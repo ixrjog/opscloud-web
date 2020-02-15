@@ -7,6 +7,17 @@
       <div>
         <el-row :gutter="24" style="margin-bottom: 5px">
           <el-col :span="4">
+            <el-select v-model="queryParam.groupId" filterable clearable
+              remote reserve-keyword placeholder="输入关键词搜索资源组" :remote-method="getGroup" :loading="loading">
+              <el-option
+                v-for="item in groupOptions"
+                :key="item.id"
+                :label="item.groupCode"
+                :value="item.id">
+              </el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="4">
             <el-input v-model="queryParam.resourceName" placeholder="资源路径"/>
           </el-col>
           <el-col :span="4">
@@ -31,9 +42,9 @@
           :columns="columns"
           :data="data"
           :options="options"
-          add-title="新增角色"
+          add-title="新增资源"
           :add-template="addTemplate"
-          edit-title="修改角色"
+          edit-title="修改资源"
           :edit-template="addTemplate"
           :form-options="formOptions"
           @row-add="handleRowAdd"
@@ -53,12 +64,18 @@
 <script>
   import authTag from './authTag'
   // API
+  import { queryGroupPage } from '@api/auth/auth.group.js'
   import { queryResourcePage, deleteResourceById, addResource, updateResource } from '@api/auth/auth.resource.js'
 
   export default {
     data () {
       return {
         columns: [
+          {
+            title: '资源组',
+            key: 'groupCode',
+            minWidth: '40%'
+          },
           {
             title: '资源路径',
             key: 'resourceName',
@@ -83,6 +100,10 @@
         ],
         data: [],
         addTemplate: {
+          groupCode: {
+            title: '资源组',
+            value: ''
+          },
           resourceName: {
             title: '资源路径',
             value: ''
@@ -92,20 +113,20 @@
             value: ''
           },
           needAuth: {
-              title: '鉴权',
-              value: 1,
-              component: {
-                  name: 'el-select',
-                  options: [
-                    {
-                      label: '鉴权',
-                      value: 1
-                    },
-                    {
-                      label: '不鉴权',
-                      value: 0
-                  }]
-              }
+            title: '鉴权',
+            value: 1,
+            component: {
+              name: 'el-select',
+              options: [
+                {
+                  label: '鉴权',
+                  value: 1
+                },
+                {
+                  label: '不鉴权',
+                  value: 0
+                }]
+            }
           }
         },
         options: {
@@ -123,6 +144,8 @@
           total: 0
         },
         queryParam: {
+          groupId: '',
+          groupCode: '',
           resourceName: '',
           needAuth: ''
         },
@@ -130,8 +153,8 @@
           value: -1,
           label: '全部'
         }, {
-            value: 0,
-            label: '不鉴权'
+          value: 0,
+          label: '不鉴权'
         }, {
           value: 1,
           label: '鉴权'
@@ -153,22 +176,20 @@
             fixed: 'left',
             confirm: false
           }
-          // custom: [
-          //   {
-          //     text: '允许/禁止',
-          //     type: 'warning',
-          //     size: 'mini',
-          //     fixed: 'left',
-          //     emit: 'workflow-update'
-          //   }
-          // ]
-        }
+        },
+        groupOptions: []
       }
     },
     mounted () {
       this.fetchData()
     },
     methods: {
+      getGroup (groupCode) {
+        queryGroupPage(groupCode, 1, 10)
+          .then(res => {
+            this.groupOptions = res.body.data
+          })
+      },
       handleClick () {
         this.$emit('input', !this.value)
       },
@@ -245,8 +266,7 @@
       },
       fetchData () {
         this.loading = true
-        queryResourcePage(
-          this.queryParam.resourceName, this.queryParam.needAuth, this.pagination.currentPage, this.pagination.pageSize)
+        queryResourcePage(this.queryParam.groupId, this.queryParam.resourceName, this.queryParam.needAuth, this.pagination.currentPage, this.pagination.pageSize)
           .then(res => {
             this.data = res.body.data
             this.pagination.total = res.body.totalNum

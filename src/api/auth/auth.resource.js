@@ -1,8 +1,8 @@
 import request from '@/plugin/axios'
 
-export function queryResourcePage (resourceName, needAuth, page, length) {
+export function queryResourcePage (groupId, resourceName, needAuth, page, length) {
   return request({
-    url: '/auth/resource/page/query?resourceName=' + resourceName + '&needAuth=' + needAuth + '&page=' + page + '&length=' + length,
+    url: '/auth/resource/page/query?resourceName=' + resourceName + '&groupId=' + groupId + '&needAuth=' + needAuth + '&page=' + page + '&length=' + length,
     method: 'get'
   })
 }
