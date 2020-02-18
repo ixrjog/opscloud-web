@@ -11,12 +11,23 @@ export default [
   //   ]
   // },
   {
+    title: '云主机管理',
+    icon: 'server',
+    children: [
+      { path: '/cloudserver/server/ecs', title: 'ECS', icon: 'window-restore' },
+      { path: '/cloudserver/server/ec2', title: 'EC2', icon: 'window-restore' },
+      { path: '/cloudserver/server/esxi', title: 'ESXI', icon: 'window-restore' },
+      { path: '/cloudserver/server/vm', title: 'VM', icon: 'window-restore' },
+      { path: '/cloudserver/server/zabbixhost', title: 'ZabbixHost', icon: 'window-restore' }
+    ]
+  },
+  {
     title: '权限配置',
     icon: 'address-card',
     children: [
       { path: '/auth/role', title: '角色配置', icon: 'users' },
       { path: '/auth/resource', title: '资源', icon: 'puzzle-piece' },
-      { path: '/auth/group', title: '资源组' },
+      { path: '/auth/group', title: '资源组', icon: 'th-list' },
       { path: '/auth/resource/group', title: '资源组配置' },
       { path: '/auth/user/role', title: '用户角色配置', icon: 'edit' }
     ]

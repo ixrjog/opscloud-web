@@ -92,6 +92,60 @@ const frameIn = [
           title: '资源管理'
         }
       },
+      {
+        path: '/auth/group',
+        name: 'auth-group',
+        component: () => import('@/pages/auth/group'),
+        meta: {
+          auth: true,
+          title: '资源组管理'
+        }
+      },
+      {
+        path: '/cloudserver/server/ecs',
+        name: 'cloudserver-server-ecs',
+        component: () => import('@/pages/cloudserver/server/ecs'),
+        meta: {
+          auth: true,
+          title: 'ECS主机管理'
+        }
+      },
+      {
+        path: '/cloudserver/server/ec2',
+        name: 'cloudserver-server-ec2',
+        component: () => import('@/pages/cloudserver/server/ec2'),
+        meta: {
+          auth: true,
+          title: 'EC2主机管理'
+        }
+      },
+      {
+        path: '/cloudserver/server/esxi',
+        name: 'cloudserver-server-esxi',
+        component: () => import('@/pages/cloudserver/server/esxi'),
+        meta: {
+          auth: true,
+          title: 'ESXi主机管理'
+        }
+      },
+      {
+        path: '/cloudserver/server/vm',
+        name: 'cloudserver-server-vm',
+        component: () => import('@/pages/cloudserver/server/vm'),
+        meta: {
+          auth: true,
+          title: 'VM主机管理'
+        }
+      },
+      {
+        path: '/cloudserver/server/zabbixhost',
+        name: 'cloudserver-server-zabbixhost',
+        component: () => import('@/pages/cloudserver/server/zabbixhost'),
+        meta: {
+          auth: true,
+          title: 'ZabbixHost主机管理'
+        }
+      },
       // binlog订阅配置
       {
         path: '/binlog/config',

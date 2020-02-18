@@ -29,3 +29,11 @@ export function updateResource (data) {
     data
   })
 }
+
+export function updateResourceNeedAuth (data) {
+  return request({
+    url: '/auth/resource/updateNeedAuth',
+    method: 'put',
+    data
+  })
+}
