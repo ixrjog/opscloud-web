@@ -2,102 +2,90 @@
   <d2-container>
     <template>
       <div>
-        <h1>角色配置</h1>
+        <h1>角色资源配置</h1>
       </div>
-      <div>
+      <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
           <el-col :span="4">
-            <el-input v-model="queryParam.roleName" placeholder="角色名称"/>
+            <el-select v-model="queryParam.roleId" filterable clearable
+                       remote reserve-keyword placeholder="输入关键词搜索角色" :remote-method="getRole" :loading="loading">
+              <el-option
+                v-for="item in roleOptions"
+                :key="item.id"
+                :label="item.roleName"
+                :value="item.id">
+              </el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="4">
+            <el-select v-model="queryParam.groupId" filterable clearable
+                       remote reserve-keyword placeholder="输入关键词搜索资源组" :remote-method="getGroup" :loading="loading">
+              <el-option
+                v-for="item in groupOptions"
+                :key="item.id"
+                :label="item.groupCode"
+                :value="item.id">
+              </el-option>
+            </el-select>
           </el-col>
           <el-col :span="4">
             <el-button @click="fetchData">查询</el-button>
-            <el-button @click="addRow">新增</el-button>
           </el-col>
         </el-row>
       </div>
-      <div>
-        <d2-crud
-          ref="d2Crud"
-          :columns="columns"
-          :data="data"
-          :options="options"
-          add-title="新增角色"
-          :add-template="addTemplate"
-          edit-title="修改角色"
-          :edit-template="addTemplate"
-          :form-options="formOptions"
-          @row-add="handleRowAdd"
-          @dialog-cancel="handleDialogCancel"
-          :rowHandle="rowHandle"
-          @row-remove="handleRowRemove"
-          @row-edit="handleRowEdit"
-          :loading="loading"
-          :pagination="pagination"
-          @pagination-current-change="paginationCurrentChange">
-        </d2-crud>
-      </div>
+      <el-row>
+        <el-col :span="12" v-if="tableUnbindData.length != 0">
+          <div>
+            <h3>未绑定资源</h3>
+          </div>
+          <el-table :data="tableUnbindData" style="width: 100%">
+            <el-table-column prop="resourceName" label="资源路径"></el-table-column>
+            <el-table-column prop="comment" label="描述"></el-table-column>
+            <el-table-column fixed="right" label="操作" width="280">
+              <template slot-scope="scope">
+                <el-button type="success" plain size="mini" @click="roleBindResource(scope.row)">绑定</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-pagination background @current-change="paginationCurrentChange"
+                         layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
+                         :page-size="pagination.pageSize">
+          </el-pagination>
+        </el-col>
+        <el-col :span="12" v-if="tableBindData.length != 0">
+          <div>
+            <h3>已绑定资源</h3>
+          </div>
+          <el-table :data="tableBindData" style="width: 100%">
+            <el-table-column prop="resourceName" label="资源路径"></el-table-column>
+            <el-table-column prop="comment" label="描述"></el-table-column>
+            <el-table-column fixed="right" label="操作" width="280">
+              <template slot-scope="scope">
+                <el-button type="danger" plain size="mini" @click="roleUnbindResource(scope.row)">解除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-pagination background @current-change="paginationCurrentChange"
+                         layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
+                         :page-size="pagination.pageSize">
+          </el-pagination>
+        </el-col>
+      </el-row>
     </template>
   </d2-container>
 </template>
 
 <script>
-  import workflowTag from './workflowTag'
   // API
-  import { queryRolePage, deleteRoleById, addRole, updateRole } from '@api/auth/auth.role.js'
+  import { queryRolePage } from '@api/auth/auth.role.js'
+  import { queryGroupPage } from '@api/auth/auth.group.js'
+  import { queryRoleBindResourcePage, queryRoleUnbindResourcePage, bindRoleResource, unbindRoleResource } from '@api/auth/auth.role.resource.js'
 
   export default {
     data () {
       return {
-        columns: [
-          {
-            title: '角色',
-            key: 'roleName',
-            minWidth: '40%'
-          },
-          {
-            title: '描述',
-            key: 'comment',
-            minWidth: '30%'
-          },
-          {
-            title: '允许工作流申请',
-            key: 'workflow',
-            component: {
-              name: workflowTag,
-              props: {
-                myProps: ''
-              }
-            },
-            minWidth: '20%'
-          }
-        ],
-        data: [],
-        addTemplate: {
-          roleName: {
-            title: '角色',
-            value: ''
-          },
-          comment: {
-            title: '描述',
-            value: ''
-          },
-          workflow: {
-              title: '允许工作流申请',
-              value: 0,
-              component: {
-                  name: 'el-select',
-                  options: [
-                    {
-                      label: '允许',
-                      value: 1
-                    },
-                    {
-                      label: '禁止',
-                      value: 0
-                  }]
-              }
-          }
-        },
+        tableUnbindData: [],
+        tableBindData: [],
         options: {
           stripe: true
         },
@@ -113,117 +101,58 @@
           total: 0
         },
         queryParam: {
-          roleName: ''
+          roleId: '',
+          groupId: ''
         },
-        selectOptions: [{
-          value: 0,
-          label: '禁用'
-        }, {
-          value: 1,
-          label: '允许'
-        }],
-        rowHandle: {
-          remove: {
-            icon: 'el-icon-delete',
-            size: 'mini',
-            fixed: 'right',
-            confirm: true,
-            show (index, row) {
-              return true
-            }
-          },
-          edit: {
-            icon: 'el-icon-edit',
-            type: 'primary',
-            size: 'mini',
-            fixed: 'left',
-            confirm: false
-          }
-          // custom: [
-          //   {
-          //     text: '允许/禁止',
-          //     type: 'warning',
-          //     size: 'mini',
-          //     fixed: 'left',
-          //     emit: 'workflow-update'
-          //   }
-          // ]
-        }
+        roleOptions: [],
+        groupOptions: []
       }
     },
-    mounted () {
-      this.fetchData()
-    },
+    // mounted () {
+    //   this.fetchData()
+    // },
     methods: {
-      handleClick () {
-        this.$emit('input', !this.value)
+      getRole (roleName) {
+        queryRolePage(roleName, 1, 20)
+          .then(res => {
+            this.roleOptions = res.body.data
+          })
       },
-      // 普通的新增
-      addRow () {
-        this.$refs.d2Crud.showDialog({
-          mode: 'add'
-        })
+      getGroup (groupCode) {
+        queryGroupPage(groupCode, 1, 20)
+          .then(res => {
+            this.groupOptions = res.body.data
+          })
       },
-      handleRowAdd (row, done) {
-        this.formOptions.saveLoading = true
+      roleBindResource (row) {
         setTimeout(() => {
           var requestBody = {
-            'roleName': row.roleName,
-            'comment': row.comment,
-            'workflow': row.workflow
+            'resourceId': row.id,
+            'roleId': this.queryParam.roleId
           }
-          addRole(requestBody)
+          bindRoleResource(requestBody)
             .then(res => {
               // 返回数据
               this.$message({
-                message: '成功',
+                message: '绑定成功',
                 type: 'success'
               })
               this.fetchData()
-              done()
             })
-
-          // done可以传入一个对象来修改提交的某个字段
-          this.formOptions.saveLoading = false
         }, 600)
       },
-      handleRowRemove ({ index, row }, done) {
+      roleUnbindResource (row) {
         setTimeout(() => {
-          deleteRoleById(row.id)
+          unbindRoleResource(row.id)
             .then(res => {
+              // 返回数据
               this.$message({
-                message: '删除成功',
+                message: '解除绑定成功',
                 type: 'success'
               })
               this.fetchData()
-              done()
             })
-        }, 300)
-      },
-      handleRowEdit ({ index, row }, done) {
-        setTimeout(() => {
-          updateRole({
-            id: row.id,
-            roleName: row.roleName,
-            comment: row.comment,
-            workflow: row.workflow
-          })
-            .then(res => {
-              this.$message({
-                message: '更新成功',
-                type: 'success'
-              })
-              this.fetchData()
-              done()
-            })
-        }, 300)
-      },
-      handleDialogCancel (done) {
-        this.$message({
-          message: '取消保存',
-          type: 'warning'
-        })
-        done()
+        }, 600)
       },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage
@@ -231,10 +160,17 @@
       },
       fetchData () {
         this.loading = true
-        queryRolePage(
-          this.queryParam.roleName, this.pagination.currentPage, this.pagination.pageSize)
+        // 绑定的资源
+        queryRoleBindResourcePage(this.queryParam.roleId, this.queryParam.groupId, this.pagination.currentPage, this.pagination.pageSize)
           .then(res => {
-            this.data = res.body.data
+            this.tableBindData = res.body.data
+            this.pagination.total = res.body.totalNum
+            this.loading = false
+          })
+        // 未绑定的资源
+        queryRoleUnbindResourcePage(this.queryParam.roleId, this.queryParam.groupId, this.pagination.currentPage, this.pagination.pageSize)
+          .then(res => {
+            this.tableUnbindData = res.body.data
             this.pagination.total = res.body.totalNum
             this.loading = false
           })

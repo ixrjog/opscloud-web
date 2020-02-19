@@ -25,18 +25,11 @@ export default [
     title: '权限配置',
     icon: 'address-card',
     children: [
-      { path: '/auth/role', title: '角色配置', icon: 'users' },
       { path: '/auth/resource', title: '资源', icon: 'puzzle-piece' },
       { path: '/auth/group', title: '资源组', icon: 'th-list' },
-      { path: '/auth/resource/group', title: '资源组配置' },
-      { path: '/auth/user/role', title: '用户角色配置', icon: 'edit' }
+      { path: '/auth/role', title: '角色配置', icon: 'users' },
+      { path: '/auth/role/resource', title: '角色资源管理', icon: 'edit' },
+      { path: '/auth/user/role', title: '用户角色配置', icon: 'id-card' }
     ]
   }
-  // { path: '/business/detail', title: '业务域管理', icon: 'home' },
-  // { path: '/binlog/config', title: 'binlog订阅管理', icon: 'home' },
-  // { path: '/rule/detail', title: '规则SQL管理', icon: 'home' },
-  // { path: '/rule/equal', title: '规则等式', icon: 'home' },
-  // { path: '/rule/check/failure', title: '检查失败记录', icon: 'home' },
-  // { path: '/business/rule', title: '业务规则', icon: 'home' },
-  // { path: '/sql/debug', title: 'SQL调试', icon: 'home' }
 ]

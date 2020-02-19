@@ -93,6 +93,15 @@ const frameIn = [
         }
       },
       {
+        path: '/auth/role/resource',
+        name: 'auth-role-resource',
+        component: () => import('@/pages/auth/role-resource'),
+        meta: {
+          auth: true,
+          title: '角色资源管理'
+        }
+      },
+      {
         path: '/auth/group',
         name: 'auth-group',
         component: () => import('@/pages/auth/group'),
