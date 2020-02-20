@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import D2ContainerFrame from '@/components/d2-container-frame/index.vue'
+import D2ContainerFrame from '@/components/d2-container-frame/index.bak.vue'
 
 describe('d2-container-frame', () => {
   // 存在且是Vue组件实例

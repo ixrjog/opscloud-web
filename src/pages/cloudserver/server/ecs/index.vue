@@ -2,9 +2,9 @@
   <d2-container>
     <template>
       <div>
-        <h1>Aliyun:ECS实例管理</h1>
+        <h1>{{title}}</h1>
       </div>
-      <div>
+      <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
           <el-col :span="4">
             <el-input v-model="queryParam.serverName" placeholder="服务器名称"/>
@@ -28,104 +28,142 @@
           </el-col>
         </el-row>
       </div>
-      <div>
-        <d2-crud
-          ref="d2Crud"
-          :columns="columns"
-          :data="data"
-          :options="options"
-          add-title="新增角色"
-          :add-template="addTemplate"
-          edit-title="修改角色"
-          :edit-template="addTemplate"
-          :form-options="formOptions"
-          @row-add="handleRowAdd"
-          @dialog-cancel="handleDialogCancel"
-          :rowHandle="rowHandle"
-          @row-remove="handleRowRemove"
-          @row-edit="handleRowEdit"
-          :loading="loading"
-          :pagination="pagination"
-          @pagination-current-change="paginationCurrentChange">
-        </d2-crud>
-      </div>
+      <el-table :data="tableData" style="width: 100%">
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form label-position="left" inline class="table-expand">
+              <el-form-item label="实例id">
+                <span>{{ props.row.instanceId }}</span>
+              </el-form-item>
+              <el-form-item label="服务器名称">
+                <span>{{ props.row.serverName }}</span>
+              </el-form-item>
+              <el-form-item label="实例类型">
+                <span>{{ props.row.instanceType }}</span>
+              </el-form-item>
+              <el-form-item v-if="props.row.vpcId != null && props.row.vpcId != ''" label="vpcId">
+                <span>{{ props.row.vpcId }}</span>
+              </el-form-item>
+              <el-form-item label="镜像id">
+                <span>{{ props.row.imageId }}</span>
+              </el-form-item>
+              <el-form-item label="系统盘容量(GiB)">
+                <span>{{ props.row.systemDiskSize }}</span>
+              </el-form-item>
+              <el-form-item v-if="props.row.dataDiskSize != null && props.row.dataDiskSize != 0" label="数据盘容量(GiB)">
+                <span>{{ props.row.dataDiskSize }}</span>
+              </el-form-item>
+              <el-form-item label="付费类型">
+                <span>{{ props.row.chargeType }}</span>
+              </el-form-item>
+              <el-form-item label="自动续费状态">
+                <span>{{ props.row.renewalStatus }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
+        <el-table-column prop="instanceName" label="实例名"></el-table-column>
+        <el-table-column prop="publicIp" label="公网ip"></el-table-column>
+        <el-table-column prop="privateIp" label="私网ip"></el-table-column>
+        <el-table-column prop="cpu" label="cpu" width="80" v-if="showCpuColumn"></el-table-column>
+        <el-table-column prop="memory" label="内存(GiB)" width="100" v-if="showCpuColumn">
+          <template slot-scope="scope">
+            <span>{{scope.row.memory | getMemoryText}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="zone" label="区"></el-table-column>
+        <el-table-column prop="serverStatus" label="状态">
+          <template slot-scope="scope">
+            <el-tag class="filters" :type="scope.row.serverStatus | getStatusTagType" size="small ">{{scope.row.serverStatus | getStatusTagText}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column fixed="right" label="操作" width="280">
+          <template slot-scope="scope">
+<!--            <el-button type="primary" plain size="mini" @click="updateItemNeedAuth(scope.row)">{{scope.row.needAuth ===-->
+<!--              0 ? '鉴权' : '不鉴权'}}-->
+<!--            </el-button>-->
+            <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination background @current-change="paginationCurrentChange"
+                     layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
+                     :page-size="pagination.pageSize">
+      </el-pagination>
+<!--      <el-dialog :title="dialogForm.operationType ? dialogForm.addTitle : dialogForm.updateTitle"-->
+<!--                 :visible.sync="dialogForm.visible">-->
+<!--        <el-form :model="form">-->
+<!--          <el-form-item label="资源组" :label-width="formLabelWidth">-->
+<!--            <el-select v-model="form.group" filterable clearable-->
+<!--                       remote reserve-keyword placeholder="输入关键词搜索资源组" :remote-method="getGroup" :loading="loading">-->
+<!--              <el-option-->
+<!--                v-for="item in groupOptions"-->
+<!--                :key="item.id"-->
+<!--                :label="item.groupCode"-->
+<!--                :value="item">-->
+<!--              </el-option>-->
+<!--            </el-select>-->
+<!--          </el-form-item>-->
+<!--        </el-form>-->
+<!--        <el-form :model="form">-->
+<!--          <el-form-item label="资源路径" :label-width="formLabelWidth">-->
+<!--            <el-input v-model="form.resourceName" placeholder="请输入内容"></el-input>-->
+<!--          </el-form-item>-->
+<!--        </el-form>-->
+<!--        <el-form :model="form">-->
+<!--          <el-form-item label="鉴权" :label-width="formLabelWidth">-->
+<!--            <el-select v-model="form.needAuth" placeholder="是否鉴权">-->
+<!--              <el-option-->
+<!--                v-for="item in needAuthOptions"-->
+<!--                :key="item.value"-->
+<!--                :label="item.label"-->
+<!--                :value="item.value">-->
+<!--              </el-option>-->
+<!--            </el-select>-->
+<!--          </el-form-item>-->
+<!--        </el-form>-->
+<!--        <el-form :model="form">-->
+<!--          <el-form-item label="描述" :label-width="formLabelWidth">-->
+<!--            <el-input v-model="form.comment" placeholder="请输入内容"></el-input>-->
+<!--          </el-form-item>-->
+<!--        </el-form>-->
+<!--        <div slot="footer" class="dialog-footer">-->
+<!--          <el-button @click="dialogForm.visible = false">取消</el-button>-->
+<!--          <el-button type="primary" @click="saveInfo">确定</el-button>-->
+<!--        </div>-->
+<!--      </el-dialog>-->
     </template>
   </d2-container>
 </template>
 
 <script>
-  import serverStatusTag from '../serverStatusTag'
+  // Filters
+  import { getStatusTagType, getStatusTagText, getMemoryText } from '@/filters/server.js'
   // API
   import { queryCloudserverPage, syncCloudserverByKey, deleteCloudserverById } from '@api/cloudserver/server/cloudserver.js'
 
   export default {
     data () {
       return {
-        columns: [
-          {
-            title: '实例名',
-            key: 'instanceName',
-            minWidth: '40%'
-          },
-          {
-            title: '实例id',
-            key: 'instanceId',
-            minWidth: '40%'
-          },
-          {
-            title: '公网ip',
-            key: 'publicIp',
-            minWidth: '30%'
-          },
-          {
-            title: '私网ip',
-            key: 'privateIp',
-            minWidth: '30%'
-          },
-          {
-            title: '区',
-            key: 'zone',
-            minWidth: '30%'
-          },
-          {
-            title: '状态',
-            key: 'serverStatus',
-            component: {
-              name: serverStatusTag,
-              props: {
-                myProps: ''
-              }
-            },
-            minWidth: '20%'
-          }
-        ],
-        data: [],
-        addTemplate: {
-          roleName: {
-            title: '角色',
-            value: ''
-          },
-          comment: {
-            title: '描述',
-            value: ''
-          },
-          workflow: {
-            title: '允许工作流申请',
-            value: 0,
-            component: {
-              name: 'el-select',
-              options: [
-                {
-                  label: '允许',
-                  value: 1
-                },
-                {
-                  label: '禁止',
-                  value: 0
-                }]
-            }
-          }
+        form: {
+          group: '',
+          id: '',
+          groupId: '',
+          resourceName: '',
+          comment: '',
+          typeLogo: '',
+          needAuth: 1
         },
+        dialogImageUrl: '',
+        dialogVisible: false,
+        formLabelWidth: '100px',
+        dialogForm: {
+          visible: false,
+          addTitle: '新增资源配置',
+          updateTitle: '更新资源配置',
+          operationType: true
+        },
+        tableData: [],
         options: {
           stripe: true
         },
@@ -159,37 +197,19 @@
           value: 3,
           label: '服务器表未删除但云服务器已销毁'
         }],
-        rowHandle: {
-          remove: {
-            icon: 'el-icon-delete',
-            size: 'mini',
-            fixed: 'right',
-            confirm: true,
-            show (index, row) {
-              return true
-            }
-          },
-          edit: {
-            icon: 'el-icon-edit',
-            type: 'primary',
-            size: 'mini',
-            fixed: 'left',
-            confirm: false
-          }
-          // custom: [
-          //   {
-          //     text: '允许/禁止',
-          //     type: 'warning',
-          //     size: 'mini',
-          //     fixed: 'left',
-          //     emit: 'workflow-update'
-          //   }
-          // ]
-        }
+        cloudserverKey: 'AliyunECSCloudserver',
+        title: 'Aliyun:ECS实例管理',
+        showCpuColumn: true,
+        showMemoryColumn: true
       }
     },
     mounted () {
       this.fetchData()
+    },
+    filters: {
+      getStatusTagType,
+      getStatusTagText,
+      getMemoryText
     },
     methods: {
       handleClick () {
@@ -213,6 +233,37 @@
               done()
             })
         }, 300)
+      },
+      delItem (row) {
+        this.$confirm('此操作将删除当前配置?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          deleteCloudserverById(row.id).then(res => {
+            this.fetchData()
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+      },
+      addItem () {
+        this.dialogForm.operationType = true
+        this.dialogForm.visible = true
+        this.form = {
+          id: '',
+          groupId: '',
+          resourceName: '',
+          comment: '',
+          needAuth: 1
+        }
       },
       // handleRowEdit ({ index, row }, done) {
       //   setTimeout(() => {
@@ -248,14 +299,14 @@
         queryCloudserverPage(
           this.queryParam.cloudserverType, this.queryParam.serverName, this.queryParam.queryIp, this.queryParam.serverStatus, this.pagination.currentPage, this.pagination.pageSize)
           .then(res => {
-            this.data = res.body.data
+            this.tableData = res.body.data
             this.pagination.total = res.body.totalNum
             this.loading = false
           })
       },
       handleSync () {
         setTimeout(() => {
-          syncCloudserverByKey('AliyunECSCloudserver')
+          syncCloudserverByKey(this.cloudserverKey)
             .then(res => {
               this.$message({
                 message: '后台同步数据中',
@@ -268,3 +319,18 @@
     }
   }
 </script>
+
+<style>
+  .table-expand {
+    font-size: 0;
+  }
+  .table-expand label {
+    width: 150px;
+    color: #99a9bf;
+  }
+  .table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+  }
+</style>
