@@ -111,6 +111,15 @@ const frameIn = [
         }
       },
       {
+        path: '/auth/user/role',
+        name: 'auth-user-role',
+        component: () => import('@/pages/auth/user-role'),
+        meta: {
+          auth: true,
+          title: '用户角色管理'
+        }
+      },
+      {
         path: '/cloudserver/server/ecs',
         name: 'cloudserver-server-ecs',
         component: () => import('@/pages/cloudserver/server/ecs'),

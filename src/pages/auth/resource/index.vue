@@ -103,7 +103,6 @@
 </template>
 
 <script>
-  import authTag from './authTag'
   // API
   import { queryGroupPage } from '@api/auth/auth.group.js'
   import { queryResourcePage, deleteResourceById, addResource, updateResource, updateResourceNeedAuth } from '@api/auth/auth.resource.js'
@@ -129,34 +128,6 @@
           updateTitle: '更新资源配置',
           operationType: true
         },
-        columns: [
-          {
-            title: '资源组',
-            key: 'groupCode',
-            minWidth: '40%'
-          },
-          {
-            title: '资源路径',
-            key: 'resourceName',
-            minWidth: '40%'
-          },
-          {
-            title: '描述',
-            key: 'comment',
-            minWidth: '30%'
-          },
-          {
-            title: '鉴权',
-            key: 'needAuth',
-            component: {
-              name: authTag,
-              props: {
-                myProps: ''
-              }
-            },
-            minWidth: '20%'
-          }
-        ],
         tableData: [],
         options: {
           stripe: true
