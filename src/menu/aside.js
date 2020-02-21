@@ -11,6 +11,14 @@ export default [
   //   ]
   // },
   {
+    title: '服务器组管理',
+    icon: 'server',
+    children: [
+      { path: '/server/group', title: '服务器组', icon: 'window-restore' },
+      { path: '/server/group/type', title: '服务器组类型', icon: 'window-restore' }
+    ]
+  },
+  {
     title: '云主机管理',
     icon: 'server',
     children: [

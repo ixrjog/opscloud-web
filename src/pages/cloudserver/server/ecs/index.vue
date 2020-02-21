@@ -82,6 +82,8 @@
 <!--            <el-button type="primary" plain size="mini" @click="updateItemNeedAuth(scope.row)">{{scope.row.needAuth ===-->
 <!--              0 ? '鉴权' : '不鉴权'}}-->
 <!--            </el-button>-->
+            <el-button type="primary" plain size="mini" @click="addItem(scope.row)">导入
+            </el-button>
             <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -151,10 +153,8 @@
           groupId: '',
           resourceName: '',
           comment: '',
-          typeLogo: '',
           needAuth: 1
         },
-        dialogImageUrl: '',
         dialogVisible: false,
         formLabelWidth: '100px',
         dialogForm: {

@@ -73,6 +73,25 @@ const frameIn = [
         hidden: true,
         component: _import('system/function/redirect')
       },
+      // server group
+      {
+        path: '/server/group',
+        name: 'server-group',
+        component: () => import('@/pages/server/group'),
+        meta: {
+          auth: true,
+          title: '服务器组'
+        }
+      },
+      {
+        path: '/server/group/type',
+        name: 'server-groupp-type',
+        component: () => import('@/pages/server/group/type'),
+        meta: {
+          auth: true,
+          title: '服务器组类型'
+        }
+      },
       // opscloud auth
       {
         path: '/auth/role',
