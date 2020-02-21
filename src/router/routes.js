@@ -73,6 +73,16 @@ const frameIn = [
         hidden: true,
         component: _import('system/function/redirect')
       },
+      // env
+      {
+        path: '/env',
+        name: 'env',
+        component: () => import('@/pages/env'),
+        meta: {
+          auth: true,
+          title: '环境配置'
+        }
+      },
       // server group
       {
         path: '/server/group',

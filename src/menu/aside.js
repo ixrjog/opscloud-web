@@ -15,7 +15,8 @@ export default [
     icon: 'server',
     children: [
       { path: '/server/group', title: '服务器组', icon: 'window-restore' },
-      { path: '/server/group/type', title: '服务器组类型', icon: 'window-restore' }
+      { path: '/server/group/type', title: '服务器组类型', icon: 'window-restore' },
+      { path: '/env', title: '环境配置', icon: 'window-restore' }
     ]
   },
   {
