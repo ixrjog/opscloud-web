@@ -11,12 +11,20 @@ export default [
   //   ]
   // },
   {
-    title: '服务器组管理',
+    title: '全局配置',
     icon: 'server',
     children: [
+      { path: '/env', title: '环境配置', icon: 'window-restore' },
+      { path: '/tag', title: '标签配置', icon: 'window-restore' }
+    ]
+  },
+  {
+    title: '服务器管理',
+    icon: 'server',
+    children: [
+      { path: '/server', title: '服务器', icon: 'window-restore' },
       { path: '/server/group', title: '服务器组', icon: 'window-restore' },
-      { path: '/server/group/type', title: '服务器组类型', icon: 'window-restore' },
-      { path: '/env', title: '环境配置', icon: 'window-restore' }
+      { path: '/server/group/type', title: '服务器组类型', icon: 'window-restore' }
     ]
   },
   {

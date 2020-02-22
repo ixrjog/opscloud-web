@@ -1,0 +1,32 @@
+import request from '@/plugin/axios'
+
+export function queryServerPage (name, serverGroupId, queryIp, envType, page, length) {
+  return request({
+    url: '/server/page/query?name=' + name + '&serverGroupId=' + serverGroupId +
+      '&queryIp=' + queryIp + '&envType=' + envType + '&page=' + page + '&length=' + length,
+    method: 'get'
+  })
+}
+
+export function addServer (data) {
+  return request({
+    url: '/server/add',
+    method: 'post',
+    data
+  })
+}
+
+export function updateServer (data) {
+  return request({
+    url: '/server/update',
+    method: 'put',
+    data
+  })
+}
+
+export function deleteServerById (id) {
+  return request({
+    url: '/server/del?id=' + id,
+    method: 'delete'
+  })
+}
