@@ -1,9 +1,9 @@
 import request from '@/plugin/axios'
 
-export function queryServerPage (name, serverGroupId, queryIp, envType, page, length) {
+export function queryServerPage (name, serverGroupId, queryIp, envType, tagId, page, length) {
   return request({
     url: '/server/page/query?name=' + name + '&serverGroupId=' + serverGroupId +
-      '&queryIp=' + queryIp + '&envType=' + envType + '&page=' + page + '&length=' + length,
+      '&queryIp=' + queryIp + '&envType=' + envType + '&tagId=' + tagId + '&page=' + page + '&length=' + length,
     method: 'get'
   })
 }

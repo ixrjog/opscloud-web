@@ -12,7 +12,7 @@
           <el-col :span="4">
             <el-input v-model="queryParam.queryIp" placeholder="ip"/>
           </el-col>
-          <el-col :span="4">
+          <el-col :span="3">
             <el-select v-model="queryParam.serverGroupId" filterable clearable
                        remote reserve-keyword placeholder="搜索服务器组" :remote-method="getServerGroup" :loading="loading">
               <el-option
@@ -23,13 +23,25 @@
               </el-option>
             </el-select>
           </el-col>
-          <el-col :span="4">
+          <el-col :span="3">
             <el-select v-model="queryParam.envType" clearable placeholder="环境">
               <el-option
                 v-for="item in envTypeOptions"
                 :key="item.id"
                 :label="item.envName"
                 :value="item.envType">
+              </el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="3">
+            <el-select
+              v-model="queryParam.tagId" filterable clearable remote reserve-keyword
+              placeholder="请输入关键词搜索标签" :remote-method="getTag" :loading="loading">
+              <el-option
+                v-for="item in tagOptions"
+                :key="item.id"
+                :label="item.tagKey"
+                :value="item.id">
               </el-option>
             </el-select>
           </el-col>
@@ -89,9 +101,9 @@
           <template slot-scope="scope">
             <div class="tag-group">
               <el-tag style="margin-left: 5px"
-                v-for="item in scope.row.tags"
-                :key="item.id"
-                :style="{ color: item.color }">
+                      v-for="item in scope.row.tags"
+                      :key="item.id"
+                      :style="{ color: item.color }">
                 {{ item.tagKey }}
               </el-tag>
             </div>
@@ -102,8 +114,8 @@
             <!--            <el-button type="primary" plain size="mini" @click="updateItemNeedAuth(scope.row)">{{scope.row.needAuth ===-->
             <!--              0 ? '鉴权' : '不鉴权'}}-->
             <!--            </el-button>-->
-            <el-button type="primary" plain size="mini" @click="editTag(scope.row)">标签</el-button>
-            <el-button type="primary" plain size="mini" @click="addItem(scope.row)">导入</el-button>
+            <el-button type="primary" plain size="mini" @click="editItemTag(scope.row)">标签</el-button>
+            <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
             <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -112,18 +124,114 @@
                      layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                      :page-size="pagination.pageSize">
       </el-pagination>
+      <!-- server编辑-->
+      <el-dialog :title="dialogForm.operationType ? dialogForm.addTitle : dialogForm.updateTitle"
+                 :visible.sync="dialogForm.visible">
+        <el-form :model="form">
+          <el-form-item label="名称" :label-width="formLabelWidth">
+            <el-input v-model="form.name" placeholder="请输入内容"></el-input>
+          </el-form-item>
+        </el-form>
+        <el-form :model="form">
+          <el-form-item label="服务器组" :label-width="formLabelWidth">
+            <el-select v-model="form.serverGroup" filterable clearable
+                       remote reserve-keyword placeholder="输入关键词搜组类型" :remote-method="getServerGroupByEdit"
+                       :loading="loading">
+              <el-option
+                v-for="item in form.serverGroupOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <el-form :model="form">
+          <el-form-item label="服务器类型" :label-width="formLabelWidth">
+            <el-select v-model="form.serverType" placeholder="选择类型">
+              <el-option
+                v-for="item in form.serverTypeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <el-form :model="form">
+          <el-form-item label="登录用户" :label-width="formLabelWidth">
+            <el-input v-model="form.loginUser" placeholder="请输入内容"></el-input>
+          </el-form-item>
+        </el-form>
+        <el-form :model="form">
+          <el-form-item label="登录类型" :label-width="formLabelWidth">
+            <el-select v-model="form.loginType" placeholder="选择类型">
+              <el-option
+                v-for="item in form.loginTypeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <el-form :model="form">
+          <el-form-item label="环境" :label-width="formLabelWidth">
+            <el-select v-model="form.envType" filterable clearable
+                       remote reserve-keyword
+                       :loading="loading">
+              <el-option
+                v-for="item in form.envTypeOptions"
+                :key="item.id"
+                :label="item.envName"
+                :value="item.envType">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <el-form :model="form">
+          <el-form-item label="区" :label-width="formLabelWidth">
+            <el-input v-model="form.area" placeholder="请输入内容"></el-input>
+          </el-form-item>
+        </el-form>
+        <el-form :model="form">
+          <el-form-item label="公网ip" :label-width="formLabelWidth">
+            <el-input v-model="form.publicIp" placeholder="请输入内容"></el-input>
+          </el-form-item>
+        </el-form>
+        <el-form :model="form">
+          <el-form-item label="私网ip" :label-width="formLabelWidth">
+            <el-input v-model="form.privateIp" placeholder="请输入内容"></el-input>
+          </el-form-item>
+        </el-form>
+        <el-form :model="form">
+          <el-form-item label="序号" :label-width="formLabelWidth">
+            <el-input v-model="form.serialNumber" placeholder="请输入内容"></el-input>
+          </el-form-item>
+        </el-form>
+        <el-form :model="form">
+          <el-form-item label="描述" :label-width="formLabelWidth">
+            <el-input v-model="form.comment" placeholder="请输入内容"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogForm.visible = false">取消</el-button>
+          <el-button type="primary" @click="saveItem">确定</el-button>
+        </div>
+      </el-dialog>
+      <!-- server编辑-->
       <!-- tag编辑-->
-      <el-dialog :title="dialogTagForm.title"
-                 :visible.sync="dialogTagForm.visible">
-        <el-form :model="tagForm">
-          <el-transfer v-model="tagForm.serverTag"
+      <el-dialog :title="dialogFormTag.title"
+                 :visible.sync="dialogFormTag.visible">
+        <el-form :model="formTag">
+          <el-transfer v-model="formTag.serverTag"
                        :props="{ key: 'id', label: 'tagKey' }"
-                       :data="tagForm.tagOptions"
+                       :data="formTag.tagOptions"
                        :titles="['所有标签', '服务器标签']">
           </el-transfer>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogTagForm.visible = false">关闭</el-button>
+          <el-button @click="dialogFormTag.visible = false">关闭</el-button>
           <el-button type="primary" @click="saveTag">确定</el-button>
         </div>
       </el-dialog>
@@ -145,14 +253,65 @@
   export default {
     data () {
       return {
-        tagForm: {
+        form: {
+          serverGroup: {},
+          id: '',
+          name: '',
+          serverGroupId: '',
+          loginType: '',
+          loginUser: '',
+          envType: '',
+          publicIp: '',
+          privateIp: '',
+          serverType: '',
+          area: '',
+          serialNumber: '',
+          monitorStatus: '',
+          comment: '',
+          // options
+          serverGroupOptions: [],
+          envTypeOptions: [],
+          serverTypeOptions: [{
+            value: 0,
+            label: 'server'
+          }, {
+            value: 1,
+            label: 'vmware vm'
+          }, {
+            value: 2,
+            label: 'aliyun ecs'
+          }, {
+            value: 3,
+            label: 'aws ec2'
+          }, {
+            value: 4,
+            label: 'tencent cvm'
+          }, {
+            value: 5,
+            label: 'vmware esxi'
+          }],
+          loginTypeOptions: [{
+            value: 0,
+            label: 'key'
+          }, {
+            value: 1,
+            label: 'passwd'
+          }]
+        },
+        formTag: {
           serverId: '',
           serverTag: [],
           tagOptions: []
         },
         dialogVisible: false,
-        formLabelWidth: '100px',
-        dialogTagForm: {
+        formLabelWidth: '150px',
+        dialogForm: {
+          visible: false,
+          addTitle: '新增服务器配置',
+          updateTitle: '更新服务器配置',
+          operationType: true
+        },
+        dialogFormTag: {
           visible: false,
           title: '编辑标签'
         },
@@ -176,9 +335,10 @@
           serverGroupId: '',
           queryIp: '',
           envType: '',
-          tagKey: ''
+          tagId: ''
         },
         title: '服务器信息',
+        tagOptions: [],
         envTypeOptions: [],
         serverGroupOptions: [],
         businessType: 1
@@ -195,19 +355,25 @@
       getServerTypeText
     },
     methods: {
-      getServerTag () {
-        queryBusinessTag(this.businessType, this.tagForm.businessId, '')
+      getTag (tagKey) {
+        queryTagPage(tagKey, 1, 100)
           .then(res => {
-            this.tagForm.serverTag = []
+            this.tagOptions = res.body.data
+          })
+      },
+      getServerTag () {
+        queryBusinessTag(this.businessType, this.formTag.businessId, '')
+          .then(res => {
+            this.formTag.serverTag = []
             for (var index = 0; index < res.body.length; index++) {
-              this.tagForm.serverTag.push(res.body[index].id)
+              this.formTag.serverTag.push(res.body[index].id)
             }
           })
       },
       getEditTag () {
         queryTagPage('', 1, 100)
           .then(res => {
-            this.tagForm.tagOptions = res.body.data
+            this.formTag.tagOptions = res.body.data
           })
       },
       getEnvType () {
@@ -220,6 +386,12 @@
         queryServerGroupPage(queryName, '', 1, 20)
           .then(res => {
             this.serverGroupOptions = res.body.data
+          })
+      },
+      getServerGroupByEdit (queryName) {
+        queryServerGroupPage(queryName, '', 1, 20)
+          .then(res => {
+            this.from.serverGroupOptions = res.body.data
           })
       },
       handleClick () {
@@ -245,11 +417,33 @@
           })
         })
       },
-      editTag (row) {
-        this.dialogTagForm.visible = true
-        this.tagForm.businessId = row.id
+      editItemTag (row) {
+        this.dialogFormTag.visible = true
+        this.formTag.businessId = row.id
         this.getServerTag()
         this.getEditTag()
+      },
+      editItem (row) {
+        this.dialogForm.visible = true
+        this.dialogForm.operationType = false
+        this.form.serverGroup = row.serverGroup
+        this.form.id = row.id
+        this.form.name = row.name
+        this.form.serverGroupId = row.serverGroupId
+        this.form.loginType = row.loginType
+        this.form.loginUser = row.loginUser
+        this.form.envType = row.envType
+        this.form.publicIp = row.publicIp
+        this.form.privateIp = row.privateIp
+        this.form.serverType = row.serverType
+        this.form.area = row.area
+        this.form.serialNumber = row.serialNumber
+        this.form.monitorStatus = row.monitorStatus
+        this.form.comment = row.comment
+        // options
+        this.form.envTypeOptions = this.envTypeOptions
+        this.form.serverGroupOptions = []
+        this.form.serverGroupOptions.push(row.serverGroup)
       },
       addItem () {
         this.dialogForm.operationType = true
@@ -269,12 +463,54 @@
         })
         done()
       },
+      saveItem () {
+        setTimeout(() => {
+          var requestBody = {
+            'id': this.form.id,
+            'name': this.form.name,
+            'serverGroupId': this.form.serverGroup == null ? this.form.serverGroupId : this.form.serverGroup.id,
+            'loginType': this.form.loginType,
+            'loginUser': this.form.loginUser,
+            'serverType': this.form.serverType,
+            'envType': this.form.envType,
+            'publicIp': this.form.publicIp,
+            'privateIp': this.form.privateIp,
+            'area': this.form.area,
+            'serialNumber': this.form.serialNumber,
+            'monitorStatus': this.form.monitorStatus,
+            'comment': this.form.comment
+          }
+          if (this.dialogForm.operationType) {
+            addServer(requestBody)
+              .then(res => {
+                // 返回数据
+                this.$message({
+                  message: '成功',
+                  type: 'success'
+                })
+                this.dialogForm.visible = false
+                this.fetchData()
+              })
+          } else {
+            updateServer(requestBody)
+              .then(res => {
+                // 返回数据
+                this.$message({
+                  message: '成功',
+                  type: 'success'
+                })
+                this.dialogForm.visible = false
+                this.fetchData()
+              })
+          }
+        }, 600)
+      },
       saveTag () {
         setTimeout(() => {
           var requestBody = {
             'businessType': this.businessType,
-            'businessId': this.tagForm.businessId,
-            'tagIds': this.tagForm.serverTag
+            'businessId': this.formTag.businessId,
+            'tagIds': this.formTag.serverTag
           }
           updateTagBusiness(requestBody)
             .then(res => {
@@ -283,7 +519,7 @@
                 message: '成功',
                 type: 'success'
               })
-              this.dialogForm.visible = false
+              this.dialogFormTag.visible = false
               this.fetchData()
             })
         }, 600)
@@ -295,7 +531,7 @@
       fetchData () {
         this.loading = true
         queryServerPage(
-          this.queryParam.name, this.queryParam.serverGroupId, this.queryParam.queryIp, this.queryParam.envType, this.pagination.currentPage, this.pagination.pageSize)
+          this.queryParam.name, this.queryParam.serverGroupId, this.queryParam.queryIp, this.queryParam.envType, this.queryParam.tagId, this.pagination.currentPage, this.pagination.pageSize)
           .then(res => {
             this.tableData = res.body.data
             this.pagination.total = res.body.totalNum

@@ -39,6 +39,14 @@ export default [
     ]
   },
   {
+    title: '用户管理',
+    icon: 'user-circle',
+    children: [
+      { path: '/user', title: '用户', icon: 'user' },
+      { path: '/user/group', title: '用户组', icon: 'user-circle' }
+    ]
+  },
+  {
     title: '权限配置',
     icon: 'address-card',
     children: [
