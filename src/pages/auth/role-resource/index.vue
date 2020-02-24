@@ -113,7 +113,7 @@
     // },
     methods: {
       getRole (roleName) {
-        queryRolePage(roleName, 1, 20)
+        queryRolePage(roleName, '', 1, 20)
           .then(res => {
             this.roleOptions = res.body.data
           })

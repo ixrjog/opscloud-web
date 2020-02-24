@@ -193,16 +193,16 @@ const frameIn = [
           auth: true,
           title: '用户管理'
         }
+      },
+      {
+        path: '/user/group',
+        name: 'user-group',
+        component: () => import('@/pages/user/group'),
+        meta: {
+          auth: true,
+          title: '用户组管理'
+        }
       }
-      // {
-      //   path: '/user/group',
-      //   name: 'user-group',
-      //   component: () => import('@/pages/user/group'),
-      //   meta: {
-      //     auth: true,
-      //     title: '用户组管理'
-      //   }
-      // },
     ]
   }
 ]

@@ -7,10 +7,11 @@
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
           <el-col :span="4">
-            <el-input v-model="queryParam.queryName" placeholder="输入关键字模糊查询"/>
+            <el-input v-model="queryParam.name" placeholder="输入关键字查询用户组"/>
           </el-col>
           <el-col :span="4">
             <el-button @click="fetchData">查询</el-button>
+            <el-button @click="syncLdapUserGroup">同步</el-button>
           </el-col>
         </el-row>
       </div>
@@ -18,29 +19,26 @@
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline class="table-expand">
-              <el-form-item label="姓名" v-if="props.row.name != null && props.row.name != ''">
-                <span>{{ props.row.name }}</span>
-              </el-form-item>
-              <el-form-item label="电话" v-if="props.row.phone != null && props.row.phone != ''">
-                <span>{{ props.row.phone }}</span>
-              </el-form-item>
-              <el-form-item label="微信" v-if="props.row.wechat != null && props.row.wechat != ''">
-                <span>{{ props.row.wechat }}</span>
-              </el-form-item>
-              <el-form-item label="数据源" v-if="props.row.source != null && props.row.source != ''">
-                <span>{{ props.row.source }}</span>
+              <el-form-item label="用户成员">
+                <div class="tag-group">
+                    <el-tag style="margin-left: 5px"
+                            v-for="item in props.row.users"
+                            :key="item.id">{{ item.username }}&lt;{{ item.displayName }}&gt;</el-tag>
+                </div>
               </el-form-item>
             </el-form>
           </template>
         </el-table-column>
-        <el-table-column prop="username" label="用户名"></el-table-column>
-        <el-table-column prop="displayName" label="显示名"></el-table-column>
-        <el-table-column prop="email" label="邮箱"></el-table-column>
-        <el-table-column v-if="false" prop="name" label="环境">
+        <el-table-column prop="name" label="用户组名称"></el-table-column>
+        <el-table-column prop="users.length" label="成员数" width="100"></el-table-column>
+        <el-table-column prop="workflow" label="工作流" width="100">
           <template slot-scope="scope">
-            <el-tag disable-transitions :style="{ color: scope.row.env.color }">{{scope.row.env.envName}}</el-tag>
+            <el-tag :type="scope.row.workflow === 0 ? 'success' : 'danger'" disable-transitions>{{scope.row.workflow ===
+              0 ? '不允许' : '允许'}}
+            </el-tag>
           </template>
         </el-table-column>
+        <el-table-column prop="comment" label="描述"></el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
             <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
@@ -52,24 +50,24 @@
                      layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                      :page-size="pagination.pageSize">
       </el-pagination>
-      <!-- user编辑对话框-->
-      <dialoguser :form="form" :user="user" @closeDialog="fetchData"></dialoguser>
-      <!-- user编辑对话框-->
+      <!-- userGroup编辑对话框-->
+      <dialoggroup :form="form" :group="group" @closeDialog="fetchData"></dialoggroup>
+      <!-- userGroup编辑对话框-->
     </template>
   </d2-container>
 </template>
 
 <script>
   // Component
-  import dialoguser from './dialog.user'
+  import dialoggroup from './dialog.group'
 
   // API
-  import { fuzzyQueryUserPage, deleteUserById } from '@api/user/user.js'
+  import { queryUserGroupPage, deleteUserGroupById, syncUserGroup } from '@api/user/user.group.js'
 
   export default {
     data () {
       return {
-        user: {},
+        group: {},
         form: {
           visible: false,
           labelWidth: '150px',
@@ -95,16 +93,17 @@
           total: 0
         },
         queryParam: {
-          queryName: ''
+          name: '',
+          workflow: ''
         },
-        title: '用户管理'
+        title: '用户组管理'
       }
     },
     mounted () {
       this.fetchData()
     },
     components: {
-      dialoguser
+      dialoggroup
     },
     methods: {
       handleClick () {
@@ -116,7 +115,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteUserById(row.id).then(res => {
+          deleteUserGroupById(row.id).then(res => {
             this.fetchData()
             this.$message({
               type: 'success',
@@ -137,12 +136,9 @@
         // user
         this.user = {
           id: row.id,
-          username: row.username,
           name: row.name,
-          displayName: row.displayName,
-          wechat: row.wechat,
-          email: row.email,
-          phone: row.phone,
+          grpType: row.grpType,
+          workflow: row.workflow,
           comment: row.comment
         }
       },
@@ -153,12 +149,9 @@
         // user
         this.user = {
           id: '',
-          username: '',
           name: '',
-          displayName: '',
-          wechat: '',
-          email: '',
-          phone: '',
+          grpType: 0,
+          workflow: 0,
           comment: ''
         }
       },
@@ -169,18 +162,26 @@
         })
         done()
       },
+      syncLdapUserGroup (done) {
+        setTimeout(() => {
+          syncUserGroup()
+            .then(res => {
+              this.$message({
+                message: '同步成功',
+                type: 'success'
+              })
+              this.fetchData()
+              done()
+            })
+        }, 300)
+      },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage
         this.fetchData()
       },
       fetchData () {
         this.loading = true
-        var requestBody = {
-          'queryName': this.queryParam.queryName,
-          'page': this.pagination.currentPage,
-          'length': this.pagination.pageSize
-        }
-        fuzzyQueryUserPage(requestBody)
+        queryUserGroupPage(this.queryParam.name, '', this.queryParam.workflow, this.pagination.currentPage, this.pagination.pageSize)
           .then(res => {
             this.tableData = res.body.data
             this.pagination.total = res.body.totalNum
@@ -204,6 +205,6 @@
   .table-expand .el-form-item {
     margin-right: 0;
     margin-bottom: 0;
-    width: 50%;
+    width: 100%;
   }
 </style>

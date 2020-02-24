@@ -23,7 +23,7 @@
         <el-table-column prop="resourceName" label="资源名称"></el-table-column>
         <el-table-column prop="workflow" label="工作流" width="100">
           <template slot-scope="scope">
-            <el-tag disable-transitions>{{scope.row.workflow === 1 ? '允许' : '不允许' }}</el-tag>
+            <el-tag :type="scope.row.workflow === 0 ? 'success' : 'danger'" disable-transitions>{{scope.row.workflow === 0 ? '不允许' : '允许'}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="comment" label="描述"></el-table-column>
