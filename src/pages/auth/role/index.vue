@@ -2,109 +2,68 @@
   <d2-container>
     <template>
       <div>
-        <h1>角色配置</h1>
+        <h1>{{title}}</h1>
       </div>
-      <div>
+      <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
           <el-col :span="4">
             <el-input v-model="queryParam.roleName" placeholder="角色名称"/>
           </el-col>
           <el-col :span="4">
+            <el-input v-model="queryParam.resourceName" placeholder="资源名称"/>
+          </el-col>
+          <el-col :span="4">
             <el-button @click="fetchData">查询</el-button>
-            <el-button @click="addRow">新增</el-button>
+            <el-button @click="addItem">新增</el-button>
           </el-col>
         </el-row>
       </div>
-      <div>
-        <d2-crud
-          ref="d2Crud"
-          :columns="columns"
-          :data="data"
-          :options="options"
-          add-title="新增角色"
-          :add-template="addTemplate"
-          edit-title="修改角色"
-          :edit-template="addTemplate"
-          :form-options="formOptions"
-          @row-add="handleRowAdd"
-          @dialog-cancel="handleDialogCancel"
-          :rowHandle="rowHandle"
-          @row-remove="handleRowRemove"
-          @row-edit="handleRowEdit"
-          :loading="loading"
-          :pagination="pagination"
-          @pagination-current-change="paginationCurrentChange">
-        </d2-crud>
-      </div>
+      <el-table :data="tableData" style="width: 100%">
+        <el-table-column prop="roleName" label="名称"></el-table-column>
+        <el-table-column prop="resourceName" label="资源名称"></el-table-column>
+        <el-table-column prop="workflow" label="工作流" width="100">
+          <template slot-scope="scope">
+            <el-tag disable-transitions>{{scope.row.workflow === 1 ? '允许' : '不允许' }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="comment" label="描述"></el-table-column>
+        <el-table-column fixed="right" label="操作" width="280">
+          <template slot-scope="scope">
+            <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
+            <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination background @current-change="paginationCurrentChange"
+                     layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
+                     :page-size="pagination.pageSize">
+      </el-pagination>
+      <!-- role编辑-->
+      <dialogrole :form="form" :role="role" @closeRoleDialog="fetchData"></dialogrole>
+      <!-- role编辑-->
     </template>
   </d2-container>
 </template>
 
 <script>
-  import workflowTag from './workflowTag'
+  // import workflowTag from './workflow.tag'
+  import dialogrole from './dialog.role'
   // API
-  import { queryRolePage, deleteRoleById, addRole, updateRole } from '@api/auth/auth.role.js'
+  import { queryRolePage, deleteRoleById } from '@api/auth/auth.role.js'
 
   export default {
     data () {
       return {
-        columns: [
-          {
-            title: '角色',
-            key: 'roleName',
-            minWidth: '40%'
-          },
-          {
-            title: '描述',
-            key: 'comment',
-            minWidth: '30%'
-          },
-          {
-            title: '允许工作流申请',
-            key: 'workflow',
-            component: {
-              name: workflowTag,
-              props: {
-                myProps: ''
-              }
-            },
-            minWidth: '20%'
-          }
-        ],
-        data: [],
-        addTemplate: {
-          roleName: {
-            title: '角色',
-            value: ''
-          },
-          comment: {
-            title: '描述',
-            value: ''
-          },
-          workflow: {
-              title: '允许工作流申请',
-              value: 0,
-              component: {
-                  name: 'el-select',
-                  options: [
-                    {
-                      label: '允许',
-                      value: 1
-                    },
-                    {
-                      label: '禁止',
-                      value: 0
-                  }]
-              }
-          }
-        },
+        tableData: [],
         options: {
           stripe: true
         },
-        formOptions: {
-          labelWidth: '80px',
-          labelPosition: 'left',
-          saveLoading: false
+        form: {
+          visible: false,
+          labelWidth: '150px',
+          operationType: true,
+          addTitle: '新增角色配置',
+          updateTitle: '更新角色配置'
         },
         loading: false,
         pagination: {
@@ -113,117 +72,60 @@
           total: 0
         },
         queryParam: {
-          roleName: ''
+          roleName: '',
+          resourceName: ''
         },
-        selectOptions: [{
-          value: 0,
-          label: '禁用'
-        }, {
-          value: 1,
-          label: '允许'
-        }],
-        rowHandle: {
-          remove: {
-            icon: 'el-icon-delete',
-            size: 'mini',
-            fixed: 'right',
-            confirm: true,
-            show (index, row) {
-              return true
-            }
-          },
-          edit: {
-            icon: 'el-icon-edit',
-            type: 'primary',
-            size: 'mini',
-            fixed: 'left',
-            confirm: false
-          }
-          // custom: [
-          //   {
-          //     text: '允许/禁止',
-          //     type: 'warning',
-          //     size: 'mini',
-          //     fixed: 'left',
-          //     emit: 'workflow-update'
-          //   }
-          // ]
-        }
+        role: {},
+        title: '角色配置'
       }
     },
     mounted () {
       this.fetchData()
     },
+    components: {
+      dialogrole
+    },
     methods: {
       handleClick () {
         this.$emit('input', !this.value)
       },
-      // 普通的新增
-      addRow () {
-        this.$refs.d2Crud.showDialog({
-          mode: 'add'
-        })
+      editItem (row) {
+        // form
+        this.form.visible = true
+        this.form.operationType = false
+        // role
+        this.role = Object.assign({}, row)
       },
-      handleRowAdd (row, done) {
-        this.formOptions.saveLoading = true
-        setTimeout(() => {
-          var requestBody = {
-            'roleName': row.roleName,
-            'comment': row.comment,
-            'workflow': row.workflow
-          }
-          addRole(requestBody)
-            .then(res => {
-              // 返回数据
-              this.$message({
-                message: '成功',
-                type: 'success'
-              })
-              this.fetchData()
-              done()
-            })
-
-          // done可以传入一个对象来修改提交的某个字段
-          this.formOptions.saveLoading = false
-        }, 600)
+      addItem () {
+        this.form.operationType = true
+        this.form.visible = true
+        this.role = {
+          id: '',
+          roleName: '',
+          resourceName: '',
+          workflow: 0,
+          comment: ''
+        }
       },
-      handleRowRemove ({ index, row }, done) {
-        setTimeout(() => {
-          deleteRoleById(row.id)
-            .then(res => {
-              this.$message({
-                message: '删除成功',
-                type: 'success'
-              })
-              this.fetchData()
-              done()
-            })
-        }, 300)
-      },
-      handleRowEdit ({ index, row }, done) {
-        setTimeout(() => {
-          updateRole({
-            id: row.id,
-            roleName: row.roleName,
-            comment: row.comment,
-            workflow: row.workflow
-          })
-            .then(res => {
-              this.$message({
-                message: '更新成功',
-                type: 'success'
-              })
-              this.fetchData()
-              done()
-            })
-        }, 300)
-      },
-      handleDialogCancel (done) {
-        this.$message({
-          message: '取消保存',
+      delItem (row) {
+        this.$confirm('此操作将删除当前配置?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
           type: 'warning'
+        }).then(() => {
+          deleteRoleById(row.id).then(res => {
+            this.fetchData()
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
         })
-        done()
       },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage
@@ -232,9 +134,9 @@
       fetchData () {
         this.loading = true
         queryRolePage(
-          this.queryParam.roleName, this.pagination.currentPage, this.pagination.pageSize)
+          this.queryParam.roleName, this.queryParam.resourceName, this.pagination.currentPage, this.pagination.pageSize)
           .then(res => {
-            this.data = res.body.data
+            this.tableData = res.body.data
             this.pagination.total = res.body.totalNum
             this.loading = false
           })

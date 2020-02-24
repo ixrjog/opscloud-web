@@ -9,19 +9,21 @@
 </template>
 
 <script>
-const linkD2Admin = 'https://github.com/d2-projects/d2-admin'
+  // https://github.com/ixrjog/opsCloud
+  // const linkD2Admin = 'https://github.com/d2-projects/d2-admin'
+const linkD2Admin = 'https://github.com/ixrjog/opsCloud'
 export default {
   data () {
     return {
       badges: [
         [
-          { img: 'https://img.shields.io/github/stars/d2-projects/d2-admin.svg', link: `${linkD2Admin}/stargazers` },
-          { img: 'https://img.shields.io/github/forks/d2-projects/d2-admin.svg', link: `${linkD2Admin}/network/members` },
-          { img: 'https://img.shields.io/github/issues/d2-projects/d2-admin.svg', link: `${linkD2Admin}/issues` },
-          { img: 'https://img.shields.io/github/issues-closed/d2-projects/d2-admin.svg', link: `${linkD2Admin}/issues?q=is%3Aissue+is%3Aclosed` },
-          { img: 'https://img.shields.io/github/issues-pr/d2-projects/d2-admin.svg', link: `${linkD2Admin}/pulls` },
-          { img: 'https://img.shields.io/github/issues-pr-closed/d2-projects/d2-admin.svg', link: `${linkD2Admin}/pulls?q=is%3Apr+is%3Aclosed` },
-          { img: 'https://img.shields.io/github/last-commit/d2-projects/d2-admin.svg', link: linkD2Admin }
+          { img: 'https://img.shields.io/github/stars/ixrjog/opsCloud.svg', link: `${linkD2Admin}/stargazers` },
+          { img: 'https://img.shields.io/github/forks/ixrjog/opsCloud.svg', link: `${linkD2Admin}/network/members` },
+          { img: 'https://img.shields.io/github/issues/ixrjog/opsCloud.svg', link: `${linkD2Admin}/issues` },
+          { img: 'https://img.shields.io/github/issues-closed/ixrjog/opsCloud.svg', link: `${linkD2Admin}/issues?q=is%3Aissue+is%3Aclosed` },
+          { img: 'https://img.shields.io/github/issues-pr/ixrjog/opsCloud.svg', link: `${linkD2Admin}/pulls` },
+          { img: 'https://img.shields.io/github/issues-pr-closed/ixrjog/opsCloud.svg', link: `${linkD2Admin}/pulls?q=is%3Apr+is%3Aclosed` },
+          { img: 'https://img.shields.io/github/last-commit/ixrjog/opsCloud.svg', link: linkD2Admin }
         ],
         [
           { img: 'https://github.com/d2-projects/d2-admin-start-kit/workflows/Deploy%20https%3A%2F%2Fd2.pub/badge.svg', link: `${linkD2Admin}/actions?query=workflow%3A%22Deploy+https%3A%2F%2Fd2.pub%22` },

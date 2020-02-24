@@ -1,8 +1,8 @@
 import request from '@/plugin/axios'
 
-export function queryRolePage (roleName, page, length) {
+export function queryRolePage (roleName, resourceName, page, length) {
   return request({
-    url: '/auth/role/page/query?roleName=' + roleName + '&page=' + page + '&length=' + length,
+    url: '/auth/role/page/query?roleName=' + roleName + '&resourceName=' + resourceName + '&page=' + page + '&length=' + length,
     method: 'get'
   })
 }
