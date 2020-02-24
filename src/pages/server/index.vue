@@ -126,10 +126,10 @@
                      :page-size="pagination.pageSize">
       </el-pagination>
       <!-- server编辑-->
-      <dialogserver :form="serverForm" :server="server" @closeServerDialog="fetchData"></dialogserver>
+      <dialogserver :form="formServer" :server="server" @closeServerDialog="fetchData"></dialogserver>
       <!-- server编辑-->
       <!-- tag编辑-->
-      <dialogtag :form="tagForm" :tag="tag" @closeTagDialog="fetchData"></dialogtag>
+      <dialogtag :form="formTag" :tag="tag" @closeTagDialog="fetchData"></dialogtag>
       <!-- tag编辑-->
     </template>
   </d2-container>
@@ -150,7 +150,7 @@
   export default {
     data () {
       return {
-        serverForm: {
+        formServer: {
           visible: false,
           labelWidth: '150px',
           operationType: true,
@@ -159,7 +159,7 @@
         },
         server: {},
         tag: {},
-        tagForm: {
+        formTag: {
           visible: false,
           title: '编辑标签'
         },
@@ -245,7 +245,7 @@
         })
       },
       editTag (row) {
-        this.tagForm.visible = true
+        this.formTag.visible = true
         this.tag = {
           businessId: row.id,
           businessType: this.businessType,
@@ -263,12 +263,12 @@
               this.tag.serverTag.push(res.body[index].id)
             }
           })
-        this.tagForm.visible = true
+        this.formTag.visible = true
       },
       editItem (row) {
         // form
-        this.serverForm.visible = true
-        this.serverForm.operationType = false
+        this.formServer.visible = true
+        this.formServer.operationType = false
         // server
         this.server = Object.assign({}, row)
         this.server.envTypeOptions = this.envTypeOptions
@@ -276,8 +276,8 @@
         this.server.serverGroupOptions.push(row.serverGroup)
       },
       addItem () {
-        this.serverForm.operationType = true
-        this.serverForm.visible = true
+        this.formServer.operationType = true
+        this.formServer.visible = true
         this.server = {
           serverGroup: '',
           id: '',
