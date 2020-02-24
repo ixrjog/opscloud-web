@@ -57,8 +57,8 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogForm.visible = false">取消</el-button>
-          <el-button type="primary" @click="saveInfo">确定</el-button>
+          <el-button size="mini" @click="dialogForm.visible = false">取消</el-button>
+          <el-button size="mini" type="primary" @click="saveInfo">确定</el-button>
         </div>
       </el-dialog>
     </template>

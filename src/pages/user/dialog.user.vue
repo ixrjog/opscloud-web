@@ -57,11 +57,6 @@
     name: 'dialog-user',
     props: {
       form: {
-        visible: false,
-        labelWidth: '150px',
-        operationType: true,
-        addTitle: '新增用户信息',
-        updateTitle: '更新用户信息'
       },
       user: {
         id: '',
@@ -109,6 +104,7 @@
                   type: 'success'
                 })
                 this.form.visible = false
+                this.$emit('closeDialog')
               })
           } else {
             updateUser(requestBody)
@@ -119,7 +115,7 @@
                   type: 'success'
                 })
                 this.form.visible = false
-                this.$emit("closeDialog")
+                this.$emit('closeDialog')
               })
           }
         }, 600)

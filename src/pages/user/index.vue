@@ -53,8 +53,7 @@
                      :page-size="pagination.pageSize">
       </el-pagination>
       <!-- user编辑对话框-->
-      <dialoguser :form="form" :user="user" @closeDialog="fetchData">
-      </dialoguser>
+      <dialoguser :form="form" :user="user" @closeDialog="fetchData"></dialoguser>
       <!-- user编辑对话框-->
     </template>
   </d2-container>
@@ -70,22 +69,13 @@
   export default {
     data () {
       return {
-        // user: {
-        //   id: '',
-        //   username: '',
-        //   name: '',
-        //   password: '',
-        //   displayName: '',
-        //   email: '',
-        //   wechat: '',
-        //   phone: '',
-        //   comment: ''
-        // },
         user: {},
         form: {
           visible: false,
           labelWidth: '150px',
-          operationType: true
+          operationType: true,
+          addTitle: '新增用户信息',
+          updateTitle: '更新用户信息'
         },
         dialogVisible: false,
         formLabelWidth: '150px',
@@ -120,12 +110,6 @@
       handleClick () {
         this.$emit('input', !this.value)
       },
-      // getUserRandomPassword () {
-      //   getRandomPassword()
-      //     .then(res => {
-      //       this.form.password = res.body
-      //     })
-      // },
       delItem (row) {
         this.$confirm('此操作将删除当前配置?', '提示', {
           confirmButtonText: '确定',
