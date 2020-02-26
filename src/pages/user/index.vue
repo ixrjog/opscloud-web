@@ -11,10 +11,11 @@
           </el-col>
           <el-col :span="4">
             <el-button @click="fetchData">查询</el-button>
+            <el-button @click="syncLdapUser">同步</el-button>
           </el-col>
         </el-row>
       </div>
-      <el-table :data="tableData" style="width: 100%">
+      <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline class="table-expand">
@@ -30,17 +31,21 @@
               <el-form-item label="数据源" v-if="props.row.source != null && props.row.source != ''">
                 <span>{{ props.row.source }}</span>
               </el-form-item>
+              <el-form-item label="用户组">
+                <div class="tag-group">
+                  <el-tag style="margin-left: 5px"
+                          v-for="item in props.row.userGroups"
+                          :key="item.id">{{ item.name }}
+                  </el-tag>
+                </div>
+              </el-form-item>
             </el-form>
           </template>
         </el-table-column>
         <el-table-column prop="username" label="用户名"></el-table-column>
         <el-table-column prop="displayName" label="显示名"></el-table-column>
         <el-table-column prop="email" label="邮箱"></el-table-column>
-        <el-table-column v-if="false" prop="name" label="环境">
-          <template slot-scope="scope">
-            <el-tag disable-transitions :style="{ color: scope.row.env.color }">{{scope.row.env.envName}}</el-tag>
-          </template>
-        </el-table-column>
+        <el-table-column prop="userGroups.length" label="用户组"></el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
             <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
@@ -52,7 +57,7 @@
                      layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                      :page-size="pagination.pageSize">
       </el-pagination>
-      <!-- user编辑对话框-->
+      <!-- user编辑对话框 -->
       <dialoguser :form="form" :user="user" @closeDialog="fetchData"></dialoguser>
       <!-- user编辑对话框-->
     </template>
@@ -64,7 +69,7 @@
   import dialoguser from './dialog.user'
 
   // API
-  import { fuzzyQueryUserPage, deleteUserById } from '@api/user/user.js'
+  import { fuzzyQueryUserPage, deleteUserById, syncUser } from '@api/user/user.js'
 
   export default {
     data () {
@@ -169,6 +174,19 @@
         })
         done()
       },
+      syncLdapUser () {
+        setTimeout(() => {
+          this.loading = true
+          syncUser()
+            .then(res => {
+              this.$message({
+                message: '同步成功',
+                type: 'success'
+              })
+              this.fetchData()
+            })
+        }, 300)
+      },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage
         this.fetchData()
@@ -177,6 +195,7 @@
         this.loading = true
         var requestBody = {
           'queryName': this.queryParam.queryName,
+          'extend': 1,
           'page': this.pagination.currentPage,
           'length': this.pagination.pageSize
         }

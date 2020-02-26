@@ -15,15 +15,16 @@
           </el-col>
         </el-row>
       </div>
-      <el-table :data="tableData" style="width: 100%">
+      <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline class="table-expand">
               <el-form-item label="用户成员">
                 <div class="tag-group">
-                    <el-tag style="margin-left: 5px"
-                            v-for="item in props.row.users"
-                            :key="item.id">{{ item.username }}&lt;{{ item.displayName }}&gt;</el-tag>
+                  <el-tag style="margin-left: 5px"
+                          v-for="item in props.row.users"
+                          :key="item.id">{{ item.username }}&lt;{{ item.displayName }}&gt;
+                  </el-tag>
                 </div>
               </el-form-item>
             </el-form>
@@ -162,8 +163,9 @@
         })
         done()
       },
-      syncLdapUserGroup (done) {
+      syncLdapUserGroup () {
         setTimeout(() => {
+          this.loading = true
           syncUserGroup()
             .then(res => {
               this.$message({
@@ -171,7 +173,6 @@
                 type: 'success'
               })
               this.fetchData()
-              done()
             })
         }, 300)
       },
@@ -181,7 +182,7 @@
       },
       fetchData () {
         this.loading = true
-        queryUserGroupPage(this.queryParam.name, '', this.queryParam.workflow, this.pagination.currentPage, this.pagination.pageSize)
+        queryUserGroupPage(this.queryParam.name, '', this.queryParam.workflow, 1, this.pagination.currentPage, this.pagination.pageSize)
           .then(res => {
             this.tableData = res.body.data
             this.pagination.total = res.body.totalNum
@@ -205,6 +206,6 @@
   .table-expand .el-form-item {
     margin-right: 0;
     margin-bottom: 0;
-    width: 100%;
+    width: 50%;
   }
 </style>

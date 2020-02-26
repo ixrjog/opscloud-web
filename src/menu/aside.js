@@ -56,5 +56,12 @@ export default [
       { path: '/auth/role/resource', title: '角色资源管理', icon: 'edit' },
       { path: '/auth/user/role', title: '用户角色配置', icon: 'id-card' }
     ]
+  },
+  {
+    title: '个人详情',
+    icon: 'user-o',
+    children: [
+      { path: '/user/detail', title: '我', icon: 'address-book' }
+    ]
   }
 ]

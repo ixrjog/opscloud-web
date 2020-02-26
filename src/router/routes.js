@@ -202,6 +202,15 @@ const frameIn = [
           auth: true,
           title: '用户组管理'
         }
+      },
+      {
+        path: '/user/detail',
+        name: 'user-detail',
+        component: () => import('@/pages/user/detail'),
+        meta: {
+          auth: true,
+          title: '个人详情'
+        }
       }
     ]
   }

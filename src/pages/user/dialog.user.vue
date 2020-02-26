@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :title="form.operationType ? form.addTitle : form.updateTitle" :visible.sync="form.visible">
+  <el-dialog :title="form.operationType ? form.addTitle : form.updateTitle" :visible.sync="form.visible" :before-close="closeDialog" >
     <el-form :model="form">
       <el-form-item label="用户名" :label-width="form.labelWidth">
         <el-input v-model="user.username" placeholder="请输入内容" :disabled="!form.operationType"></el-input>
@@ -7,7 +7,7 @@
     </el-form>
     <el-form :model="user">
       <el-form-item label="密码" :label-width="form.labelWidth">
-        <el-input v-model="user.password" clearable placeholder="请输入内容">
+        <el-input v-model="password" clearable placeholder="请输入内容">
           <el-button slot="append" icon="el-icon-key" @click="getUserRandomPassword"></el-button>
         </el-input>
       </el-form-item>
@@ -43,7 +43,7 @@
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="form.visible = false">取消</el-button>
+      <el-button @click="closeDialog">取消</el-button>
       <el-button type="primary" @click="saveItem">确定</el-button>
     </div>
   </el-dialog>
@@ -54,10 +54,14 @@
   import { getRandomPassword, updateUser, addUser } from '@api/user/user.js'
 
   export default {
+    data () {
+      return {
+        password: ''
+      }
+    },
     name: 'dialog-user',
     props: {
-      form: {
-      },
+      form: {},
       user: {
         id: '',
         username: '',
@@ -73,14 +77,22 @@
     mixins: [],
     mounted () {
     },
+    mutation () {
+
+    },
     methods: {
+      closeDialog () {
+        this.password = ''
+        this.form.visible = false
+        this.$emit('closeDialog')
+      },
       handleClick () {
         this.$emit('input', !this.value)
       },
       getUserRandomPassword () {
         getRandomPassword()
           .then(res => {
-            this.user.password = res.body
+            this.password = res.body
           })
       },
       saveItem () {
@@ -88,7 +100,7 @@
           var requestBody = {
             'id': this.user.id,
             'name': this.user.name,
-            'password': this.user.password,
+            'password': this.password,
             'displayName': this.user.displayName,
             'email': this.user.email,
             'wechat': this.user.wechat,
@@ -103,8 +115,7 @@
                   message: '成功',
                   type: 'success'
                 })
-                this.form.visible = false
-                this.$emit('closeDialog')
+                this.closeDialog()
               })
           } else {
             updateUser(requestBody)
@@ -114,8 +125,7 @@
                   message: '成功',
                   type: 'success'
                 })
-                this.form.visible = false
-                this.$emit('closeDialog')
+                this.closeDialog()
               })
           }
         }, 600)

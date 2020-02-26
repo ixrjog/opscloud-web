@@ -27,10 +27,10 @@
         </el-row>
       </div>
       <el-table :data="tableData" style="width: 100%">
-        <el-table-column prop="username" label="用户名" ></el-table-column>
-        <el-table-column prop="displayName" label="显示名" ></el-table-column>
-        <el-table-column prop="roleName" label="角色" ></el-table-column>
-        <el-table-column prop="roleComment" label="描述" ></el-table-column>
+        <el-table-column prop="username" label="用户名"></el-table-column>
+        <el-table-column prop="displayName" label="显示名"></el-table-column>
+        <el-table-column prop="roleName" label="角色"></el-table-column>
+        <el-table-column prop="roleComment" label="描述"></el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
             <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
@@ -38,7 +38,8 @@
         </el-table-column>
       </el-table>
       <el-pagination background @current-change="paginationCurrentChange"
-                     layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage" :page-size="pagination.pageSize">
+                     layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
+                     :page-size="pagination.pageSize">
       </el-pagination>
       <el-dialog :title="dialogForm.title"
                  :visible.sync="dialogForm.visible">
@@ -126,13 +127,13 @@
     },
     methods: {
       getRole (roleName) {
-        queryRolePage(roleName, 1, 10)
+        queryRolePage(roleName, '', 1, 10)
           .then(res => {
             this.roleOptions = res.body.data
           })
       },
       getUser (username) {
-        queryUserPage(username, 1, 20)
+        queryUserPage(username, '', 1, 20)
           .then(res => {
             this.userOptions = res.body.data
           })
@@ -183,15 +184,15 @@
             'roleId': this.form.roleId
           }
           addUserRole(requestBody)
-              .then(res => {
-                // 返回数据
-                this.$message({
-                  message: '成功',
-                  type: 'success'
-                })
-                this.dialogForm.visible = false
-                this.fetchData()
+            .then(res => {
+              // 返回数据
+              this.$message({
+                message: '成功',
+                type: 'success'
               })
+              this.dialogForm.visible = false
+              this.fetchData()
+            })
         }, 600)
       },
       paginationCurrentChange (currentPage) {

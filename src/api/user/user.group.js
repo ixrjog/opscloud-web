@@ -7,9 +7,9 @@ import request from '@/plugin/axios'
  * @param length
  * @returns {AxiosPromise}
  */
-export function queryUserGroupPage (name, grpType, workflow, page, length) {
+export function queryUserGroupPage (name, grpType, workflow, extend, page, length) {
   return request({
-    url: '/user/group/page/query?name=' + name + '&grpType=' + grpType + '&workflow=' + workflow + '&page=' + page + '&length=' + length,
+    url: '/user/group/page/query?name=' + name + '&grpType=' + grpType + '&workflow=' + workflow + '&extend=' + extend + '&page=' + page + '&length=' + length,
     method: 'get'
   })
 }

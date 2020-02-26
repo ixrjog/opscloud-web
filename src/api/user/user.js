@@ -7,9 +7,16 @@ import request from '@/plugin/axios'
  * @param length
  * @returns {AxiosPromise}
  */
-export function queryUserPage (username, page, length) {
+export function queryUserPage (username, extend, page, length) {
   return request({
-    url: '/user/page/query?username=' + username + '&page=' + page + '&length=' + length,
+    url: '/user/page/query?username=' + username + '&extend=' + extend + '&page=' + page + '&length=' + length,
+    method: 'get'
+  })
+}
+
+export function queryUserDetail () {
+  return request({
+    url: '/user/detail',
     method: 'get'
   })
 }
@@ -53,6 +60,13 @@ export function deleteUserById (id) {
 export function getRandomPassword () {
   return request({
     url: '/user/password/random',
+    method: 'get'
+  })
+}
+
+export function syncUser () {
+  return request({
+    url: '/user/ldap/sync',
     method: 'get'
   })
 }

@@ -26,7 +26,7 @@
           </el-col>
         </el-row>
       </div>
-      <el-table :data="tableData" style="width: 100%">
+      <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column prop="name" label="名称" ></el-table-column>
         <el-table-column prop="serverGroupType" label="组类型">
           <template slot-scope="scope">
