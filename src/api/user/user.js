@@ -70,3 +70,11 @@ export function syncUser () {
     method: 'get'
   })
 }
+
+export function applyApiToken (data) {
+  return request({
+    url: '/user/apply/token',
+    method: 'post',
+    data
+  })
+}

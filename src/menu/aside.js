@@ -12,10 +12,10 @@ export default [
   // },
   {
     title: '全局配置',
-    icon: 'server',
+    icon: 'cogs',
     children: [
-      { path: '/env', title: '环境配置', icon: 'window-restore' },
-      { path: '/tag', title: '标签配置', icon: 'window-restore' }
+      { path: '/env', title: '环境配置', icon: 'cog' },
+      { path: '/tag', title: '标签配置', icon: 'cog' }
     ]
   },
   {
@@ -29,7 +29,7 @@ export default [
   },
   {
     title: '云主机管理',
-    icon: 'server',
+    icon: 'cloud',
     children: [
       { path: '/cloudserver/server/ecs', title: 'ECS', icon: 'window-restore' },
       { path: '/cloudserver/server/ec2', title: 'EC2', icon: 'window-restore' },
@@ -61,7 +61,7 @@ export default [
     title: '个人详情',
     icon: 'user-o',
     children: [
-      { path: '/user/detail', title: '我', icon: 'address-book' }
+      { path: '/user/detail', title: '我的详情', icon: 'address-book' }
     ]
   }
 ]

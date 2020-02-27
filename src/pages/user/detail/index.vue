@@ -13,37 +13,37 @@
                 <el-button style="float: right; padding: 3px 0" type="text">修改基本信息</el-button>
               </div>
               <el-form :model="userDetailForm">
-                <el-form-item label="用户名" :label-width="form.labelWidth">
+                <el-form-item label="用户名" :label-width="labelWidth">
                   <el-input v-model="userDetailForm.username" readonly></el-input>
                 </el-form-item>
               </el-form>
               <el-form :model="userDetailForm">
-                <el-form-item label="显示名" :label-width="form.labelWidth">
+                <el-form-item label="显示名" :label-width="labelWidth">
                   <el-input v-model="userDetailForm.displayName" readonly></el-input>
                 </el-form-item>
               </el-form>
               <el-form :model="userDetailForm">
-                <el-form-item label="姓名" :label-width="form.labelWidth">
+                <el-form-item label="姓名" :label-width="labelWidth">
                   <el-input v-model="userDetailForm.name" readonly></el-input>
                 </el-form-item>
               </el-form>
               <el-form :model="userDetailForm">
-                <el-form-item label="电话" :label-width="form.labelWidth">
+                <el-form-item label="电话" :label-width="labelWidth">
                   <el-input v-model="userDetailForm.phone" readonly></el-input>
                 </el-form-item>
               </el-form>
               <el-form :model="userDetailForm">
-                <el-form-item label="邮箱" :label-width="form.labelWidth">
+                <el-form-item label="邮箱" :label-width="labelWidth">
                   <el-input v-model="userDetailForm.email" readonly></el-input>
                 </el-form-item>
               </el-form>
               <el-form :model="userDetailForm">
-                <el-form-item label="微信" :label-width="form.labelWidth">
+                <el-form-item label="微信" :label-width="labelWidth">
                   <el-input v-model="userDetailForm.wechat" readonly></el-input>
                 </el-form-item>
               </el-form>
               <el-form :model="userDetailForm">
-                <el-form-item label="留言" :label-width="form.labelWidth">
+                <el-form-item label="留言" :label-width="labelWidth">
                   <el-input v-model="userDetailForm.comment" readonly></el-input>
                 </el-form-item>
               </el-form>
@@ -91,20 +91,25 @@
                 <template slot="title">
                   开发者令牌<i class="header-icon el-icon-info"></i>(API-Token)
                 </template>
-                <div class="tag-group">
-                  <el-tag style="margin-left: 5px"
-                          v-for="item in userDetailForm.userGroups"
-                          :key="item.id">{{ item.name }}
-                  </el-tag>
-                </div>
+                <el-table :data="userDetailForm.apiTokens" style="width: 100%">
+                  <el-table-column prop="tokenId" label="id" width="240">
+                  </el-table-column>
+                  <el-table-column prop="token" label="api-token">
+                  </el-table-column>
+                  <el-table-column prop="expiredTime" label="过期时间">
+                  </el-table-column>
+                  <el-table-column prop="comment" label="描述">
+                  </el-table-column>
+                </el-table>
+                <el-button style="margin-top: 5px" @click="addApiToken">申请</el-button>
               </el-collapse-item>
             </el-collapse>
           </el-col>
         </el-row>
         <!-- 用户资源详情-->
       </div>
-      <!-- user编辑对话框 -->
-      <dialoguser :form="form" :user="user" @closeDialog="fetchData"></dialoguser>
+      <!-- api-token编辑对话框 -->
+      <dialogtoken :form="tokenForm" @closeDialog="fetchData"></dialogtoken>
       <!-- user编辑对话框-->
     </template>
   </d2-container>
@@ -112,7 +117,7 @@
 
 <script>
   // Component
-  import dialoguser from '../dialog.user'
+  import dialogtoken from './dialog.api.token'
 
   // API
   import { queryUserDetail } from '@api/user/user.js'
@@ -122,15 +127,19 @@
       return {
         userDetailForm: {},
         user: {},
-        form: {
+        tokenForm: {
+          data: {
+            id: '',
+            tokenId: '',
+            token: '',
+            expiredTime: '',
+            comment: ''
+          },
           visible: false,
           labelWidth: '100px',
-          operationType: true,
-          addTitle: '新增用户信息',
-          updateTitle: '更新用户信息'
+          title: '申请ApiToken'
         },
-        dialogVisible: false,
-        formLabelWidth: '100px',
+        labelWidth: '100px',
         formLabelColor: '#99a9bf',
         tableData: [],
         options: {
@@ -157,7 +166,7 @@
       this.fetchData()
     },
     components: {
-      dialoguser
+      dialogtoken
     },
     methods: {
       handleClick () {
@@ -179,21 +188,9 @@
           comment: row.comment
         }
       },
-      addItem () {
+      addApiToken () {
         // form
-        this.form.visible = true
-        this.form.operationType = true
-        // user
-        this.user = {
-          id: '',
-          username: '',
-          name: '',
-          displayName: '',
-          wechat: '',
-          email: '',
-          phone: '',
-          comment: ''
-        }
+        this.tokenForm.visible = true
       },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage
