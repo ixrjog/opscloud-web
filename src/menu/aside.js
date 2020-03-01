@@ -20,22 +20,30 @@ export default [
   },
   {
     title: '服务器管理',
-    icon: 'server',
+    iconSvg: 'servers',
     children: [
-      { path: '/server', title: '服务器', icon: 'window-restore' },
-      { path: '/server/group', title: '服务器组', icon: 'window-restore' },
-      { path: '/server/group/type', title: '服务器组类型', icon: 'window-restore' }
+      { path: '/server', title: '服务器', iconSvg: 'server' },
+      { path: '/server/group', title: '服务器组', iconSvg: 'servers' },
+      { path: '/server/group/type', title: '服务器组类型', iconSvg: 'servergrp-type' }
     ]
   },
   {
     title: '云主机管理',
     icon: 'cloud',
     children: [
-      { path: '/cloudserver/server/ecs', title: 'ECS', icon: 'window-restore' },
-      { path: '/cloudserver/server/ec2', title: 'EC2', icon: 'window-restore' },
-      { path: '/cloudserver/server/esxi', title: 'ESXI', icon: 'window-restore' },
-      { path: '/cloudserver/server/vm', title: 'VM', icon: 'window-restore' },
-      { path: '/cloudserver/server/zabbixhost', title: 'ZabbixHost', icon: 'window-restore' }
+      { path: '/cloud/server/ecs', title: 'ECS', iconSvg: 'aliyun-ecs' },
+      { path: '/cloud/server/ec2', title: 'EC2', iconSvg: 'amazonaws' },
+      { path: '/cloud/server/esxi', title: 'ESXI', iconSvg: 'vmware' },
+      // tencent
+      { path: '/cloud/server/vm', title: 'VM', iconSvg: 'vmware' },
+      { path: '/cloud/server/zabbixhost', title: 'ZabbixHost', iconSvg: 'zabbix' }
+    ]
+  },
+  {
+    title: '云数据库',
+    icon: 'cloud',
+    children: [
+      { path: '/cloud/db/instance', title: '数据库实例', iconSvg: 'aliyun-ecs' }
     ]
   },
   {
@@ -43,7 +51,7 @@ export default [
     icon: 'user-circle',
     children: [
       { path: '/user', title: '用户', icon: 'user' },
-      { path: '/user/group', title: '用户组', icon: 'user-circle' }
+      { path: '/user/group', title: '用户组', iconSvg: 'usergrp' }
     ]
   },
   {

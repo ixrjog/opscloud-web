@@ -80,12 +80,11 @@
                 <template slot="title">
                   SSH密钥<i class="header-icon el-icon-info"></i>(堡垒机,Gitlab)
                 </template>
-                <div class="tag-group">
-                  <el-tag style="margin-left: 5px"
-                          v-for="item in userDetailForm.userGroups"
-                          :key="item.id">{{ item.name }}
-                  </el-tag>
-                </div>
+                <el-col>
+                  <el-tag style="margin-left: 5px">pubKey</el-tag>
+                  <el-tag style="margin-left: 5px">{{ userDetailForm.credentialMap.sshPubKey.title }}</el-tag>
+                </el-col>
+                <el-button style="margin-top: 5px" size="mini" @click="editSshKey">编辑</el-button>
               </el-collapse-item>
               <el-collapse-item>
                 <template slot="title">
@@ -101,16 +100,17 @@
                   <el-table-column prop="comment" label="描述">
                   </el-table-column>
                 </el-table>
-                <el-button style="margin-top: 5px" @click="addApiToken">申请</el-button>
+                <el-button style="margin-top: 5px" size="mini" @click="addApiToken">申请</el-button>
               </el-collapse-item>
             </el-collapse>
           </el-col>
         </el-row>
         <!-- 用户资源详情-->
       </div>
-      <!-- api-token编辑对话框 -->
+      <!-- api-token申请对话框 -->
       <dialogtoken :form="tokenForm" @closeDialog="fetchData"></dialogtoken>
-      <!-- user编辑对话框-->
+      <!-- ssh-pubkey编辑对话框 -->
+      <dialogsshkey :form="sshKeyForm" @closeDialog="fetchData"></dialogsshkey>
     </template>
   </d2-container>
 </template>
@@ -118,6 +118,7 @@
 <script>
   // Component
   import dialogtoken from './dialog.api.token'
+  import dialogsshkey from './dialog.ssh.key'
 
   // API
   import { queryUserDetail } from '@api/user/user.js'
@@ -138,6 +139,19 @@
           visible: false,
           labelWidth: '100px',
           title: '申请ApiToken'
+        },
+        sshKeyForm: {
+          data: {
+            id: '',
+            userId: '',
+            username: '',
+            title: '',
+            credential: '',
+            credentialType: 2 // ssh pub-key
+          },
+          visible: false,
+          labelWidth: '100px',
+          title: '编辑SSH公钥'
         },
         labelWidth: '100px',
         formLabelColor: '#99a9bf',
@@ -166,7 +180,8 @@
       this.fetchData()
     },
     components: {
-      dialogtoken
+      dialogtoken,
+      dialogsshkey
     },
     methods: {
       handleClick () {
@@ -191,6 +206,13 @@
       addApiToken () {
         // form
         this.tokenForm.visible = true
+      },
+      editSshKey () {
+        // form
+        if (this.userDetailForm.credentialMap.sshPubKey != null) {
+          this.sshKeyForm.data = Object.assign({}, this.userDetailForm.credentialMap.sshPubKey)
+        }
+        this.sshKeyForm.visible = true
       },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage

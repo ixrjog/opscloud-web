@@ -140,48 +140,58 @@ const frameIn = [
         }
       },
       {
-        path: '/cloudserver/server/ecs',
-        name: 'cloudserver-server-ecs',
-        component: () => import('@/pages/cloudserver/server/ecs'),
+        path: '/cloud/server/ecs',
+        name: 'cloud-server-ecs',
+        component: () => import('@/pages/cloud/server/ecs'),
         meta: {
           auth: true,
           title: 'ECS主机管理'
         }
       },
       {
-        path: '/cloudserver/server/ec2',
-        name: 'cloudserver-server-ec2',
-        component: () => import('@/pages/cloudserver/server/ec2'),
+        path: '/cloud/server/ec2',
+        name: 'cloud-server-ec2',
+        component: () => import('@/pages/cloud/server/ec2'),
         meta: {
           auth: true,
           title: 'EC2主机管理'
         }
       },
       {
-        path: '/cloudserver/server/esxi',
-        name: 'cloudserver-server-esxi',
-        component: () => import('@/pages/cloudserver/server/esxi'),
+        path: '/cloud/server/esxi',
+        name: 'cloud-server-esxi',
+        component: () => import('@/pages/cloud/server/esxi'),
         meta: {
           auth: true,
           title: 'ESXi主机管理'
         }
       },
       {
-        path: '/cloudserver/server/vm',
-        name: 'cloudserver-server-vm',
-        component: () => import('@/pages/cloudserver/server/vm'),
+        path: '/cloud/server/vm',
+        name: 'cloud-server-vm',
+        component: () => import('@/pages/cloud/server/vm'),
         meta: {
           auth: true,
           title: 'VM主机管理'
         }
       },
       {
-        path: '/cloudserver/server/zabbixhost',
-        name: 'cloudserver-server-zabbixhost',
-        component: () => import('@/pages/cloudserver/server/zabbixhost'),
+        path: '/cloud/server/zabbixhost',
+        name: 'cloud-server-zabbixhost',
+        component: () => import('@/pages/cloud/server/zabbixhost'),
         meta: {
           auth: true,
           title: 'ZabbixHost主机管理'
+        }
+      },
+      // cloudDB
+      {
+        path: '/cloud/db/instance',
+        name: 'cloud-db-instance',
+        component: () => import('@/pages/cloud/db/instance'),
+        meta: {
+          auth: true,
+          title: '云数据库实例详情'
         }
       },
       // user

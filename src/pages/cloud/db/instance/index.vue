@@ -7,15 +7,12 @@
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
           <el-col :span="4">
-            <el-input v-model="queryParam.serverName" placeholder="服务器名称"/>
+            <el-input v-model="queryParam.queryName" placeholder="关键字查询"/>
           </el-col>
           <el-col :span="4">
-            <el-input v-model="queryParam.queryIp" placeholder="ip"/>
-          </el-col>
-          <el-col :span="4">
-            <el-select v-model="queryParam.serverStatus" clearable placeholder="状态">
+            <el-select v-model="queryParam.cloudDbType" clearable placeholder="云数据库类型">
               <el-option
-                v-for="item in statusOptions"
+                v-for="item in cloudDbTypeOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
@@ -32,56 +29,61 @@
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline class="table-expand">
-              <el-form-item label="实例id">
-                <span>{{ props.row.instanceId }}</span>
+              <el-form-item label="账户uid">
+                <span>{{ props.row.uid }}</span>
               </el-form-item>
-              <el-form-item label="服务器名称">
-                <span>{{ props.row.serverName }}</span>
+              <el-form-item label="账户名称">
+                <span>{{ props.row.accountName }}</span>
               </el-form-item>
               <el-form-item label="实例类型">
-                <span>{{ props.row.instanceType }}</span>
+                <span>{{ props.row.dbInstanceClass }}</span>
               </el-form-item>
-              <el-form-item v-if="props.row.vpcId != null && props.row.vpcId != ''" label="vpcId">
-                <span>{{ props.row.vpcId }}</span>
+              <el-form-item v-if="props.row.createdTime != null && props.row.createdTime != ''" label="实例创建时间">
+                <span>{{ props.row.createdTime }}</span>
               </el-form-item>
-              <el-form-item label="镜像id">
-                <span>{{ props.row.imageId }}</span>
+              <el-form-item v-if="props.row.expiredTime != null && props.row.expiredTime != ''" label="实例过期时间">
+                <span>{{ props.row.expiredTime }}</span>
               </el-form-item>
-              <el-form-item label="系统盘容量(GiB)">
-                <span>{{ props.row.systemDiskSize }}</span>
+              <el-form-item label="连接地址">
+                <span>{{ props.row.attributeMap.ConnectionString }}</span>
               </el-form-item>
-              <el-form-item v-if="props.row.dataDiskSize != null && props.row.dataDiskSize != 0" label="数据盘容量(GiB)">
-                <span>{{ props.row.dataDiskSize }}</span>
+              <el-form-item label="端口">
+                <span>{{ props.row.attributeMap.Port }}</span>
               </el-form-item>
-              <el-form-item label="付费类型">
-                <span>{{ props.row.chargeType }}</span>
+              <el-form-item label="实例内存(MB)">
+                <span>{{ props.row.attributeMap.DBInstanceMemory }}</span>
               </el-form-item>
-              <el-form-item label="自动续费状态">
-                <span>{{ props.row.renewalStatus }}</span>
+              <el-form-item label="最大连接数">
+                <span>{{ props.row.attributeMap.MaxConnections }}</span>
+              </el-form-item>
+              <el-form-item label="实例存储类型">
+                <span>{{ props.row.attributeMap.DBInstanceStorageType }}</span>
+              </el-form-item>
+              <el-form-item label="实例存储(GB)">
+                <span>{{ props.row.attributeMap.DBInstanceStorage }}</span>
+              </el-form-item>
+              <el-form-item label="可用性">
+                <span>{{ props.row.attributeMap.AvailabilityValue }}</span>
               </el-form-item>
             </el-form>
           </template>
         </el-table-column>
-        <el-table-column prop="instanceName" label="实例名"></el-table-column>
-        <el-table-column prop="publicIp" label="公网ip"></el-table-column>
-        <el-table-column prop="privateIp" label="私网ip"></el-table-column>
-        <el-table-column prop="cpu" label="cpu" width="80" v-if="showCpuColumn"></el-table-column>
-        <el-table-column prop="memory" label="内存(GiB)" width="100" v-if="showCpuColumn">
+        <el-table-column prop="dbInstanceId" label="实例id"></el-table-column>
+        <el-table-column prop="cloudDbType" label="云类型">
           <template slot-scope="scope">
-            <span>{{scope.row.memory | getMemoryText}}</span>
+            <el-tag class="filters" :type="scope.row.cloudDbType | getCloudDBTypeTagType" size="small ">{{scope.row.cloudDbType | getCloudDBTypeTagText}}</el-tag>
           </template>
         </el-table-column>
+        <el-table-column prop="dbInstanceDescription" label="描述"></el-table-column>
+        <el-table-column prop="engine" label="engine" width="100">
+          <template slot-scope="scope">
+            <el-tag class="filters"  size="small ">{{scope.row.engine}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="engineVersion" label="version" width="80"></el-table-column>
         <el-table-column prop="zone" label="区"></el-table-column>
-        <el-table-column prop="serverStatus" label="状态">
-          <template slot-scope="scope">
-            <el-tag class="filters" :type="scope.row.serverStatus | getStatusTagType" size="small ">{{scope.row.serverStatus | getStatusTagText}}</el-tag>
-          </template>
-        </el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
-<!--            <el-button type="primary" plain size="mini" @click="updateItemNeedAuth(scope.row)">{{scope.row.needAuth ===-->
-<!--              0 ? '鉴权' : '不鉴权'}}-->
-<!--            </el-button>-->
             <el-button type="primary" plain size="mini" @click="addItem(scope.row)">导入
             </el-button>
             <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
@@ -140,9 +142,9 @@
 
 <script>
   // Filters
-  import { getStatusTagType, getStatusTagText, getMemoryText } from '@/filters/server.js'
+  import { getCloudDBTypeTagType, getCloudDBTypeTagText } from '@/filters/cloud.js'
   // API
-  import { queryCloudserverPage, syncCloudserverByKey, deleteCloudserverById } from '@api/cloudserver/server/cloudserver.js'
+  import { fuzzyQueryCloudDBPage, deleteCloudDBById, syncCloudDB } from '@api/cloud/cloud.db.js'
 
   export default {
     data () {
@@ -179,26 +181,17 @@
           total: 0
         },
         queryParam: {
-          cloudserverType: 2,
-          serverName: '',
-          queryIp: '',
-          serverStatus: ''
+          cloudDbType: '',
+          queryName: ''
         },
-        statusOptions: [{
-          value: 0,
-          label: '新建(未录入)'
-        }, {
-          value: 1,
-          label: '已录入'
-        }, {
+        cloudDbTypeOptions: [{
           value: 2,
-          label: '标记删除'
+          label: 'Aliyun-RDS-Mysql'
         }, {
           value: 3,
-          label: '服务器表未删除但云服务器已销毁'
+          label: 'AWS-RDS-Mysql'
         }],
-        cloudserverKey: 'AliyunECSCloudserver',
-        title: 'Aliyun:ECS实例管理',
+        title: '云数据库实例管理',
         showCpuColumn: true,
         showMemoryColumn: true
       }
@@ -207,32 +200,12 @@
       this.fetchData()
     },
     filters: {
-      getStatusTagType,
-      getStatusTagText,
-      getMemoryText
+      getCloudDBTypeTagType,
+      getCloudDBTypeTagText
     },
     methods: {
       handleClick () {
         this.$emit('input', !this.value)
-      },
-      // 普通的新增
-      addRow () {
-        this.$refs.d2Crud.showDialog({
-          mode: 'add'
-        })
-      },
-      handleRowRemove ({ index, row }, done) {
-        setTimeout(() => {
-          deleteCloudserverById(row.id)
-            .then(res => {
-              this.$message({
-                message: '删除成功',
-                type: 'success'
-              })
-              this.fetchData()
-              done()
-            })
-        }, 300)
       },
       delItem (row) {
         this.$confirm('此操作将删除当前配置?', '提示', {
@@ -240,7 +213,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteCloudserverById(row.id).then(res => {
+          deleteCloudDBById(row.id).then(res => {
             this.fetchData()
             this.$message({
               type: 'success',
@@ -265,24 +238,6 @@
           needAuth: 1
         }
       },
-      // handleRowEdit ({ index, row }, done) {
-      //   setTimeout(() => {
-      //     updateCloudserver({
-      //       id: row.id,
-      //       roleName: row.roleName,
-      //       comment: row.comment,
-      //       workflow: row.workflow
-      //     })
-      //       .then(res => {
-      //         this.$message({
-      //           message: '更新成功',
-      //           type: 'success'
-      //         })
-      //         this.fetchData()
-      //         done()
-      //       })
-      //   }, 300)
-      // },
       handleDialogCancel (done) {
         this.$message({
           message: '取消保存',
@@ -296,8 +251,13 @@
       },
       fetchData () {
         this.loading = true
-        queryCloudserverPage(
-          this.queryParam.cloudserverType, this.queryParam.serverName, this.queryParam.queryIp, this.queryParam.serverStatus, this.pagination.currentPage, this.pagination.pageSize)
+        var requestBody = {
+          'queryName': this.queryParam.queryName,
+          'cloudDbType': this.queryParam.cloudDbType,
+          'page': this.pagination.currentPage,
+          'length': this.pagination.pageSize
+        }
+        fuzzyQueryCloudDBPage(requestBody)
           .then(res => {
             this.tableData = res.body.data
             this.pagination.total = res.body.totalNum
@@ -306,7 +266,8 @@
       },
       handleSync () {
         setTimeout(() => {
-          syncCloudserverByKey(this.cloudserverKey)
+          this.loading = true
+          syncCloudDB()
             .then(res => {
               this.$message({
                 message: '后台同步数据中',

@@ -71,9 +71,19 @@ export function syncUser () {
   })
 }
 
+// 申请ApiToken
 export function applyApiToken (data) {
   return request({
     url: '/user/apply/token',
+    method: 'post',
+    data
+  })
+}
+
+// 用户保存凭据
+export function saveUserCredential (data) {
+  return request({
+    url: '/user/credential/save',
     method: 'post',
     data
   })
