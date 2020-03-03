@@ -1,6 +1,8 @@
 <template>
   <el-dialog :title="form.title"
              :visible.sync="form.visible">
+    <d2-markdown :source="doc"/>
+    <div style="margin: 15px 0;"></div>
     <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
     <div style="margin: 15px 0;"></div>
     <el-checkbox-group v-model="checkedPrivileges" @change="handleCheckedPrivilegesChange">
@@ -14,21 +16,26 @@
   // eslint-disable-next-line no-unused-vars
   import { queryBusinessTag, queryTagPage, updateTagBusiness } from '@api/tag/tag.js'
 
+  import doc from '@/static/md/cloud.db.privilege.md'
+
   const privilegeOptions = ['ReadOnly', 'ReadWrite', 'DDLOnly', 'DMLOnly']
 
   export default {
     data () {
       return {
         checkAll: false,
-        // checkedPrivileges: ['ReadOnly'],
         privileges: privilegeOptions,
-        isIndeterminate: true
+        isIndeterminate: true,
+        checkedPrivileges: this.formCheckedPrivileges,
+        id: this.cloudDbId,
+        doc
       }
     },
     name: 'dialog-privilege',
     props: {
       form: {},
-      checkedPrivileges: []
+      formCheckedPrivileges: {},
+      cloudDbId: {}
     },
     mixins: [],
     mounted () {

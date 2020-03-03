@@ -95,14 +95,14 @@
                      layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                      :page-size="pagination.pageSize">
       </el-pagination>
-      <dialogprivilege :form="formPrivilege" :privilege="privilege" @closeTagDialog="fetchData"></dialogprivilege>
+      <dialogPrivilege :form="formPrivilege" :formCheckedPrivileges="privileges" :cloudDbId="cloudDbId" @closeTagDialog="fetchData"></dialogPrivilege>
     </template>
   </d2-container>
 </template>
 
 <script>
 
-  import dialogprivilege from './dialog.privilege'
+  import dialogPrivilege from './dialog.privilege'
 
   // Filters
   import { getCloudDBTypeTagType, getCloudDBTypeTagText } from '@/filters/cloud.js'
@@ -112,20 +112,21 @@
   export default {
     data () {
       return {
-        privilege: [],
+        privileges: [],
+        cloudDbId: '',
         formPrivilege: {
           visible: false,
           labelWidth: '80px',
           title: '数据库实例账户授权'
         },
-        form: {
-          group: '',
-          id: '',
-          groupId: '',
-          resourceName: '',
-          comment: '',
-          needAuth: 1
-        },
+        // form: {
+        //   group: '',
+        //   id: '',
+        //   groupId: '',
+        //   resourceName: '',
+        //   comment: '',
+        //   needAuth: 1
+        // },
         dialogVisible: false,
         formLabelWidth: '100px',
         dialogForm: {
@@ -167,7 +168,7 @@
       this.fetchData()
     },
     components: {
-      dialogprivilege
+      dialogPrivilege
     },
     filters: {
       getCloudDBTypeTagType,
@@ -211,9 +212,9 @@
       accountPrivilege (row) {
         // form
         this.formPrivilege.visible = true
-        // privilege
-        // this.privilege = Object.assign({}, row)
-        this.privilege = []
+        // 选中项(已授权项)
+        this.privileges = []
+        this.cloudDbId = row.id
       },
       handleDialogCancel (done) {
         this.$message({
