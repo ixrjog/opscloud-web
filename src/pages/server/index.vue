@@ -138,7 +138,7 @@
 <script>
   // Component
   import dialogserver from './dialog.server'
-  import dialogtag from './dialog.tag'
+  import dialogtag from '@/components/opscloud/tag/dialog.tag'
   // Filters
   import { getLoginTypeText, getMonitorStatusText, getMonitorStatusType, getServerTypeText } from '@/filters/server.js'
   // API

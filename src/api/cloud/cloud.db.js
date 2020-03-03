@@ -26,3 +26,10 @@ export function deleteCloudDBById (id) {
     method: 'delete'
   })
 }
+
+export function syncCloudDBDatabase (cloudDbId) {
+  return request({
+    url: '/cloud/db/database/sync?id=' + cloudDbId,
+    method: 'get'
+  })
+}

@@ -43,7 +43,8 @@ export default [
     title: '云数据库',
     icon: 'cloud',
     children: [
-      { path: '/cloud/db/instance', title: '数据库实例', iconSvg: 'aliyun-ecs' }
+      { path: '/cloud/db/instance', title: '数据库实例', iconSvg: 'rds' },
+      { path: '/cloud/db/database', title: '数据库', iconSvg: 'database' }
     ]
   },
   {

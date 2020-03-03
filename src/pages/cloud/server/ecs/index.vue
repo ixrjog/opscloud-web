@@ -5,30 +5,20 @@
         <h1>{{title}}</h1>
       </div>
       <div style="margin-bottom: 5px">
-        <el-row :gutter="24" style="margin-bottom: 5px">
-          <el-col :span="4">
-            <el-input v-model="queryParam.serverName" placeholder="服务器名称"/>
-          </el-col>
-          <el-col :span="4">
-            <el-input v-model="queryParam.queryIp" placeholder="ip"/>
-          </el-col>
-          <el-col :span="4">
-            <el-select v-model="queryParam.serverStatus" clearable placeholder="状态">
-              <el-option
-                v-for="item in statusOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </el-col>
-          <el-col :span="4">
-            <el-button @click="fetchData">查询</el-button>
-            <el-button @click="handleSync">同步</el-button>
-          </el-col>
-        </el-row>
+        <el-input v-model="queryParam.serverName" placeholder="服务器名称" style="display: inline-block; max-width:200px"/>
+        <el-input v-model="queryParam.queryIp" placeholder="ip" style="display: inline-block; max-width:200px; margin-left: 5px"/>
+        <el-select v-model="queryParam.serverStatus" clearable placeholder="状态" style="margin-left: 5px">
+          <el-option
+            v-for="item in statusOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
+        <el-button @click="handleSync" style="margin-left: 5px">同步</el-button>
       </div>
-      <el-table :data="tableData" style="width: 100%">
+      <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline class="table-expand">
@@ -74,14 +64,16 @@
         <el-table-column prop="zone" label="区"></el-table-column>
         <el-table-column prop="serverStatus" label="状态">
           <template slot-scope="scope">
-            <el-tag class="filters" :type="scope.row.serverStatus | getStatusTagType" size="small ">{{scope.row.serverStatus | getStatusTagText}}</el-tag>
+            <el-tag class="filters" :type="scope.row.serverStatus | getStatusTagType" size="small ">
+              {{scope.row.serverStatus | getStatusTagText}}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
-<!--            <el-button type="primary" plain size="mini" @click="updateItemNeedAuth(scope.row)">{{scope.row.needAuth ===-->
-<!--              0 ? '鉴权' : '不鉴权'}}-->
-<!--            </el-button>-->
+            <!--            <el-button type="primary" plain size="mini" @click="updateItemNeedAuth(scope.row)">{{scope.row.needAuth ===-->
+            <!--              0 ? '鉴权' : '不鉴权'}}-->
+            <!--            </el-button>-->
             <el-button type="primary" plain size="mini" @click="addItem(scope.row)">导入
             </el-button>
             <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
@@ -92,48 +84,48 @@
                      layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                      :page-size="pagination.pageSize">
       </el-pagination>
-<!--      <el-dialog :title="dialogForm.operationType ? dialogForm.addTitle : dialogForm.updateTitle"-->
-<!--                 :visible.sync="dialogForm.visible">-->
-<!--        <el-form :model="form">-->
-<!--          <el-form-item label="资源组" :label-width="formLabelWidth">-->
-<!--            <el-select v-model="form.group" filterable clearable-->
-<!--                       remote reserve-keyword placeholder="输入关键词搜索资源组" :remote-method="getGroup" :loading="loading">-->
-<!--              <el-option-->
-<!--                v-for="item in groupOptions"-->
-<!--                :key="item.id"-->
-<!--                :label="item.groupCode"-->
-<!--                :value="item">-->
-<!--              </el-option>-->
-<!--            </el-select>-->
-<!--          </el-form-item>-->
-<!--        </el-form>-->
-<!--        <el-form :model="form">-->
-<!--          <el-form-item label="资源路径" :label-width="formLabelWidth">-->
-<!--            <el-input v-model="form.resourceName" placeholder="请输入内容"></el-input>-->
-<!--          </el-form-item>-->
-<!--        </el-form>-->
-<!--        <el-form :model="form">-->
-<!--          <el-form-item label="鉴权" :label-width="formLabelWidth">-->
-<!--            <el-select v-model="form.needAuth" placeholder="是否鉴权">-->
-<!--              <el-option-->
-<!--                v-for="item in needAuthOptions"-->
-<!--                :key="item.value"-->
-<!--                :label="item.label"-->
-<!--                :value="item.value">-->
-<!--              </el-option>-->
-<!--            </el-select>-->
-<!--          </el-form-item>-->
-<!--        </el-form>-->
-<!--        <el-form :model="form">-->
-<!--          <el-form-item label="描述" :label-width="formLabelWidth">-->
-<!--            <el-input v-model="form.comment" placeholder="请输入内容"></el-input>-->
-<!--          </el-form-item>-->
-<!--        </el-form>-->
-<!--        <div slot="footer" class="dialog-footer">-->
-<!--          <el-button @click="dialogForm.visible = false">取消</el-button>-->
-<!--          <el-button type="primary" @click="saveInfo">确定</el-button>-->
-<!--        </div>-->
-<!--      </el-dialog>-->
+      <!--      <el-dialog :title="dialogForm.operationType ? dialogForm.addTitle : dialogForm.updateTitle"-->
+      <!--                 :visible.sync="dialogForm.visible">-->
+      <!--        <el-form :model="form">-->
+      <!--          <el-form-item label="资源组" :label-width="formLabelWidth">-->
+      <!--            <el-select v-model="form.group" filterable clearable-->
+      <!--                       remote reserve-keyword placeholder="输入关键词搜索资源组" :remote-method="getGroup" :loading="loading">-->
+      <!--              <el-option-->
+      <!--                v-for="item in groupOptions"-->
+      <!--                :key="item.id"-->
+      <!--                :label="item.groupCode"-->
+      <!--                :value="item">-->
+      <!--              </el-option>-->
+      <!--            </el-select>-->
+      <!--          </el-form-item>-->
+      <!--        </el-form>-->
+      <!--        <el-form :model="form">-->
+      <!--          <el-form-item label="资源路径" :label-width="formLabelWidth">-->
+      <!--            <el-input v-model="form.resourceName" placeholder="请输入内容"></el-input>-->
+      <!--          </el-form-item>-->
+      <!--        </el-form>-->
+      <!--        <el-form :model="form">-->
+      <!--          <el-form-item label="鉴权" :label-width="formLabelWidth">-->
+      <!--            <el-select v-model="form.needAuth" placeholder="是否鉴权">-->
+      <!--              <el-option-->
+      <!--                v-for="item in needAuthOptions"-->
+      <!--                :key="item.value"-->
+      <!--                :label="item.label"-->
+      <!--                :value="item.value">-->
+      <!--              </el-option>-->
+      <!--            </el-select>-->
+      <!--          </el-form-item>-->
+      <!--        </el-form>-->
+      <!--        <el-form :model="form">-->
+      <!--          <el-form-item label="描述" :label-width="formLabelWidth">-->
+      <!--            <el-input v-model="form.comment" placeholder="请输入内容"></el-input>-->
+      <!--          </el-form-item>-->
+      <!--        </el-form>-->
+      <!--        <div slot="footer" class="dialog-footer">-->
+      <!--          <el-button @click="dialogForm.visible = false">取消</el-button>-->
+      <!--          <el-button type="primary" @click="saveInfo">确定</el-button>-->
+      <!--        </div>-->
+      <!--      </el-dialog>-->
     </template>
   </d2-container>
 </template>
@@ -305,10 +297,12 @@
   .table-expand {
     font-size: 0;
   }
+
   .table-expand label {
     width: 150px;
     color: #99a9bf;
   }
+
   .table-expand .el-form-item {
     margin-right: 0;
     margin-bottom: 0;

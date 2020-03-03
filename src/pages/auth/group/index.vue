@@ -6,13 +6,9 @@
       </div>
       <div>
         <el-row :gutter="24" style="margin-bottom: 5px">
-          <el-col :span="4">
-            <el-input v-model="queryParam.groupCode" placeholder="资源组名称"/>
-          </el-col>
-          <el-col :span="4">
-            <el-button @click="fetchData">查询</el-button>
-            <el-button @click="addRow">新增</el-button>
-          </el-col>
+            <el-input v-model="queryParam.groupCode" placeholder="资源组名称" style="display: inline-block; max-width:200px"/>
+            <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
+            <el-button @click="addRow" style="margin-left: 5px">新增</el-button>
         </el-row>
       </div>
       <div>

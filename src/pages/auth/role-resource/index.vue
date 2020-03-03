@@ -6,9 +6,8 @@
       </div>
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
-          <el-col :span="4">
             <el-select v-model="queryParam.roleId" filterable clearable
-                       remote reserve-keyword placeholder="输入关键词搜索角色" :remote-method="getRole" :loading="loading">
+                       remote reserve-keyword placeholder="输入关键词搜索角色" :remote-method="getRole" :loading="loading" style="display: inline-block; max-width:200px">
               <el-option
                 v-for="item in roleOptions"
                 :key="item.id"
@@ -16,10 +15,8 @@
                 :value="item.id">
               </el-option>
             </el-select>
-          </el-col>
-          <el-col :span="4">
             <el-select v-model="queryParam.groupId" filterable clearable
-                       remote reserve-keyword placeholder="输入关键词搜索资源组" :remote-method="getGroup" :loading="loading">
+                       remote reserve-keyword placeholder="输入关键词搜索资源组" :remote-method="getGroup" :loading="loading" style="margin-left: 5px">
               <el-option
                 v-for="item in groupOptions"
                 :key="item.id"
@@ -27,10 +24,7 @@
                 :value="item.id">
               </el-option>
             </el-select>
-          </el-col>
-          <el-col :span="4">
-            <el-button @click="fetchData">查询</el-button>
-          </el-col>
+            <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
         </el-row>
       </div>
       <el-row>
@@ -108,9 +102,10 @@
         groupOptions: []
       }
     },
-    // mounted () {
-    //   this.fetchData()
-    // },
+    mounted () {
+      this.getRole('')
+      this.getGroup('')
+    },
     methods: {
       getRole (roleName) {
         queryRolePage(roleName, '', 1, 20)

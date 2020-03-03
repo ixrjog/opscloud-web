@@ -191,7 +191,16 @@ const frameIn = [
         component: () => import('@/pages/cloud/db/instance'),
         meta: {
           auth: true,
-          title: '云数据库实例详情'
+          title: '数据库实例详情'
+        }
+      },
+      {
+        path: '/cloud/db/database',
+        name: 'cloud-db-database',
+        component: () => import('@/pages/cloud/db/database'),
+        meta: {
+          auth: true,
+          title: '数据库'
         }
       },
       // user

@@ -6,12 +6,9 @@
       </div>
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
-          <el-col :span="4">
-            <el-input v-model="queryParam.username" placeholder="用户名"/>
-          </el-col>
-          <el-col :span="4">
+            <el-input v-model="queryParam.username" placeholder="用户名" style="display: inline-block; max-width:200px"/>
             <el-select v-model="queryParam.roleId" filterable clearable
-                       remote reserve-keyword placeholder="输入关键词搜索角色" :remote-method="getRole" :loading="loading">
+                       remote reserve-keyword placeholder="输入关键词搜索角色" :remote-method="getRole" :loading="loading" style="margin-left: 5px">
               <el-option
                 v-for="item in roleOptions"
                 :key="item.id"
@@ -19,11 +16,8 @@
                 :value="item.id">
               </el-option>
             </el-select>
-          </el-col>
-          <el-col :span="4">
-            <el-button @click="fetchData">查询</el-button>
-            <el-button @click="addItem">新增</el-button>
-          </el-col>
+            <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
+            <el-button @click="addItem" style="margin-left: 5px">新增</el-button>
         </el-row>
       </div>
       <el-table :data="tableData" style="width: 100%">
