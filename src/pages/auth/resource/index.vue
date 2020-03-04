@@ -6,137 +6,79 @@
       </div>
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
-          <el-col :span="4">
-            <el-select v-model="queryParam.groupId" filterable clearable
-                       remote reserve-keyword placeholder="输入关键词搜索资源组" :remote-method="getGroup" :loading="loading">
-              <el-option
-                v-for="item in groupOptions"
-                :key="item.id"
-                :label="item.groupCode"
-                :value="item.id">
-              </el-option>
-            </el-select>
-          </el-col>
-          <el-col :span="4">
-            <el-input v-model="queryParam.resourceName" placeholder="资源路径"/>
-          </el-col>
-          <el-col :span="4">
-            <el-select v-model="queryParam.needAuth" clearable placeholder="鉴权">
-              <el-option
-                v-for="item in authOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </el-col>
-          <el-col :span="4">
-            <el-button @click="fetchData">查询</el-button>
-            <el-button @click="addItem">新增</el-button>
-          </el-col>
+          <el-select v-model="queryParam.groupId" filterable clearable
+                     remote reserve-keyword placeholder="输入关键词搜索资源组" :remote-method="getGroup" :loading="loading"
+                     style="display: inline-block; max-width:200px">
+            <el-option
+              v-for="item in groupOptions"
+              :key="item.id"
+              :label="item.groupCode"
+              :value="item.id">
+            </el-option>
+          </el-select>
+          <el-input v-model="queryParam.resourceName" placeholder="资源路径"
+                    style="display: inline-block; max-width:200px; margin-left: 5px"/>
+          <el-select v-model="queryParam.needAuth" clearable placeholder="鉴权" style="margin-left: 5px">
+            <el-option
+              v-for="item in authOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
+          <el-button @click="addItem" style="margin-left: 5px">新增</el-button>
         </el-row>
       </div>
       <el-table :data="tableData" style="width: 100%">
-        <el-table-column prop="groupCode" label="资源组" ></el-table-column>
-        <el-table-column prop="resourceName" label="资源路径" ></el-table-column>
-        <el-table-column prop="comment" label="描述" ></el-table-column>
+        <el-table-column prop="groupCode" label="资源组"></el-table-column>
+        <el-table-column prop="resourceName" label="资源路径"></el-table-column>
+        <el-table-column prop="comment" label="描述"></el-table-column>
         <el-table-column prop="needAuth" label="鉴权">
           <template slot-scope="scope">
-            <el-tag :type="scope.row.needAuth === 0 ? 'success' : 'danger'" disable-transitions>{{scope.row.needAuth === 0 ? '不鉴权' : '鉴权'}}</el-tag>
+            <el-tag :type="scope.row.needAuth === 0 ? 'success' : 'danger'" disable-transitions>{{scope.row.needAuth ===
+              0 ? '不鉴权' : '鉴权'}}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
-            <el-button type="primary" plain size="mini" @click="updateItemNeedAuth(scope.row)">{{scope.row.needAuth === 0 ? '鉴权' : '不鉴权'}}</el-button>
+            <el-button type="primary" plain size="mini" @click="updateItemNeedAuth(scope.row)">{{scope.row.needAuth ===
+              0 ? '鉴权' : '不鉴权'}}
+            </el-button>
             <el-button type="warning" plain size="mini" @click="updateItem(scope.row)">编辑</el-button>
             <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
       <el-pagination background @current-change="paginationCurrentChange"
-                     layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage" :page-size="pagination.pageSize">
+                     layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
+                     :page-size="pagination.pageSize">
       </el-pagination>
-      <el-dialog :title="dialogForm.operationType ? dialogForm.addTitle : dialogForm.updateTitle"
-                 :visible.sync="dialogForm.visible">
-        <el-form :model="form">
-          <el-form-item label="资源组" :label-width="formLabelWidth">
-            <el-select v-model="form.group" filterable clearable
-                       remote reserve-keyword placeholder="输入关键词搜索资源组" :remote-method="getGroup" :loading="loading">
-              <el-option
-                v-for="item in groupOptions"
-                :key="item.id"
-                :label="item.groupCode"
-                :value="item">
-              </el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
-        <el-form :model="form">
-          <el-form-item label="资源路径" :label-width="formLabelWidth">
-            <el-input v-model="form.resourceName" placeholder="请输入内容"></el-input>
-          </el-form-item>
-        </el-form>
-        <el-form :model="form">
-          <el-form-item label="鉴权" :label-width="formLabelWidth">
-            <el-select v-model="form.needAuth" placeholder="是否鉴权">
-              <el-option
-                v-for="item in needAuthOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
-        <el-form :model="form">
-          <el-form-item label="描述" :label-width="formLabelWidth">
-            <el-input v-model="form.comment" placeholder="请输入内容"></el-input>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogForm.visible = false">取消</el-button>
-          <el-button type="primary" @click="saveInfo">确定</el-button>
-        </div>
-      </el-dialog>
+      <ResourceDialog :formStatus="formResourceStatus" :formData="resource"
+                      @closeResourceDialog="fetchData"></ResourceDialog>
     </template>
   </d2-container>
 </template>
 
 <script>
+  import ResourceDialog from '@/components/opscloud/dialog/ResourceDialog'
   // API
   import { queryGroupPage } from '@api/auth/auth.group.js'
-  import { queryResourcePage, deleteResourceById, addResource, updateResource, updateResourceNeedAuth } from '@api/auth/auth.resource.js'
+  import { queryResourcePage, deleteResourceById, updateResourceNeedAuth } from '@api/auth/auth.resource.js'
 
   export default {
     data () {
       return {
-        form: {
-          group: '',
-          id: '',
-          groupId: '',
-          resourceName: '',
-          comment: '',
-          typeLogo: '',
-          needAuth: 1
-        },
-        dialogImageUrl: '',
-        dialogVisible: false,
-        formLabelWidth: '100px',
-        dialogForm: {
+        resource: {},
+        formResourceStatus: {
           visible: false,
           addTitle: '新增资源配置',
           updateTitle: '更新资源配置',
+          labelWidth: '100px',
           operationType: true
         },
         tableData: [],
-        options: {
-          stripe: true
-        },
-        formOptions: {
-          labelWidth: '80px',
-          labelPosition: 'left',
-          saveLoading: false
-        },
         loading: false,
         pagination: {
           currentPage: 1,
@@ -171,6 +113,10 @@
     },
     mounted () {
       this.fetchData()
+      this.getGroup('')
+    },
+    components: {
+      ResourceDialog
     },
     methods: {
       getGroup (groupCode) {
@@ -210,9 +156,9 @@
         })
       },
       addItem () {
-        this.dialogForm.operationType = true
-        this.dialogForm.visible = true
-        this.form = {
+        this.formResourceStatus.operationType = true
+        this.formResourceStatus.visible = true
+        this.resource = {
           id: '',
           groupId: '',
           resourceName: '',
@@ -236,56 +182,12 @@
           })
       },
       updateItem (row) {
-        var group = {
-          'id': row.groupId,
-          'groupCode': row.groupCode
-        }
-        this.groupOptions = []
-        this.groupOptions.push(group)
-        this.form = {
-          group: group,
-          id: row.id,
-          groupId: row.groupId,
-          resourceName: row.resourceName,
-          comment: row.comment,
-          needAuth: row.needAuth
-        }
-        this.dialogForm.operationType = false
-        this.dialogForm.visible = true
-      },
-      saveInfo () {
-        setTimeout(() => {
-          var requestBody = {
-            'id': this.form.id,
-            'groupId': this.form.group.id,
-            'resourceName': this.form.resourceName,
-            'comment': this.form.comment,
-            'needAuth': this.form.needAuth
-          }
-          if (this.dialogForm.operationType) {
-            addResource(requestBody)
-              .then(res => {
-                // 返回数据
-                this.$message({
-                  message: '成功',
-                  type: 'success'
-                })
-                this.dialogForm.visible = false
-                this.fetchData()
-              })
-          } else {
-            updateResource(requestBody)
-              .then(res => {
-                // 返回数据
-                this.$message({
-                  message: '成功',
-                  type: 'success'
-                })
-                this.dialogForm.visible = false
-                this.fetchData()
-              })
-          }
-        }, 600)
+        var resource = Object.assign({}, row)
+        resource.groupOptions = []
+        resource.groupOptions.push(resource.group)
+        this.resource = resource
+        this.formResourceStatus.operationType = false
+        this.formResourceStatus.visible = true
       },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage

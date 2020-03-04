@@ -4,76 +4,49 @@
       <div>
         <h1>资源组配置</h1>
       </div>
-      <div>
+      <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
-            <el-input v-model="queryParam.groupCode" placeholder="资源组名称" style="display: inline-block; max-width:200px"/>
-            <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
-            <el-button @click="addRow" style="margin-left: 5px">新增</el-button>
+          <el-input v-model="queryParam.groupCode" placeholder="资源组名称" style="display: inline-block; max-width:200px"/>
+          <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
+          <el-button @click="addItem" style="margin-left: 5px">新增</el-button>
         </el-row>
       </div>
-      <div>
-        <d2-crud
-          ref="d2Crud"
-          :columns="columns"
-          :data="data"
-          :options="options"
-          add-title="新增角色"
-          :add-template="addTemplate"
-          edit-title="修改角色"
-          :edit-template="addTemplate"
-          :form-options="formOptions"
-          @row-add="handleRowAdd"
-          @dialog-cancel="handleDialogCancel"
-          :rowHandle="rowHandle"
-          @row-remove="handleRowRemove"
-          @row-edit="handleRowEdit"
-          :loading="loading"
-          :pagination="pagination"
-          @pagination-current-change="paginationCurrentChange">
-        </d2-crud>
-      </div>
+      <el-table :data="tableData" style="width: 100%">
+        <el-table-column prop="groupCode" label="资源组名称"></el-table-column>
+        <el-table-column prop="comment" label="描述"></el-table-column>
+        <el-table-column fixed="right" label="操作" width="280">
+          <template slot-scope="scope">
+            <el-button type="warning" plain size="mini" @click="updateItem(scope.row)">编辑</el-button>
+            <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination background @current-change="paginationCurrentChange"
+                     layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
+                     :page-size="pagination.pageSize">
+      </el-pagination>
+      <ResourceGroupDialog :formStatus="formResourceGroupStatus" :formData="resourceGroup"
+                      @closeResourceGroupDialog="fetchData"></ResourceGroupDialog>
     </template>
   </d2-container>
 </template>
 
 <script>
-
+  import ResourceGroupDialog from '@/components/opscloud/dialog/ResourceGroupDialog'
   // API
-  import { queryGroupPage, deleteGroupById, addGroup, updateGroup } from '@api/auth/auth.group.js'
+  import { queryGroupPage, deleteGroupById } from '@api/auth/auth.group.js'
 
   export default {
     data () {
       return {
-        columns: [
-          {
-            title: '资源组名称',
-            key: 'groupCode',
-            minWidth: '40%'
-          },
-          {
-            title: '描述',
-            key: 'comment',
-            minWidth: '30%'
-          }
-        ],
-        data: [],
-        addTemplate: {
-          groupCode: {
-            title: '资源组名称',
-            value: ''
-          },
-          comment: {
-            title: '描述',
-            value: ''
-          }
-        },
-        options: {
-          stripe: true
-        },
-        formOptions: {
-          labelWidth: '80px',
-          labelPosition: 'left',
-          saveLoading: false
+        tableData: [],
+        resourceGroup: {},
+        formResourceGroupStatus: {
+          visible: false,
+          addTitle: '新增资源组配置',
+          updateTitle: '更新资源组配置',
+          labelWidth: '100px',
+          operationType: true
         },
         loading: false,
         pagination: {
@@ -83,91 +56,52 @@
         },
         queryParam: {
           groupCode: ''
-        },
-        rowHandle: {
-          remove: {
-            icon: 'el-icon-delete',
-            size: 'mini',
-            fixed: 'right',
-            confirm: true,
-            show (index, row) {
-              return true
-            }
-          },
-          edit: {
-            icon: 'el-icon-edit',
-            type: 'primary',
-            size: 'mini',
-            fixed: 'left',
-            confirm: false
-          }
         }
       }
     },
     mounted () {
       this.fetchData()
     },
+    components: {
+      ResourceGroupDialog
+    },
     methods: {
       handleClick () {
         this.$emit('input', !this.value)
       },
-      // 普通的新增
-      addRow () {
-        this.$refs.d2Crud.showDialog({
-          mode: 'add'
+      delItem (row) {
+        this.$confirm('此操作将删除当前配置?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          deleteGroupById(row.id).then(res => {
+            this.fetchData()
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
         })
       },
-      handleRowAdd (row, done) {
-        this.formOptions.saveLoading = true
-        setTimeout(() => {
-          var requestBody = {
-            'groupCode': row.groupCode,
-            'comment': row.comment
-          }
-          addGroup(requestBody)
-            .then(res => {
-              // 返回数据
-              this.$message({
-                message: '成功',
-                type: 'success'
-              })
-              this.fetchData()
-              done()
-            })
-
-          // done可以传入一个对象来修改提交的某个字段
-          this.formOptions.saveLoading = false
-        }, 600)
+      addItem () {
+        this.formResourceGroupStatus.operationType = true
+        this.formResourceGroupStatus.visible = true
+        this.resourceGroup = {
+          id: '',
+          groupCode: '',
+          comment: ''
+        }
       },
-      handleRowRemove ({ index, row }, done) {
-        setTimeout(() => {
-          deleteGroupById(row.id)
-            .then(res => {
-              this.$message({
-                message: '删除成功',
-                type: 'success'
-              })
-              this.fetchData()
-              done()
-            })
-        }, 300)
-      },
-      handleRowEdit ({ index, row }, done) {
-        setTimeout(() => {
-          updateGroup({
-            id: row.id,
-            groupCode: row.groupCode,
-            comment: row.comment
-          })
-            .then(res => {
-              this.$message({
-                message: '更新成功',
-                type: 'success'
-              })
-              this.fetchData()
-              done()
-            })
-        }, 300)
+      updateItem (row) {
+        this.resourceGroup = Object.assign({}, row)
+        this.formResourceGroupStatus.operationType = false
+        this.formResourceGroupStatus.visible = true
       },
       handleDialogCancel (done) {
         this.$message({
@@ -185,7 +119,7 @@
         queryGroupPage(
           this.queryParam.groupCode, this.pagination.currentPage, this.pagination.pageSize)
           .then(res => {
-            this.data = res.body.data
+            this.tableData = res.body.data
             this.pagination.total = res.body.totalNum
             this.loading = false
           })

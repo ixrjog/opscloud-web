@@ -6,34 +6,30 @@
       </div>
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
-          <el-col :span="4">
-            <el-input v-model="queryParam.name" placeholder="名称"/>
-          </el-col>
-          <el-col :span="4">
-            <el-select v-model="queryParam.grpType" filterable clearable
-                       remote reserve-keyword placeholder="输入关键词搜组类型" :remote-method="getGrpType" :loading="loading">
-              <el-option
-                v-for="item in grpTypeOptions"
-                :key="item.grpType"
-                :label="item.name"
-                :value="item.grpType">
-              </el-option>
-            </el-select>
-          </el-col>
-          <el-col :span="4">
-            <el-button @click="fetchData">查询</el-button>
-            <el-button @click="addItem">新增</el-button>
-          </el-col>
+          <el-input v-model="queryParam.name" placeholder="名称" :style="searchBarHeadStyle"/>
+          <el-select v-model="queryParam.grpType" filterable clearable :style="searchBarStyle"
+                     remote reserve-keyword placeholder="输入关键词搜组类型" :remote-method="getGrpType" :loading="loading">
+            <el-option
+              v-for="item in grpTypeOptions"
+              :key="item.grpType"
+              :label="item.name"
+              :value="item.grpType">
+            </el-option>
+          </el-select>
+          <el-button @click="fetchData" :style="searchBarStyle">查询</el-button>
+          <el-button @click="addItem" :style="searchBarStyle">新增</el-button>
         </el-row>
       </div>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
-        <el-table-column prop="name" label="名称" ></el-table-column>
+        <el-table-column prop="name" label="名称"></el-table-column>
         <el-table-column prop="serverGroupType" label="组类型">
           <template slot-scope="scope">
-            <el-tag disable-transitions :style="{ color: scope.row.serverGroupType.color }">{{scope.row.serverGroupType.name}}</el-tag>
+            <el-tag disable-transitions :style="{ color: scope.row.serverGroupType.color }">
+              {{scope.row.serverGroupType.name}}
+            </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="comment" label="描述" ></el-table-column>
+        <el-table-column prop="comment" label="描述"></el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
             <el-button type="warning" plain size="mini" @click="updateItem(scope.row)">编辑</el-button>
@@ -42,73 +38,42 @@
         </el-table-column>
       </el-table>
       <el-pagination background @current-change="paginationCurrentChange"
-                     layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage" :page-size="pagination.pageSize">
+                     layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
+                     :page-size="pagination.pageSize">
       </el-pagination>
-      <el-dialog :title="dialogForm.operationType ? dialogForm.addTitle : dialogForm.updateTitle"
-                 :visible.sync="dialogForm.visible">
-        <el-form :model="form">
-          <el-form-item label="名称" :label-width="formLabelWidth">
-            <el-input v-model="form.name" placeholder="请输入内容"></el-input>
-          </el-form-item>
-        </el-form>
-        <el-form :model="form">
-          <el-form-item label="组类型" :label-width="formLabelWidth">
-            <el-select v-model="form.grpType" filterable clearable
-                       remote reserve-keyword placeholder="输入关键词搜组类型" :remote-method="getDialogGrpType" :loading="loading">
-              <el-option
-                v-for="item in grpTypeDialogOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.grpType">
-              </el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
-        <el-form :model="form">
-          <el-form-item label="描述" :label-width="formLabelWidth">
-            <el-input v-model="form.comment" placeholder="请输入内容"></el-input>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button size="mini" @click="dialogForm.visible = false">取消</el-button>
-          <el-button size="mini" type="primary" @click="saveInfo">确定</el-button>
-        </div>
-      </el-dialog>
+      <ServerGroupDialog :formStatus="formServerGroupStatus" :formData="serverGroup"
+                         @closeServerGroupDialog="fetchData"></ServerGroupDialog>
     </template>
   </d2-container>
 </template>
 
 <script>
+  import ServerGroupDialog from '@/components/opscloud/dialog/ServerGroupDialog'
   // API
   import { queryServerGroupTypePage } from '@api/server/server.group.type.js'
-  import { queryServerGroupPage, deleteServerGroupById, addServerGroup, updateServerGroup } from '@api/server/server.group.js'
+  import { queryServerGroupPage, deleteServerGroupById } from '@api/server/server.group.js'
 
   export default {
     data () {
       return {
-        form: {
-          id: '',
-          name: '',
-          grpType: '',
-          comment: ''
+        searchBarHeadStyle: {
+          display: 'inline-block',
+          maxWidth: '200px'
         },
-        dialogImageUrl: '',
-        dialogVisible: false,
-        formLabelWidth: '100px',
-        dialogForm: {
+        searchBarStyle: {
+          marginLeft: '5px'
+        },
+        serverGroup: {},
+        formServerGroupStatus: {
           visible: false,
           addTitle: '新增服务器组配置',
           updateTitle: '更新服务器组配置',
-          operationType: true
+          operationType: true,
+          labelWidth: '100px'
         },
         tableData: [],
         options: {
           stripe: true
-        },
-        formOptions: {
-          labelWidth: '80px',
-          labelPosition: 'left',
-          saveLoading: false
         },
         loading: false,
         pagination: {
@@ -128,17 +93,14 @@
       this.getGrpType('')
       this.fetchData()
     },
+    components: {
+      ServerGroupDialog
+    },
     methods: {
       getGrpType (name) {
         queryServerGroupTypePage(name, '', 1, 10)
           .then(res => {
             this.grpTypeOptions = res.body.data
-          })
-      },
-      getDialogGrpType (name) {
-        queryServerGroupTypePage(name, '', 1, 10)
-          .then(res => {
-            this.grpTypeDialogOptions = res.body.data
           })
       },
       handleClick () {
@@ -172,10 +134,9 @@
         })
       },
       addItem () {
-        this.getDialogGrpType('')
-        this.dialogForm.operationType = true
-        this.dialogForm.visible = true
-        this.form = {
+        this.formServerGroupStatus.operationType = true
+        this.formServerGroupStatus.visible = true
+        this.serverGroup = {
           id: '',
           name: 'group_',
           grpType: '',
@@ -183,49 +144,17 @@
         }
       },
       updateItem (row) {
-        this.grpTypeDialogOptions = []
-        this.grpTypeDialogOptions.push(row.serverGroupType)
-        this.form = {
+        var grpTypeOptions = []
+        grpTypeOptions.push(row.serverGroupType)
+        this.serverGroup = {
           id: row.id,
           name: row.name,
           grpType: row.grpType,
-          comment: row.comment
+          comment: row.comment,
+          grpTypeOptions: grpTypeOptions
         }
-        this.dialogForm.operationType = false
-        this.dialogForm.visible = true
-      },
-      saveInfo () {
-        setTimeout(() => {
-          var requestBody = {
-            'id': this.form.id,
-            'name': this.form.name,
-            'grpType': this.form.grpType,
-            'comment': this.form.comment
-          }
-          if (this.dialogForm.operationType) {
-            addServerGroup(requestBody)
-              .then(res => {
-                // 返回数据
-                this.$message({
-                  message: '成功',
-                  type: 'success'
-                })
-                this.dialogForm.visible = false
-                this.fetchData()
-              })
-          } else {
-            updateServerGroup(requestBody)
-              .then(res => {
-                // 返回数据
-                this.$message({
-                  message: '成功',
-                  type: 'success'
-                })
-                this.dialogForm.visible = false
-                this.fetchData()
-              })
-          }
-        }, 600)
+        this.formServerGroupStatus.operationType = false
+        this.formServerGroupStatus.visible = true
       },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage

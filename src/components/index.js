@@ -9,4 +9,4 @@ Vue.component('d2-markdown', () => import('./d2-markdown'))
 Vue.component('d2-icon-svg', () => import('./d2-icon-svg/index.vue'))
 
 // 对话框组件
-// Vue.component('server-dialog', () => import('./oc/dialog/server/index.vue'))
+// Vue.component('server-dialog', () => import('./oc/dialog/server/index.bak.vue'))

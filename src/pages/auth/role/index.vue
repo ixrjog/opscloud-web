@@ -33,7 +33,7 @@
                      :page-size="pagination.pageSize">
       </el-pagination>
       <!-- role编辑-->
-      <dialogrole :form="form" :role="role" @closeRoleDialog="fetchData"></dialogrole>
+      <RoleDialog :formStatus="formRoleStatus" :formData="role" @closeRoleDialog="fetchData"></RoleDialog>
       <!-- role编辑-->
     </template>
   </d2-container>
@@ -41,7 +41,7 @@
 
 <script>
   // import workflowTag from './workflow.tag'
-  import dialogrole from './dialog.role'
+  import RoleDialog from '@/components/opscloud/dialog/RoleDialog'
   // API
   import { queryRolePage, deleteRoleById } from '@api/auth/auth.role.js'
 
@@ -49,10 +49,8 @@
     data () {
       return {
         tableData: [],
-        options: {
-          stripe: true
-        },
-        form: {
+        role: {},
+        formRoleStatus: {
           visible: false,
           labelWidth: '150px',
           operationType: true,
@@ -69,7 +67,6 @@
           roleName: '',
           resourceName: ''
         },
-        role: {},
         title: '角色配置'
       }
     },
@@ -77,7 +74,7 @@
       this.fetchData()
     },
     components: {
-      dialogrole
+      RoleDialog
     },
     methods: {
       handleClick () {
@@ -85,14 +82,14 @@
       },
       editItem (row) {
         // form
-        this.form.visible = true
-        this.form.operationType = false
+        this.formRoleStatus.visible = true
+        this.formRoleStatus.operationType = false
         // role
         this.role = Object.assign({}, row)
       },
       addItem () {
-        this.form.operationType = true
-        this.form.visible = true
+        this.formRoleStatus.operationType = true
+        this.formRoleStatus.visible = true
         this.role = {
           id: '',
           roleName: '',

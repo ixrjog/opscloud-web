@@ -33,3 +33,11 @@ export function syncCloudDBDatabase (cloudDbId) {
     method: 'get'
   })
 }
+
+export function privilegeCloudDBAccount (data) {
+  return request({
+    url: '/cloud/db/account/privilege',
+    method: 'put',
+    data
+  })
+}

@@ -8,6 +8,14 @@ export function queryServerPage (name, serverGroupId, queryIp, envType, tagId, p
   })
 }
 
+export function fuzzyQueryServerPage (data) {
+  return request({
+    url: '/server/page/fuzzy/query',
+    method: 'post',
+    data
+  })
+}
+
 export function addServer (data) {
   return request({
     url: '/server/add',

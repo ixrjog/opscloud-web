@@ -105,7 +105,7 @@
 
 <script>
 
-  import dialogtag from '@/components/opscloud/tag/dialog.tag'
+  import TagDialog from '@/components/opscloud/dialog/TagDialog'
   import dialogdatabase from './dialog.database'
 
   // Filters
@@ -179,7 +179,7 @@
       this.getTag('')
     },
     components: {
-      dialogtag,
+      TagDialog,
       dialogdatabase
     },
     filters: {

@@ -5,17 +5,17 @@
         <h1>{{title}}</h1>
       </div>
       <div style="margin-bottom: 5px">
-            <el-input v-model="queryParam.queryName" placeholder="关键字查询" style="display: inline-block; max-width:200px"/>
-            <el-select v-model="queryParam.cloudDbType" clearable placeholder="云数据库类型" style="margin-left: 5px">
-              <el-option
-                v-for="item in cloudDbTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-            <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
-            <el-button @click="handleSync" style="margin-left: 5px">同步</el-button>
+        <el-input v-model="queryParam.queryName" placeholder="关键字查询" :style="searchBarHeadStyle"/>
+        <el-select v-model="queryParam.cloudDbType" clearable placeholder="云数据库类型" :style="searchBarStyle">
+          <el-option
+            v-for="item in cloudDbTypeOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <el-button @click="fetchData" :style="searchBarStyle">查询</el-button>
+        <el-button @click="handleSync" :style="searchBarStyle">同步</el-button>
       </div>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column type="expand">
@@ -57,11 +57,19 @@
               <el-form-item label="可用性">
                 <span>{{ props.row.attributeMap.AvailabilityValue }}</span>
               </el-form-item>
-              <el-form-item label="databases">
+              <el-form-item label="数据库">
                 <div class="tag-group">
                   <el-tag style="margin-left: 5px"
                           v-for="item in props.row.databases"
                           :key="item.id">{{ item.dbName }}
+                  </el-tag>
+                </div>
+              </el-form-item>
+              <el-form-item label="授权">
+                <div class="tag-group">
+                  <el-tag style="margin-left: 5px"
+                          v-for="item in props.row.accounts"
+                          :key="item.id">{{ item.accountPrivilege }}
                   </el-tag>
                 </div>
               </el-form-item>
@@ -71,14 +79,17 @@
         <el-table-column prop="dbInstanceId" label="实例id"></el-table-column>
         <el-table-column prop="cloudDbType" label="云类型">
           <template slot-scope="scope">
-            <el-tag class="filters" :type="scope.row.cloudDbType | getCloudDBTypeTagType" size="small ">{{scope.row.cloudDbType | getCloudDBTypeTagText}}</el-tag>
+            <el-tag class="filters" :type="scope.row.cloudDbType | getCloudDBTypeTagType" size="small ">
+              {{scope.row.cloudDbType | getCloudDBTypeTagText}}
+            </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="databases.length" label="databases"></el-table-column>
+        <el-table-column prop="databases.length" label="数据库"></el-table-column>
+        <el-table-column prop="accounts.length" label="授权"></el-table-column>
         <el-table-column prop="dbInstanceDescription" label="描述"></el-table-column>
         <el-table-column prop="engine" label="engine" width="100">
           <template slot-scope="scope">
-            <el-tag class="filters"  size="small ">{{scope.row.engine}}</el-tag>
+            <el-tag class="filters" size="small ">{{scope.row.engine}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="engineVersion" label="version" width="80"></el-table-column>
@@ -95,14 +106,15 @@
                      layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                      :page-size="pagination.pageSize">
       </el-pagination>
-      <dialogPrivilege :form="formPrivilege" :formCheckedPrivileges="privileges" :cloudDbId="cloudDbId" @closeTagDialog="fetchData"></dialogPrivilege>
+      <PrivilegeDialog :formStatus="formPrivilege" :formData="cloudDb"
+                       @closeTagDialog="fetchData"></PrivilegeDialog>
     </template>
   </d2-container>
 </template>
 
 <script>
 
-  import dialogPrivilege from './dialog.privilege'
+  import PrivilegeDialog from '@/components/opscloud/dialog/PrivilegeDialog'
 
   // Filters
   import { getCloudDBTypeTagType, getCloudDBTypeTagText } from '@/filters/cloud.js'
@@ -112,21 +124,18 @@
   export default {
     data () {
       return {
-        privileges: [],
-        cloudDbId: '',
-        formPrivilege: {
-          visible: false,
-          labelWidth: '80px',
-          title: '数据库实例账户授权'
+        searchBarHeadStyle: {
+          display: 'inline-block',
+          maxWidth: '200px'
         },
-        // form: {
-        //   group: '',
-        //   id: '',
-        //   groupId: '',
-        //   resourceName: '',
-        //   comment: '',
-        //   needAuth: 1
-        // },
+        searchBarStyle: {
+          marginLeft: '5px'
+         },
+        privileges: [],
+        cloudDb: {},
+        formPrivilege: {
+          visible: false
+        },
         dialogVisible: false,
         formLabelWidth: '100px',
         dialogForm: {
@@ -168,7 +177,7 @@
       this.fetchData()
     },
     components: {
-      dialogPrivilege
+      PrivilegeDialog
     },
     filters: {
       getCloudDBTypeTagType,
@@ -210,11 +219,8 @@
         })
       },
       accountPrivilege (row) {
-        // form
         this.formPrivilege.visible = true
-        // 选中项(已授权项)
-        this.privileges = []
-        this.cloudDbId = row.id
+        this.cloudDb = row
       },
       handleDialogCancel (done) {
         this.$message({
@@ -263,10 +269,12 @@
   .table-expand {
     font-size: 0;
   }
+
   .table-expand label {
     width: 150px;
     color: #99a9bf;
   }
+
   .table-expand .el-form-item {
     margin-right: 0;
     margin-bottom: 0;

@@ -48,7 +48,7 @@
                      :page-size="pagination.pageSize">
       </el-pagination>
       <!-- userGroup编辑对话框-->
-      <dialoggroup :form="form" :group="group" @closeDialog="fetchData"></dialoggroup>
+      <UserGroupDialog :formStatus="formGroupStatus" :formData="group" @closeDialog="fetchData"></UserGroupDialog>
       <!-- userGroup编辑对话框-->
     </template>
   </d2-container>
@@ -56,7 +56,7 @@
 
 <script>
   // Component
-  import dialoggroup from './dialog.group'
+  import UserGroupDialog from '@/components/opscloud/dialog/UserGroupDialog'
 
   // API
   import { queryUserGroupPage, deleteUserGroupById, syncUserGroup } from '@api/user/user.group.js'
@@ -65,24 +65,14 @@
     data () {
       return {
         group: {},
-        form: {
+        formGroupStatus: {
           visible: false,
           labelWidth: '150px',
           operationType: true,
           addTitle: '新增用户信息',
           updateTitle: '更新用户信息'
         },
-        dialogVisible: false,
-        formLabelWidth: '150px',
         tableData: [],
-        options: {
-          stripe: true
-        },
-        formOptions: {
-          labelWidth: '80px',
-          labelPosition: 'left',
-          saveLoading: false
-        },
         loading: false,
         pagination: {
           currentPage: 1,
@@ -100,7 +90,7 @@
       this.fetchData()
     },
     components: {
-      dialoggroup
+      UserGroupDialog
     },
     methods: {
       handleClick () {
@@ -128,23 +118,17 @@
       },
       editItem (row) {
         // form
-        this.form.visible = true
-        this.form.operationType = false
+        this.formGroupStatus.visible = true
+        this.formGroupStatus.operationType = false
         // user
-        this.user = {
-          id: row.id,
-          name: row.name,
-          grpType: row.grpType,
-          workflow: row.workflow,
-          comment: row.comment
-        }
+        this.group = Object.assign({}, row)
       },
       addItem () {
         // form
-        this.form.visible = true
-        this.form.operationType = true
+        this.formGroupStatus.visible = true
+        this.formGroupStatus.operationType = true
         // user
-        this.user = {
+        this.group = {
           id: '',
           name: '',
           grpType: 0,

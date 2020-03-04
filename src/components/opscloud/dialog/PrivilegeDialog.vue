@@ -1,20 +1,23 @@
 <template>
-  <el-dialog :title="form.title"
-             :visible.sync="form.visible">
+  <el-dialog :title="title" :visible.sync="formStatus.visible">
     <d2-markdown :source="doc"/>
     <div style="margin: 15px 0;"></div>
     <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
     <div style="margin: 15px 0;"></div>
-    <el-checkbox-group v-model="checkedPrivileges" @change="handleCheckedPrivilegesChange">
+    <el-checkbox-group v-model="formData.privileges" @change="handleCheckedPrivilegesChange">
       <el-checkbox v-for="privilege in privileges" :label="privilege" :key="privilege">{{privilege}}</el-checkbox>
     </el-checkbox-group>
+    <div slot="footer" class="dialog-footer">
+      <el-button size="mini" @click="formStatus.visible = false">取消</el-button>
+      <el-button type="primary" size="mini" @click="saveItem">确定</el-button>
+    </div>
   </el-dialog>
 </template>
 
 <script>
+
   // API
-  // eslint-disable-next-line no-unused-vars
-  import { queryBusinessTag, queryTagPage, updateTagBusiness } from '@api/tag/tag.js'
+  import { privilegeCloudDBAccount } from '@api/cloud/cloud.db.js'
 
   import doc from '@/static/md/cloud.db.privilege.md'
 
@@ -26,16 +29,21 @@
         checkAll: false,
         privileges: privilegeOptions,
         isIndeterminate: true,
-        checkedPrivileges: this.formCheckedPrivileges,
-        id: this.cloudDbId,
-        doc
+        doc,
+        title: '数据库实例账户授权'
       }
     },
     name: 'dialog-privilege',
+    // props: ['formStatus', 'formData'],
     props: {
-      form: {},
-      formCheckedPrivileges: {},
-      cloudDbId: {}
+      formStatus: {
+        type: Object,
+        default () {
+          return {
+            visible: false
+          }
+        }
+      }
     },
     mixins: [],
     mounted () {
@@ -56,11 +64,10 @@
       saveItem () {
         setTimeout(() => {
           var requestBody = {
-            'businessType': this.tag.businessType,
-            'businessId': this.tag.businessId,
-            'tagIds': this.tag.serverTag
+            'cloudDbId': this.formData.id,
+            'privileges': this.formData.privileges
           }
-          updateTagBusiness(requestBody)
+          privilegeCloudDBAccount(requestBody)
             .then(res => {
               // 返回数据
               this.$message({

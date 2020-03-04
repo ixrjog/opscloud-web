@@ -6,13 +6,9 @@
       </div>
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
-          <el-col :span="4">
-            <el-input v-model="queryParam.envName" placeholder="名称"/>
-          </el-col>
-          <el-col :span="4">
-            <el-button @click="fetchData">查询</el-button>
-            <el-button @click="addItem">新增</el-button>
-          </el-col>
+            <el-input v-model="queryParam.envName" placeholder="名称" style="display: inline-block; max-width:200px"/>
+            <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
+            <el-button @click="addItem" style="margin-left: 5px">新增</el-button>
         </el-row>
       </div>
       <el-table :data="tableData" style="width: 100%">
@@ -33,55 +29,24 @@
       <el-pagination background @current-change="paginationCurrentChange"
                      layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage" :page-size="pagination.pageSize">
       </el-pagination>
-      <el-dialog :title="dialogForm.operationType ? dialogForm.addTitle : dialogForm.updateTitle"
-                 :visible.sync="dialogForm.visible">
-        <el-form :model="form">
-          <el-form-item label="名称" :label-width="formLabelWidth">
-            <el-input v-model="form.envName" placeholder="请输入内容"></el-input>
-          </el-form-item>
-        </el-form>
-        <el-form :model="form">
-          <el-form-item label="类型值" :label-width="formLabelWidth">
-            <el-input v-model="form.envType" placeholder="请输入内容" :disabled="!dialogForm.operationType"></el-input>
-          </el-form-item>
-        </el-form>
-        <el-form :model="form">
-          <el-form-item label="颜色" :label-width="formLabelWidth">
-            <el-color-picker v-model="form.color"></el-color-picker>
-          </el-form-item>
-        </el-form>
-        <el-form :model="form">
-          <el-form-item label="描述" :label-width="formLabelWidth">
-            <el-input v-model="form.comment" placeholder="请输入内容"></el-input>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button size="mini" @click="dialogForm.visible = false">取消</el-button>
-          <el-button size="mini" type="primary" @click="saveInfo">确定</el-button>
-        </div>
-      </el-dialog>
+      <EnvDialog :formStatus="formEnvStatus" :formData="env" @closeEnvDialog="fetchData"></EnvDialog>
     </template>
   </d2-container>
 </template>
 
 <script>
+
+  import EnvDialog from '@/components/opscloud/dialog/EnvDialog'
   // API
-  import { queryEnvPage, deleteEnvById, addEnv, updateEnv } from '@api/env/env.js'
+  import { queryEnvPage, deleteEnvById } from '@api/env/env.js'
 
   export default {
     data () {
       return {
-        form: {
-          id: '',
-          envName: '',
-          envType: '',
-          color: '',
-          comment: ''
-        },
-        dialogVisible: false,
-        formLabelWidth: '100px',
-        dialogForm: {
+        env: {},
+        formEnvStatus: {
           visible: false,
+          labelWidth: '100px',
           addTitle: '新增环境类型配置',
           updateTitle: '更新环境类型配置',
           operationType: true
@@ -90,11 +55,11 @@
         options: {
           stripe: true
         },
-        formOptions: {
-          labelWidth: '80px',
-          labelPosition: 'left',
-          saveLoading: false
-        },
+        // formOptions: {
+        //   labelWidth: '80px',
+        //   labelPosition: 'left',
+        //   saveLoading: false
+        // },
         loading: false,
         pagination: {
           currentPage: 1,
@@ -105,6 +70,9 @@
           envName: ''
         }
       }
+    },
+    components: {
+      EnvDialog
     },
     mounted () {
       this.fetchData()
@@ -141,9 +109,9 @@
         })
       },
       addItem () {
-        this.dialogForm.operationType = true
-        this.dialogForm.visible = true
-        this.form = {
+        this.formEnvStatus.operationType = true
+        this.formEnvStatus.visible = true
+        this.env = {
           id: '',
           envName: '',
           envType: '',
@@ -152,49 +120,15 @@
         }
       },
       updateItem (row) {
-        this.form = {
+        this.env = {
           id: row.id,
           envName: row.envName,
           envType: row.envType,
           color: row.color,
           comment: row.comment
         }
-        this.dialogForm.operationType = false
-        this.dialogForm.visible = true
-      },
-      saveInfo () {
-        setTimeout(() => {
-          var requestBody = {
-            'id': this.form.id,
-            'envName': this.form.envName,
-            'envType': this.form.envType,
-            'color': this.form.color,
-            'comment': this.form.comment
-          }
-          if (this.dialogForm.operationType) {
-            addEnv(requestBody)
-              .then(res => {
-                // 返回数据
-                this.$message({
-                  message: '成功',
-                  type: 'success'
-                })
-                this.dialogForm.visible = false
-                this.fetchData()
-              })
-          } else {
-            updateEnv(requestBody)
-              .then(res => {
-                // 返回数据
-                this.$message({
-                  message: '成功',
-                  type: 'success'
-                })
-                this.dialogForm.visible = false
-                this.fetchData()
-              })
-          }
-        }, 600)
+        this.formEnvStatus.operationType = false
+        this.formEnvStatus.visible = true
       },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage

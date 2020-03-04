@@ -1,18 +1,18 @@
 <template>
-  <el-dialog :title="form.operationType ? form.addTitle : form.updateTitle"
-             :visible.sync="form.visible">
-    <el-form :model="server">
-      <el-form-item label="名称" :label-width="form.labelWidth">
-        <el-input v-model="server.name" placeholder="请输入内容"></el-input>
+  <el-dialog :title="formStatus.operationType ? formStatus.addTitle : formStatus.updateTitle"
+             :visible.sync="formStatus.visible">
+    <el-form :model="formData">
+      <el-form-item label="名称" :label-width="formStatus.labelWidth">
+        <el-input v-model="formData.name" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="server">
-      <el-form-item label="服务器组" :label-width="form.labelWidth">
-        <el-select v-model="server.serverGroupId" filterable clearable
+    <el-form :model="formData">
+      <el-form-item label="服务器组" :label-width="formStatus.labelWidth">
+        <el-select v-model="formData.serverGroupId" filterable clearable
                    remote reserve-keyword placeholder="输入关键词搜组类型" :remote-method="getServerGroup"
                    :loading="loading">
           <el-option
-            v-for="item in server.serverGroupOptions"
+            v-for="item in formData.serverGroupOptions"
             :key="item.id"
             :label="item.name"
             :value="item.id">
@@ -20,9 +20,9 @@
         </el-select>
       </el-form-item>
     </el-form>
-    <el-form :model="server">
-      <el-form-item label="服务器类型" :label-width="form.labelWidth">
-        <el-select v-model="server.serverType" placeholder="选择类型">
+    <el-form :model="formData">
+      <el-form-item label="服务器类型" :label-width="formStatus.labelWidth">
+        <el-select v-model="formData.serverType" placeholder="选择类型">
           <el-option
             v-for="item in serverTypeOptions"
             :key="item.value"
@@ -32,14 +32,14 @@
         </el-select>
       </el-form-item>
     </el-form>
-    <el-form :model="server">
-      <el-form-item label="登录用户" :label-width="form.labelWidth">
-        <el-input v-model="server.loginUser" placeholder="请输入内容"></el-input>
+    <el-form :model="formData">
+      <el-form-item label="登录用户" :label-width="formStatus.labelWidth">
+        <el-input v-model="formData.loginUser" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="server">
-      <el-form-item label="登录类型" :label-width="form.labelWidth">
-        <el-select v-model="server.loginType" placeholder="选择类型">
+    <el-form :model="formData">
+      <el-form-item label="登录类型" :label-width="formStatus.labelWidth">
+        <el-select v-model="formData.loginType" placeholder="选择类型">
           <el-option
             v-for="item in loginTypeOptions"
             :key="item.value"
@@ -49,13 +49,13 @@
         </el-select>
       </el-form-item>
     </el-form>
-    <el-form :model="server">
-      <el-form-item label="环境" :label-width="form.labelWidth">
-        <el-select v-model="server.envType" filterable clearable
+    <el-form :model="formData">
+      <el-form-item label="环境" :label-width="formStatus.labelWidth">
+        <el-select v-model="formData.envType" filterable clearable
                    remote reserve-keyword
                    :loading="loading">
           <el-option
-            v-for="item in server.envTypeOptions"
+            v-for="item in formData.envTypeOptions"
             :key="item.envType"
             :label="item.envName"
             :value="item.envType">
@@ -63,34 +63,34 @@
         </el-select>
       </el-form-item>
     </el-form>
-    <el-form :model="server">
-      <el-form-item label="区" :label-width="form.labelWidth">
-        <el-input v-model="server.area" placeholder="请输入内容"></el-input>
+    <el-form :model="formData">
+      <el-form-item label="区" :label-width="formStatus.labelWidth">
+        <el-input v-model="formData.area" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="server">
-      <el-form-item label="公网ip" :label-width="form.labelWidth">
-        <el-input v-model="server.publicIp" placeholder="请输入内容"></el-input>
+    <el-form :model="formData">
+      <el-form-item label="公网ip" :label-width="formStatus.labelWidth">
+        <el-input v-model="formData.publicIp" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="server">
-      <el-form-item label="私网ip" :label-width="form.labelWidth">
-        <el-input v-model="server.privateIp" placeholder="请输入内容"></el-input>
+    <el-form :model="formData">
+      <el-form-item label="私网ip" :label-width="formStatus.labelWidth">
+        <el-input v-model="formData.privateIp" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="server">
-      <el-form-item label="序号" :label-width="form.labelWidth">
-        <el-input v-model="server.serialNumber" placeholder="请输入内容"></el-input>
+    <el-form :model="formData">
+      <el-form-item label="序号" :label-width="formStatus.labelWidth">
+        <el-input v-model="formData.serialNumber" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="server">
-      <el-form-item label="描述" :label-width="form.labelWidth">
-        <el-input v-model="server.comment" placeholder="请输入内容"></el-input>
+    <el-form :model="formData">
+      <el-form-item label="描述" :label-width="formStatus.labelWidth">
+        <el-input v-model="formData.comment" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button size="mini" @click="form.visible = false">取消</el-button>
-      <el-button type="primary" size="mini" @click="saveItem">确定</el-button>
+      <el-button size="mini" @click="formStatus.visible = false">取消</el-button>
+      <el-button type="primary" size="mini" @click="saveInfo">确定</el-button>
     </div>
   </el-dialog>
 </template>
@@ -132,27 +132,8 @@
         }]
       }
     },
-    name: 'dialog-server',
-    props: {
-      form: {},
-      server: {
-        serverGroup: {},
-        id: '',
-        name: '',
-        serverGroupId: '',
-        loginType: '',
-        loginUser: '',
-        envType: '',
-        publicIp: '',
-        privateIp: '',
-        serverType: '',
-        area: '',
-        serialNumber: '',
-        monitorStatus: '',
-        comment: '',
-        serverGroupOptions: []
-      }
-    },
+    name: 'server-dialog',
+    props: ['formStatus', 'formData'],
     mixins: [],
     mounted () {
     },
@@ -163,17 +144,17 @@
       getServerGroup (queryName) {
         queryServerGroupPage(queryName, '', 1, 20)
           .then(res => {
-            this.server.serverGroupOptions = res.body.data
+            this.formData.serverGroupOptions = res.body.data
           })
       },
-      saveItem () {
+      saveInfo () {
         setTimeout(() => {
           var requestBody = {}
-          requestBody = Object.assign({}, this.server)
+          requestBody = Object.assign({}, this.formData)
           delete requestBody.serverGroupOptions
           delete requestBody.tags
           delete requestBody.env
-          requestBody.serverGroupId = this.server.serverGroup == null ? this.server.serverGroupId : this.server.serverGroup.id
+          requestBody.serverGroupId = this.formData.serverGroup == null ? this.formData.serverGroupId : this.formData.serverGroup.id
           if (this.formStatus.operationType) {
             addServer(requestBody)
               .then(res => {

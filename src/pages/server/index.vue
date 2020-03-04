@@ -6,14 +6,8 @@
       </div>
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
-          <el-col :span="4">
-            <el-input v-model="queryParam.name" placeholder="服务器名称"/>
-          </el-col>
-          <el-col :span="4">
-            <el-input v-model="queryParam.queryIp" placeholder="ip"/>
-          </el-col>
-          <el-col :span="3">
-            <el-select v-model="queryParam.serverGroupId" filterable clearable
+            <el-input v-model="queryParam.queryName" placeholder="输入关键字查询" :style="searchBarHeadStyle"/>
+            <el-select v-model="queryParam.serverGroupId" filterable clearable :style="searchBarStyle"
                        remote reserve-keyword placeholder="搜索服务器组" :remote-method="getServerGroup" :loading="loading">
               <el-option
                 v-for="item in serverGroupOptions"
@@ -22,9 +16,7 @@
                 :value="item.id">
               </el-option>
             </el-select>
-          </el-col>
-          <el-col :span="3">
-            <el-select v-model="queryParam.envType" clearable placeholder="环境">
+            <el-select v-model="queryParam.envType" clearable placeholder="环境" :style="searchBarStyle">
               <el-option
                 v-for="item in envTypeOptions"
                 :key="item.id"
@@ -32,10 +24,8 @@
                 :value="item.envType">
               </el-option>
             </el-select>
-          </el-col>
-          <el-col :span="3">
             <el-select
-              v-model="queryParam.tagId" filterable clearable remote reserve-keyword
+              v-model="queryParam.tagId" filterable clearable remote reserve-keyword :style="searchBarStyle"
               placeholder="请输入关键词搜索标签" :remote-method="getTag" :loading="loading">
               <el-option
                 v-for="item in tagOptions"
@@ -44,11 +34,8 @@
                 :value="item.id">
               </el-option>
             </el-select>
-          </el-col>
-          <el-col :span="4">
-            <el-button @click="fetchData">查询</el-button>
-            <el-button @click="addItem">新增</el-button>
-          </el-col>
+            <el-button @click="fetchData" :style="searchBarStyle">查询</el-button>
+            <el-button @click="addItem" :style="searchBarStyle">新增</el-button>
         </el-row>
       </div>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
@@ -126,10 +113,10 @@
                      :page-size="pagination.pageSize">
       </el-pagination>
       <!-- server编辑-->
-      <dialogserver :form="formServer" :server="server" @closeServerDialog="fetchData"></dialogserver>
+      <ServerDialog :formStatus="formServerStatus" :formData="server" @closeServerDialog="fetchData"></ServerDialog>
       <!-- server编辑-->
       <!-- tag编辑-->
-      <dialogtag :form="formTag" :tag="tag" @closeTagDialog="fetchData"></dialogtag>
+      <TagTransferDialog :formStatus="formTagTransferStatus" :formData="tagTransfer" @closeTagTransferDialog="fetchData"></TagTransferDialog>
       <!-- tag编辑-->
     </template>
   </d2-container>
@@ -137,20 +124,32 @@
 
 <script>
   // Component
-  import dialogserver from './dialog.server'
-  import dialogtag from '@/components/opscloud/tag/dialog.tag'
+  import ServerDialog from '@/components/opscloud/dialog/ServerDialog'
+  import TagTransferDialog from '@/components/opscloud/dialog/TagTransferDialog'
   // Filters
   import { getLoginTypeText, getMonitorStatusText, getMonitorStatusType, getServerTypeText } from '@/filters/server.js'
   // API
   import { queryEnvPage } from '@api/env/env.js'
   import { queryBusinessTag, queryTagPage } from '@api/tag/tag.js'
   import { queryServerGroupPage } from '@api/server/server.group.js'
-  import { queryServerPage, deleteServerById } from '@api/server/server.js'
+  import { fuzzyQueryServerPage, deleteServerById } from '@api/server/server.js'
 
   export default {
     data () {
       return {
-        formServer: {
+        searchBarHeadStyle: {
+          display: 'inline-block',
+          maxWidth: '200px'
+        },
+        searchBarStyle: {
+          marginLeft: '5px'
+        },
+        tagTransfer: {},
+        formTagTransferStatus: {
+          visible: false,
+          title: '编辑服务器标签'
+        },
+        formServerStatus: {
           visible: false,
           labelWidth: '150px',
           operationType: true,
@@ -158,11 +157,6 @@
           updateTitle: '更新服务器配置'
         },
         server: {},
-        tag: {},
-        formTag: {
-          visible: false,
-          title: '编辑标签'
-        },
         tableData: [],
         options: {
           stripe: true
@@ -174,9 +168,8 @@
           total: 0
         },
         queryParam: {
-          name: '',
+          queryName: '',
           serverGroupId: '',
-          queryIp: '',
           envType: '',
           tagId: ''
         },
@@ -193,8 +186,8 @@
       this.getTag('')
     },
     components: {
-      dialogserver,
-      dialogtag
+      ServerDialog,
+      TagTransferDialog
     },
     filters: {
       getLoginTypeText,
@@ -245,8 +238,8 @@
         })
       },
       editTag (row) {
-        this.formTag.visible = true
-        this.tag = {
+        this.formTagTransferStatus.visible = true
+        this.tagTransfer = {
           businessId: row.id,
           businessType: this.businessType,
           serverTag: [],
@@ -254,21 +247,21 @@
         }
         queryTagPage('', 1, 100)
           .then(res => {
-            this.tag.tagOptions = res.body.data
+            this.tagTransfer.tagOptions = res.body.data
           })
-        queryBusinessTag(this.businessType, this.tag.businessId, '')
+        queryBusinessTag(this.businessType, this.tagTransfer.businessId, '')
           .then(res => {
-            this.tag.serverTag = []
+            this.tagTransfer.serverTag = []
             for (var index = 0; index < res.body.length; index++) {
-              this.tag.serverTag.push(res.body[index].id)
+              this.tagTransfer.serverTag.push(res.body[index].id)
             }
           })
-        this.formTag.visible = true
+        this.formTagTransferStatus.visible = true
       },
       editItem (row) {
         // form
-        this.formServer.visible = true
-        this.formServer.operationType = false
+        this.formServerStatus.visible = true
+        this.formServerStatus.operationType = false
         // server
         this.server = Object.assign({}, row)
         this.server.envTypeOptions = this.envTypeOptions
@@ -276,8 +269,8 @@
         this.server.serverGroupOptions.push(row.serverGroup)
       },
       addItem () {
-        this.formServer.operationType = true
-        this.formServer.visible = true
+        this.formServerStatus.operationType = true
+        this.formServerStatus.visible = true
         this.server = {
           serverGroup: '',
           id: '',
@@ -310,8 +303,16 @@
       },
       fetchData () {
         this.loading = true
-        queryServerPage(
-          this.queryParam.name, this.queryParam.serverGroupId, this.queryParam.queryIp, this.queryParam.envType, this.queryParam.tagId, this.pagination.currentPage, this.pagination.pageSize)
+        var requestBody = {
+          'queryName': this.queryParam.queryName,
+          'extend': 1,
+          'serverGroupId': this.queryParam.serverGroupId,
+          'envType': this.queryParam.envType,
+          'tagId': this.queryParam.tagId,
+          'page': this.pagination.currentPage,
+          'length': this.pagination.pageSize
+        }
+        fuzzyQueryServerPage(requestBody)
           .then(res => {
             this.tableData = res.body.data
             this.pagination.total = res.body.totalNum

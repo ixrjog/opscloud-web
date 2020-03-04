@@ -6,13 +6,9 @@
       </div>
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
-          <el-col :span="4">
-            <el-input v-model="queryParam.tagKey" placeholder="标签key"/>
-          </el-col>
-          <el-col :span="4">
-            <el-button @click="fetchData">查询</el-button>
-            <el-button @click="addItem">新增</el-button>
-          </el-col>
+            <el-input v-model="queryParam.tagKey" placeholder="标签key" style="display: inline-block; max-width:200px"/>
+            <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
+            <el-button @click="addItem" style="margin-left: 5px">新增</el-button>
         </el-row>
       </div>
       <el-table :data="tableData" style="width: 100%">
@@ -32,49 +28,23 @@
       <el-pagination background @current-change="paginationCurrentChange"
                      layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage" :page-size="pagination.pageSize">
       </el-pagination>
-      <el-dialog :title="dialogForm.operationType ? dialogForm.addTitle : dialogForm.updateTitle"
-                 :visible.sync="dialogForm.visible">
-        <el-form :model="form">
-          <el-form-item label="标签key" :label-width="formLabelWidth">
-            <el-input v-model="form.tagKey" placeholder="请输入内容"></el-input>
-          </el-form-item>
-        </el-form>
-        <el-form :model="form">
-          <el-form-item label="颜色" :label-width="formLabelWidth">
-            <el-color-picker v-model="form.color"></el-color-picker>
-          </el-form-item>
-        </el-form>
-        <el-form :model="form">
-          <el-form-item label="描述" :label-width="formLabelWidth">
-            <el-input v-model="form.comment" placeholder="请输入内容"></el-input>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogForm.visible = false">取消</el-button>
-          <el-button type="primary" @click="saveInfo">确定</el-button>
-        </div>
-      </el-dialog>
+      <TagDialog :formStatus="formTagStatus" :formData="tag" @closeTagDialog="fetchData"></TagDialog>
     </template>
   </d2-container>
 </template>
 
 <script>
+  import TagDialog from '@/components/opscloud/dialog/TagDialog'
   // API
-  import { queryTagPage, deleteTagById, addTag, updateTag } from '@api/tag/tag.js'
+  import { queryTagPage, deleteTagById } from '@api/tag/tag.js'
 
   export default {
     data () {
       return {
-        form: {
-          id: '',
-          tagKey: '',
-          color: '',
-          comment: ''
-        },
-        dialogVisible: false,
-        formLabelWidth: '100px',
-        dialogForm: {
+        tag: {},
+        formTagStatus: {
           visible: false,
+          labelWidth: '100px',
           addTitle: '新增标签配置',
           updateTitle: '更新标签配置',
           operationType: true
@@ -82,11 +52,6 @@
         tableData: [],
         options: {
           stripe: true
-        },
-        formOptions: {
-          labelWidth: '80px',
-          labelPosition: 'left',
-          saveLoading: false
         },
         loading: false,
         pagination: {
@@ -102,16 +67,12 @@
     mounted () {
       this.fetchData()
     },
+    components: {
+      TagDialog
+    },
     methods: {
       handleClick () {
         this.$emit('input', !this.value)
-      },
-      handleDialogCancel (done) {
-        this.$message({
-          message: '取消保存',
-          type: 'warning'
-        })
-        done()
       },
       delItem (row) {
         this.$confirm('此操作将删除当前配置?', '提示', {
@@ -134,9 +95,9 @@
         })
       },
       addItem () {
-        this.dialogForm.operationType = true
-        this.dialogForm.visible = true
-        this.form = {
+        this.formTagStatus.operationType = true
+        this.formTagStatus.visible = true
+        this.tag = {
           id: '',
           tagKey: '',
           color: '',
@@ -144,47 +105,9 @@
         }
       },
       updateItem (row) {
-        this.form = {
-          id: row.id,
-          tagKey: row.tagKey,
-          color: row.color,
-          comment: row.comment
-        }
-        this.dialogForm.operationType = false
-        this.dialogForm.visible = true
-      },
-      saveInfo () {
-        setTimeout(() => {
-          var requestBody = {
-            'id': this.form.id,
-            'tagKey': this.form.tagKey,
-            'color': this.form.color,
-            'comment': this.form.comment
-          }
-          if (this.dialogForm.operationType) {
-            addTag(requestBody)
-              .then(res => {
-                // 返回数据
-                this.$message({
-                  message: '成功',
-                  type: 'success'
-                })
-                this.dialogForm.visible = false
-                this.fetchData()
-              })
-          } else {
-            updateTag(requestBody)
-              .then(res => {
-                // 返回数据
-                this.$message({
-                  message: '成功',
-                  type: 'success'
-                })
-                this.dialogForm.visible = false
-                this.fetchData()
-              })
-          }
-        }, 600)
+        this.tag = Object.assign({}, row)
+        this.formTagStatus.operationType = false
+        this.formTagStatus.visible = true
       },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage
