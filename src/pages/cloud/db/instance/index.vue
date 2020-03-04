@@ -106,8 +106,7 @@
                      layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                      :page-size="pagination.pageSize">
       </el-pagination>
-      <PrivilegeDialog :formStatus="formPrivilege" :formData="cloudDb"
-                       @closeTagDialog="fetchData"></PrivilegeDialog>
+      <PrivilegeDialog :formStatus="formPrivilegeStatus" :formData="cloudDb" @closePrivilegeDialog="fetchData"></PrivilegeDialog>
     </template>
   </d2-container>
 </template>
@@ -133,26 +132,11 @@
          },
         privileges: [],
         cloudDb: {},
-        formPrivilege: {
-          visible: false
-        },
-        dialogVisible: false,
-        formLabelWidth: '100px',
-        dialogForm: {
+        formPrivilegeStatus: {
           visible: false,
-          addTitle: '新增资源配置',
-          updateTitle: '更新资源配置',
-          operationType: true
+          formLabelWidth: '100px'
         },
         tableData: [],
-        options: {
-          stripe: true
-        },
-        formOptions: {
-          labelWidth: '80px',
-          labelPosition: 'left',
-          saveLoading: false
-        },
         loading: false,
         pagination: {
           currentPage: 1,

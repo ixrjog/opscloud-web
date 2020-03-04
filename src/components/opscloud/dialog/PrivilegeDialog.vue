@@ -34,23 +34,14 @@
       }
     },
     name: 'dialog-privilege',
-    // props: ['formStatus', 'formData'],
-    props: {
-      formStatus: {
-        type: Object,
-        default () {
-          return {
-            visible: false
-          }
-        }
-      }
-    },
+    props: ['formStatus', 'formData'],
     mixins: [],
     mounted () {
     },
     methods: {
+      // 全选
       handleCheckAllChange (val) {
-        this.checkedPrivileges = val ? privilegeOptions : []
+        this.formData.privileges = val ? privilegeOptions : []
         this.isIndeterminate = false
       },
       handleCheckedPrivilegesChange (value) {
@@ -74,7 +65,7 @@
                 message: '成功',
                 type: 'success'
               })
-              this.form.visible = false
+              this.formStatus.visible = false
               this.$emit('closePrivilegeDialog')
             })
         }, 600)

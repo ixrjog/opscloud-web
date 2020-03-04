@@ -149,12 +149,12 @@
       },
       saveInfo () {
         setTimeout(() => {
-          var requestBody = {}
-          requestBody = Object.assign({}, this.formData)
+          var requestBody = Object.assign({}, this.formData)
           delete requestBody.serverGroupOptions
+          delete requestBody.envTypeOptions
           delete requestBody.tags
           delete requestBody.env
-          requestBody.serverGroupId = this.formData.serverGroup == null ? this.formData.serverGroupId : this.formData.serverGroup.id
+          // requestBody.serverGroupId = this.formData.serverGroup == null ? this.formData.serverGroupId : this.formData.serverGroup.id
           if (this.formStatus.operationType) {
             addServer(requestBody)
               .then(res => {

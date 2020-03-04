@@ -97,16 +97,16 @@
                      layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                      :page-size="pagination.pageSize">
       </el-pagination>
-      <dialogtag :form="formTag" :tag="tag" @closeTagDialog="fetchData"></dialogtag>
-      <dialogdatabase :form="formDatabase" :database="database" @closeDatabaseDialog="fetchData"></dialogdatabase>
+      <TagTransferDialog :formStatus="formTagTransferStatus" :formData="tagTransfer" @closeTagTransferDialog="fetchData"></TagTransferDialog>
+      <CloudDBDatabaseDialog :formStatus="formDatabaseStatus" :formData="database" @closeDatabaseDialog="fetchData"></CloudDBDatabaseDialog>
     </template>
   </d2-container>
 </template>
 
 <script>
 
-  import TagDialog from '@/components/opscloud/dialog/TagDialog'
-  import dialogdatabase from './dialog.database'
+  import CloudDBDatabaseDialog from '@/components/opscloud/dialog/CloudDBDatabaseDialog'
+  import TagTransferDialog from '@/components/opscloud/dialog/TagTransferDialog'
 
   // Filters
   import { getCloudDBTypeTagType, getCloudDBTypeTagText } from '@/filters/cloud.js'
@@ -118,35 +118,19 @@
   export default {
     data () {
       return {
-        tag: {},
-        formTag: {
+        tagTransfer: {},
+        formTagTransferStatus: {
           visible: false,
           labelWidth: '80px',
-          title: '编辑标签'
+          title: '编辑云数据库标签'
         },
         database: {},
-        formDatabase: {
+        formDatabaseStatus: {
           visible: false,
           labelWidth: '80px',
-          title: '编辑数据库'
-        },
-        dialogVisible: false,
-        formLabelWidth: '100px',
-        dialogForm: {
-          visible: false,
-          addTitle: '新增资源配置',
-          updateTitle: '更新资源配置',
-          operationType: true
+          title: '编辑云数据库'
         },
         tableData: [],
-        options: {
-          stripe: true
-        },
-        formOptions: {
-          labelWidth: '80px',
-          labelPosition: 'left',
-          saveLoading: false
-        },
         loading: false,
         pagination: {
           currentPage: 1,
@@ -179,8 +163,8 @@
       this.getTag('')
     },
     components: {
-      TagDialog,
-      dialogdatabase
+      TagTransferDialog,
+      CloudDBDatabaseDialog
     },
     filters: {
       getCloudDBTypeTagType,
@@ -204,8 +188,8 @@
       },
       editItem (row) {
         // form
-        this.formDatabase.visible = true
-        this.formDatabase.operationType = false
+        this.formDatabaseStatus.visible = true
+        this.formDatabaseStatus.operationType = false
         // server
         this.database = Object.assign({}, row)
         this.database.envTypeOptions = this.envTypeOptions
@@ -231,8 +215,8 @@
         })
       },
       editTag (row) {
-        this.formTag.visible = true
-        this.tag = {
+        this.formTagTransferStatus.visible = true
+        this.tagTransfer = {
           businessId: row.id,
           businessType: this.businessType,
           serverTag: [],
@@ -240,16 +224,15 @@
         }
         queryTagPage('', 1, 100)
           .then(res => {
-            this.tag.tagOptions = res.body.data
+            this.tagTransfer.tagOptions = res.body.data
           })
-        queryBusinessTag(this.businessType, this.tag.businessId, '')
+        queryBusinessTag(this.businessType, this.tagTransfer.businessId, '')
           .then(res => {
-            this.tag.serverTag = []
             for (var index = 0; index < res.body.length; index++) {
-              this.tag.serverTag.push(res.body[index].id)
+              this.tagTransfer.serverTag.push(res.body[index].id)
             }
           })
-        this.formTag.visible = true
+        this.formTagTransferStatus.visible = true
       },
       handleDialogCancel (done) {
         this.$message({

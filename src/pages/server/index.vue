@@ -251,7 +251,6 @@
           })
         queryBusinessTag(this.businessType, this.tagTransfer.businessId, '')
           .then(res => {
-            this.tagTransfer.serverTag = []
             for (var index = 0; index < res.body.length; index++) {
               this.tagTransfer.serverTag.push(res.body[index].id)
             }
@@ -259,14 +258,15 @@
         this.formTagTransferStatus.visible = true
       },
       editItem (row) {
+        // server
+        var server = Object.assign({}, row)
+        server.envTypeOptions = this.envTypeOptions
+        server.serverGroupOptions = []
+        server.serverGroupOptions.push(server.serverGroup)
+        this.server = server
         // form
         this.formServerStatus.visible = true
         this.formServerStatus.operationType = false
-        // server
-        this.server = Object.assign({}, row)
-        this.server.envTypeOptions = this.envTypeOptions
-        this.server.serverGroupOptions = []
-        this.server.serverGroupOptions.push(row.serverGroup)
       },
       addItem () {
         this.formServerStatus.operationType = true
