@@ -35,73 +35,29 @@
                      layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                      :page-size="pagination.pageSize">
       </el-pagination>
-      <el-dialog :title="dialogForm.title"
-                 :visible.sync="dialogForm.visible">
-        <el-form :model="form">
-          <el-form-item label="用户" :label-width="formLabelWidth">
-            <el-select v-model="form.username" filterable clearable
-                       remote reserve-keyword placeholder="输入关键词搜索用户" :remote-method="getUser" :loading="loading">
-              <el-option
-                v-for="item in userOptions"
-                :key="item.id"
-                :label="item.username"
-                :value="item.username">
-              </el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
-        <el-form :model="form">
-          <el-form-item label="角色" :label-width="formLabelWidth">
-            <el-select v-model="form.roleId" filterable clearable
-                       remote reserve-keyword placeholder="输入关键词搜索角色" :remote-method="getRole" :loading="loading">
-              <el-option
-                v-for="item in roleOptions"
-                :key="item.id"
-                :label="item.roleName"
-                :value="item.id">
-              </el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogForm.visible = false">取消</el-button>
-          <el-button type="primary" @click="saveInfo">确定</el-button>
-        </div>
-      </el-dialog>
+      <UserRoleDialog :formStatus="formUserRoleStatus" :formData="userRole" @closeUserRoleDialog="fetchData"></UserRoleDialog>
     </template>
   </d2-container>
 </template>
 
 <script>
+
+  import UserRoleDialog from '@/components/opscloud/dialog/UserRoleDialog'
   // API
   import { queryRolePage } from '@api/auth/auth.role.js'
   import { queryUserPage } from '@api/user/user.js'
-  import { queryUserRolePage, addUserRole, deleteUserRoleById } from '@api/auth/auth.user.role.js'
+  import { queryUserRolePage, deleteUserRoleById } from '@api/auth/auth.user.role.js'
 
   export default {
     data () {
       return {
-        form: {
-          id: '',
-          username: '',
-          roleId: ''
-        },
-        dialogImageUrl: '',
-        dialogVisible: false,
-        formLabelWidth: '100px',
-        dialogForm: {
+        userRole: {},
+        formUserRoleStatus: {
           visible: false,
-          title: '用户角色绑定配置'
+          title: '用户角色绑定配置',
+          labelWidth: '100px'
         },
         tableData: [],
-        options: {
-          stripe: true
-        },
-        formOptions: {
-          labelWidth: '80px',
-          labelPosition: 'left',
-          saveLoading: false
-        },
         loading: false,
         pagination: {
           currentPage: 1,
@@ -118,6 +74,9 @@
     },
     mounted () {
       this.fetchData()
+    },
+    components: {
+      UserRoleDialog
     },
     methods: {
       getRole (roleName) {
@@ -163,31 +122,12 @@
         })
       },
       addItem () {
-        this.dialogForm.visible = true
-        this.form = {
+        this.formUserRoleStatus.visible = true
+        this.userRole = {
           id: '',
           username: '',
           roleId: ''
         }
-      },
-      saveInfo () {
-        setTimeout(() => {
-          var requestBody = {
-            'id': this.form.id,
-            'username': this.form.username,
-            'roleId': this.form.roleId
-          }
-          addUserRole(requestBody)
-            .then(res => {
-              // 返回数据
-              this.$message({
-                message: '成功',
-                type: 'success'
-              })
-              this.dialogForm.visible = false
-              this.fetchData()
-            })
-        }, 600)
       },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage

@@ -80,14 +80,14 @@
       return {
         tableUnbindData: [],
         tableBindData: [],
-        options: {
-          stripe: true
-        },
-        formOptions: {
-          labelWidth: '80px',
-          labelPosition: 'left',
-          saveLoading: false
-        },
+        // options: {
+        //   stripe: true
+        // },
+        // formOptions: {
+        //   labelWidth: '80px',
+        //   labelPosition: 'left',
+        //   saveLoading: false
+        // },
         loading: false,
         pagination: {
           currentPage: 1,
