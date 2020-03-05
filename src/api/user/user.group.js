@@ -43,3 +43,17 @@ export function syncUserGroup () {
     method: 'get'
   })
 }
+
+export function grantUserUserGroup (userId, userGroupId) {
+  return request({
+    url: '/user/group/grant?userId=' + userId + '&userGroupId=' + userGroupId,
+    method: 'get'
+  })
+}
+
+export function revokeUserUserGroup (userId, userGroupId) {
+  return request({
+    url: '/user/group/revoke?userId=' + userId + '&userGroupId=' + userGroupId,
+    method: 'delete'
+  })
+}

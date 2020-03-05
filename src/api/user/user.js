@@ -88,3 +88,17 @@ export function saveUserCredential (data) {
     data
   })
 }
+
+export function queryUserIncludeUserGroupPage (userId, page, length) {
+  return request({
+    url: '/user/include/group/page/query?userId=' + userId + '&page=' + page + '&length=' + length,
+    method: 'get'
+  })
+}
+
+export function queryUserExcludeUserGroupPage (userId, queryName, page, length) {
+  return request({
+    url: '/user/exclude/group/page/query?userId=' + userId + '&queryName=' + queryName + '&page=' + page + '&length=' + length,
+    method: 'get'
+  })
+}

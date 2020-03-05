@@ -46,6 +46,7 @@
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
             <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
+            <el-button type="primary" plain size="mini" @click="editUserGroup(scope.row)">授权</el-button>
             <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -56,7 +57,8 @@
       </el-pagination>
       <!-- user编辑对话框 -->
       <UserDialog :formStatus="formUserStatus" :formData="user" @closeUserDialog="fetchData"></UserDialog>
-      <!-- user编辑对话框-->
+      <!-- user授权编辑对话框-->
+      <UserUserGroupDialog ref="userUserGroupDialog" :formStatus="formUserUserGroupStatus" @closeUserUserGroupDialog="fetchData"></UserUserGroupDialog>
     </template>
   </d2-container>
 </template>
@@ -64,6 +66,7 @@
 <script>
   // Component
   import UserDialog from '@/components/opscloud/dialog/UserDialog'
+  import UserUserGroupDialog from '@/components/opscloud/dialog/UserUserGroupDialog'
   // API
   import { fuzzyQueryUserPage, deleteUserById, syncUser } from '@api/user/user.js'
 
@@ -77,6 +80,11 @@
           operationType: true,
           addTitle: '新增用户信息',
           updateTitle: '更新用户信息'
+        },
+        formUserUserGroupStatus: {
+          visible: false,
+          labelWidth: '150px',
+          title: '用户组授权'
         },
         tableData: [],
         options: {
@@ -98,7 +106,8 @@
       this.fetchData()
     },
     components: {
-      UserDialog
+      UserDialog,
+      UserUserGroupDialog
     },
     methods: {
       handleClick () {
@@ -130,6 +139,14 @@
         this.formUserStatus.operationType = false
         // user
         this.user = Object.assign({}, row)
+      },
+      editUserGroup (row) {
+        // form
+        this.formUserUserGroupStatus.visible = true
+        // user
+        this.user = Object.assign({}, row)
+        // 调用子组件的方法
+        this.$refs.userUserGroupDialog.initData(this.user)
       },
       addItem () {
         // form
