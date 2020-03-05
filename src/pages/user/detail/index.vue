@@ -82,7 +82,7 @@
                 </template>
                 <el-col>
                   <el-tag v-if="formUserDetail.credentialMap != null && formUserDetail.credentialMap.sshPubKey != null"
-                          style="margin-left: 5px">{{ formUserDetail.credentialMap.sshPubKey.title }}
+                          style="margin-left: 5px">{{ formUserDetail.credentialMap.sshPubKey.title }} {{ formUserDetail.credentialMap.sshPubKey.fingerprint }}
                   </el-tag>
                 </el-col>
                 <el-button style="margin-top: 5px" size="mini" @click="editSSHKey">编辑</el-button>
@@ -114,7 +114,7 @@
       <UserApiTokenDialog :formStatus="formUserApiTokenStatus" :formData="userApiToken"
                           @closeUserApiTokenDialog="fetchData"></UserApiTokenDialog>
       <!-- ssh-pubkey编辑对话框 -->
-      <UserSSHKeyDialog :formStatus="formUserSSHKeyStatus" :formData="userSSHKey"
+      <UserSSHKeyDialog :formStatus="formUserSSHKeyStatus" ref="userSSHKeyDialog"
                         @closeUserSSHKeyDialog="fetchData"></UserSSHKeyDialog>
     </template>
   </d2-container>
@@ -210,6 +210,7 @@
             credentialType: 2 // ssh pub-key
           }
         }
+        this.$refs.userSSHKeyDialog.initData(this.userSSHKey)
         this.formUserSSHKeyStatus.visible = true
       },
       paginationCurrentChange (currentPage) {
