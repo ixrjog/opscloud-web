@@ -44,7 +44,8 @@ export default [
     icon: 'cloud',
     children: [
       { path: '/cloud/db/instance', title: '数据库实例', iconSvg: 'rds' },
-      { path: '/cloud/db/database', title: '数据库', iconSvg: 'database' }
+      { path: '/cloud/db/database', title: '数据库', iconSvg: 'database' },
+      { path: '/cloud/db/my/database', title: '我的数据库', iconSvg: 'my-database' }
     ]
   },
   {

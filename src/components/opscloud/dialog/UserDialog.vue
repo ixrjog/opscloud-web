@@ -1,19 +1,19 @@
 <template>
   <el-dialog :title="formStatus.operationType ? formStatus.addTitle : formStatus.updateTitle" :visible.sync="formStatus.visible" :before-close="closeDialog" >
     <el-form :model="formData">
-      <el-form-item label="用户名" :label-width="formStatus.labelWidth">
+      <el-form-item label="用户名" :label-width="formStatus.labelWidth" :required="true">
         <el-input v-model="formData.username" placeholder="请输入内容" :disabled="!formStatus.operationType"></el-input>
       </el-form-item>
     </el-form>
     <el-form :model="formData">
-      <el-form-item label="密码" :label-width="formStatus.labelWidth">
+      <el-form-item label="密码" :label-width="formStatus.labelWidth" :required="formStatus.operationType">
         <el-input v-model="password" clearable placeholder="请输入内容">
           <el-button slot="append" icon="el-icon-key" @click="getUserRandomPassword"></el-button>
         </el-input>
       </el-form-item>
     </el-form>
     <el-form :model="formData">
-      <el-form-item label="显示名" :label-width="formStatus.labelWidth">
+      <el-form-item label="显示名" :label-width="formStatus.labelWidth" :required="true">
         <el-input v-model="formData.displayName" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
@@ -28,7 +28,7 @@
       </el-form-item>
     </el-form>
     <el-form :model="formData">
-      <el-form-item label="邮箱" :label-width="formStatus.labelWidth">
+      <el-form-item label="邮箱" :label-width="formStatus.labelWidth" :required="true">
         <el-input v-model="formData.email" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
@@ -52,7 +52,7 @@
 <script>
 
   // API
-  import { getRandomPassword, updateUser, addUser } from '@api/user/user.js'
+  import { getRandomPassword, updateUser, createUser } from '@api/user/user.js'
 
   export default {
     data () {
@@ -84,7 +84,7 @@
           var requestBody = Object.assign({}, this.formData)
           requestBody.password = this.password
           if (this.formStatus.operationType) {
-            addUser(requestBody)
+            createUser(requestBody)
               .then(res => {
                 // 返回数据
                 this.$message({

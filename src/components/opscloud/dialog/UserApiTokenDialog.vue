@@ -1,36 +1,36 @@
 <template>
-  <el-dialog :title="form.title" :visible.sync="form.visible" :before-close="closeDialog">
-    <el-form :model="form.data">
-      <el-form-item label="id" :label-width="form.labelWidth">
-        <el-input v-model="form.data.tokenId" placeholder="自动生成无需输入" readonly></el-input>
+  <el-dialog :title="formStatus.title" :visible.sync="formStatus.visible" :before-close="closeDialog">
+    <el-form :model="formData">
+      <el-form-item label="id" :label-width="formStatus.labelWidth">
+        <el-input v-model="tokenId" placeholder="自动生成无需输入" readonly></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="form.data">
-      <el-form-item label="api-token" :label-width="form.labelWidth">
-        <el-input v-model="form.data.token" clearable placeholder="自动生成无需输入" readonly>
+    <el-form :model="formData">
+      <el-form-item label="api-token" :label-width="formStatus.labelWidth">
+        <el-input v-model="apiToken" clearable placeholder="自动生成无需输入" readonly>
         </el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="form.data">
-      <el-form-item label="过期时间" :label-width="form.labelWidth">
+    <el-form :model="formData">
+      <el-form-item label="过期时间" :label-width="formStatus.labelWidth">
         <el-date-picker
-          v-model="form.data.expiredTime" value-format="yyyy-MM-dd HH:mm:ss"
+          v-model="formData.expiredTime" value-format="yyyy-MM-dd HH:mm:ss"
           align="right"
           type="date"
           placeholder="选择日期"
           :picker-options="pickerOptions">
         </el-date-picker>
-        <!--        <el-input v-model="form.data.expiredTime" placeholder="请输入内容"></el-input>-->
       </el-form-item>
     </el-form>
-    <el-form :model="form.data">
-      <el-form-item label="描述" :label-width="form.labelWidth">
-        <el-input v-model="form.data.comment" placeholder="请输入内容"></el-input>
+    <el-form :model="formData">
+      <el-form-item label="描述" :label-width="formStatus.labelWidth">
+        <el-input v-model="formData.comment" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="closeDialog">关闭</el-button>
-      <el-button type="primary" @click="saveItem" v-show="form.data.tokenId == null || form.data.tokenId ==''">申请</el-button>
+      <el-button type="primary" @click="saveItem" v-show="tokenId == null || tokenId ==''">申请
+      </el-button>
     </div>
   </el-dialog>
 </template>
@@ -42,6 +42,8 @@
   export default {
     data () {
       return {
+        tokenId: '',
+        apiToken: '',
         pickerOptions: {
           disabledDate (time) {
             return false
@@ -95,10 +97,8 @@
         }
       }
     },
-    name: 'dialog-token',
-    props: {
-      form: {}
-    },
+    name: 'user-api-token-dialog',
+    props: ['formStatus', 'formData'],
     mixins: [],
     mounted () {
     },
@@ -106,23 +106,30 @@
     },
     methods: {
       closeDialog () {
-        this.form.data = {}
-        this.form.visible = false
-        this.$emit('closeDialog')
+        this.formData = {}
+        this.tokenId = ''
+        this.apiToken = ''
+        this.formStatus.visible = false
+        this.$emit('closeUserApiTokenDialog')
       },
       handleClick () {
         this.$emit('input', !this.value)
       },
       saveItem () {
         setTimeout(() => {
-          applyApiToken(this.form.data)
+          applyApiToken(this.formData)
             .then(res => {
               // 返回数据
-              this.$message({
-                message: '成功',
-                type: 'success'
-              })
-              this.form.data = res.body
+              if (res.success) {
+                this.$message({
+                  message: '成功',
+                  type: 'success'
+                })
+                this.tokenId = res.body.tokenId
+                this.apiToken = res.body.token
+              } else {
+                this.$message.error('错误:' + res.msg)
+              }
             })
         }, 30)
       }

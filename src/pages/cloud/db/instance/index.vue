@@ -15,7 +15,9 @@
           </el-option>
         </el-select>
         <el-button @click="fetchData" :style="searchBarStyle">查询</el-button>
-        <el-button @click="handleSync" :style="searchBarStyle">同步</el-button>
+        <el-tooltip class="item" effect="light" content="同步云端数据库实例" placement="top-start">
+          <el-button @click="handleSync" :style="searchBarStyle">同步</el-button>
+        </el-tooltip>
       </div>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column type="expand">
@@ -57,7 +59,7 @@
               <el-form-item label="可用性">
                 <span>{{ props.row.attributeMap.AvailabilityValue }}</span>
               </el-form-item>
-              <el-form-item label="数据库">
+              <el-form-item label="数据库" width="50">
                 <div class="tag-group">
                   <el-tag style="margin-left: 5px"
                           v-for="item in props.row.databases"
@@ -65,7 +67,7 @@
                   </el-tag>
                 </div>
               </el-form-item>
-              <el-form-item label="授权">
+              <el-form-item label="授权" width="50">
                 <div class="tag-group">
                   <el-tag style="margin-left: 5px"
                           v-for="item in props.row.accounts"
@@ -96,7 +98,9 @@
         <el-table-column prop="zone" label="区"></el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
-            <el-button type="primary" plain size="mini" @click="syncDatabase(scope.row)">同步</el-button>
+            <el-tooltip class="item" effect="light" content="同步数据库信息" placement="top-start">
+              <el-button type="primary" plain size="mini" @click="syncDatabase(scope.row)">同步</el-button>
+            </el-tooltip>
             <el-button type="primary" plain size="mini" @click="accountPrivilege(scope.row)">授权</el-button>
             <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
           </template>
@@ -134,7 +138,7 @@
         cloudDb: {},
         formPrivilegeStatus: {
           visible: false,
-          formLabelWidth: '100px'
+          labelWidth: '100px'
         },
         tableData: [],
         loading: false,
@@ -203,7 +207,7 @@
         })
       },
       accountPrivilege (row) {
-        this.formPrivilege.visible = true
+        this.formPrivilegeStatus.visible = true
         this.cloudDb = row
       },
       handleDialogCancel (done) {

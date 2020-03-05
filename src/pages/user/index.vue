@@ -9,6 +9,7 @@
             <el-input v-model="queryParam.queryName" placeholder="输入关键字模糊查询" style="display: inline-block; max-width:200px"/>
             <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
             <el-button @click="syncLdapUser" style="margin-left: 5px">同步</el-button>
+            <el-button @click="addItem" style="margin-left: 5px">新建</el-button>
         </el-row>
       </div>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
@@ -54,7 +55,7 @@
                      :page-size="pagination.pageSize">
       </el-pagination>
       <!-- user编辑对话框 -->
-      <UserDialog :formStatus="formUserStatus" :formData="user" @closeDialog="fetchData"></UserDialog>
+      <UserDialog :formStatus="formUserStatus" :formData="user" @closeUserDialog="fetchData"></UserDialog>
       <!-- user编辑对话框-->
     </template>
   </d2-container>

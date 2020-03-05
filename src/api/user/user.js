@@ -34,9 +34,9 @@ export function fuzzyQueryUserPage (data) {
   })
 }
 
-export function addUser (data) {
+export function createUser (data) {
   return request({
-    url: '/user/add',
+    url: '/user/create',
     method: 'post',
     data
   })
