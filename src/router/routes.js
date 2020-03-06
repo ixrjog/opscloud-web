@@ -76,6 +76,15 @@ const frameIn = [
         }
       },
       {
+        path: '/server/attribute',
+        name: 'server-attribute',
+        component: () => import('@/pages/server/attribute'),
+        meta: {
+          auth: true,
+          title: '服务器属性'
+        }
+      },
+      {
         path: '/server/group',
         name: 'server-group',
         component: () => import('@/pages/server/group'),

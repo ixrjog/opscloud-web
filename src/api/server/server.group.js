@@ -57,3 +57,10 @@ export function revokeUserServerGroup (userId, serverGroupId) {
     method: 'delete'
   })
 }
+
+export function queryServerGroupAttribute (id) {
+  return request({
+    url: '/server/group/attribute?id=' + id,
+    method: 'get'
+  })
+}

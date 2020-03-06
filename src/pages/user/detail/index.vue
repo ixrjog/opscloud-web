@@ -7,7 +7,7 @@
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
           <el-col :span="10">
-            <el-card class="box-card">
+            <el-card class="box-card" shadow="never">
               <div slot="header" class="clearfix">
                 <span>个人信息</span>
                 <el-button style="float: right; padding: 3px 0" type="text" @click="editItem()">修改基本信息</el-button>

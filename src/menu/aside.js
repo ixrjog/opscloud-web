@@ -23,6 +23,7 @@ export default [
     iconSvg: 'servers',
     children: [
       { path: '/server', title: '服务器', iconSvg: 'server' },
+      { path: '/server/attribute', title: '服务器属性', iconSvg: 'attribute' },
       { path: '/server/group', title: '服务器组', iconSvg: 'servers' },
       { path: '/server/group/type', title: '服务器组类型', iconSvg: 'servergrp-type' }
     ]
