@@ -29,3 +29,31 @@ export function updateServerGroup (data) {
     data
   })
 }
+
+export function queryUserIncludeServerGroupPage (userId, page, length) {
+  return request({
+    url: '/server/group/user/include/page/query?userId=' + userId + '&page=' + page + '&length=' + length,
+    method: 'get'
+  })
+}
+
+export function queryUserExcludeServerGroupPage (userId, queryName, page, length) {
+  return request({
+    url: '/server/group/user/exclude/page/query?userId=' + userId + '&queryName=' + queryName + '&page=' + page + '&length=' + length,
+    method: 'get'
+  })
+}
+
+export function grantUserServerGroup (userId, serverGroupId) {
+  return request({
+    url: '/server/group/grant?userId=' + userId + '&serverGroupId=' + serverGroupId,
+    method: 'get'
+  })
+}
+
+export function revokeUserServerGroup (userId, serverGroupId) {
+  return request({
+    url: '/server/group/revoke?userId=' + userId + '&serverGroupId=' + serverGroupId,
+    method: 'delete'
+  })
+}

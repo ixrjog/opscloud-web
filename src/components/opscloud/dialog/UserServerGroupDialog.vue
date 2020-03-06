@@ -2,27 +2,34 @@
   <el-dialog :title="formStatus.title" :visible.sync="formStatus.visible" :before-close="closeDialog">
     <div style="margin-bottom: 5px">
       <el-row :gutter="24" style="margin-bottom: 5px">
-        <el-select v-model="userGroupId" filterable clearable
+        <el-select v-model="serverGroupId" filterable clearable
                    style="display: inline-block; max-width:200px; margin-left: 10px"
-                   remote reserve-keyword placeholder="输入关键词搜索用户组" :remote-method="getUserGroup" :loading="loading">
+                   remote reserve-keyword placeholder="输入关键词搜索服务器组" :remote-method="getServerGroup" :loading="loading">
           <el-option
-            v-for="item in userGroupOptions"
+            v-for="item in serverGroupOptions"
             :key="item.id"
             :label="item.name"
             :value="item.id">
           </el-option>
         </el-select>
-        <el-button type="success" :disabled="userGroupId == ''" plain size="mini" @click="grantUserGroup()"
+        <el-button type="success" :disabled="serverGroupId == ''" plain size="mini" @click="grantServerGroup()"
                    style="margin-left: 10px">授权
         </el-button>
       </el-row>
     </div>
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
-      <el-table-column prop="name" label="已授权用户组名称"></el-table-column>
+      <el-table-column prop="name" label="已授权服务器组名称"></el-table-column>
+      <el-table-column prop="serverGroupType" label="组类型">
+        <template slot-scope="scope">
+          <el-tag disable-transitions :style="{ color: scope.row.serverGroupType.color }">
+            {{scope.row.serverGroupType.name}}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="comment" label="描述"></el-table-column>
       <el-table-column fixed="right" label="操作" width="280">
         <template slot-scope="scope">
-          <el-button type="danger" plain size="mini" @click="revokeUserGroup(scope.row)">解除</el-button>
+          <el-button type="danger" plain size="mini" @click="revokeServerGroup(scope.row)">解除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -38,15 +45,15 @@
 
 <script>
   // API
-  import { grantUserUserGroup, revokeUserUserGroup, queryUserIncludeUserGroupPage, queryUserExcludeUserGroupPage } from '@api/user/user.group.js'
+  import { grantUserServerGroup, revokeUserServerGroup, queryUserIncludeServerGroupPage, queryUserExcludeServerGroupPage } from '@api/server/server.group.js'
 
   export default {
     data () {
       return {
-        userGroupId: '',
+        serverGroupId: '',
         user: {},
         tableData: [],
-        userGroupOptions: [],
+        serverGroupOptions: [],
         loading: false,
         pagination: {
           currentPage: 1,
@@ -55,7 +62,7 @@
         }
       }
     },
-    name: 'user-usergroup-dialog',
+    name: 'user-servergroup-dialog',
     props: ['formStatus'],
     mixins: [],
     mounted () {
@@ -64,49 +71,49 @@
       initData (user) {
         // 初始化数据
         this.user = user
-        this.userGroupId = ''
+        this.serverGroupId = ''
         this.pagination.currentPage = 1
-        this.getUserGroup('')
+        this.getServerGroup('')
         this.fetchData()
       },
-      getUserGroup (queryName) {
-        queryUserExcludeUserGroupPage(this.user.id, queryName, 1, 20)
+      getServerGroup (queryName) {
+        queryUserExcludeServerGroupPage(this.user.id, queryName, 1, 20)
           .then(res => {
-            this.userGroupOptions = res.body.data
+            this.serverGroupOptions = res.body.data
           })
       },
       closeDialog () {
         this.formStatus.visible = false
-        this.$emit('closeUserUserGroupDialog')
+        this.$emit('closeUserServerGroupDialog')
       },
       handleClick () {
         this.$emit('input', !this.value)
       },
-      grantUserGroup () {
+      grantServerGroup () {
         setTimeout(() => {
-          grantUserUserGroup(this.user.id, this.userGroupId)
+          grantUserServerGroup(this.user.id, this.serverGroupId)
             .then(res => {
               // 返回数据
               this.$message({
                 message: '成功',
                 type: 'success'
               })
-              this.userGroupId = ''
-              this.getUserGroup('')
+              this.serverGroupId = ''
+              this.getServerGroup('')
               this.fetchData()
             })
         }, 30)
       },
-      revokeUserGroup (row) {
+      revokeServerGroup (row) {
         setTimeout(() => {
-          revokeUserUserGroup(this.user.id, row.id)
+          revokeUserServerGroup(this.user.id, row.id)
             .then(res => {
               // 返回数据
               this.$message({
                 message: '成功',
                 type: 'success'
               })
-              this.getUserGroup('')
+              this.getServerGroup('')
               this.fetchData()
             })
         }, 30)
@@ -117,7 +124,7 @@
       },
       fetchData () {
         this.loading = true
-        queryUserIncludeUserGroupPage(this.user.id, this.pagination.currentPage, this.pagination.pageSize)
+        queryUserIncludeServerGroupPage(this.user.id, this.pagination.currentPage, this.pagination.pageSize)
           .then(res => {
             this.tableData = res.body.data
             this.pagination.total = res.body.totalNum

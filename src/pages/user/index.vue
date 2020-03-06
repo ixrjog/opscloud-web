@@ -36,6 +36,14 @@
                   </el-tag>
                 </div>
               </el-form-item>
+              <el-form-item label="服务器组">
+                <div class="tag-group">
+                  <el-tag style="margin-left: 5px"
+                          v-for="item in props.row.serverGroups"
+                          :key="item.id">{{ item.name }}
+                  </el-tag>
+                </div>
+              </el-form-item>
             </el-form>
           </template>
         </el-table-column>
@@ -43,10 +51,16 @@
         <el-table-column prop="displayName" label="显示名"></el-table-column>
         <el-table-column prop="email" label="邮箱"></el-table-column>
         <el-table-column prop="userGroups.length" label="用户组"></el-table-column>
-        <el-table-column fixed="right" label="操作" width="280">
+        <el-table-column prop="serverGroups.length" label="服务器组"></el-table-column>
+        <el-table-column fixed="right" label="操作" width="380">
           <template slot-scope="scope">
             <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
-            <el-button type="primary" plain size="mini" @click="editUserGroup(scope.row)">授权</el-button>
+            <el-tooltip class="item" effect="light" content="用户组授权" placement="top-start">
+              <el-button type="primary" plain size="mini" icon="el-icon-user-solid" @click="editUserGroup(scope.row)">授权</el-button>
+            </el-tooltip>
+            <el-tooltip class="item" effect="light" content="服务器组授权" placement="top-start">
+              <el-button type="primary" plain size="mini" icon="fa fa-server" @click="editServerGroup(scope.row)">授权</el-button>
+            </el-tooltip>
             <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -57,8 +71,10 @@
       </el-pagination>
       <!-- user编辑对话框 -->
       <UserDialog :formStatus="formUserStatus" :formData="user" @closeUserDialog="fetchData"></UserDialog>
-      <!-- user授权编辑对话框-->
+      <!-- 用户组授权编辑对话框-->
       <UserUserGroupDialog ref="userUserGroupDialog" :formStatus="formUserUserGroupStatus" @closeUserUserGroupDialog="fetchData"></UserUserGroupDialog>
+      <!-- 服务器组授权编辑对话框-->
+      <UserServerGroupDialog ref="userServerGroupDialog" :formStatus="formUserServerGroupStatus" @closeUserServerGroupDialog="fetchData"></UserServerGroupDialog>
     </template>
   </d2-container>
 </template>
@@ -67,6 +83,7 @@
   // Component
   import UserDialog from '@/components/opscloud/dialog/UserDialog'
   import UserUserGroupDialog from '@/components/opscloud/dialog/UserUserGroupDialog'
+  import UserServerGroupDialog from '@/components/opscloud/dialog/UserServerGroupDialog'
   // API
   import { fuzzyQueryUserPage, deleteUserById, syncUser } from '@api/user/user.js'
 
@@ -85,6 +102,11 @@
           visible: false,
           labelWidth: '150px',
           title: '用户组授权'
+        },
+        formUserServerGroupStatus: {
+          visible: false,
+          labelWidth: '150px',
+          title: '服务器组授权'
         },
         tableData: [],
         options: {
@@ -107,7 +129,8 @@
     },
     components: {
       UserDialog,
-      UserUserGroupDialog
+      UserUserGroupDialog,
+      UserServerGroupDialog
     },
     methods: {
       handleClick () {
@@ -147,6 +170,14 @@
         this.user = Object.assign({}, row)
         // 调用子组件的方法
         this.$refs.userUserGroupDialog.initData(this.user)
+      },
+      editServerGroup (row) {
+        // form
+        this.formUserServerGroupStatus.visible = true
+        // user
+        this.user = Object.assign({}, row)
+        // 调用子组件的方法
+        this.$refs.userServerGroupDialog.initData(this.user)
       },
       addItem () {
         // form
