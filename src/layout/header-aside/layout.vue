@@ -85,7 +85,7 @@
 <script>
 import d2MenuSide from './components/menu-side'
 import d2MenuHeader from './components/menu-header'
-import d2Tabs from './components/tabs'
+// import d2Tabs from './components/tabs'
 import d2HeaderFullscreen from './components/header-fullscreen'
 import d2HeaderLocales from './components/header-locales'
 import d2HeaderSearch from './components/header-search'
@@ -104,7 +104,7 @@ export default {
   components: {
     d2MenuSide,
     d2MenuHeader,
-    d2Tabs,
+    // d2Tabs,
     d2HeaderFullscreen,
     d2HeaderLocales,
     d2HeaderSearch,
