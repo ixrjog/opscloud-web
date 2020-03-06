@@ -74,9 +74,16 @@ export function syncUser () {
 // 申请ApiToken
 export function applyApiToken (data) {
   return request({
-    url: '/user/apply/token',
+    url: '/user/token/apply',
     method: 'post',
     data
+  })
+}
+
+export function delApiTokenById (id) {
+  return request({
+    url: '/user/token/del?id=' + id,
+    method: 'delete'
   })
 }
 

@@ -12,7 +12,7 @@
       </el-form-item>
     </el-form>
     <el-form :model="formData">
-      <el-form-item label="过期时间" :label-width="formStatus.labelWidth">
+      <el-form-item label="过期时间" :label-width="formStatus.labelWidth" :required="true">
         <el-date-picker
           v-model="formData.expiredTime" value-format="yyyy-MM-dd HH:mm:ss"
           align="right"
@@ -23,7 +23,7 @@
       </el-form-item>
     </el-form>
     <el-form :model="formData">
-      <el-form-item label="描述" :label-width="formStatus.labelWidth">
+      <el-form-item label="描述" :label-width="formStatus.labelWidth" :required="true">
         <el-input v-model="formData.comment" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
