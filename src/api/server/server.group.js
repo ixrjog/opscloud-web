@@ -60,7 +60,15 @@ export function revokeUserServerGroup (userId, serverGroupId) {
 
 export function queryServerGroupAttribute (id) {
   return request({
-    url: '/server/group/attribute?id=' + id,
+    url: '/server/group/attribute/query?id=' + id,
     method: 'get'
+  })
+}
+
+export function saveServerGroupAttribute (data) {
+  return request({
+    url: '/server/group/attribute/save',
+    method: 'put',
+    data
   })
 }

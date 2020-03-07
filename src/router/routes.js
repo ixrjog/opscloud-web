@@ -77,7 +77,7 @@ const frameIn = [
       },
       {
         path: '/server/attribute',
-        name: 'server-attribute',
+        name: 'card',
         component: () => import('@/pages/server/attribute'),
         meta: {
           auth: true,

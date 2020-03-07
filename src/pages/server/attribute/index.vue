@@ -17,7 +17,6 @@
             </el-option>
           </el-select>
           <el-button @click="fetchData" :style="searchBarStyle">查询</el-button>
-          <el-button @click="addItem" :style="searchBarStyle">新增</el-button>
         </el-row>
       </div>
       <el-row :gutter="20">
@@ -34,8 +33,8 @@
             <el-table-column prop="comment" label="描述"></el-table-column>
             <el-table-column fixed="right" label="操作" width="100">
               <template slot-scope="scope">
-                <el-button type="warning" plain size="mini" @click="getServerGroupAttribute(scope.row)">编辑</el-button>
-                <!--            <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>-->
+                <el-button type="success" plain size="mini" @click="editServerGroupAttribute(scope.row.id)"
+                           icon="el-icon-right"></el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -43,36 +42,11 @@
                          layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                          :page-size="pagination.pageSize">
           </el-pagination>
-          <ServerGroupDialog :formStatus="formServerGroupStatus" :formData="serverGroup"
-                             @closeServerGroupDialog="fetchData"></ServerGroupDialog>
         </el-col>
-        <el-col :span="14" v-if="attributeGroups != null && attributeGroups.length != 0">
+        <el-col :span="14" v-show="showServerAttributeCard">
           <transition name="el-zoom-in-top">
-            <el-card class="box-card" shadow="never">
-              <div slot="header" class="clearfix">
-                <span>服务器组属性(默认继承父属性)</span>
-                <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
-              </div>
-              <el-collapse v-model="activeName" accordion>
-                <div v-for="attributeGroup in attributeGroups" :key="attributeGroup.groupName" class="text item">
-                  <el-collapse-item :title="attributeGroup.groupName" :name="attributeGroup.groupName">
-                    <!--                  <d2-highlight :code="attributeGroup.attributes"/>-->
-                    <!--                  width="500" height="100"-->
-                    <editor v-model="attributeGroup.attributes" @init="editorInit" lang="yaml" theme="chrome"
-                            width="1000"
-                            height="200" :options="options"></editor>
-                    <div style="margin-top: 5px">
-                      <el-button type="success" plain size="mini" @click="getServerGroupAttribute(scope.row)">预览
-                      </el-button>
-                      <el-button type="info" plain size="mini" @click="getServerGroupAttribute(scope.row)">智能
-                      </el-button>
-                      <el-button type="warning" style="float:right; margin-right: 250px" plain size="mini" @click="getServerGroupAttribute(scope.row)">保存
-                      </el-button>
-                    </div>
-                  </el-collapse-item>
-                </div>
-              </el-collapse>
-            </el-card>
+            <ServerAttributeCard ref="serverAttributeCard"
+                                 :formStatus="formServerAttributeStatus"></ServerAttributeCard>
           </transition>
         </el-col>
       </el-row>
@@ -81,10 +55,11 @@
 </template>
 
 <script>
-  import ServerGroupDialog from '@/components/opscloud/dialog/ServerGroupDialog'
+  // Component
+  import ServerAttributeCard from '@/components/opscloud/card/ServerAttributeCard'
   // API
   import { queryServerGroupTypePage } from '@api/server/server.group.type.js'
-  import { queryServerGroupPage, queryServerGroupAttribute } from '@api/server/server.group.js'
+  import { queryServerGroupPage } from '@api/server/server.group.js'
 
   export default {
     data () {
@@ -96,16 +71,12 @@
         searchBarStyle: {
           marginLeft: '5px'
         },
-        activeName: '',
-        attributeGroups: [],
-        serverGroup: {},
-        formServerGroupStatus: {
-          visible: false,
-          addTitle: '新增服务器组配置',
-          updateTitle: '更新服务器组配置',
-          operationType: true,
-          labelWidth: '100px'
+        formServerAttributeStatus: {
+          serverAttributeTitle: '服务器属性',
+          groupAttributeTitle: '服务器组属性'
         },
+        showServerAttributeCard: false,
+        serverGroup: {},
         tableData: [],
         // options: {
         //   stripe: true
@@ -113,23 +84,14 @@
         loading: false,
         pagination: {
           currentPage: 1,
-          pageSize: 10,
+          pageSize: 5,
           total: 0
         },
         queryParam: {
           name: '',
           grpType: ''
         },
-        grpTypeOptions: [],
-        grpTypeDialogOptions: [],
-        // ace
-        options: {
-          // vue2-ace-editor编辑器配置自动补全等
-          enableBasicAutocompletion: true,
-          enableSnippets: true,
-          // 自动补全
-          enableLiveAutocompletion: true
-        }
+        grpTypeOptions: []
       }
     },
     mounted () {
@@ -137,26 +99,12 @@
       this.fetchData()
     },
     components: {
-      ServerGroupDialog,
-      editor: require('vue2-ace-editor')
+      ServerAttributeCard
     },
     methods: {
-      editorInit: function () {
-        // language extension prerequsite...
-        require('brace/ext/language_tools')
-        require('brace/mode/html')
-        // language
-        require('brace/mode/yaml')
-        require('brace/mode/less')
-        require('brace/theme/chrome')
-        // snippet
-        require('brace/snippets/yaml')
-      },
-      getServerGroupAttribute (row) {
-        queryServerGroupAttribute(row.id)
-          .then(res => {
-            this.attributeGroups = res.body
-          })
+      editServerGroupAttribute (id) {
+        this.showServerAttributeCard = true
+        this.$refs.serverAttributeCard.initData(2, id)
       },
       getGrpType (name) {
         queryServerGroupTypePage(name, '', 1, 10)
@@ -164,59 +112,16 @@
             this.grpTypeOptions = res.body.data
           })
       },
-      handleClick () {
-        this.$emit('input', !this.value)
-      },
-      handleDialogCancel (done) {
-        this.$message({
-          message: '取消保存',
-          type: 'warning'
-        })
-        done()
-      },
-      // delItem (row) {
-      //   this.$confirm('此操作将删除当前配置?', '提示', {
-      //     confirmButtonText: '确定',
-      //     cancelButtonText: '取消',
-      //     type: 'warning'
-      //   }).then(() => {
-      //     deleteServerGroupById(row.id).then(res => {
-      //       this.fetchData()
-      //       this.$message({
-      //         type: 'success',
-      //         message: '删除成功!'
-      //       })
-      //     })
-      //   }).catch(() => {
-      //     this.$message({
-      //       type: 'info',
-      //       message: '已取消删除'
-      //     })
-      //   })
+      // handleClick () {
+      //   this.$emit('input', !this.value)
       // },
-      addItem () {
-        this.formServerGroupStatus.operationType = true
-        this.formServerGroupStatus.visible = true
-        this.serverGroup = {
-          id: '',
-          name: 'group_',
-          grpType: '',
-          comment: ''
-        }
-      },
-      updateItem (row) {
-        var grpTypeOptions = []
-        grpTypeOptions.push(row.serverGroupType)
-        this.serverGroup = {
-          id: row.id,
-          name: row.name,
-          grpType: row.grpType,
-          comment: row.comment,
-          grpTypeOptions: grpTypeOptions
-        }
-        this.formServerGroupStatus.operationType = false
-        this.formServerGroupStatus.visible = true
-      },
+      // handleDialogCancel (done) {
+      //   this.$message({
+      //     message: '取消保存',
+      //     type: 'warning'
+      //   })
+      //   done()
+      // },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage
         this.fetchData()
