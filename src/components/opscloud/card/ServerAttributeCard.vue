@@ -31,6 +31,7 @@
 <script>
   // API
   import { queryServerGroupAttribute, saveServerGroupAttribute } from '@api/server/server.group.js'
+  import { queryServerAttribute, saveServerAttribute } from '@api/server/server.js'
 
   export default {
     data () {
@@ -68,6 +69,11 @@
         // type 1 server; type 2 serverGroup
         if (this.businessType === 2) {
           queryServerGroupAttribute(id)
+            .then(res => {
+              this.attributeGroups = res.body
+            })
+        }else{
+          queryServerAttribute(id)
             .then(res => {
               this.attributeGroups = res.body
             })

@@ -38,3 +38,19 @@ export function deleteServerById (id) {
     method: 'delete'
   })
 }
+
+export function queryServerAttribute (id) {
+  return request({
+    url: '/server/attribute/query?id=' + id,
+    method: 'get'
+  })
+}
+
+export function saveServerAttribute (data) {
+  return request({
+    url: '/server/attribute/save',
+    method: 'put',
+    data
+  })
+}
+
