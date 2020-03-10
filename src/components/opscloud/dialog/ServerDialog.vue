@@ -1,18 +1,18 @@
 <template>
   <el-dialog :title="formStatus.operationType ? formStatus.addTitle : formStatus.updateTitle"
              :visible.sync="formStatus.visible">
-    <el-form :model="formData">
-      <el-form-item label="名称" :label-width="formStatus.labelWidth">
-        <el-input v-model="formData.name" placeholder="请输入内容"></el-input>
+    <el-form :model="serverData">
+      <el-form-item label="名称" :label-width="formStatus.labelWidth" :required="true">
+        <el-input v-model="serverData.name" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
-      <el-form-item label="服务器组" :label-width="formStatus.labelWidth">
-        <el-select v-model="formData.serverGroupId" filterable clearable
+    <el-form :model="serverData">
+      <el-form-item label="服务器组" :label-width="formStatus.labelWidth" :required="true">
+        <el-select v-model="serverData.serverGroupId" filterable clearable
                    remote reserve-keyword placeholder="输入关键词搜组类型" :remote-method="getServerGroup"
                    :loading="loading">
           <el-option
-            v-for="item in formData.serverGroupOptions"
+            v-for="item in serverGroupOptions"
             :key="item.id"
             :label="item.name"
             :value="item.id">
@@ -20,9 +20,9 @@
         </el-select>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
-      <el-form-item label="服务器类型" :label-width="formStatus.labelWidth">
-        <el-select v-model="formData.serverType" placeholder="选择类型">
+    <el-form :model="serverData">
+      <el-form-item label="服务器类型" :label-width="formStatus.labelWidth" :required="true">
+        <el-select v-model="serverData.serverType" placeholder="选择类型">
           <el-option
             v-for="item in serverTypeOptions"
             :key="item.value"
@@ -32,14 +32,14 @@
         </el-select>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
+    <el-form :model="serverData">
       <el-form-item label="登录用户" :label-width="formStatus.labelWidth">
-        <el-input v-model="formData.loginUser" placeholder="请输入内容"></el-input>
+        <el-input v-model="serverData.loginUser" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
+    <el-form :model="serverData">
       <el-form-item label="登录类型" :label-width="formStatus.labelWidth">
-        <el-select v-model="formData.loginType" placeholder="选择类型">
+        <el-select v-model="serverData.loginType" placeholder="选择类型">
           <el-option
             v-for="item in loginTypeOptions"
             :key="item.value"
@@ -49,13 +49,13 @@
         </el-select>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
-      <el-form-item label="环境" :label-width="formStatus.labelWidth">
-        <el-select v-model="formData.envType" filterable clearable
+    <el-form :model="serverData">
+      <el-form-item label="环境" :label-width="formStatus.labelWidth" :required="true">
+        <el-select v-model="serverData.envType" filterable clearable
                    remote reserve-keyword
                    :loading="loading">
           <el-option
-            v-for="item in formData.envTypeOptions"
+            v-for="item in envTypeOptions"
             :key="item.envType"
             :label="item.envName"
             :value="item.envType">
@@ -63,29 +63,29 @@
         </el-select>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
+    <el-form :model="serverData">
       <el-form-item label="区" :label-width="formStatus.labelWidth">
-        <el-input v-model="formData.area" placeholder="请输入内容"></el-input>
+        <el-input v-model="serverData.area" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
+    <el-form :model="serverData">
       <el-form-item label="公网ip" :label-width="formStatus.labelWidth">
-        <el-input v-model="formData.publicIp" placeholder="请输入内容"></el-input>
+        <el-input v-model="serverData.publicIp" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
-      <el-form-item label="私网ip" :label-width="formStatus.labelWidth">
-        <el-input v-model="formData.privateIp" placeholder="请输入内容"></el-input>
+    <el-form :model="serverData">
+      <el-form-item label="私网ip" :label-width="formStatus.labelWidth" :required="true">
+        <el-input v-model="serverData.privateIp" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
-      <el-form-item label="序号" :label-width="formStatus.labelWidth">
-        <el-input v-model="formData.serialNumber" placeholder="请输入内容"></el-input>
+    <el-form :model="serverData">
+      <el-form-item label="序号" :label-width="formStatus.labelWidth" :required="true">
+        <el-input v-model="serverData.serialNumber" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
+    <el-form :model="serverData">
       <el-form-item label="描述" :label-width="formStatus.labelWidth">
-        <el-input v-model="formData.comment" placeholder="请输入内容"></el-input>
+        <el-input v-model="serverData.comment" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -97,6 +97,7 @@
 
 <script>
   // API
+  import { queryEnvPage } from '@api/env/env.js'
   import { addServer, updateServer } from '@api/server/server.js'
   import { queryServerGroupPage } from '@api/server/server.group.js'
 
@@ -104,6 +105,9 @@
     data () {
       return {
         loading: false,
+        envTypeOptions: [],
+        serverGroupOptions: [],
+        serverData: {},
         serverTypeOptions: [{
           value: 0,
           label: 'server'
@@ -133,23 +137,47 @@
       }
     },
     name: 'server-dialog',
-    props: ['formStatus', 'formData'],
+    props: ['formStatus'],
     mixins: [],
     mounted () {
     },
     methods: {
+      getEnvType () {
+        queryEnvPage('', '', 1, 20)
+          .then(res => {
+            this.envTypeOptions = res.body.data
+          })
+      },
+      initData (serverData, serverGroupOptions) {
+        this.serverData = serverData
+        this.serverGroupOptions = serverGroupOptions
+        this.getEnvType()
+        // 尝试选择匹配服务器组
+        if (JSON.stringify(this.serverData.serverGroup) === '{}') {
+          var queryName = this.serverData.name.replace(new RegExp('-[0-9]+$'), '')
+          queryServerGroupPage(queryName, '', 1, 20)
+            .then(res => {
+              this.serverGroupOptions = res.body.data
+              if (JSON.stringify(this.serverGroupOptions) === '[]') return
+              if (this.serverGroupOptions.length >= 0) {
+                this.serverData.serveGroup = this.serverGroupOptions[0]
+                this.serverData.serverGroupId = this.serverGroupOptions[0].id
+              }
+            })
+        }
+      },
       handleClick () {
         this.$emit('input', !this.value)
       },
       getServerGroup (queryName) {
         queryServerGroupPage(queryName, '', 1, 20)
           .then(res => {
-            this.formData.serverGroupOptions = res.body.data
+            this.serverGroupOptions = res.body.data
           })
       },
       saveInfo () {
         setTimeout(() => {
-          var requestBody = Object.assign({}, this.formData)
+          var requestBody = Object.assign({}, this.serverData)
           delete requestBody.serverGroupOptions
           delete requestBody.envTypeOptions
           delete requestBody.tags

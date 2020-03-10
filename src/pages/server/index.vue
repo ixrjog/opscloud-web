@@ -6,36 +6,36 @@
       </div>
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
-            <el-input v-model="queryParam.queryName" placeholder="输入关键字查询" :style="searchBarHeadStyle"/>
-            <el-select v-model="queryParam.serverGroupId" filterable clearable :style="searchBarStyle"
-                       remote reserve-keyword placeholder="搜索服务器组" :remote-method="getServerGroup" :loading="loading">
-              <el-option
-                v-for="item in serverGroupOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id">
-              </el-option>
-            </el-select>
-            <el-select v-model="queryParam.envType" clearable placeholder="环境" :style="searchBarStyle">
-              <el-option
-                v-for="item in envTypeOptions"
-                :key="item.id"
-                :label="item.envName"
-                :value="item.envType">
-              </el-option>
-            </el-select>
-            <el-select
-              v-model="queryParam.tagId" filterable clearable remote reserve-keyword :style="searchBarStyle"
-              placeholder="请输入关键词搜索标签" :remote-method="getTag" :loading="loading">
-              <el-option
-                v-for="item in tagOptions"
-                :key="item.id"
-                :label="item.tagKey"
-                :value="item.id">
-              </el-option>
-            </el-select>
-            <el-button @click="fetchData" :style="searchBarStyle">查询</el-button>
-            <el-button @click="addItem" :style="searchBarStyle">新增</el-button>
+          <el-input v-model="queryParam.queryName" placeholder="输入关键字查询" :style="searchBarHeadStyle"/>
+          <el-select v-model="queryParam.serverGroupId" filterable clearable :style="searchBarStyle"
+                     remote reserve-keyword placeholder="搜索服务器组" :remote-method="getServerGroup" :loading="loading">
+            <el-option
+              v-for="item in serverGroupOptions"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+          <el-select v-model="queryParam.envType" clearable placeholder="环境" :style="searchBarStyle">
+            <el-option
+              v-for="item in envTypeOptions"
+              :key="item.id"
+              :label="item.envName"
+              :value="item.envType">
+            </el-option>
+          </el-select>
+          <el-select
+            v-model="queryParam.tagId" filterable clearable remote reserve-keyword :style="searchBarStyle"
+            placeholder="请输入关键词搜索标签" :remote-method="getTag" :loading="loading">
+            <el-option
+              v-for="item in tagOptions"
+              :key="item.id"
+              :label="item.tagKey"
+              :value="item.id">
+            </el-option>
+          </el-select>
+          <el-button @click="fetchData" :style="searchBarStyle">查询</el-button>
+          <el-button @click="addItem" :style="searchBarStyle">新增</el-button>
         </el-row>
       </div>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
@@ -113,11 +113,10 @@
                      :page-size="pagination.pageSize">
       </el-pagination>
       <!-- server编辑-->
-      <ServerDialog :formStatus="formServerStatus" :formData="server" @closeServerDialog="fetchData"></ServerDialog>
-      <!-- server编辑-->
+      <ServerDialog :formStatus="formServerStatus" ref="serverDialog" @closeServerDialog="fetchData"></ServerDialog>
       <!-- tag编辑-->
-      <TagTransferDialog :formStatus="formTagTransferStatus" :formData="tagTransfer" @closeTagTransferDialog="fetchData"></TagTransferDialog>
-      <!-- tag编辑-->
+      <TagTransferDialog :formStatus="formTagTransferStatus" :formData="tagTransfer"
+                         @closeTagTransferDialog="fetchData"></TagTransferDialog>
     </template>
   </d2-container>
 </template>
@@ -156,7 +155,6 @@
           addTitle: '新增服务器配置',
           updateTitle: '更新服务器配置'
         },
-        server: {},
         tableData: [],
         options: {
           stripe: true
@@ -259,19 +257,18 @@
       },
       editItem (row) {
         // server
-        var server = Object.assign({}, row)
-        server.envTypeOptions = this.envTypeOptions
-        server.serverGroupOptions = []
-        server.serverGroupOptions.push(server.serverGroup)
-        this.server = server
+        var serverData = Object.assign({}, row)
+        var serverGroupOptions = []
+        serverGroupOptions.push(serverData.serverGroup)
         // form
         this.formServerStatus.visible = true
         this.formServerStatus.operationType = false
+        this.$refs.serverDialog.initData(serverData, serverGroupOptions)
       },
       addItem () {
         this.formServerStatus.operationType = true
         this.formServerStatus.visible = true
-        this.server = {
+        var serverData = {
           serverGroup: '',
           id: '',
           name: '',
@@ -289,6 +286,7 @@
           // options
           serverGroupOptions: []
         }
+        this.$refs.serverDialog.initData(serverData)
       },
       handleDialogCancel (done) {
         this.$message({

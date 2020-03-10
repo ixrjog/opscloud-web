@@ -72,7 +72,7 @@
             .then(res => {
               this.attributeGroups = res.body
             })
-        }else{
+        } else {
           queryServerAttribute(id)
             .then(res => {
               this.attributeGroups = res.body
@@ -94,20 +94,37 @@
         this.$emit('input', !this.value)
       },
       updateServerGroupAttribute (attributeGroup) {
-        saveServerGroupAttribute(attributeGroup)
-          .then(res => {
-            if (res.success) {
-              this.$message({
-                message: '保存成功',
-                type: 'success'
-              })
-              this.getServerAttribute(this.businessId)
-            } else {
-              this.$message.error({
-                message: '保存失败'
-              })
-            }
-          })
+        if (this.businessType === 2) {
+          saveServerGroupAttribute(attributeGroup)
+            .then(res => {
+              if (res.success) {
+                this.$message({
+                  message: '保存成功',
+                  type: 'success'
+                })
+                this.getServerAttribute(this.businessId)
+              } else {
+                this.$message.error({
+                  message: '保存失败'
+                })
+              }
+            })
+        } else {
+          saveServerAttribute(attributeGroup)
+            .then(res => {
+              if (res.success) {
+                this.$message({
+                  message: '保存成功',
+                  type: 'success'
+                })
+                this.getServerAttribute(this.businessId)
+              } else {
+                this.$message.error({
+                  message: '保存失败'
+                })
+              }
+            })
+        }
       }
     }
   }

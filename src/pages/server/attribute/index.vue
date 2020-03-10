@@ -168,7 +168,7 @@
         this.$refs.serverAttributeCard.initData(2, id)
         this.serverFetchData()
       },
-      editServerAttribute (id){
+      editServerAttribute (id) {
         this.showServerAttributeCard = true
         this.$refs.serverAttributeCard.initData(1, id)
       },

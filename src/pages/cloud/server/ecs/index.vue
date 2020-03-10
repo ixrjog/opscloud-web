@@ -6,7 +6,8 @@
       </div>
       <div style="margin-bottom: 5px">
         <el-input v-model="queryParam.serverName" placeholder="服务器名称" style="display: inline-block; max-width:200px"/>
-        <el-input v-model="queryParam.queryIp" placeholder="ip" style="display: inline-block; max-width:200px; margin-left: 5px"/>
+        <el-input v-model="queryParam.queryIp" placeholder="ip"
+                  style="display: inline-block; max-width:200px; margin-left: 5px"/>
         <el-select v-model="queryParam.serverStatus" clearable placeholder="状态" style="margin-left: 5px">
           <el-option
             v-for="item in statusOptions"
@@ -84,53 +85,15 @@
                      layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                      :page-size="pagination.pageSize">
       </el-pagination>
-      <!--      <el-dialog :title="dialogForm.operationType ? dialogForm.addTitle : dialogForm.updateTitle"-->
-      <!--                 :visible.sync="dialogForm.visible">-->
-      <!--        <el-form :model="form">-->
-      <!--          <el-form-item label="资源组" :label-width="formLabelWidth">-->
-      <!--            <el-select v-model="form.group" filterable clearable-->
-      <!--                       remote reserve-keyword placeholder="输入关键词搜索资源组" :remote-method="getGroup" :loading="loading">-->
-      <!--              <el-option-->
-      <!--                v-for="item in groupOptions"-->
-      <!--                :key="item.id"-->
-      <!--                :label="item.groupCode"-->
-      <!--                :value="item">-->
-      <!--              </el-option>-->
-      <!--            </el-select>-->
-      <!--          </el-form-item>-->
-      <!--        </el-form>-->
-      <!--        <el-form :model="form">-->
-      <!--          <el-form-item label="资源路径" :label-width="formLabelWidth">-->
-      <!--            <el-input v-model="form.resourceName" placeholder="请输入内容"></el-input>-->
-      <!--          </el-form-item>-->
-      <!--        </el-form>-->
-      <!--        <el-form :model="form">-->
-      <!--          <el-form-item label="鉴权" :label-width="formLabelWidth">-->
-      <!--            <el-select v-model="form.needAuth" placeholder="是否鉴权">-->
-      <!--              <el-option-->
-      <!--                v-for="item in needAuthOptions"-->
-      <!--                :key="item.value"-->
-      <!--                :label="item.label"-->
-      <!--                :value="item.value">-->
-      <!--              </el-option>-->
-      <!--            </el-select>-->
-      <!--          </el-form-item>-->
-      <!--        </el-form>-->
-      <!--        <el-form :model="form">-->
-      <!--          <el-form-item label="描述" :label-width="formLabelWidth">-->
-      <!--            <el-input v-model="form.comment" placeholder="请输入内容"></el-input>-->
-      <!--          </el-form-item>-->
-      <!--        </el-form>-->
-      <!--        <div slot="footer" class="dialog-footer">-->
-      <!--          <el-button @click="dialogForm.visible = false">取消</el-button>-->
-      <!--          <el-button type="primary" @click="saveInfo">确定</el-button>-->
-      <!--        </div>-->
-      <!--      </el-dialog>-->
+      <!-- server编辑-->
+      <ServerDialog :formStatus="formServerStatus" ref="serverDialog" @closeServerDialog="fetchData"></ServerDialog>
     </template>
   </d2-container>
 </template>
 
 <script>
+  // Component
+  import ServerDialog from '@/components/opscloud/dialog/ServerDialog'
   // Filters
   import { getStatusTagType, getStatusTagText, getMemoryText } from '@/filters/server.js'
   // API
@@ -139,30 +102,16 @@
   export default {
     data () {
       return {
-        form: {
-          group: '',
-          id: '',
-          groupId: '',
-          resourceName: '',
-          comment: '',
-          needAuth: 1
-        },
-        dialogVisible: false,
-        formLabelWidth: '100px',
-        dialogForm: {
+        formServerStatus: {
           visible: false,
-          addTitle: '新增资源配置',
-          updateTitle: '更新资源配置',
-          operationType: true
+          labelWidth: '150px',
+          operationType: true,
+          addTitle: '新增服务器配置',
+          updateTitle: '更新服务器配置'
         },
         tableData: [],
         options: {
           stripe: true
-        },
-        formOptions: {
-          labelWidth: '80px',
-          labelPosition: 'left',
-          saveLoading: false
         },
         loading: false,
         pagination: {
@@ -190,6 +139,7 @@
           label: '服务器表未删除但云服务器已销毁'
         }],
         cloudServerKey: 'AliyunECSCloudServer',
+        serverType: 2,
         title: 'Aliyun:ECS实例管理',
         showCpuColumn: true,
         showMemoryColumn: true
@@ -197,6 +147,9 @@
     },
     mounted () {
       this.fetchData()
+    },
+    components: {
+      ServerDialog
     },
     filters: {
       getStatusTagType,
@@ -227,41 +180,27 @@
           })
         })
       },
-      addItem () {
-        this.dialogForm.operationType = true
-        this.dialogForm.visible = true
-        this.form = {
+      addItem (row) {
+        this.formServerStatus.operationType = true
+        this.formServerStatus.visible = true
+        var serverData = {
+          serverGroup: {},
           id: '',
-          groupId: '',
-          resourceName: '',
-          comment: '',
-          needAuth: 1
+          name: (row.serverName != null ? row.serverName : row.instanceName),
+          serverGroupId: '',
+          loginType: 0,
+          loginUser: 'root',
+          envType: 4,
+          publicIp: row.publicIp,
+          privateIp: row.privateIp,
+          serverType: this.serverType,
+          area: row.zone,
+          serialNumber: 0,
+          monitorStatus: -1,
+          comment: row.comment,
+          cloudServerId: row.id
         }
-      },
-      // handleRowEdit ({ index, row }, done) {
-      //   setTimeout(() => {
-      //     updateCloudserver({
-      //       id: row.id,
-      //       roleName: row.roleName,
-      //       comment: row.comment,
-      //       workflow: row.workflow
-      //     })
-      //       .then(res => {
-      //         this.$message({
-      //           message: '更新成功',
-      //           type: 'success'
-      //         })
-      //         this.fetchData()
-      //         done()
-      //       })
-      //   }, 300)
-      // },
-      handleDialogCancel (done) {
-        this.$message({
-          message: '取消保存',
-          type: 'warning'
-        })
-        done()
+        this.$refs.serverDialog.initData(serverData, [])
       },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage
