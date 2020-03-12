@@ -212,6 +212,15 @@ const frameIn = [
           title: '数据库'
         }
       },
+      {
+        path: '/jump/jumpserver',
+        name: 'jump-jumpserver',
+        component: () => import('@/pages/jump/jumpserver'),
+        meta: {
+          auth: true,
+          title: 'Jumpserver堡垒机'
+        }
+      },
       // user
       {
         path: '/user',

@@ -50,25 +50,17 @@
               <el-form-item label="字符集">
                 <span>{{ props.row.characterSetName }}</span>
               </el-form-item>
-              <el-form-item label="账户">
-                <div class="tag-group">
-                  <el-tag style="margin-left: 5px"
-                          v-for="item in props.row.databases"
-                          :key="item.id">{{ item.dbName }}
-                  </el-tag>
-                </div>
-              </el-form-item>
             </el-form>
           </template>
         </el-table-column>
         <el-table-column prop="dbInstanceId" label="实例id"></el-table-column>
         <el-table-column prop="dbName" label="数据库名称"></el-table-column>
-        <el-table-column prop="name" label="环境">
+        <el-table-column prop="name" label="环境" width="120">
           <template slot-scope="scope">
             <el-tag disable-transitions :style="{ color: scope.row.env.color }">{{scope.row.env.envName}}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="engine" label="engine">
+        <el-table-column prop="engine" label="engine" width="120">
           <template slot-scope="scope">
             <el-tag class="filters"  size="small ">{{scope.row.engine}}</el-tag>
           </template>

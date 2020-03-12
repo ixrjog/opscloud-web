@@ -179,6 +179,7 @@
         setTimeout(() => {
           var requestBody = Object.assign({}, this.serverData)
           delete requestBody.serverGroupOptions
+          delete requestBody.serverGroup
           delete requestBody.envTypeOptions
           delete requestBody.tags
           delete requestBody.env

@@ -1,12 +1,12 @@
 <template>
   <el-dialog :title="formStatus.operationType ? formStatus.addTitle : formStatus.updateTitle"
              :visible.sync="formStatus.visible">
-    <el-form :model="formData">
-      <el-form-item label="资源组" :label-width="formStatus.labelWidth">
-        <el-select v-model="formData.groupId" filterable clearable
+    <el-form :model="resourceData">
+      <el-form-item label="资源组" :label-width="formStatus.labelWidth" :required="true">
+        <el-select v-model="resourceData.groupId" filterable clearable
                    remote reserve-keyword placeholder="输入关键词搜索资源组" :remote-method="getGroup" :loading="loading">
           <el-option
-            v-for="item in formData.groupOptions"
+            v-for="item in groupOptions"
             :key="item.id"
             :label="item.groupCode"
             :value="item.id">
@@ -14,14 +14,14 @@
         </el-select>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
-      <el-form-item label="资源路径" :label-width="formStatus.labelWidth">
-        <el-input v-model="formData.resourceName" placeholder="请输入内容"></el-input>
+    <el-form :model="resourceData">
+      <el-form-item label="资源路径" :label-width="formStatus.labelWidth" :required="true">
+        <el-input v-model="resourceData.resourceName" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
-      <el-form-item label="鉴权" :label-width="formStatus.labelWidth">
-        <el-select v-model="formData.needAuth" placeholder="是否鉴权">
+    <el-form :model="resourceData">
+      <el-form-item label="鉴权" :label-width="formStatus.labelWidth" :required="true">
+        <el-select v-model="resourceData.needAuth" placeholder="是否鉴权">
           <el-option
             v-for="item in needAuthOptions"
             :key="item.value"
@@ -31,9 +31,9 @@
         </el-select>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
+    <el-form :model="resourceData">
       <el-form-item label="描述" :label-width="formStatus.labelWidth">
-        <el-input v-model="formData.comment" placeholder="请输入内容"></el-input>
+        <el-input v-model="resourceData.comment" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -52,6 +52,8 @@
   export default {
     data () {
       return {
+        resourceData: {},
+        groupOptions: [],
         loading: false,
         // groupOptions: this.formData.groupOptions,
         // group: this.formData.group,
@@ -65,14 +67,22 @@
       }
     },
     name: 'resource-dialog',
-    props: ['formStatus', 'formData'],
+    props: ['formStatus'],
     mounted () {
     },
     methods: {
+      initData (resourceData, groupOptions) {
+        this.resourceData = resourceData
+        if ((JSON.stringify(groupOptions) == '[]')) {
+          this.getGroup('')
+        } else {
+          this.groupOptions = groupOptions
+        }
+      },
       getGroup (groupCode) {
         queryGroupPage(groupCode, 1, 10)
           .then(res => {
-            this.formData.groupOptions = res.body.data
+            this.groupOptions = res.body.data
           })
       },
       handleClick () {
@@ -80,7 +90,7 @@
       },
       saveInfo () {
         setTimeout(() => {
-          var requestBody = Object.assign({}, this.formData)
+          var requestBody = Object.assign({}, this.resourceData)
           if (this.formStatus.operationType) {
             addResource(requestBody)
               .then(res => {

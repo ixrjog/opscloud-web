@@ -46,7 +46,7 @@
             <el-button type="primary" plain size="mini" @click="updateItemNeedAuth(scope.row)">{{scope.row.needAuth ===
               0 ? '鉴权' : '不鉴权'}}
             </el-button>
-            <el-button type="warning" plain size="mini" @click="updateItem(scope.row)">编辑</el-button>
+            <el-button type="warning" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
             <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -55,7 +55,7 @@
                      layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                      :page-size="pagination.pageSize">
       </el-pagination>
-      <ResourceDialog :formStatus="formResourceStatus" :formData="resource"
+      <ResourceDialog :formStatus="formResourceStatus" ref="resourceDialog"
                       @closeResourceDialog="fetchData"></ResourceDialog>
     </template>
   </d2-container>
@@ -70,7 +70,6 @@
   export default {
     data () {
       return {
-        resource: {},
         formResourceStatus: {
           visible: false,
           addTitle: '新增资源配置',
@@ -155,17 +154,6 @@
           })
         })
       },
-      addItem () {
-        this.formResourceStatus.operationType = true
-        this.formResourceStatus.visible = true
-        this.resource = {
-          id: '',
-          groupId: '',
-          resourceName: '',
-          comment: '',
-          needAuth: 1
-        }
-      },
       updateItemNeedAuth (row) {
         var requestBody = {
           'id': row.id,
@@ -181,13 +169,25 @@
             this.fetchData()
           })
       },
-      updateItem (row) {
+      addItem () {
+        this.formResourceStatus.operationType = true
+        this.formResourceStatus.visible = true
+        var resource = {
+          id: '',
+          groupId: '',
+          resourceName: '',
+          comment: '',
+          needAuth: 1
+        }
+        this.$refs.resourceDialog.initData(resource, [])
+      },
+      editItem (row) {
         var resource = Object.assign({}, row)
-        resource.groupOptions = []
-        resource.groupOptions.push(resource.group)
-        this.resource = resource
+        var groupOptions = []
+        groupOptions.push(resource.group)
         this.formResourceStatus.operationType = false
         this.formResourceStatus.visible = true
+        this.$refs.resourceDialog.initData(resource, groupOptions)
       },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage

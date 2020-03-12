@@ -86,8 +86,8 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="databases.length" label="数据库"></el-table-column>
-        <el-table-column prop="accounts.length" label="授权"></el-table-column>
+        <el-table-column prop="databases.length" label="数据库" width="80"></el-table-column>
+        <el-table-column prop="accounts.length" label="授权" width="80"></el-table-column>
         <el-table-column prop="dbInstanceDescription" label="描述"></el-table-column>
         <el-table-column prop="engine" label="engine" width="100">
           <template slot-scope="scope">

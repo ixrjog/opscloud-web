@@ -50,6 +50,13 @@ export default [
     ]
   },
   {
+    title: '堡垒机',
+    icon: 'cloud',
+    children: [
+      { path: '/jump/jumpserver', title: 'jumpserver', iconSvg: 'rds' }
+    ]
+  },
+  {
     title: '用户管理',
     icon: 'user-circle',
     children: [
