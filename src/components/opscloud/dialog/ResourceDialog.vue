@@ -73,7 +73,7 @@
     methods: {
       initData (resourceData, groupOptions) {
         this.resourceData = resourceData
-        if ((JSON.stringify(groupOptions) == '[]')) {
+        if ((JSON.stringify(groupOptions) === '[]')) {
           this.getGroup('')
         } else {
           this.groupOptions = groupOptions

@@ -53,7 +53,9 @@ export default [
     title: '堡垒机',
     icon: 'cloud',
     children: [
-      { path: '/jump/jumpserver', title: 'jumpserver', iconSvg: 'rds' }
+      { path: '/jump/jumpserver/settings', title: '设置', iconSvg: 'rds' },
+      { path: '/jump/jumpserver/user', title: '用户管理', iconSvg: 'rds' },
+      { path: '/jump/jumpserver/asset', title: '资产管理', iconSvg: 'rds' }
     ]
   },
   {

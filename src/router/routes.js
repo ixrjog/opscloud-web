@@ -213,12 +213,30 @@ const frameIn = [
         }
       },
       {
-        path: '/jump/jumpserver',
-        name: 'jump-jumpserver',
-        component: () => import('@/pages/jump/jumpserver'),
+        path: '/jump/jumpserver/settings',
+        name: 'jump-jumpserver-settings',
+        component: () => import('@/pages/jump/jumpserver/settings'),
         meta: {
           auth: true,
-          title: 'Jumpserver堡垒机'
+          title: 'Jumpserver设置'
+        }
+      },
+      {
+        path: '/jump/jumpserver/user',
+        name: 'jump-jumpserver-user',
+        component: () => import('@/pages/jump/jumpserver/user'),
+        meta: {
+          auth: true,
+          title: 'Jumpserver用户管理'
+        }
+      },
+      {
+        path: '/jump/jumpserver/asset',
+        name: 'jump-jumpserver-asset',
+        component: () => import('@/pages/jump/jumpserver/asset'),
+        meta: {
+          auth: true,
+          title: 'Jumpserver资产管理'
         }
       },
       // user
