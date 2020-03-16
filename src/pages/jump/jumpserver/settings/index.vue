@@ -103,14 +103,14 @@
             </el-row>
           </el-tab-pane>
           <el-tab-pane label="当前会话">
-            <!--用户搜索-->
+            <!--会话搜索-->
             <div style="margin-bottom: 5px">
               <!--            :gutter="24"-->
               <el-row style="margin-bottom: 5px">
                 <el-button @click="fetchTerminalSessionData" :style="searchBarStyle">查询</el-button>
               </el-row>
             </div>
-            <!--用户table-->
+            <!--会话table-->
             <el-row style="margin-bottom: 5px">
               <el-table :data="terminalSessionTableData" style="width: 100%" v-loading="terminalSessionLoading">
                 <el-table-column prop="user" label="用户"></el-table-column>
@@ -121,7 +121,7 @@
                 <el-table-column prop="terminalName" label="终端名称"></el-table-column>
                 <el-table-column prop="dateStart" label="会话开始时间"></el-table-column>
               </el-table>
-              <!--用户翻页-->
+              <!--会话翻页-->
               <el-pagination background @current-change="terminalSessionPaginationCurrentChange"
                              layout="prev, pager, next" :total="terminalSessionPagination.total"
                              :current-page="terminalSessionPagination.currentPage"
@@ -129,7 +129,9 @@
               </el-pagination>
             </el-row>
           </el-tab-pane>
-          <el-tab-pane label="帮助"></el-tab-pane>
+          <el-tab-pane label="帮助">
+            <d2-markdown :source="doc"/>
+          </el-tab-pane>
         </el-tabs>
       </el-col>
     </template>
@@ -139,6 +141,8 @@
 <script>
   // Component
   // import ServerAttributeCard from '@/components/opscloud/card/ServerAttributeCard'
+
+  import doc from '@/static/md/jump.jumpserver.settings.md'
   // Filters
   import { getUserRoleType, getUserRoleText, getActiveType, getActiveText } from '@/filters/jumpserver.js'
 
@@ -181,7 +185,8 @@
         settings: {},
         terminals: [],
         terminalLoding: false,
-        title: 'Jumpserver控制面板'
+        title: 'Jumpserver控制面板',
+        doc,
       }
     },
     mounted () {
