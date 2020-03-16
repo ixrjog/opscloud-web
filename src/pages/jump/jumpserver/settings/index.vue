@@ -186,7 +186,7 @@
         terminals: [],
         terminalLoding: false,
         title: 'Jumpserver控制面板',
-        doc,
+        doc
       }
     },
     mounted () {

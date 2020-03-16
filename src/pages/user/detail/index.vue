@@ -84,6 +84,10 @@
                   <el-tag v-if="formUserDetail.credentialMap != null && formUserDetail.credentialMap.sshPubKey != null"
                           style="margin-left: 5px">{{ formUserDetail.credentialMap.sshPubKey.title }} {{ formUserDetail.credentialMap.sshPubKey.fingerprint }}
                   </el-tag>
+                  <el-tooltip class="item" effect="light" content="堡垒机公钥已推送" placement="top">
+                    <el-tag v-if="formUserDetail.attributeMap.jumpserverPubkey" type="success"
+                            style="margin-left: 5px">堡垒机</el-tag>
+                  </el-tooltip>
                 </el-col>
                 <el-button style="margin-top: 5px" size="mini" @click="editSSHKey">编辑</el-button>
               </el-collapse-item>

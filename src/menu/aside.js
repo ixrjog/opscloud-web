@@ -55,7 +55,7 @@ export default [
     children: [
       { path: '/jump/jumpserver/settings', title: '设置', icon: 'cog' },
       { path: '/jump/jumpserver/user', title: '用户管理', icon: 'user' },
-      { path: '/jump/jumpserver/asset', title: '资产管理', iconSvg: 'server' }
+      { path: '/jump/jumpserver/asset', title: '资产管理', icon: 'server' }
     ]
   },
   {
