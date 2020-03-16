@@ -39,3 +39,17 @@ export function fuzzyQueryAdminUserPage (data) {
     data
   })
 }
+
+export function authAdmin (id) {
+  return request({
+    url: '/jump/jumpserver/user/admin/auth?id=' + id,
+    method: 'get'
+  })
+}
+
+export function revokeAdmin (id) {
+  return request({
+    url: '/jump/jumpserver/user/admin/revoke?id=' + id,
+    method: 'get'
+  })
+}

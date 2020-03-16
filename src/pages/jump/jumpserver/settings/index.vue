@@ -61,7 +61,9 @@
                           :value="item.id">
                         </el-option>
                       </el-select>
-<!--                      <el-button @click="fetchUserData" :style="searchBarStyle">授权</el-button>-->
+                      <el-button type="success" plain size="mini" @click="setUserAdmin()" :style="searchBarStyle"
+                                 :disabled="userId == ''">授权
+                      </el-button>
                     </el-row>
                   </div>
                   <el-row style="margin-bottom: 5px">
@@ -70,7 +72,7 @@
                       <el-table-column prop="name" label="显示名"></el-table-column>
                       <el-table-column fixed="right" label="操作" width="80">
                         <template slot-scope="scope">
-                          <el-button type="danger" plain size="mini" @click="revokeItem(scope.row)">撤销</el-button>
+                          <el-button type="danger" plain size="mini" @click="revokeItem(scope.row)" v-if="scope.row.username != 'admin'">撤销</el-button>
                         </template>
                       </el-table-column>
                     </el-table>
@@ -100,8 +102,34 @@
               </el-col>
             </el-row>
           </el-tab-pane>
-          <el-tab-pane label="帮助">
+          <el-tab-pane label="当前会话">
+            <!--用户搜索-->
+            <div style="margin-bottom: 5px">
+              <!--            :gutter="24"-->
+              <el-row style="margin-bottom: 5px">
+                <el-button @click="fetchTerminalSessionData" :style="searchBarStyle">查询</el-button>
+              </el-row>
+            </div>
+            <!--用户table-->
+            <el-row style="margin-bottom: 5px">
+              <el-table :data="terminalSessionTableData" style="width: 100%" v-loading="terminalSessionLoading">
+                <el-table-column prop="user" label="用户"></el-table-column>
+                <el-table-column prop="remoteAddr" label="用户ip"></el-table-column>
+                <el-table-column prop="asset" label="资产"></el-table-column>
+                <el-table-column prop="protocol" label="协议"></el-table-column>
+                <el-table-column prop="systemUser" label="系统账户"></el-table-column>
+                <el-table-column prop="terminalName" label="终端名称"></el-table-column>
+                <el-table-column prop="dateStart" label="会话开始时间"></el-table-column>
+              </el-table>
+              <!--用户翻页-->
+              <el-pagination background @current-change="terminalSessionPaginationCurrentChange"
+                             layout="prev, pager, next" :total="terminalSessionPagination.total"
+                             :current-page="terminalSessionPagination.currentPage"
+                             :page-size="terminalSessionPagination.pageSize">
+              </el-pagination>
+            </el-row>
           </el-tab-pane>
+          <el-tab-pane label="帮助"></el-tab-pane>
         </el-tabs>
       </el-col>
     </template>
@@ -115,8 +143,8 @@
   import { getUserRoleType, getUserRoleText, getActiveType, getActiveText } from '@/filters/jumpserver.js'
 
   // API
-  import { fuzzyQueryAdminUserPage } from '@api/jump/jump.jumpserver.user.js'
-  import { querySettings, queryTerminal, saveSettings } from '@api/jump/jump.jumpserver.js'
+  import { fuzzyQueryAdminUserPage, authAdmin, revokeAdmin } from '@api/jump/jump.jumpserver.user.js'
+  import { querySettings, queryTerminal, saveSettings, queryTerminalSessionPage } from '@api/jump/jump.jumpserver.js'
 
   export default {
     data () {
@@ -139,6 +167,13 @@
           queryName: '',
           isAdmin: 1
         },
+        terminalSessionTableData: [],
+        terminalSessionPagination: {
+          currentPage: 1,
+          pageSize: 10,
+          total: 0
+        },
+        terminalSessionLoading: false,
         userOptions: [],
         userId: '',
         searchUserLoading: false,
@@ -153,6 +188,7 @@
       this.getSettings()
       this.getTerminal()
       this.fetchAdminUserData()
+      this.fetchTerminalSessionData()
     },
     filters: {
       getUserRoleType,
@@ -169,7 +205,7 @@
         var requestBody = {
           queryName: queryName,
           isAdmin: 0,
-          page: 0,
+          page: 1,
           length: 20
         }
         fuzzyQueryAdminUserPage(requestBody)
@@ -201,6 +237,35 @@
             }
           })
       },
+      setUserAdmin () {
+        authAdmin(this.userId)
+          .then(res => {
+            if (res.success) {
+              this.fetchAdminUserData()
+              this.$message({
+                type: 'success',
+                message: '设置成功!'
+              })
+            } else {
+              this.$message.error(res.msg)
+            }
+            this.userId = ''
+          })
+      },
+      revokeItem (row) {
+        revokeAdmin(row.id)
+          .then(res => {
+            if (res.success) {
+              this.fetchAdminUserData()
+              this.$message({
+                type: 'success',
+                message: '设置成功!'
+              })
+            } else {
+              this.$message.error(res.msg)
+            }
+          })
+      },
       getTerminal () {
         this.terminalLoding = true
         queryTerminal()
@@ -224,6 +289,23 @@
             this.adminUserPagination.total = res.body.totalNum
             this.adminUserLoading = false
           })
+      },
+      terminalSessionPaginationCurrentChange (currentPage) {
+        this.terminalSessionPagination.currentPage = currentPage
+        this.fetchTerminalSessionData()
+      },
+      fetchTerminalSessionData () {
+        this.terminalSessionLoading = true
+        var requestBody = {
+          page: this.terminalSessionPagination.currentPage,
+          length: this.terminalSessionPagination.pageSize
+        }
+        queryTerminalSessionPage(requestBody)
+          .then(res => {
+            this.terminalSessionTableData = res.body.data
+            this.terminalSessionPagination.total = res.body.totalNum
+            this.terminalSessionLoading = false
+          })
       }
     }
   }
@@ -245,15 +327,15 @@
     width: 50%;
   }
 
-  .el-row {
-    margin-bottom: 20px;
+  /*.el-row {*/
+  /*  margin-bottom: 20px;*/
+  /*&*/
+  /*:last-child {*/
+  /*  margin-bottom: 0;*/
+  /*}*/
 
-  &
-  :last-child {
-    margin-bottom: 0;
-  }
+  /*}*/
 
-  }
   .el-col {
     border-radius: 4px;
   }

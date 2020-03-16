@@ -21,3 +21,11 @@ export function queryTerminal () {
     method: 'get'
   })
 }
+
+export function queryTerminalSessionPage (data) {
+  return request({
+    url: '/jump/jumpserver/terminal/session/page/query',
+    method: 'post',
+    data
+  })
+}

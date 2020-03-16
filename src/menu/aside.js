@@ -42,7 +42,7 @@ export default [
   },
   {
     title: '云数据库',
-    icon: 'cloud',
+    iconSvg: 'cloud-db',
     children: [
       { path: '/cloud/db/instance', title: '数据库实例', iconSvg: 'rds' },
       { path: '/cloud/db/database', title: '数据库', iconSvg: 'database' },
@@ -51,11 +51,11 @@ export default [
   },
   {
     title: '堡垒机',
-    icon: 'cloud',
+    iconSvg: 'jump',
     children: [
-      { path: '/jump/jumpserver/settings', title: '设置', iconSvg: 'rds' },
-      { path: '/jump/jumpserver/user', title: '用户管理', iconSvg: 'rds' },
-      { path: '/jump/jumpserver/asset', title: '资产管理', iconSvg: 'rds' }
+      { path: '/jump/jumpserver/settings', title: '设置', icon: 'cog' },
+      { path: '/jump/jumpserver/user', title: '用户管理', icon: 'user' },
+      { path: '/jump/jumpserver/asset', title: '资产管理', iconSvg: 'server' }
     ]
   },
   {
