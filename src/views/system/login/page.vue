@@ -16,7 +16,7 @@
         flex="dir:top main:justify cross:stretch box:justify">
         <div class="page-login--content-header">
           <p class="page-login--content-header-motto">
-            时间是一切财富中最宝贵的财富
+            时间是一切财富中最宝贵的财富 DevOps
           </p>
         </div>
         <div
@@ -49,7 +49,7 @@
                     <i slot="prepend" class="fa fa-keyboard-o"></i>
                   </el-input>
                 </el-form-item>
-                <el-form-item prop="code">
+                <el-form-item prop="code" v-if="false">
                   <el-input
                     type="text"
                     v-model="formLogin.code"
@@ -75,7 +75,7 @@
               <span>注册用户</span>
             </p>
             <!-- quick login -->
-            <el-button class="page-login--quick" size="default" type="info" @click="dialogVisible = true">
+            <el-button class="page-login--quick" size="default" type="info" @click="dialogVisible = true" v-if="false">
               快速选择用户（测试功能）
             </el-button>
           </div>
@@ -154,9 +154,9 @@ export default {
       ],
       // 表单
       formLogin: {
-        username: 'admin',
-        password: 'admin',
-        code: 'v9am'
+        username: '',
+        password: '',
+        code: ''
       },
       // 表单校验
       rules: {
