@@ -84,8 +84,8 @@
                   <el-tag v-if="formUserDetail.credentialMap != null && formUserDetail.credentialMap.sshPubKey != null"
                           style="margin-left: 5px">{{ formUserDetail.credentialMap.sshPubKey.title }} {{ formUserDetail.credentialMap.sshPubKey.fingerprint }}
                   </el-tag>
-                  <el-tooltip class="item" effect="light" content="堡垒机公钥已推送" placement="top">
-                    <el-tag v-if="formUserDetail.attributeMap.jumpserverPubkey" type="success"
+                  <el-tooltip class="item" effect="light" content="堡垒机公钥已推送" placement="top" v-show="formUserDetail.attributeMap != null && formUserDetail.attributeMap.jumpserverPubkey">
+                    <el-tag type="success"
                             style="margin-left: 5px">堡垒机</el-tag>
                   </el-tooltip>
                 </el-col>
