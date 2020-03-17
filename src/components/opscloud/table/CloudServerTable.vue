@@ -70,7 +70,7 @@
           <!--            <el-button type="primary" plain size="mini" @click="updateItemNeedAuth(scope.row)">{{scope.row.needAuth ===-->
           <!--              0 ? '鉴权' : '不鉴权'}}-->
           <!--            </el-button>-->
-          <el-button type="primary" plain size="mini" @click="addItem(scope.row)">导入
+          <el-button type="primary" plain size="mini" @click="addItem(scope.row)" v-show="scope.row.serverStatus == 0">导入
           </el-button>
           <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
         </template>
