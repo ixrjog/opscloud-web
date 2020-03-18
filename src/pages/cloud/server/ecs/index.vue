@@ -1,7 +1,13 @@
 <template>
   <d2-container>
     <h1>{{title}}</h1>
-    <CloudServerTable :formStatus="formCloudServerStatus" ref="cloudServerTable"></CloudServerTable>
+    <el-tabs v-model="activeName">
+      <el-tab-pane label="主机管理" name="server">
+        <CloudServerTable :formStatus="formCloudServerStatus" ref="cloudServerTable"></CloudServerTable>
+      </el-tab-pane>
+      <el-tab-pane label="镜像管理" name="image">镜像管理</el-tab-pane>
+    </el-tabs>
+
   </d2-container>
 </template>
 
@@ -12,6 +18,7 @@
   export default {
     data () {
       return {
+        activeName: 'server',
         formCloudServerStatus: {
           cloudServerKey: 'AliyunECSCloudServer',
           serverType: 2,
