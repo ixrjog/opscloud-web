@@ -23,26 +23,3 @@ export function getUserRoleText (value) {
       return '未定义'
   }
 }
-
-// isActive
-export function getActiveType (value) {
-  switch (value) {
-    case true:
-      return 'success'
-    case false:
-      return 'warning'
-    default:
-      return 'info'
-  }
-}
-
-export function getActiveText (value) {
-  switch (value) {
-    case true:
-      return '有效'
-    case false:
-      return '无效'
-    default:
-      return '未定义'
-  }
-}

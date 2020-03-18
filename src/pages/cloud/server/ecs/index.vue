@@ -5,7 +5,9 @@
       <el-tab-pane label="主机管理" name="server">
         <CloudServerTable :formStatus="formCloudServerStatus" ref="cloudServerTable"></CloudServerTable>
       </el-tab-pane>
-      <el-tab-pane label="镜像管理" name="image">镜像管理</el-tab-pane>
+      <el-tab-pane label="镜像管理" name="image">
+        <CloudImageTable :formStatus="formCloudImageStatus" ref="cloudImageTable"></CloudImageTable>
+      </el-tab-pane>
     </el-tabs>
 
   </d2-container>
@@ -14,6 +16,7 @@
 <script>
 
   import CloudServerTable from '@/components/opscloud/table/CloudServerTable.vue'
+  import CloudImageTable from '@/components/opscloud/table/CloudImageTable.vue'
 
   export default {
     data () {
@@ -25,11 +28,16 @@
           showCpuColumn: true,
           showMemoryColumn: true
         },
+        formCloudImageStatus: {
+          cloudImageKey: 'AliyunCloudImage',
+          cloudType: 2
+        },
         title: 'Aliyun:ECS实例管理'
       }
     },
     components: {
-      CloudServerTable
+      CloudServerTable,
+      CloudImageTable
     },
     mounted () {
       //   this.$refs.cloudServerTable.fetchData()

@@ -16,7 +16,8 @@
                     <el-button style="float: right; padding: 3px 0" type="text" @click="saveSettings">保存</el-button>
                   </div>
                   <el-form :model="settings">
-                    <el-form-item label="管理账户" :label-width="labelWidth" :required="true">
+                    <el-tooltip content="推送权限的账户" placement="top-start" effect="light">
+                      <el-form-item label="管理账户" :label-width="labelWidth" :required="true">
                       <template>
                         <el-select v-model="settings.assetsAdminuserId" placeholder="请选择" clearable>
                           <el-option
@@ -28,18 +29,35 @@
                         </el-select>
                       </template>
                     </el-form-item>
-                    <el-form-item label="系统账户" :label-width="labelWidth" :required="true">
-                      <template>
-                        <el-select v-model="settings.assetsSystemuserId" placeholder="请选择" clearable>
-                          <el-option
-                            v-for="item in settings.assetsSystemusers"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.id">
-                          </el-option>
-                        </el-select>
-                      </template>
-                    </el-form-item>
+                    </el-tooltip>
+                    <el-tooltip content="普通用户登录系统的账户(不支持sudo)" placement="top-start" effect="light">
+                      <el-form-item label="低权限系统账户" :label-width="labelWidth" :required="true">
+                        <template>
+                          <el-select v-model="settings.assetsSystemuserId" placeholder="请选择" clearable>
+                            <el-option
+                              v-for="item in settings.assetsSystemusers"
+                              :key="item.id"
+                              :label="item.name"
+                              :value="item.id">
+                            </el-option>
+                          </el-select>
+                        </template>
+                      </el-form-item>
+                    </el-tooltip>
+                    <el-tooltip content="管理员登录系统的账户(支持sudo)" placement="bottom" effect="light">
+                      <el-form-item label="高权限系统账户" :label-width="labelWidth" :required="true">
+                        <template>
+                          <el-select v-model="settings.assetsAdminSystemuserId" placeholder="请选择" clearable>
+                            <el-option
+                              v-for="item in settings.assetsSystemusers"
+                              :key="item.id"
+                              :label="item.name"
+                              :value="item.id">
+                            </el-option>
+                          </el-select>
+                        </template>
+                      </el-form-item>
+                    </el-tooltip>
                   </el-form>
                 </el-card>
                 <div style="margin: 15px 0;"></div>
@@ -144,8 +162,8 @@
 
   import doc from '@/static/md/jump.jumpserver.settings.md'
   // Filters
-  import { getUserRoleType, getUserRoleText, getActiveType, getActiveText } from '@/filters/jumpserver.js'
-
+  import { getUserRoleType, getUserRoleText } from '@/filters/jumpserver.js'
+  import { getActiveType, getActiveText } from '@/filters/public.js'
   // API
   import { fuzzyQueryAdminUserPage, authAdmin, revokeAdmin } from '@api/jump/jump.jumpserver.user.js'
   import { querySettings, queryTerminal, saveSettings, queryTerminalSessionPage } from '@api/jump/jump.jumpserver.js'

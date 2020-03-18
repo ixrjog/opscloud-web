@@ -109,7 +109,8 @@
   // Component
   // import ServerAttributeCard from '@/components/opscloud/card/ServerAttributeCard'
   // Filters
-  import { getUserRoleType, getUserRoleText, getActiveType, getActiveText } from '@/filters/jumpserver.js'
+  import { getUserRoleType, getUserRoleText } from '@/filters/jumpserver.js'
+  import { getActiveType, getActiveText } from '@/filters/public.js'
   // API
   import { fuzzyQueryUserPage, syncUser, setUserActive } from '@api/jump/jump.jumpserver.user.js'
 
