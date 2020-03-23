@@ -1,15 +1,24 @@
 <template>
   <div>
-    <el-input v-model="queryParam.groupCode" placeholder="资源组名称" style="display: inline-block; max-width:200px"/>
+    <el-input v-model="queryParam.roleName" placeholder="角色名称" style="display: inline-block; max-width:200px"/>
+    <el-input v-model="queryParam.resourceName" placeholder="资源名称"
+              style="display: inline-block; max-width:200px; margin-left: 5px"/>
     <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
     <el-button @click="addItem" style="margin-left: 5px">新增</el-button>
-
     <el-table :data="tableData" style="width: 100%">
-      <el-table-column prop="groupCode" label="资源组名称"></el-table-column>
+      <el-table-column prop="roleName" label="名称"></el-table-column>
+      <el-table-column prop="resourceName" label="资源名称"></el-table-column>
+      <el-table-column prop="workflow" label="工作流" width="100">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.workflow === 0 ? 'success' : 'danger'" disable-transitions>{{scope.row.workflow === 0 ?
+            '不允许' : '允许'}}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="comment" label="描述"></el-table-column>
       <el-table-column fixed="right" label="操作" width="280">
         <template slot-scope="scope">
-          <el-button type="warning" plain size="mini" @click="updateItem(scope.row)">编辑</el-button>
+          <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
           <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -18,27 +27,29 @@
                    layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                    :page-size="pagination.pageSize">
     </el-pagination>
-    <ResourceGroupDialog :formStatus="formResourceGroupStatus" :formData="resourceGroup"
-                         @closeResourceGroupDialog="fetchData"></ResourceGroupDialog>
+    <!-- role编辑-->
+    <RoleDialog :formStatus="formRoleStatus" :formData="role" @closeRoleDialog="fetchData"></RoleDialog>
   </div>
 </template>
 
 <script>
-  import ResourceGroupDialog from '@/components/opscloud/dialog/ResourceGroupDialog'
+
+  import RoleDialog from '@/components/opscloud/dialog/RoleDialog'
   // API
-  import { queryGroupPage, deleteGroupById } from '@api/auth/auth.group.js'
+  import { queryRolePage, deleteRoleById } from '@api/auth/auth.role.js'
+
   export default {
-    name: 'AuthGroupTable',
+    name: 'AuthRoleTable',
     data () {
       return {
         tableData: [],
-        resourceGroup: {},
-        formResourceGroupStatus: {
+        role: {},
+        formRoleStatus: {
           visible: false,
-          addTitle: '新增资源组配置',
-          updateTitle: '更新资源组配置',
-          labelWidth: '100px',
-          operationType: true
+          labelWidth: '150px',
+          operationType: true,
+          addTitle: '新增角色配置',
+          updateTitle: '更新角色配置'
         },
         loading: false,
         pagination: {
@@ -47,19 +58,39 @@
           total: 0
         },
         queryParam: {
-          groupCode: ''
-        }
+          roleName: '',
+          resourceName: ''
+        },
+        title: '角色配置'
       }
     },
     mounted () {
       this.fetchData()
     },
     components: {
-      ResourceGroupDialog
+      RoleDialog
     },
     methods: {
       handleClick () {
         this.$emit('input', !this.value)
+      },
+      editItem (row) {
+        // form
+        this.formRoleStatus.visible = true
+        this.formRoleStatus.operationType = false
+        // role
+        this.role = Object.assign({}, row)
+      },
+      addItem () {
+        this.formRoleStatus.operationType = true
+        this.formRoleStatus.visible = true
+        this.role = {
+          id: '',
+          roleName: '',
+          resourceName: '',
+          workflow: 0,
+          comment: ''
+        }
       },
       delItem (row) {
         this.$confirm('此操作将删除当前配置?', '提示', {
@@ -67,7 +98,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteGroupById(row.id).then(res => {
+          deleteRoleById(row.id).then(res => {
             this.fetchData()
             this.$message({
               type: 'success',
@@ -81,35 +112,14 @@
           })
         })
       },
-      addItem () {
-        this.formResourceGroupStatus.operationType = true
-        this.formResourceGroupStatus.visible = true
-        this.resourceGroup = {
-          id: '',
-          groupCode: '',
-          comment: ''
-        }
-      },
-      updateItem (row) {
-        this.resourceGroup = Object.assign({}, row)
-        this.formResourceGroupStatus.operationType = false
-        this.formResourceGroupStatus.visible = true
-      },
-      handleDialogCancel (done) {
-        this.$message({
-          message: '取消保存',
-          type: 'warning'
-        })
-        done()
-      },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage
         this.fetchData()
       },
       fetchData () {
         this.loading = true
-        queryGroupPage(
-          this.queryParam.groupCode, this.pagination.currentPage, this.pagination.pageSize)
+        queryRolePage(
+          this.queryParam.roleName, this.queryParam.resourceName, this.pagination.currentPage, this.pagination.pageSize)
           .then(res => {
             this.tableData = res.body.data
             this.pagination.total = res.body.totalNum

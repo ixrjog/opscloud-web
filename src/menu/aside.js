@@ -70,10 +70,8 @@ export default [
     title: '权限配置',
     icon: 'address-card',
     children: [
-      { path: '/auth/resource', title: '资源', icon: 'puzzle-piece' },
-      { path: '/auth/group', title: '资源组', icon: 'th-list' },
-      { path: '/auth/role', title: '角色配置', icon: 'users' },
-      { path: '/auth/role/resource', title: '角色资源管理', icon: 'edit' },
+      { path: '/auth/resource', title: '资源管理', icon: 'puzzle-piece' },
+      { path: '/auth/role', title: '角色管理', icon: 'users' },
       { path: '/auth/user/role', title: '用户角色配置', icon: 'id-card' }
     ]
   },
