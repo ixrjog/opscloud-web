@@ -2,14 +2,17 @@
   <d2-container>
     <h1>{{title}}</h1>
     <el-tabs v-model="activeName">
-      <el-tab-pane label="主机管理" name="server">
+      <el-tab-pane label="实例" name="server">
         <CloudServerTable :formStatus="formCloudServerStatus" ref="cloudServerTable"></CloudServerTable>
       </el-tab-pane>
-      <el-tab-pane label="镜像管理" name="image">
+      <el-tab-pane label="镜像" name="image">
         <CloudImageTable :formStatus="formCloudImageStatus" ref="cloudImageTable"></CloudImageTable>
       </el-tab-pane>
-      <el-tab-pane label="VPC管理" name="vpc">
+      <el-tab-pane label="VPC" name="vpc">
         <CloudVPCTable :formStatus="formCloudVPCStatus" ref="cloudVPCTable"></CloudVPCTable>
+      </el-tab-pane>
+      <el-tab-pane label="实例模版" name="instanceTemplate">
+        <CloudInstanceTemplateTable :formStatus="formCloudInstanceTemplateStatus" ref="cloudInstanceTemplateTable"></CloudInstanceTemplateTable>
       </el-tab-pane>
     </el-tabs>
 
@@ -38,6 +41,10 @@
         },
         formCloudVPCStatus: {
           cloudVPCKey: 'AliyunCloudVPC',
+          cloudType: 2
+        },
+        formCloudInstanceTemplateStatus: {
+          cloudInstanceKey: 'AliyunCloudInstance',
           cloudType: 2
         },
         title: 'Aliyun:ECS实例管理'

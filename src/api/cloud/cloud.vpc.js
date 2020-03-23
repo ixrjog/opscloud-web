@@ -21,3 +21,10 @@ export function deleteCloudVPCById (id) {
     method: 'delete'
   })
 }
+
+export function setCloudVPCActiveById (id) {
+  return request({
+    url: '/cloud/vpc/active/set?id=' + id,
+    method: 'put'
+  })
+}

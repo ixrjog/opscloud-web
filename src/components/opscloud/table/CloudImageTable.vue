@@ -46,16 +46,16 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="isDeleted" label="被删除">
+      <el-table-column prop="isDeleted" label="被删除" v-if="false">
         <template slot-scope="scope">
           <el-tag v-show="scope.row.isDeleted == 1" size="small" type="danger">已删除</el-tag>
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="280">
         <template slot-scope="scope">
-          <!--            <el-button type="primary" plain size="mini" @click="updateItemNeedAuth(scope.row)">{{scope.row.needAuth ===-->
-          <!--              0 ? '鉴权' : '不鉴权'}}-->
-          <!--            </el-button>-->
+          <el-button :type="scope.row.isActive === 0 ? 'success' : 'info'" plain size="mini"
+                     @click="setItemActive(scope.row)">{{scope.row.isActive === 0 ? '有效' : '无效'}}
+          </el-button>
           <el-button type="primary" plain size="mini" @click="addItem(scope.row)" v-show="scope.row.serverStatus == 0">
             导入
           </el-button>
@@ -78,7 +78,12 @@
   // Filters
   import { getActiveType, getActiveText } from '@/filters/public.js'
   // API
-  import { fuzzyQueryCloudImagePage, syncCloudImageByKey, deleteCloudImageById } from '@api/cloud/cloud.image.js'
+  import {
+    fuzzyQueryCloudImagePage,
+    syncCloudImageByKey,
+    deleteCloudImageById,
+    setCloudImageActiveById
+  } from '@api/cloud/cloud.image.js'
 
   export default {
     data () {
@@ -151,6 +156,15 @@
           this.$message({
             type: 'info',
             message: '已取消删除'
+          })
+        })
+      },
+      setItemActive (row) {
+        setCloudImageActiveById(row.id).then(res => {
+          this.fetchData()
+          this.$message({
+            type: 'success',
+            message: '设置成功!'
           })
         })
       },

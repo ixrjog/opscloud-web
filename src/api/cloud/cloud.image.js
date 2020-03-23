@@ -21,3 +21,10 @@ export function deleteCloudImageById (id) {
     method: 'delete'
   })
 }
+
+export function setCloudImageActiveById (id) {
+  return request({
+    url: '/cloud/image/active/set?id=' + id,
+    method: 'put'
+  })
+}
