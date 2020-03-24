@@ -13,7 +13,7 @@
       </el-form-item>
     </el-form>
     <el-form :model="formData">
-      <el-form-item label="登录类型" :label-width="formStatus.labelWidth">
+      <el-form-item label="工作流" :label-width="formStatus.labelWidth">
         <el-select v-model="formData.workflow" placeholder="选择类型">
           <el-option
             v-for="item in workflowOptions"
