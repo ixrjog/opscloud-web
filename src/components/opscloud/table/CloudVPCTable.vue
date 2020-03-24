@@ -111,6 +111,7 @@
         queryParam: {
           extend: 1,
           queryName: '',
+          regionId: '',
           isActive: -1,
           isDeleted: -1
         },

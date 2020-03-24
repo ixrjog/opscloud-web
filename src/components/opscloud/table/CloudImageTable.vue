@@ -107,6 +107,7 @@
         },
         queryParam: {
           queryName: '',
+          regionId: '',
           isActive: -1,
           isDeleted: -1
         },

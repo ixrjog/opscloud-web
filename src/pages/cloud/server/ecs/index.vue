@@ -15,7 +15,6 @@
         <CloudInstanceTemplateTable :formStatus="formCloudInstanceTemplateStatus" ref="cloudInstanceTemplateTable"></CloudInstanceTemplateTable>
       </el-tab-pane>
     </el-tabs>
-
   </d2-container>
 </template>
 
@@ -24,6 +23,7 @@
   import CloudServerTable from '@/components/opscloud/table/CloudServerTable.vue'
   import CloudImageTable from '@/components/opscloud/table/CloudImageTable.vue'
   import CloudVPCTable from '@/components/opscloud/table/CloudVPCTable.vue'
+  import CloudInstanceTemplateTable from '@/components/opscloud/table/CloudInstanceTemplateTable.vue'
 
   export default {
     data () {
@@ -53,7 +53,8 @@
     components: {
       CloudServerTable,
       CloudImageTable,
-      CloudVPCTable
+      CloudVPCTable,
+      CloudInstanceTemplateTable
     },
     mounted () {
       //   this.$refs.cloudServerTable.fetchData()
