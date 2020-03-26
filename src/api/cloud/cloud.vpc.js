@@ -8,6 +8,14 @@ export function fuzzyQueryCloudVPCPage (data) {
   })
 }
 
+export function queryCloudVPCPage (data) {
+  return request({
+    url: '/cloud/vpc/page/query',
+    method: 'post',
+    data
+  })
+}
+
 export function syncCloudVPCByKey (cloudVPCKey) {
   return request({
     url: '/cloud/vpc/sync?key=' + cloudVPCKey,
@@ -26,5 +34,13 @@ export function setCloudVPCActiveById (id) {
   return request({
     url: '/cloud/vpc/active/set?id=' + id,
     method: 'put'
+  })
+}
+
+export function queryCloudVPCSecurityGroupPage (data) {
+  return request({
+    url: '/cloud/vpc/security/group/page/query',
+    method: 'post',
+    data
   })
 }

@@ -86,14 +86,14 @@
                      :disabled="templateData.regionId == null || templateData.regionId == ''">查询
           </el-button>
           <el-table :data="imageTableData" style="width: 100%" v-loading="imageTableLoading">
-            <el-table-column label="实例类型">
+            <el-table-column label="镜像id">
               <template scope="scope">
                 <el-radio v-model="imageId" :label="scope.row.imageId"
                           @change.native="getImageRow(scope.$index,scope.row)"></el-radio>
               </template>
             </el-table-column>
             <el-table-column prop="imageName" label="镜像名称"></el-table-column>
-            <el-table-column prop="regionId" label="regionId"></el-table-column>
+            <el-table-column prop="regionId" label="地区id"></el-table-column>
             <el-table-column prop="imageSize" label="容量(GiB)"></el-table-column>
           </el-table>
           <el-pagination background @current-change="imagePaginationCurrentChange"
@@ -111,14 +111,14 @@
                      :disabled="templateData.regionId == null || templateData.regionId == ''">查询
           </el-button>
           <el-table :data="vpcTableData" style="width: 100%" v-loading="vpcTableLoading">
-            <el-table-column label="实例类型">
+            <el-table-column label="专有网络id">
               <template scope="scope">
                 <el-radio v-model="vpcId" :label="scope.row.vpcId"
                           @change.native="getVPCRow(scope.$index,scope.row)"></el-radio>
               </template>
             </el-table-column>
-            <el-table-column prop="vpcName" label="vpc名称"></el-table-column>
-            <el-table-column prop="regionId" label="regionId"></el-table-column>
+            <el-table-column prop="vpcName" label="专有网络名称"></el-table-column>
+            <el-table-column prop="regionId" label="地区id"></el-table-column>
             <el-table-column prop="vswitchMap" label="虚拟交换机" width="400">
               <template slot-scope="scope">
                 <el-tree :data="scope.row.vswitchData" show-checkbox ref="vswitchTree" node-key="vswitchId"></el-tree>
@@ -130,6 +130,60 @@
                          :current-page="vpcPagination.currentPage"
                          :page-size="vpcPagination.pageSize">
           </el-pagination>
+        </el-form>
+      </el-tab-pane>
+      <el-tab-pane label="VPC安全组" name="vpcSecurityGroup" :disabled="vpcId ==null || vpcId == ''">
+        <el-form :model="templateData">
+          <el-input v-model="queryVPCSecurityGroupParam.queryName" placeholder="关键字查询"
+                    style="display: inline-block; max-width:200px; margin-left: 5px"/>
+          <el-button size="mini" @click="fetchVPCSecurityGroupData" style="margin-left: 5px">查询
+          </el-button>
+          <el-table :data="vpcSecurityGroupTableData" style="width: 100%" v-loading="vpcSecurityGroupTableLoading">
+            <el-table-column label="安全组id">
+              <template scope="scope">
+                <el-radio v-model="securityGroupId" :label="scope.row.securityGroupId"
+                          @change.native="getVPCSecurityGroupRow(scope.$index,scope.row)"></el-radio>
+              </template>
+            </el-table-column>
+            <el-table-column prop="securityGroupName" label="安全组名称"></el-table-column>
+          </el-table>
+          <el-pagination background @current-change="vpcSecurityGroupPaginationCurrentChange"
+                         layout="prev, pager, next" :total="vpcSecurityGroupPagination.total"
+                         :current-page="vpcSecurityGroupPagination.currentPage"
+                         :page-size="vpcSecurityGroupPagination.pageSize">
+          </el-pagination>
+        </el-form>
+      </el-tab-pane>
+      <el-tab-pane label="磁盘" name="disk">
+        <el-form :model="templateData">
+          <el-form-item label="系统盘类型" :label-width="formStatus.labelWidth" :required="true">
+            <el-select v-model="disk.sysDisk.category" placeholder="选择类型">
+              <el-option
+                v-for="item in aliyunDiskOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="系统盘容量GiB" :label-width="formStatus.labelWidth" :required="true">
+            <el-input v-model="disk.sysDisk.size" placeholder="请输入内容"
+                      style="display: inline-block; max-width:175px;"></el-input>
+          </el-form-item>
+          <el-form-item label="数据盘类型" :label-width="formStatus.labelWidth" :required="true">
+            <el-select v-model="disk.dataDisk.category" placeholder="选择类型">
+              <el-option
+                v-for="item in aliyunDiskOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="数据盘容量GiB" :label-width="formStatus.labelWidth" :required="true">
+            <el-input v-model="disk.dataDisk.size" placeholder="请输入内容"
+                      style="display: inline-block; max-width:175px;"></el-input>
+          </el-form-item>
         </el-form>
       </el-tab-pane>
     </el-tabs>
@@ -147,7 +201,7 @@
     queryCloudCpuList, saveCloudInstanceTemplate, saveCloudInstanceTemplateYAML
   } from '@api/cloud/cloud.instance.js'
   import { fuzzyQueryCloudImagePage } from '@api/cloud/cloud.image.js'
-  import { fuzzyQueryCloudVPCPage } from '@api/cloud/cloud.vpc.js'
+  import { queryCloudVPCPage, queryCloudVPCSecurityGroupPage } from '@api/cloud/cloud.vpc.js'
 
   export default {
     name: 'CloudInstanceTemplateDialog',
@@ -163,6 +217,7 @@
           queryName: '',
           cpuCoreCount: ''
         },
+        syncInstanceTypeLoading: false,
         instanceTypeTableLoading: false,
         instanceTypePagination: {
           currentPage: 1,
@@ -200,6 +255,38 @@
         },
         vpcSelection: {},
         vpcTableLoading: false,
+        queryVPCSecurityGroupParam: {
+          queryName: ''
+        },
+        securityGroupId: '',
+        vpcSecurityGroupSelection: {},
+        vpcSecurityGroupTableLoading: false,
+        vpcSecurityGroupTableData: [],
+        vpcSecurityGroupPagination: {
+          currentPage: 1,
+          pageSize: 10,
+          total: 0
+        },
+        aliyunDiskOptions: [{
+          value: 'cloud_efficiency',
+          label: '高效云盘'
+        }, {
+          value: 'cloud_ssd',
+          label: 'SSD云盘'
+        }, {
+          value: 'cloud_essd',
+          label: '高性能SSD云盘'
+        }],
+        disk: {
+          sysDisk: {
+            size: 40,
+            category: 'cloud_efficiency'
+          },
+          dataDisk: {
+            size: 0,
+            category: 'cloud_efficiency'
+          }
+        },
         // ace
         aceOptions: {
           // vue2-ace-editor编辑器配置自动补全等
@@ -245,6 +332,9 @@
       getVPCRow (index, row) {
         this.vpcSelection = row
       },
+      getVPCSecurityGroupRow (index, row) {
+        this.vpcSecurityGroupSelection = row
+      },
       editorInit: function () {
         // language extension prerequsite...
         require('brace/ext/language_tools')
@@ -256,14 +346,34 @@
         // snippet
         require('brace/snippets/yaml')
       },
-      initData (cloudType, templasteData) {
+      initData (cloudType, templateData) {
         this.cloudType = cloudType
-        this.templateData = templasteData
+        this.templateData = templateData
+        if (templateData.regionId !== '') {
+          this.queryInstanceTypeParam.regionId = templateData.regionId
+        }
+        if (templateData.vpcId !== '') {
+          this.vpcId = templateData.vpcId
+        }
+        if (templateData.instanceTemplate != null && templateData.instanceTemplate.disk !== null) {
+          this.data = templateData.instanceTemplate.disk
+        } else {
+          this.disk = {
+            sysDisk: {
+              size: 40,
+              category: 'cloud_efficiency'
+            },
+            dataDisk: {
+              size: 0,
+              category: 'cloud_efficiency'
+            }
+          }
+        }
         this.getRegion()
         this.getCpu()
       },
       syncInstanceType () {
-        this.syncLoading = true
+        this.syncInstanceTypeLoading = true
         setTimeout(() => {
           syncCloudInstanceTypeByType(this.cloudType)
             .then(res => {
@@ -272,7 +382,7 @@
                 type: 'success'
               })
               this.fetchData()
-              this.syncLoading = false
+              this.syncInstanceTypeLoading = false
             })
         }, 300)
       },
@@ -287,6 +397,10 @@
       vpcPaginationCurrentChange (currentPage) {
         this.vpcPagination.currentPage = currentPage
         this.fetchVPCData()
+      },
+      vpcSecurityGroupPaginationCurrentChange (currentPage) {
+        this.vpcSecurityGroupPagination.currentPage = currentPage
+        this.fetchVPCSecurityGroupData()
       },
       fetchInstanceTypeData () {
         this.instanceTypeTableLoading = true
@@ -345,21 +459,43 @@
       },
       fetchVPCData () {
         this.vpcTableLoading = true
+        var zoneIds = []
+        if (this.templateData.instanceTemplate !== null && this.templateData.instanceTemplate.zoneIds !== null) {
+          zoneIds = this.templateData.instanceTemplate.zoneIds
+        }
         var vpcQueryParam = {
           queryName: this.queryVPCParam.queryName,
           cloudType: this.formStatus.cloudType,
           isActive: 1,
           extend: 1,
+          zoneIds: zoneIds,
           regionId: this.templateData.regionId,
           page: this.vpcPagination.currentPage,
           length: this.vpcPagination.pageSize
         }
-        fuzzyQueryCloudVPCPage(vpcQueryParam)
+        queryCloudVPCPage(vpcQueryParam)
           .then(res => {
             this.vpcTableData = res.body.data
             this.vpcPagination.total = res.body.totalNum
             this.vpcTableLoading = false
             this.convertVswitchData()
+          })
+      },
+      fetchVPCSecurityGroupData () {
+        this.vpcSecurityGroupTableLoading = true
+        var vpcSecurityGroupQueryParam = {
+          queryName: this.queryVPCSecurityGroupParam.queryName,
+          isActive: 1,
+          extend: 1,
+          vpcId: this.vpcId,
+          page: this.vpcPagination.currentPage,
+          length: this.vpcPagination.pageSize
+        }
+        queryCloudVPCSecurityGroupPage(vpcSecurityGroupQueryParam)
+          .then(res => {
+            this.vpcSecurityGroupTableData = res.body.data
+            this.vpcSecurityGroupPagination.total = res.body.totalNum
+            this.vpcSecurityGroupTableLoading = false
           })
       },
       saveInfoYAML () {
@@ -395,7 +531,18 @@
         // 保存vpc/vswitch
         if (this.vpcId !== '') {
           this.templateData.vpcId = this.vpcId
-          this.templateData.vswithcShecked = this.$refs.vswitchTree.getCheckedKeys()
+          // 提交选中的虚拟交换机
+          try {
+            this.templateData.vswitchChecked = this.$refs.vswitchTree.getCheckedKeys()
+          } catch (e) {
+          }
+          // 安全组
+          if (this.securityGroupId !== '') {
+            this.templateData.securityGroupId = this.securityGroupId
+          }
+        }
+        if (this.templateData.id !== '') {
+          this.templateData.instanceTemplate.disk = this.disk
         }
         saveCloudInstanceTemplate(this.templateData)
           .then(res => {

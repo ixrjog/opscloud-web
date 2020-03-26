@@ -8,27 +8,37 @@
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="table-expand">
-            <el-form-item label="账户uid">
-              <span>{{ props.row.uid }}</span>
+            <el-form-item label="镜像id" v-show="props.row.imageId != null && props.row.imageId != ''">
+              <span>{{ props.row.imageId }}</span>
             </el-form-item>
-            <el-form-item label="cidrBlock">
-              <span>{{ props.row.cidrBlock }}</span>
+            <el-form-item label="专有网络id" v-show="props.row.vpcId != null && props.row.vpcId != ''">
+              <span>{{ props.row.vpcId }}</span>
             </el-form-item>
-            <el-form-item label="描述">
-              <span>{{ props.row.description }}</span>
+            <el-form-item label="专有网络名称" v-show="props.row.vpcName != null && props.row.vpcName != ''">
+              <span>{{ props.row.vpcName }}</span>
+            </el-form-item>
+            <el-form-item label="安全组id"
+                          v-show="props.row.securityGroupId != null && props.row.securityGroupId != ''">
+              <span>{{ props.row.securityGroupId }}</span>
+            </el-form-item>
+            <el-form-item label="安全组名称"
+                          v-show="props.row.securityGroupName != null && props.row.securityGroupName != ''">
+              <span>{{ props.row.securityGroupName }}</span>
             </el-form-item>
             <el-form-item label="创建时间">
-              <span>{{ props.row.creationTime }}</span>
+              <span>{{ props.row.createTime }}</span>
             </el-form-item>
           </el-form>
         </template>
       </el-table-column>
       <el-table-column prop="templateName" label="模版名称"></el-table-column>
-      <el-table-column prop="regionId" label="regionId"></el-table-column>
-      <el-table-column label="可用区">
+      <el-table-column prop="regionId" label="地区id"></el-table-column>
+      <el-table-column label="有效可用区">
         <template slot-scope="props">
-          <div class="tag-group" v-if="props.row.instanceTemplate != null">
-            <el-tag style="margin-left: 5px" v-for="item in props.row.instanceTemplate.zoneIds" :key="item">{{ item }}</el-tag>
+          <div class="tag-group" v-if="props.row.instanceZones != null">
+            <el-tag style="margin-left: 5px" :type="item.active ? 'success': 'info'"
+                    v-for="item in props.row.instanceZones" :key="item.zoneId">{{ item.zoneId }}
+            </el-tag>
           </div>
         </template>
       </el-table-column>
@@ -37,6 +47,7 @@
       <el-table-column prop="instanceTemplate.instance.memorySize" label="内存"></el-table-column>
       <el-table-column fixed="right" label="操作" width="280">
         <template slot-scope="scope">
+          <el-button type="success" plain size="mini" @click="createInstance(scope.row)">创建</el-button>
           <el-button type="warning" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
           <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
         </template>
@@ -49,17 +60,22 @@
     <CloudInstanceTemplateDialog :formStatus="formTemplateStatus"
                                  ref="cloudInstanceTemplateDialog"
                                  @closeCloudInstanceTemplateDialog="fetchData"></CloudInstanceTemplateDialog>
+    <CreateCloudInstanceDialog :formStatus="formCreateInstanceStatus"
+                               ref="createCloudInstanceDialog"
+                               @closeCloudInstanceTemplateDialog="fetchData">
+    </CreateCloudInstanceDialog>
   </div>
 </template>
 
 <script>
   // Component
+  import CloudInstanceTemplateDialog from '../dialog/CloudInstanceTemplateDialog'
+  import CreateCloudInstanceDialog from '../dialog/CreateCloudInstanceDialog'
 
   // Filters
   import { getActiveType, getActiveText } from '@/filters/public.js'
   // API
   import { fuzzyQueryCloudInstanceTemplatePage, deleteCloudInstanceTemplateById } from '@api/cloud/cloud.instance.js'
-  import CloudInstanceTemplateDialog from '../dialog/CloudInstanceTemplateDialog'
 
   export default {
     name: 'cloudInstanceTemplate',
@@ -72,6 +88,12 @@
           addTitle: '新增实例模版配置',
           updateTitle: '更新实例模版配置',
           cloudType: ''
+        },
+        formCreateInstanceStatus: {
+          visible: false,
+          labelWidth: '150px',
+          cloudType: '',
+          title: '模版创建ECS实例'
         },
         tableData: [],
         loading: false,
@@ -92,7 +114,8 @@
       this.fetchData()
     },
     components: {
-      CloudInstanceTemplateDialog
+      CloudInstanceTemplateDialog,
+      CreateCloudInstanceDialog
     },
     filters: {
       getActiveType,
@@ -152,6 +175,12 @@
           templateYAML: ''
         }
         this.$refs.cloudInstanceTemplateDialog.initData(this.formStatus.cloudType, templateData)
+      },
+      createInstance (row) {
+        this.formCreateInstanceStatus.visible = true
+        this.formCreateInstanceStatus.cloudType = this.formStatus.cloudType
+        var templateData = Object.assign({}, row)
+        this.$refs.createCloudInstanceDialog.initData(this.formStatus.cloudType, templateData)
       },
       fetchData () {
         this.loading = true

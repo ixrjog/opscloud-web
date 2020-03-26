@@ -59,3 +59,10 @@ export function deleteCloudInstanceTemplateById (id) {
     method: 'delete'
   })
 }
+
+export function queryCloudInstanceTemplateVSwitch (templateId, zoneId) {
+  return request({
+    url: '/cloud/instance/template/vswitch/query?templateId=' + templateId + '&zoneId=' + zoneId,
+    method: 'get'
+  })
+}
