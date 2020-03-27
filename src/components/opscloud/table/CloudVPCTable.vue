@@ -33,35 +33,33 @@
       </el-table-column>
       <el-table-column prop="vpcName" label="专有网络名称" width="120"></el-table-column>
       <el-table-column prop="regionId" label="regionId" width="120"></el-table-column>
-      <el-table-column prop="sg" label="安全组" width="400">
+      <el-table-column prop="securityGroups" label="安全组" width="400">
         <template slot-scope="scope">
           <el-col :span="12" v-for="item in scope.row.securityGroups" :key="item.id">
             <el-tooltip :content="item.securityGroupId" placement="top" effect="light">
-              <el-tag style="margin-left: 5px">{{item.securityGroupName}}</el-tag>
+              <el-tag :type="item.isActive === 1? 'success' : 'info'"  style="margin-left: 5px">{{item.securityGroupName}}</el-tag>
             </el-tooltip>
           </el-col>
         </template>
       </el-table-column>
-      <el-table-column prop="sg" label="虚拟交换机" width="400">
+      <el-table-column label="虚拟交换机" width="400">
         <template slot-scope="scope">
           <el-tree :data="scope.row.vswitchData"></el-tree>
         </template>
       </el-table-column>
-      <el-table-column prop="serverStatus" label="有效">
+      <el-table-column prop="isActive" label="有效">
         <template slot-scope="scope">
           <el-tag class="filters" :type="scope.row.isActive | getActiveType" size="small">
             {{scope.row.isActive | getActiveText}}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="280">
+      <el-table-column label="操作" width="280">
         <template slot-scope="scope">
           <el-button :type="scope.row.isActive === 0 ? 'success' : 'info'" plain size="mini"
                      @click="setItemActive(scope.row)">{{scope.row.isActive === 0 ? '有效' : '无效'}}
           </el-button>
-          <el-button type="primary" plain size="mini" @click="addItem(scope.row)" v-show="scope.row.serverStatus == 0">
-            导入
-          </el-button>
+          <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
           <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -70,14 +68,14 @@
                    layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                    :page-size="pagination.pageSize">
     </el-pagination>
-    <!-- server编辑-->
-    <ServerDialog :formStatus="formServerStatus" ref="serverDialog" @closeServerDialog="fetchData"></ServerDialog>
+    <!-- vpc编辑-->
+    <CloudVPCDialog :formStatus="formCloudVPCStatus" ref="cloudVPCDialog" @closeCloudVPCDialog="fetchData"></CloudVPCDialog>
   </div>
 </template>
 
 <script>
   // Component
-  import ServerDialog from '@/components/opscloud/dialog/ServerDialog'
+  import CloudVPCDialog from '@/components/opscloud/dialog/CloudVPCDialog'
   // Filters
   import { getActiveType, getActiveText } from '@/filters/public.js'
   // API
@@ -91,12 +89,9 @@
   export default {
     data () {
       return {
-        formServerStatus: {
+        formCloudVPCStatus: {
           visible: false,
-          labelWidth: '150px',
-          operationType: true,
-          addTitle: '新增服务器配置',
-          updateTitle: '更新服务器配置'
+          labelWidth: '150px'
         },
         tableData: [],
         options: {
@@ -128,13 +123,13 @@
         syncLoading: false
       }
     },
-    name: 'cloud-vpc-table',
+    name: 'CloudVPCTable',
     props: ['formStatus'],
     mounted () {
       this.fetchData()
     },
     components: {
-      ServerDialog
+      CloudVPCDialog
     },
     filters: {
       getActiveType,
@@ -152,6 +147,12 @@
             message: '设置成功!'
           })
         })
+      },
+      editItem (row) {
+        // form
+        this.formCloudVPCStatus.visible = true
+        // var vpcData = Object.assign({}, row)
+        this.$refs.cloudVPCDialog.initData(this.cloudType, row.vpcId)
       },
       delItem (row) {
         this.$confirm('此操作将删除当前配置?', '提示', {

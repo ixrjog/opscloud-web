@@ -44,3 +44,25 @@ export function queryCloudVPCSecurityGroupPage (data) {
     data
   })
 }
+
+export function setCloudVPCSecurityGroupActiveById (id) {
+  return request({
+    url: '/cloud/vpc/security/group/active/set?id=' + id,
+    method: 'put'
+  })
+}
+
+export function queryCloudVPCVSwitchPage (data) {
+  return request({
+    url: '/cloud/vpc/vswitch/page/query',
+    method: 'post',
+    data
+  })
+}
+
+export function setCloudVPCVSwitchActiveById (id) {
+  return request({
+    url: '/cloud/vpc/vswitch/active/set?id=' + id,
+    method: 'put'
+  })
+}

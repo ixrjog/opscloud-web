@@ -44,7 +44,7 @@
       </el-table-column>
       <el-table-column prop="instanceTemplate.instance.typeId" label="实例类型"></el-table-column>
       <el-table-column prop="instanceTemplate.instance.cpuCoreCount" label="cpu"></el-table-column>
-      <el-table-column prop="instanceTemplate.instance.memorySize" label="内存"></el-table-column>
+      <el-table-column prop="instanceTemplate.instance.memorySize" label="内存GiB"></el-table-column>
       <el-table-column fixed="right" label="操作" width="280">
         <template slot-scope="scope">
           <el-button type="success" plain size="mini" @click="createInstance(scope.row)">创建</el-button>

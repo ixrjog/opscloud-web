@@ -20,12 +20,12 @@ export default [
   },
   {
     title: '服务器管理',
-    iconSvg: 'servers',
+    icon: 'server',
     children: [
-      { path: '/server', title: '服务器', iconSvg: 'server' },
-      { path: '/server/attribute', title: '服务器属性', iconSvg: 'attribute' },
-      { path: '/server/group', title: '服务器组', iconSvg: 'servers' },
-      { path: '/server/group/type', title: '服务器组类型', iconSvg: 'servergrp-type' }
+      { path: '/server', title: '服务器', icon: 'server' },
+      { path: '/server/attribute', title: '服务器属性', icon: 'tag' },
+      { path: '/server/group', title: '服务器组', icon: 'window-restore' },
+      { path: '/server/group/type', title: '服务器组类型', icon: 'align-justify' }
     ]
   },
   {
@@ -42,16 +42,16 @@ export default [
   },
   {
     title: '云数据库',
-    iconSvg: 'cloud-db',
+    icon: 'database',
     children: [
-      { path: '/cloud/db/instance', title: '数据库实例', iconSvg: 'rds' },
-      { path: '/cloud/db/database', title: '数据库', iconSvg: 'database' },
-      { path: '/cloud/db/my/database', title: '我的数据库', iconSvg: 'my-database' }
+      { path: '/cloud/db/instance', title: '数据库实例', icon: 'cube' },
+      { path: '/cloud/db/database', title: '数据库', icon: 'cubes' },
+      { path: '/cloud/db/my/database', title: '我的数据库', icon: 'diamond' }
     ]
   },
   {
     title: '堡垒机',
-    iconSvg: 'jump',
+    icon: 'empire',
     children: [
       { path: '/jump/jumpserver/settings', title: '设置', icon: 'cog' },
       { path: '/jump/jumpserver/user', title: '用户管理', icon: 'user' },
@@ -63,14 +63,14 @@ export default [
     icon: 'user-circle',
     children: [
       { path: '/user', title: '用户', icon: 'user' },
-      { path: '/user/group', title: '用户组', iconSvg: 'usergrp' }
+      { path: '/user/group', title: '用户组', icon: 'users' }
     ]
   },
   {
-    title: '权限配置',
+    title: 'RBAC配置',
     icon: 'address-card',
     children: [
-      { path: '/auth/resource', title: '资源管理', icon: 'puzzle-piece' },
+      { path: '/auth/resource', title: '资源管理', icon: 'modx' },
       { path: '/auth/role', title: '角色管理', icon: 'users' },
       { path: '/auth/user/role', title: '用户角色配置', icon: 'id-card' }
     ]

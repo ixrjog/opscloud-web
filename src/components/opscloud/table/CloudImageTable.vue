@@ -35,7 +35,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="imageName" label="镜像名称"></el-table-column>
-      <el-table-column prop="regionId" label="regionId"></el-table-column>
+      <el-table-column prop="regionId" label="地区id"></el-table-column>
       <el-table-column prop="imageSize" label="容量(GiB)"></el-table-column>
       <el-table-column prop="osNameEn" label="系统"></el-table-column>
       <el-table-column prop="creationTime" label="创建时间"></el-table-column>
