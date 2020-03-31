@@ -365,7 +365,7 @@
               top: '10%',
               left: '8%',
               bottom: '22%',
-              right: '25%',
+              right: '35%',
               symbolSize: 7,
               edgeShape: 'polyline',
               edgeForkPosition: '63%',
@@ -482,6 +482,9 @@
                 }, {
                   name: 'instance running',
                   children: this.convertTaskData(memberMap.RUNNING)
+                }, {
+                  name: 'recorded instance',
+                  children: this.convertTaskData(memberMap.RECORDED)
                 }
                 ]
               }
