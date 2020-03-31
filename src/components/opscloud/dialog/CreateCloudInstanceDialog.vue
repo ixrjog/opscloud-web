@@ -90,8 +90,8 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="开通公网" :label-width="formStatus.labelWidth">
-            <el-checkbox v-model="createInstanceData.allocatePublicIpAddress">分配公网ip</el-checkbox>
+          <el-form-item label="公网" :label-width="formStatus.labelWidth">
+            <el-checkbox v-model="createInstanceData.allocatePublicIpAddress">分配公网ip地址</el-checkbox>
           </el-form-item>
           <el-form-item label="创建实例数量" :label-width="formStatus.labelWidth">
             <el-slider v-model="createInstanceData.createSize" :min="1" :max="40" show-input
@@ -192,26 +192,49 @@
           </el-form-item>
         </el-form>
       </el-tab-pane>
+      <el-tab-pane label="任务详情" name="task">
+        <el-form>
+          <el-form-item label="任务进度" :label-width="formStatus.labelWidth">
+            <el-progress :text-inside="true" :stroke-width="24" :percentage="completedPercentage" status="success" style="max-width:200px"></el-progress>
+          </el-form-item>
+        </el-form>
+        <div id="taskChart" style="width: 900px; height: 500px;"></div>
+      </el-tab-pane>
     </el-tabs>
     <div slot="footer" class="dialog-footer">
       <el-button size="mini" @click="closeDialog">关闭</el-button>
-      <!--      <el-button type="primary" size="mini" @click="saveInfo">保存</el-button>-->
+      <el-button type="primary" size="mini" @click="handlerCreate">创建</el-button>
     </div>
   </el-dialog>
 </template>
 
 <script>
+
   // api
   import { queryServerGroupPage } from '@api/server/server.group.js'
   import { queryEnvPage } from '@api/env/env.js'
   import { fuzzyQueryCloudImagePage } from '@api/cloud/cloud.image.js'
   import { queryCloudVPCPage, queryCloudVPCSecurityGroupPage } from '@api/cloud/cloud.vpc.js'
-  import { queryCloudInstanceTemplateVSwitch } from '@api/cloud/cloud.instance.js'
+  import {
+    queryCloudInstanceTemplateVSwitch,
+    createCloudInstance,
+    queryLastCloudInstanceTaskByTemplateId
+  } from '@api/cloud/cloud.instance.js'
+
+  let echarts = require('echarts/lib/echarts')
+  require('echarts/lib/chart/pie')
+  require('echarts/map/js/china')
+  require('echarts/lib/chart/pie')
+  require('echarts/lib/chart/line')
+  require('echarts/lib/chart/bar')
+  require('echarts/lib/component/tooltip')
+  require('echarts/lib/component/legend')
 
   export default {
     name: 'CreateCloudInstanceDialog',
     data () {
       return {
+        timer: null,
         tableData: [],
         activeName: 'template',
         templateData: {},
@@ -306,7 +329,8 @@
         securityGroupOptions: [],
         securityGroupLoading: false,
         vswitchData: [],
-        vswitchTree: []
+        vswitchTree: [],
+        completedPercentage: 0
       }
     },
     props: ['formStatus'],
@@ -316,10 +340,67 @@
       this.getEnvType()
     },
     methods: {
+      setTimer () {
+        if (this.timer == null) {
+          this.timer = setInterval(() => {
+            this.queryTask()
+            console.log('开始定时...每3秒执行一次')
+          }, 3000)
+        }
+      },
+      initMyChart (data) {
+        let myChart = echarts.init(document.getElementById('taskChart'))
+        // 指定图表的配置项和数据
+        var option = {
+          tooltip: {
+            trigger: 'item',
+            triggerOn: 'mousemove'
+          },
+          series: [
+            {
+              type: 'tree',
+              id: 0,
+              name: 'tree1',
+              data: [data],
+              top: '10%',
+              left: '8%',
+              bottom: '22%',
+              right: '25%',
+              symbolSize: 7,
+              edgeShape: 'polyline',
+              edgeForkPosition: '63%',
+              initialTreeDepth: 3,
+              lineStyle: {
+                width: 2
+              },
+              label: {
+                backgroundColor: '#fff',
+                position: 'left',
+                verticalAlign: 'middle',
+                align: 'right'
+              },
+              leaves: {
+                label: {
+                  position: 'right',
+                  verticalAlign: 'middle',
+                  align: 'left'
+                }
+              },
+              expandAndCollapse: true,
+              animationDuration: 550,
+              animationDurationUpdate: 750
+            }
+          ]
+        }
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option)
+      },
       closeDialog () {
         this.cloudType = ''
         // this.templateData = {}
         this.formStatus.visible = false
+        clearInterval(this.timer)
         this.$emit('closeCloudInstanceTemplateDialog')
       },
       getServerGroup (queryName) {
@@ -360,6 +441,54 @@
             this.securityGroupLoading = false
           })
       },
+      convertTaskData (memberList) {
+        if (memberList === undefined || JSON.stringify(memberList) === '{}') {
+          return []
+        }
+        console.log(JSON.stringify(memberList))
+        var childrens = []
+        for (var i = 0; i < memberList.length; i++) {
+          var member = memberList[i]
+          var name = member.hostname
+          if (member.privateIp !== null && member.privateIp !== '') {
+            name = name + ' (' + member.privateIp + ' )'
+          }
+          var children = {
+            name: name,
+            value: member.seq
+          }
+          childrens.push(children)
+        }
+        return childrens
+      },
+      queryTask () {
+        queryLastCloudInstanceTaskByTemplateId(this.templateData.id)
+          .then(res => {
+            var taskDetail = res.body
+            this.completedPercentage = taskDetail.completedPercentage
+            let memberMap = taskDetail.memberMap
+            if (taskDetail.id !== null) {
+              var data = {
+                name: 'task',
+                children: [{
+                  name: 'create instance',
+                  children: this.convertTaskData(memberMap.CREATE_INSTANCE)
+                }, {
+                  name: 'allocate public ip',
+                  children: this.convertTaskData(memberMap.ALLOCATE_PUBLIC_IP_ADDRESS)
+                }, {
+                  name: 'start instance',
+                  children: this.convertTaskData(memberMap.STARTING)
+                }, {
+                  name: 'instance running',
+                  children: this.convertTaskData(memberMap.RUNNING)
+                }
+                ]
+              }
+              this.initMyChart(data)
+            }
+          })
+      },
       getEnvType () {
         queryEnvPage('', '', 1, 20)
           .then(res => {
@@ -367,12 +496,12 @@
           })
       },
       convertVswitchData () {
-       // if (this.vswitchData === null || this.vswitchData.length === 0) return
+        // if (this.vswitchData === null || this.vswitchData.length === 0) return
         this.vswitchTree = []
         for (var i = 0; i < this.vswitchData.length; i++) {
           var vsw = this.vswitchData[i]
           var vswitch = {
-            id: vsw.vswitchId,
+            vswitchId: vsw.vswitchId,
             label: vsw.vswitchName + ' ( 可用ip: ' + vsw.availableIpAddressCount + ' )'
           }
           this.vswitchTree.push(vswitch)
@@ -397,6 +526,7 @@
         this.tableData = []
         this.tableData.push(templateData)
         this.createInstanceData = {
+          templateId: templateData.id,
           serverGroupId: '',
           securityGroupId: templateData.securityGroupId,
           imageId: templateData.imageId,
@@ -408,6 +538,7 @@
           createSize: 1,
           zonePattern: 'auto',
           zoneId: '',
+          vswitchIds: [],
           charge: {
             chargeType: false,
             period: 1,
@@ -438,7 +569,6 @@
         this.imageOptions.push(templateData.cloudImage)
       },
       fetchImageData () {
-        this.imageTableLoading = true
         var imageQueryParam = {
           queryName: this.queryImageParam.queryName,
           cloudType: this.formStatus.cloudType,
@@ -449,9 +579,29 @@
         }
         fuzzyQueryCloudImagePage(imageQueryParam)
           .then(res => {
-            this.imageTableData = res.body.data
             this.imagePagination.total = res.body.totalNum
-            this.imageTableLoading = false
+          })
+      },
+      handlerCreate () {
+        var requestBody = Object.assign({}, this.createInstanceData)
+        requestBody.disk = this.disk
+        try {
+          requestBody.vswitchIds = this.$refs.vswitchTree.getCheckedKeys()
+        } catch (e) {
+        }
+        createCloudInstance(requestBody)
+          .then(res => {
+            if (!res.success) {
+              this.$message.error(res.msg)
+            } else {
+              this.$message({
+                message: '任务执行中！',
+                type: 'success'
+              })
+              this.activeName = 'task'
+              this.setTimer()
+              // this.templateData = res.body
+            }
           })
       },
       fetchVPCData () {

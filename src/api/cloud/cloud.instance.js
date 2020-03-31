@@ -66,3 +66,25 @@ export function queryCloudInstanceTemplateVSwitch (templateId, zoneId) {
     method: 'get'
   })
 }
+
+export function createCloudInstance (data) {
+  return request({
+    url: '/cloud/instance/create',
+    method: 'post',
+    data
+  })
+}
+
+export function queryCloudInstanceTaskById (id) {
+  return request({
+    url: '/cloud/instance/task/query?id=' + id,
+    method: 'get'
+  })
+}
+
+export function queryLastCloudInstanceTaskByTemplateId (templateId) {
+  return request({
+    url: '/cloud/instance/task/last/query?templateId=' + templateId,
+    method: 'get'
+  })
+}

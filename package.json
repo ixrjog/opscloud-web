@@ -23,6 +23,7 @@
     "component-markdown": "^0.1.1",
     "core-js": "^3.4.3",
     "dayjs": "^1.8.17",
+    "echarts": "^4.7.0",
     "element-ui": "^2.13.0",
     "emmet": "git+https://github.com/cloud9ide/emmet-core.git#41973fcc70392864c7a469cf5dcd875b88b93d4a",
     "flex.css": "^1.1.7",
