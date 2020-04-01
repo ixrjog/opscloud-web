@@ -483,8 +483,14 @@
                   name: 'instance running',
                   children: this.convertTaskData(memberMap.RUNNING)
                 }, {
-                  name: 'recorded instance',
-                  children: this.convertTaskData(memberMap.RECORDED)
+                  name: 'cloud server recorded',
+                  children: this.convertTaskData(memberMap.CLOUD_SERVER_RECORDED)
+                }, {
+                  name: 'server recorded',
+                  children: this.convertTaskData(memberMap.SERVER_RECORDED)
+                }, {
+                  name: 'finalized',
+                  children: this.convertTaskData(memberMap.FINALIZED)
                 }
                 ]
               }
