@@ -27,3 +27,11 @@ export function updateCloudDBDatabase (data) {
     data
   })
 }
+
+export function queryCloudDBDatabaseSlowLogPage (data) {
+  return request({
+    url: '/cloud/db/database/slowlog/page/query',
+    method: 'post',
+    data
+  })
+}

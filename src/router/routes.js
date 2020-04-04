@@ -195,6 +195,15 @@ const frameIn = [
         }
       },
       {
+        path: '/cloud/db/database/slowlog',
+        name: 'cloud-db-database-slowlog',
+        component: () => import('@/pages/cloud/db/database/slowlog'),
+        meta: {
+          auth: true,
+          title: '慢日志'
+        }
+      },
+      {
         path: '/jump/jumpserver/settings',
         name: 'jump-jumpserver-settings',
         component: () => import('@/pages/jump/jumpserver/settings'),

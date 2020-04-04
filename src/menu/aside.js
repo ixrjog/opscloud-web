@@ -46,6 +46,7 @@ export default [
     children: [
       { path: '/cloud/db/instance', title: '数据库实例', icon: 'cube' },
       { path: '/cloud/db/database', title: '数据库', icon: 'cubes' },
+      { path: '/cloud/db/database/slowlog', title: '慢日志', icon: 'warning' },
       { path: '/cloud/db/my/database', title: '我的数据库', icon: 'diamond' }
     ]
   },
