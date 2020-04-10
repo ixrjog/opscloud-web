@@ -230,6 +230,16 @@ const frameIn = [
           title: 'Jumpserver资产管理'
         }
       },
+      // task
+      {
+        path: '/task/command',
+        name: 'task-command',
+        component: () => import('@/pages/task/command'),
+        meta: {
+          auth: true,
+          title: '批量命令'
+        }
+      },
       // user
       {
         path: '/user',

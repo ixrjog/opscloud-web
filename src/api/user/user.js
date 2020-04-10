@@ -95,3 +95,11 @@ export function saveUserCredential (data) {
     data
   })
 }
+
+export function queryUserServerTree (data) {
+  return request({
+    url: '/user/server/tree/query',
+    method: 'post',
+    data
+  })
+}

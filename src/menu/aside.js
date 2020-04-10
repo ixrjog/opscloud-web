@@ -68,6 +68,13 @@ export default [
     ]
   },
   {
+    title: '任务管理',
+    icon: 'th-list',
+    children: [
+      { path: '/task/command', title: '批量命令', icon: 'terminal' }
+    ]
+  },
+  {
     title: 'RBAC配置',
     icon: 'address-card',
     children: [
