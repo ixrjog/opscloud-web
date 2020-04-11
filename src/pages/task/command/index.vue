@@ -17,6 +17,9 @@
             </el-option>
           </el-select>
           <el-button @click="fetchData" :style="searchBarStyle" :loading="searching">查询</el-button>
+          <el-tooltip content="创建ansible主机配置文件" placement="bottom" effect="light">
+            <el-button @click="createAnsibleHostsCfg" :style="searchBarStyle" :loading="creating">创建</el-button>
+          </el-tooltip>
         </el-row>
       </div>
       <el-row>
@@ -83,7 +86,7 @@
   // API
   import { queryUserServerTree } from '@api/user/user.js'
   import { queryServerGroupTypePage } from '@api/server/server.group.type.js'
-  import { executorCommand, queryServerTaskById } from '@api/server/server.task.js'
+  import { executorCommand, queryServerTaskById, createAnsibleHosts } from '@api/server/server.task.js'
 
   export default {
     data () {
@@ -119,7 +122,8 @@
           taskType: 0
         },
         grpTypeOptions: [],
-        searching: false
+        searching: false,
+        creating: false
       }
     },
     mounted () {
@@ -184,6 +188,20 @@
         } catch (e) {
 
         }
+      },
+      createAnsibleHostsCfg () {
+        this.creating = true
+        createAnsibleHosts().then(res => {
+          if (res.success) {
+            this.$message({
+              message: 'ansible主机配置文件创建成功!',
+              type: 'success'
+            })
+          } else {
+            this.$message.error(res.msg)
+          }
+          this.creating = false
+        })
       },
       queryTask () {
         queryServerTaskById(this.taskId)

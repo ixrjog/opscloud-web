@@ -14,3 +14,10 @@ export function queryServerTaskById (taskId) {
     method: 'get'
   })
 }
+
+export function createAnsibleHosts () {
+  return request({
+    url: '/server/task/ansible/hosts/create',
+    method: 'get'
+  })
+}
