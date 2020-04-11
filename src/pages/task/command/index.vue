@@ -24,28 +24,50 @@
           <el-tree :data="treeData" show-checkbox ref="myServerTree" node-key="id"></el-tree>
         </el-col>
         <el-col :span="18">
-          <el-button @click="executorCommand" :style="searchBarStyle">执行</el-button>
-          <el-tabs tab-position="left" v-if="serverTask != ''">
-            <el-tab-pane label="执行中">
+          <el-tooltip content="系统命令输入框" placement="bottom" effect="light">
+            <editor v-model="executorCommandParam.command" @init="editorInit" lang="sh" theme="chrome"
+                    width="800"
+                    height="80" :options="options"></editor>
+          </el-tooltip>
+          <div style="margin-top: 5px">
+            <el-tooltip content="并发线程数" placement="bottom" effect="light">
+              <el-input-number size="mini" v-model="executorCommandParam.concurrent" :min="1" :max="10"
+                               :step="2"></el-input-number>
+            </el-tooltip>
+            <el-tooltip content="批量命令执行" placement="bottom" effect="light">
+              <el-button @click="executorCommand" :style="searchBarStyle">执行</el-button>
+            </el-tooltip>
+          </div>
+          <el-tabs tab-position="top" v-if="serverTask != ''">
+            <el-tab-pane>
+              <span slot="label"><i class="el-icon-loading"></i> 执行中</span>
               <el-card shadow="never" v-for="member in serverTask.memberMap.EXECUTING" :key="member.id"
                        style="margin-top: 5px">
                 <el-tag disable-transitions>{{member.hostPattern}} - {{member.manageIp}}</el-tag>
-                <el-tag disable-transitions :style="{ color: member.env.color , marginLeft: '5px' }">{{member.env.envName}}</el-tag>
+                <el-tag disable-transitions :style="{ color: member.env.color , marginLeft: '5px' }">
+                  {{member.env.envName}}
+                </el-tag>
                 <d2-highlight :code="member.outputMsg" style="margin-top: 5px"/>
               </el-card>
             </el-tab-pane>
-            <el-tab-pane label="队列">
+            <el-tab-pane>
+              <span slot="label"><i class="el-icon-video-pause"></i> 队列</span>
               <el-card shadow="never" v-for="member in serverTask.memberMap.QUEUE" :key="member.id"
                        style="margin-top: 5px">
                 <el-tag disable-transitions>{{member.hostPattern}} - {{member.manageIp}}</el-tag>
-                <el-tag disable-transitions :style="{ color: member.env.color , marginLeft: '5px' }">{{member.env.envName}}</el-tag>
+                <el-tag disable-transitions :style="{ color: member.env.color , marginLeft: '5px' }">
+                  {{member.env.envName}}
+                </el-tag>
               </el-card>
             </el-tab-pane>
-            <el-tab-pane label="已完成">
+            <el-tab-pane>
+              <span slot="label"><i class="el-icon-check"></i> 结束</span>
               <el-card shadow="never" v-for="member in serverTask.memberMap.FINALIZED" :key="member.id"
                        style="margin-top: 5px">
                 <el-tag disable-transitions>{{member.hostPattern}} - {{member.manageIp}}</el-tag>
-                <el-tag disable-transitions :style="{ color: member.env.color , marginLeft: '5px' }">{{member.env.envName}}</el-tag>
+                <el-tag disable-transitions :style="{ color: member.env.color , marginLeft: '5px' }">
+                  {{member.env.envName}}
+                </el-tag>
                 <d2-highlight :code="member.outputMsg" style="margin-top: 5px"/>
               </el-card>
             </el-tab-pane>
@@ -88,6 +110,14 @@
           name: '',
           grpType: ''
         },
+        executorCommandParam: {
+          command: '',
+          concurrent: 4,
+          becomeUser: '',
+          hostPatterns: [],
+          uuid: '',
+          taskType: 0
+        },
         grpTypeOptions: [],
         searching: false
       }
@@ -96,8 +126,22 @@
       this.getGrpType('')
       // this.fetchData()
     },
-    components: {},
+    components: {
+      editor: require('vue2-ace-editor')
+    },
     methods: {
+      editorInit: function () {
+        // language extension prerequsite...
+        require('brace/ext/language_tools')
+        // require('brace/mode/html')
+        // language
+        // require('brace/mode/yaml')
+        // require('brace/mode/less')
+        require('brace/mode/sh')
+        require('brace/theme/chrome')
+        // snippet
+        require('brace/snippets/yaml')
+      },
       setTimer () {
         if (this.timer == null) {
           this.timer = setInterval(() => {
@@ -121,13 +165,10 @@
       },
       executorCommand () {
         try {
-          var requestBody = {
-            uuid: this.uuid,
-            taskType: 0,
-            command: '',
-            hostPatterns: this.$refs.myServerTree.getCheckedKeys(true, false)
-          }
-          console.log(JSON.stringify(requestBody))
+          var requestBody = Object.assign({}, this.executorCommandParam)
+          requestBody.uuid = this.uuid
+          requestBody.hostPatterns = this.$refs.myServerTree.getCheckedKeys(true, false)
+          // console.log(JSON.stringify(requestBody))
           executorCommand(requestBody).then(res => {
             if (res.success) {
               this.$message({
