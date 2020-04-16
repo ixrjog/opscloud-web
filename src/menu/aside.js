@@ -71,7 +71,10 @@ export default [
     title: '任务管理',
     icon: 'th-list',
     children: [
-      { path: '/task/command', title: '批量命令', icon: 'terminal' }
+      { path: '/task/script-mgmt', title: '脚本管理', icon: 'file-text-o' },
+      { path: '/task/command', title: '批量命令', icon: 'terminal' },
+      { path: '/task/script', title: '批量脚本', icon: 'terminal' },
+      { path: '/task/ansible', title: 'playbook', icon: 'recycle' }
     ]
   },
   {

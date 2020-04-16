@@ -29,7 +29,7 @@ export default {
     highlight: {
       type: Boolean,
       required: false,
-      default: false
+      default: true
     },
     // 百度网盘分享链接特殊样式
     baidupan: {

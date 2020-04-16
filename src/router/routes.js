@@ -232,12 +232,39 @@ const frameIn = [
       },
       // task
       {
+        path: '/task/script-mgmt',
+        name: 'task-script-mgmt',
+        component: () => import('@/pages/task/script-mgmt'),
+        meta: {
+          auth: true,
+          title: '脚本管理'
+        }
+      },
+      {
         path: '/task/command',
         name: 'task-command',
         component: () => import('@/pages/task/command'),
         meta: {
           auth: true,
           title: '批量命令'
+        }
+      },
+      {
+        path: '/task/script',
+        name: 'task-script',
+        component: () => import('@/pages/task/script'),
+        meta: {
+          auth: true,
+          title: '批量脚本'
+        }
+      },
+      {
+        path: '/task/ansible',
+        name: 'task-ansible',
+        component: () => import('@/pages/task/playbook'),
+        meta: {
+          auth: true,
+          title: 'Playbook'
         }
       },
       // user
