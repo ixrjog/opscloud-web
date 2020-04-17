@@ -1,50 +1,45 @@
 <template>
-  <div>
-    <el-input v-model="queryParam.queryName" placeholder="关键字查询" style="display: inline-block; max-width:200px"/>
-    <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
-
-    <el-table :data="tableData" style="width: 100%">
-      <el-table-column type="expand">
-        <template slot-scope="props">
-          <el-form label-position="left" inline class="table-expand">
-            <el-form-item label="playbook">
-              <editor v-model="props.row.playbook" @init="editorInit" lang="yaml" theme="kuroir"
-                      width="800" height="200" :options="options"></editor>
-              <!--              <d2-highlight :code="props.row.ansible" lang="yml"/>-->
-            </el-form-item>
-          </el-form>
-        </template>
-      </el-table-column>
-      <el-table-column prop="name" label="名称"></el-table-column>
-      <el-table-column prop="extraVars" label="vars" width="520px">
-        <template slot-scope="scope">
-          <editor v-model="scope.row.extraVars" @init="editorInit" lang="yaml" theme="kuroir"
-                  width="500" height="100" :options="options"></editor>
-        </template>
-      </el-table-column>
-      <el-table-column prop="tags" label="tags" width="520px">
-        <template slot-scope="scope">
-          <editor v-model="scope.row.tags" @init="editorInit" lang="yaml" theme="kuroir"
-                  width="500" height="100" :options="options"></editor>
-          <!--          <d2-highlight :code="scope.row.tags" lang="yml"/>-->
-        </template>
-      </el-table-column>
-      <el-table-column fixed="right" label="操作" width="280">
-        <template slot-scope="scope">
-          <!--            <el-button type="primary" plain size="mini" @click="updateItemNeedAuth(scope.row)">{{scope.row.needAuth ===-->
-          <!--              0 ? '鉴权' : '不鉴权'}}-->
-          <!--            </el-button>-->
-          <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
-          <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <el-pagination background @current-change="paginationCurrentChange"
-                   layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
-                   :page-size="pagination.pageSize">
-    </el-pagination>
-    <PlaybookDialog :formStatus="formPlaybookStatus" ref="playbookDialog" @closePlaybookDialog="fetchData"></PlaybookDialog>
-  </div>
+    <div>
+        <el-input v-model="queryParam.queryName" placeholder="关键字查询" style="display: inline-block; max-width:200px"/>
+        <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
+        <el-button @click="addItem" style="margin-left: 5px">新建</el-button>
+        <el-table :data="tableData" style="width: 100%">
+            <el-table-column type="expand">
+                <template slot-scope="props">
+                    <el-form label-position="left" inline class="table-expand">
+                        <el-form-item label="tags">
+                            <editor v-model="props.row.tags" @init="editorInit" lang="yaml" theme="kuroir"
+                                    width="400" height="100" :options="options"></editor>
+                        </el-form-item>
+                    </el-form>
+                </template>
+            </el-table-column>
+            <el-table-column prop="name" label="名称" width="200px"></el-table-column>
+            <el-table-column prop="playbook" label="playbook"  width="600px">
+                <template slot-scope="scope">
+                    <editor v-model="scope.row.playbook" @init="editorInit" lang="yaml" theme="kuroir"
+                            height="200" :options="options"></editor>
+                </template>
+            </el-table-column>
+            <el-table-column prop="playbook" label="playbook"  width="400px">
+                <template slot-scope="scope">
+                    <editor v-model="scope.row.extraVars" @init="editorInit" lang="yaml" theme="kuroir"
+                            height="200" :options="options"></editor>
+                </template>
+            </el-table-column>
+            <el-table-column fixed="right" label="操作" width="280">
+                <template slot-scope="scope">
+                    <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
+                    <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <el-pagination background @current-change="paginationCurrentChange"
+                       layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
+                       :page-size="pagination.pageSize">
+        </el-pagination>
+        <PlaybookDialog :formStatus="formStatus" ref="playbookDialog" @closePlaybookDialog="fetchData"></PlaybookDialog>
+    </div>
 </template>
 
 <script>
@@ -52,12 +47,12 @@
   import PlaybookDialog from '@/components/opscloud/dialog/PlaybookDialog'
 
   // API
-  import { queryPlaybookPage } from '@api/server/server.task.js'
+  import { queryPlaybookPage, delPlaybookById } from '@api/server/server.task.js'
 
   export default {
     data () {
       return {
-        formPlaybookStatus: {
+        formStatus: {
           visible: false,
           addTitle: '新增playbook配置',
           updateTitle: '更新playbook配置',
@@ -80,7 +75,7 @@
       }
     },
     name: 'AnsiblePlaybookTable',
-    props: ['formStatus'],
+    props: [],
     mounted () {
       this.fetchData()
     },
@@ -100,11 +95,43 @@
         require('brace/snippets/yaml')
         ed.setReadOnly(true)
       },
+      addItem () {
+        let playbook = {
+          id: '',
+          name: '',
+          tags: '',
+          extraVars: '',
+          playbook: ''
+        }
+        this.formStatus.operationType = true
+        this.formStatus.visible = true
+        this.$refs.scriptDialog.initData(playbook)
+      },
       editItem (row) {
         let playbook = Object.assign({}, row)
-        this.formPlaybookStatus.operationType = false
-        this.formPlaybookStatus.visible = true
+        this.formStatus.operationType = false
+        this.formStatus.visible = true
         this.$refs.playbookDialog.initData(playbook)
+      },
+      delItem (row) {
+        this.$confirm('此操作将删除当前配置?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          delPlaybookById(row.id).then(res => {
+            this.fetchData()
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
       },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage
@@ -127,18 +154,18 @@
 </script>
 
 <style>
-  .table-expand {
-    font-size: 0;
-  }
+    .table-expand {
+        font-size: 0;
+    }
 
-  .table-expand label {
-    width: 150px;
-    color: #99a9bf;
-  }
+    .table-expand label {
+        width: 150px;
+        color: #99a9bf;
+    }
 
-  .table-expand .el-form-item {
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 50%;
-  }
+    .table-expand .el-form-item {
+        margin-right: 0;
+        margin-bottom: 0;
+        width: 50%;
+    }
 </style>

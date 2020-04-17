@@ -2,6 +2,7 @@
   <div>
     <el-input v-model="queryParam.queryName" placeholder="关键字查询" style="display: inline-block; max-width:200px"/>
     <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
+    <el-button @click="addItem">新增</el-button>
 
     <el-table :data="tableData" style="width: 100%">
       <el-table-column type="expand">
@@ -27,7 +28,7 @@
       </el-table-column>
       <el-table-column prop="scriptLang" label="锁">
         <template slot-scope="scope">
-          <el-tag type="primary" plain size="mini">{{scope.row.scriptLock === 0 ? '锁定' : '开放'}}
+          <el-tag type="primary" plain size="mini">{{scope.row.scriptLock === 0 ? '开放' : '锁定' }}
           </el-tag>
         </template>
       </el-table-column>
@@ -42,25 +43,25 @@
                    layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                    :page-size="pagination.pageSize">
     </el-pagination>
-    <PlaybookDialog :formStatus="formPlaybookStatus" ref="playbookDialog"
-                    @closePlaybookDialog="fetchData"></PlaybookDialog>
+    <ScriptDialog :formStatus="formStatus" ref="scriptDialog"
+                  @closeScriptDialog="fetchData"></ScriptDialog>
   </div>
 </template>
 
 <script>
   // Component
-  import PlaybookDialog from '@/components/opscloud/dialog/PlaybookDialog'
+  import ScriptDialog from '@/components/opscloud/dialog/ScriptDialog'
 
   // API
-  import { queryScriptPage } from '@api/server/server.task.js'
+  import { queryScriptPage, delScriptById } from '@api/server/server.task.js'
 
   export default {
     data () {
       return {
-        formPlaybookStatus: {
+        formStatus: {
           visible: false,
-          addTitle: '新增playbook配置',
-          updateTitle: '更新playbook配置',
+          addTitle: '新增script配置',
+          updateTitle: '更新script配置',
           labelWidth: '100px',
           operationType: true
         },
@@ -80,12 +81,12 @@
       }
     },
     name: 'AnsiblePlaybookTable',
-    props: ['formStatus'],
+    props: [],
     mounted () {
       this.fetchData()
     },
     components: {
-      PlaybookDialog,
+      ScriptDialog,
       editor: require('vue2-ace-editor')
     },
     methods: {
@@ -101,11 +102,43 @@
         require('brace/snippets/yaml')
         ed.setReadOnly(true)
       },
+      addItem () {
+        let scriptData = {
+          id: '',
+          name: '',
+          scriptLang: 'sh',
+          scriptLock: 0,
+          scriptContent: ''
+        }
+        this.formStatus.operationType = true
+        this.formStatus.visible = true
+        this.$refs.scriptDialog.initData(scriptData)
+      },
       editItem (row) {
-        let playbook = Object.assign({}, row)
-        this.formPlaybookStatus.operationType = false
-        this.formPlaybookStatus.visible = true
-        this.$refs.playbookDialog.initData(playbook)
+        let scriptData = Object.assign({}, row)
+        this.formStatus.operationType = false
+        this.formStatus.visible = true
+        this.$refs.scriptDialog.initData(scriptData)
+      },
+      delItem (row) {
+        this.$confirm('此操作将删除当前配置?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          delScriptById(row.id).then(res => {
+            this.fetchData()
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
       },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage

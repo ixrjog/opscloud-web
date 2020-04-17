@@ -64,7 +64,6 @@
         searchBarStyle: {
           marginLeft: '5px'
         },
-        // serverGroup: {},
         uuid: '',
         options: {
           stripe: true
@@ -90,8 +89,6 @@
     },
     mounted () {
       this.getScript('')
-      // this.getGrpType('')
-      // this.fetchData()
     },
     components: {
       ServerTree,
@@ -104,7 +101,7 @@
         this.script = script || {}
       },
       getScript (queryName) {
-        this.playbookSearching = true
+        this.scriptSearching = true
         let requestBody = {
           queryName: queryName,
           page: 1,
@@ -120,7 +117,7 @@
         const previewData = {
           name: this.script.name,
           content: this.script.scriptContent,
-          // path: this.script.path,
+          path: this.script.path,
           lang: this.script.scriptLang,
           comment: this.script.comment
         }

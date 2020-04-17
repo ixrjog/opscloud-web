@@ -12,7 +12,7 @@
       </el-form-item>
       <el-form-item label="内容" :label-width="formStatus.labelWidth">
         <editor v-model="previewData.content" @init="editorInit" :lang="previewData.lang" theme="kuroir"
-                width="700" height="400"></editor>
+                height="400"></editor>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">

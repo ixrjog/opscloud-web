@@ -90,3 +90,26 @@ export function queryScriptPage (data) {
     data
   })
 }
+
+export function addScript (data) {
+  return request({
+    url: '/server/task/script/add',
+    method: 'post',
+    data
+  })
+}
+
+export function updateScript (data) {
+  return request({
+    url: '/server/task/script/update',
+    method: 'put',
+    data
+  })
+}
+
+export function delScriptById (id) {
+  return request({
+    url: '/server/task/script/del?id=' + id,
+    method: 'delete'
+  })
+}
