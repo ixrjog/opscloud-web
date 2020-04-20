@@ -9,7 +9,7 @@
           {{member.env.envName}}
         </el-tag>
         <el-button style="float: right" @click="abortServerTaskMember(member.id)">停止</el-button>
-        <d2-highlight :code="member.outputMsg" style="margin-top: 5px"/>
+        <d2-highlight  v-if="member.outputMsgLog != null" :code="member.outputMsgLog" style="margin-top: 5px"/>
       </el-card>
     </el-tab-pane>
     <el-tab-pane name="queue" v-if="serverTask.memberMap.QUEUE != null">
@@ -51,7 +51,7 @@
         <el-tag disable-transitions :style="{ color: member.env.color , marginLeft: '5px' }">
           {{member.env.envName}}
         </el-tag>
-        <d2-highlight v-if="member.result == null" :code="member.outputMsg" style="margin-top: 5px"/>
+        <d2-highlight v-if="member.result == null && member.outputMsgLog != null" :code="member.outputMsgLog" style="margin-top: 5px"/>
         <d2-highlight v-if="member.result != null" :code="member.result.stdout" style="margin-top: 5px"/>
       </el-card>
     </el-tab-pane>
