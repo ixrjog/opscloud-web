@@ -113,3 +113,17 @@ export function delScriptById (id) {
     method: 'delete'
   })
 }
+
+export function queryAnsibleVersion () {
+  return request({
+    url: '/server/task/ansible/version',
+    method: 'get'
+  })
+}
+
+export function previewAnsibleHosts () {
+  return request({
+    url: '/server/task/ansible/hosts/preview',
+    method: 'get'
+  })
+}

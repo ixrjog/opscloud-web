@@ -11,7 +11,7 @@
       </el-option>
     </el-select>
     <el-button @click="fetchData" :style="searchBarStyle" :loading="searching">查询</el-button>
-    <el-tooltip content="创建ansible主机配置文件" placement="bottom" effect="light">
+    <el-tooltip content="创建ansible主机配置文件" placement="bottom" effect="light" v-if="false">
       <el-button @click="createAnsibleHostsCfg" :style="searchBarStyle" :loading="creating">创建</el-button>
     </el-tooltip>
     <el-card style="margin-top: 5px" class="box-card" shadow="never">

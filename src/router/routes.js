@@ -232,9 +232,9 @@ const frameIn = [
       },
       // task
       {
-        path: '/task/script-mgmt',
-        name: 'task-script-mgmt',
-        component: () => import('@/pages/task/script-mgmt'),
+        path: '/task/ansible-mgmt',
+        name: 'task-ansible-mgmt',
+        component: () => import('@/pages/task/ansible-mgmt'),
         meta: {
           auth: true,
           title: '脚本管理'
@@ -284,6 +284,15 @@ const frameIn = [
         meta: {
           auth: true,
           title: '用户组管理'
+        }
+      },
+      {
+        path: '/org/department',
+        name: 'org-department',
+        component: () => import('@/pages/org/department'),
+        meta: {
+          auth: true,
+          title: '部门管理'
         }
       },
       {

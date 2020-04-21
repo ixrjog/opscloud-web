@@ -64,14 +64,15 @@ export default [
     icon: 'user-circle',
     children: [
       { path: '/user', title: '用户', icon: 'user' },
-      { path: '/user/group', title: '用户组', icon: 'users' }
+      { path: '/user/group', title: '用户组', icon: 'users' },
+      { path: '/org/department', title: '部门管理', icon: 'connectdevelop' }
     ]
   },
   {
     title: '任务管理',
     icon: 'th-list',
     children: [
-      { path: '/task/script-mgmt', title: '脚本管理', icon: 'file-text-o' },
+      { path: '/task/ansible-mgmt', title: '配置管理', icon: 'file-text-o' },
       { path: '/task/command', title: '批量命令', icon: 'terminal' },
       { path: '/task/script', title: '批量脚本', icon: 'retweet' },
       { path: '/task/ansible', title: 'playbook', icon: 'recycle' }
