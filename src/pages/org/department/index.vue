@@ -62,8 +62,15 @@
               </el-row>
             </div>
             <el-table :data="tableData" style="width: 100%" v-loading="memberLoading">
-              <el-table-column prop="username" label="用户名"></el-table-column>
-              <el-table-column prop="displayName" label="显示名"></el-table-column>
+              <el-table-column prop="username" label="用户名">
+              </el-table-column>
+              <el-table-column prop="displayName" label="显示名">
+                <template slot-scope="scope">
+                  <i class="fa fa-gg-circle" v-if="scope.row.memberType === 1" aria-hidden="true"></i>
+                  <span v-if="scope.row.memberType === 1" style="color: #2f74ff">{{scope.row.username}}</span>
+                  <span v-if="scope.row.memberType === 0">{{scope.row.username}}</span>
+                </template>
+              </el-table-column>
               <el-table-column prop="email" label="邮箱"></el-table-column>
               <el-table-column prop="isLeader" label="经理">
                 <template slot-scope="scope">
