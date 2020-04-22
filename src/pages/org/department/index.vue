@@ -9,15 +9,31 @@
           <el-card class="box-card" shadow="never">
             <div slot="header" class="clearfix">
               <span>组织架构</span>
-              <el-button @click="fetchDepartmentTreeData" style="float: right" :loading="searching">查询</el-button>
+              <el-select v-model="treeDepartmentId" filterable clearable :style="searchBarStyle"
+                         remote reserve-keyword placeholder="搜索部门" :remote-method="getDepartment"
+                         :loading="getDepartmentLoading">
+                <el-option
+                  v-for="item in departmentOptions"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-button @click="fetchDepartmentTreeData" style="float: right; margin-left: 5px" :loading="searching">
+                查询
+              </el-button>
+              <el-button @click="addDepartment" style="float: right">新增</el-button>
             </div>
-            <el-tree
-              draggable
-              default-expand-all
-              node-key="id"
-              :data="deptTree.tree"
-              @node-drop="handleDrop"
-              @node-click="handleNodeClick"></el-tree>
+            <el-tree draggable default-expand-all highlight-current node-key="id"
+                     :data="deptTree.tree" @node-drop="handleDrop" @node-click="handleNodeClick">
+              <span class="custom-tree-node" slot-scope="{ node, data }">
+                <span>{{ node.label }}</span>
+                <span>
+                  <el-button type="text" size="mini" @click="() => editDepartment(node, data)">编辑</el-button>
+                  <el-button type="text" size="mini" @click="() => delDepartment(node, data)">删除</el-button>
+                </span>
+              </span>
+            </el-tree>
           </el-card>
         </el-col>
         <el-col :span="16">
@@ -25,41 +41,47 @@
           <el-card class="box-card" shadow="never">
             <div slot="header" class="clearfix">
               <span>部门成员</span>
+              <el-tag style="float: right" v-if="pagination != null && pagination.total != null" disable-transitions>
+                SIZE: {{ pagination.total }}
+              </el-tag>
             </div>
             <!--用户搜索-->
             <div style="margin-bottom: 5px">
               <!--            :gutter="24"-->
               <el-row style="margin-bottom: 5px">
-                <el-input v-model="queryMemberParam.queryName" placeholder="名称" :style="searchBarHeadStyle"
-                          style="display: inline-block; max-width:200px"/>
-                <el-button @click="fetchDepartmentMemberData" :style="searchBarStyle">查询</el-button>
-                <el-button @click="addItem" style="margin-left: 5px">新增</el-button>
+                <el-select v-model="userId" filterable clearable :style="searchBarStyle"
+                           remote reserve-keyword placeholder="搜索用户" :remote-method="getUser" :loading="getUserLoading">
+                  <el-option
+                    v-for="item in userOptions"
+                    :key="item.id"
+                    :label="item.displayName"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+                <el-button @click="addDeptMember" style="margin-left: 5px">加入</el-button>
               </el-row>
             </div>
             <el-table :data="tableData" style="width: 100%" v-loading="memberLoading">
               <el-table-column prop="username" label="用户名"></el-table-column>
               <el-table-column prop="displayName" label="显示名"></el-table-column>
-              <el-table-column prop="role" label="角色">
+              <el-table-column prop="email" label="邮箱"></el-table-column>
+              <el-table-column prop="isLeader" label="经理">
                 <template slot-scope="scope">
-                  <el-tag class="filters" :type="scope.row.role | getUserRoleType" size="small ">
-                    {{scope.row.role | getUserRoleText}}
-                  </el-tag>
+                  <el-tag type="success" v-if="scope.row.isLeader === 1" size="small">是</el-tag>
+                  <el-tag type="info" v-if="scope.row.isLeader === 0" size="small">否</el-tag>
                 </template>
               </el-table-column>
-              <el-table-column prop="isActive" label="有效">
+              <el-table-column prop="isApprovalAuthority" label="审批权">
                 <template slot-scope="scope">
-                  <el-tag class="filters" :type="scope.row.isActive | getActiveType" size="small ">
-                    {{scope.row.isActive | getActiveText}}
-                  </el-tag>
+                  <el-tag type="success" v-if="scope.row.isApprovalAuthority === 1" size="small">是</el-tag>
+                  <el-tag type="info" v-if="scope.row.isApprovalAuthority === 0" size="small">否</el-tag>
                 </template>
               </el-table-column>
               <el-table-column fixed="right" label="操作" width="280">
                 <template slot-scope="scope">
-                  <el-button type="primary" plain size="mini" @click="syncItem(scope.row.id)">同步</el-button>
-                  <el-button type="primary" plain size="mini" @click="setItemActive(scope.row.id)">{{!scope.row.isActive
-                    | getActiveText}}
-                  </el-button>
-                  <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
+                  <el-button type="primary" plain size="mini" @click="setDeptMemberLeader(scope.row)">经理</el-button>
+                  <el-button type="primary" plain size="mini" @click="setDeptMemberApproval(scope.row)">审批</el-button>
+                  <el-button type="danger" plain size="mini" @click="removeDeptMember(scope.row)">移除</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -72,14 +94,23 @@
           </el-card>
         </el-col>
       </el-row>
+      <DepartmentDialog ref="departmentDialog" :formStatus="formDepartmentStatus"
+                        @closeDepartmentDialog="fetchDepartmentTreeData"></DepartmentDialog>
     </template>
   </d2-container>
 </template>
 
 <script>
 
+  import DepartmentDialog from '@/components/opscloud/dialog/DepartmentDialog'
+
   // API
-  import { queryDepartmentTree, dropDepartmentTree, queryDepartmentMemberPage } from '@api/org/org.js'
+  import {
+    queryDepartmentTree, dropDepartmentTree, queryDepartmentMemberPage,
+    addDepartmentMember, removeDepartmentMemberById, updateDepartmentMemberLeader,
+    updateDepartmentMemberApproval, queryDepartmentById, queryDepartmentPage
+  } from '@api/org/org.js'
+  import { fuzzyQueryUserPage } from '@api/user/user.js'
 
   export default {
     data () {
@@ -92,6 +123,7 @@
           marginLeft: '5px'
         },
         title: '部门管理',
+        departmentName: '',
         rootParentId: 0,
         departmentId: '',
         deptTree: '',
@@ -107,14 +139,147 @@
         },
         queryMemberParam: {
           queryName: ''
+        },
+        //
+        treeDepartmentId: '',
+        departmentOptions: [],
+        getDepartmentLoading: false,
+        // user
+        userId: '',
+        getUserLoading: false,
+        userOptions: [],
+        // form
+        formDepartmentStatus: {
+          visible: false,
+          labelWidth: '150px',
+          operationType: true,
+          addTitle: '新增部门信息',
+          updateTitle: '更新部门信息'
         }
       }
     },
     mounted () {
       this.fetchDepartmentTreeData()
     },
-    components: {},
+    components: {
+      DepartmentDialog
+    },
     methods: {
+      getDepartment (queryName) {
+        this.getDepartmentLoading = true
+        var requestBody = {
+          'queryName': queryName,
+          'page': 1,
+          'length': 20
+        }
+        queryDepartmentPage(requestBody)
+          .then(res => {
+            this.departmentOptions = res.body.data
+            this.getDepartmentLoading = false
+          })
+      },
+      getUser (queryName) {
+        this.getUserLoading = true
+        var requestBody = {
+          'queryName': queryName,
+          'extend': 0,
+          'page': 1,
+          'length': 20
+        }
+        fuzzyQueryUserPage(requestBody)
+          .then(res => {
+            this.userOptions = res.body.data
+            this.getUserLoading = false
+          })
+      },
+      addDeptMember () {
+        if (this.departmentId === '' || this.userId === '') return
+        addDepartmentMember(this.departmentId, this.userId)
+          .then(res => {
+            if (res.success) {
+              this.$message({
+                type: 'success',
+                message: '添加部门成员成功!'
+              })
+              this.fetchDepartmentMemberData()
+            } else {
+              this.$message.error(res.msg)
+            }
+          })
+      },
+      // 编辑部门
+      addDepartment () {
+        let departmentData = {
+          id: 0,
+          name: '',
+          comment: '',
+          parentId: this.treeDepartmentId !== '' ? this.treeDepartmentId : 1,
+          deptType: 0
+        }
+        this.formDepartmentStatus.visible = true
+        this.formDepartmentStatus.operationType = true
+        this.$refs.departmentDialog.initData(departmentData)
+      },
+      // 编辑部门
+      editDepartment (node, data) {
+        // queryDepartmentById
+        console.log(node.key)
+        queryDepartmentById(node.key)
+          .then(res => {
+            if (res.success) {
+              let departmentData = res.body
+              this.formDepartmentStatus.visible = true
+              this.formDepartmentStatus.operationType = false
+              this.$refs.departmentDialog.initData(departmentData)
+            }
+          })
+      },
+      // 删除部门
+      delDepartment (node, data) {
+        console.log(node.key)
+      },
+      setDeptMemberLeader (row) {
+        updateDepartmentMemberLeader(row.id)
+          .then(res => {
+            if (res.success) {
+              this.$message({
+                type: 'success',
+                message: '设置部门成员经理属性成功!'
+              })
+              this.fetchDepartmentMemberData()
+            } else {
+              this.$message.error(res.msg)
+            }
+          })
+      },
+      setDeptMemberApproval (row) {
+        updateDepartmentMemberApproval(row.id)
+          .then(res => {
+            if (res.success) {
+              this.$message({
+                type: 'success',
+                message: '设置部门成员审批权属性成功!'
+              })
+              this.fetchDepartmentMemberData()
+            } else {
+              this.$message.error(res.msg)
+            }
+          })
+      },
+      removeDeptMember (row) {
+        removeDepartmentMemberById(row.id)
+          .then(res => {
+            if (res.success) {
+              this.$message({
+                type: 'success',
+                message: '移除部门成员成功!'
+              })
+              this.fetchDepartmentMemberData()
+            } else {
+              this.$message.error(res.msg)
+            }
+          })
+      },
       handleDrop (draggingNode, dropNode, dropType, ev) {
         // console.log('tree drop: ', draggingNode.label, dropNode.label, dropType)
         // console.log('tree drop: ', draggingNode.key, dropNode.key, dropType)
@@ -134,6 +299,7 @@
       handleNodeClick (data, node) {
         try {
           this.departmentId = node.key
+          this.departmentName = node.label
           this.fetchDepartmentMemberData()
         } catch (e) {
         }
@@ -144,7 +310,8 @@
       },
       fetchDepartmentTreeData () {
         this.searching = true
-        queryDepartmentTree(this.rootParentId)
+        let parentId = this.treeDepartmentId === '' ? this.rootParentId : this.treeDepartmentId
+        queryDepartmentTree(parentId)
           .then(res => {
             this.deptTree = res.body
             this.searching = false
@@ -152,7 +319,7 @@
       },
       fetchDepartmentMemberData () {
         if (this.departmentId === null || this.departmentId === '') return
-        this.loading = true
+        this.memberLoading = true
         let requestBody = {
           'departmentId': this.departmentId,
           'queryName': this.queryMemberParam.queryName,
@@ -164,12 +331,23 @@
         }
         queryDepartmentMemberPage(requestBody)
           .then(res => {
-           // console.log(JSON.stringify(res))
+            // console.log(JSON.stringify(res))
             this.tableData = res.body.data
             this.pagination.total = res.body.totalNum
-            this.loading = false
+            this.memberLoading = false
           })
       }
     }
   }
 </script>
+
+<style>
+  .custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-right: 8px;
+  }
+</style>
