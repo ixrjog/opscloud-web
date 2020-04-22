@@ -8,7 +8,6 @@
         <el-col :span="8">
           <el-card class="box-card" shadow="never">
             <div slot="header" class="clearfix">
-              <span>组织架构</span>
               <el-select v-model="treeDepartmentId" filterable clearable :style="searchBarStyle"
                          remote reserve-keyword placeholder="搜索部门" :remote-method="getDepartment"
                          :loading="getDepartmentLoading">
@@ -19,10 +18,11 @@
                   :value="item.id">
                 </el-option>
               </el-select>
-              <el-button @click="fetchDepartmentTreeData" style="float: right; margin-left: 5px" :loading="searching">
+              <el-button @click="fetchDepartmentTreeData" style="margin-left: 5px" :loading="searching">
                 查询
               </el-button>
-              <el-button @click="addDepartment" style="float: right">新增</el-button>
+              <el-button @click="addDepartment">新增</el-button>
+              <span style="float: right">组织架构</span>
             </div>
             <el-tree draggable default-expand-all highlight-current node-key="id"
                      :data="deptTree.tree" @node-drop="handleDrop" @node-click="handleNodeClick">
@@ -67,8 +67,8 @@
               <el-table-column prop="displayName" label="显示名">
                 <template slot-scope="scope">
                   <i class="fa fa-gg-circle" v-if="scope.row.memberType === 1" aria-hidden="true"></i>
-                  <span v-if="scope.row.memberType === 1" style="color: #2f74ff">{{scope.row.username}}</span>
-                  <span v-if="scope.row.memberType === 0">{{scope.row.username}}</span>
+                  <span v-if="scope.row.memberType === 1" style="color: #2f74ff">{{scope.row.displayName}}</span>
+                  <span v-if="scope.row.memberType === 0">{{scope.row.displayName}}</span>
                 </template>
               </el-table-column>
               <el-table-column prop="email" label="邮箱"></el-table-column>
