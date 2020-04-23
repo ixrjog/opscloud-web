@@ -16,8 +16,10 @@ import 'element-ui/lib/theme-chalk/index.css'
 // 菜单和路由设置
 import router from './router'
 import menuHeader from '@/menu/header'
-import menuAside from '@/menu/aside'
+// import menuAside from '@/menu/aside'
 import { frameInRoutes } from '@/router/routes'
+// 菜单工具类
+import util from '@/libs/util.js'
 
 // 核心插件
 Vue.use(d2Admin)
@@ -37,7 +39,8 @@ new Vue({
     // 设置顶栏菜单
     this.$store.commit('d2admin/menu/headerSet', menuHeader)
     // 设置侧边栏菜单
-    this.$store.commit('d2admin/menu/asideSet', menuAside)
+    // this.$store.commit('d2admin/menu/asideSet', menuAside)
+    util.menu.init()
     // 初始化菜单搜索功能
     this.$store.commit('d2admin/search/init', menuHeader)
   },
