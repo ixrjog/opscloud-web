@@ -25,15 +25,15 @@ export default {
           { img: 'https://img.shields.io/github/issues-pr-closed/ixrjog/opsCloud.svg', link: `${linkD2Admin}/pulls?q=is%3Apr+is%3Aclosed` },
           { img: 'https://img.shields.io/github/last-commit/ixrjog/opsCloud.svg', link: linkD2Admin }
         ],
+        // [
+        //   { img: 'https://github.com/d2-projects/d2-admin-start-kit/workflows/Deploy%20https%3A%2F%2Fd2.pub/badge.svg', link: `${linkD2Admin}/actions?query=workflow%3A%22Deploy+https%3A%2F%2Fd2.pub%22` },
+        //   { img: 'https://github.com/d2-projects/d2-admin-start-kit/workflows/Deploy%20https%3A%2F%2Fcdn.d2.pub/badge.svg', link: `${linkD2Admin}/actions?query=workflow%3A%22Deploy+https%3A%2F%2Fcdn.d2.pub%22` },
+        //   { img: 'https://github.com/d2-projects/d2-admin-start-kit/workflows/Deploy%20Github/badge.svg', link: `${linkD2Admin}/actions?query=workflow%3A%22Deploy+Github%22` },
+        //   { img: 'https://api.netlify.com/api/v1/badges/08ff8c93-f0a8-497a-a081-440b31fb3aa4/deploy-status', link: 'https://app.netlify.com/sites/d2-admin-start-kit/deploys' }
+        // ],
         [
-          { img: 'https://github.com/d2-projects/d2-admin-start-kit/workflows/Deploy%20https%3A%2F%2Fd2.pub/badge.svg', link: `${linkD2Admin}/actions?query=workflow%3A%22Deploy+https%3A%2F%2Fd2.pub%22` },
-          { img: 'https://github.com/d2-projects/d2-admin-start-kit/workflows/Deploy%20https%3A%2F%2Fcdn.d2.pub/badge.svg', link: `${linkD2Admin}/actions?query=workflow%3A%22Deploy+https%3A%2F%2Fcdn.d2.pub%22` },
-          { img: 'https://github.com/d2-projects/d2-admin-start-kit/workflows/Deploy%20Github/badge.svg', link: `${linkD2Admin}/actions?query=workflow%3A%22Deploy+Github%22` },
-          { img: 'https://api.netlify.com/api/v1/badges/08ff8c93-f0a8-497a-a081-440b31fb3aa4/deploy-status', link: 'https://app.netlify.com/sites/d2-admin-start-kit/deploys' }
-        ],
-        [
-          { img: 'https://visitor-count-badge.herokuapp.com/today.svg?repo_id=d2-projects.d2-admin', link: linkD2Admin },
-          { img: 'https://visitor-count-badge.herokuapp.com/total.svg?repo_id=d2-projects.d2-admin', link: linkD2Admin },
+          // { img: 'https://visitor-count-badge.herokuapp.com/today.svg?repo_id=d2-projects.d2-admin', link: linkD2Admin },
+          // { img: 'https://visitor-count-badge.herokuapp.com/total.svg?repo_id=d2-projects.d2-admin', link: linkD2Admin },
           { img: 'https://img.shields.io/github/release/d2-projects/d2-admin.svg', link: `${linkD2Admin}/releases` }
         ]
       ]
