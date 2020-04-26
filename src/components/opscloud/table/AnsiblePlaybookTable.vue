@@ -21,7 +21,7 @@
                             height="200" :options="options"></editor>
                 </template>
             </el-table-column>
-            <el-table-column prop="playbook" label="playbook"  width="400px">
+            <el-table-column prop="vars" label="vars"  width="400px">
                 <template slot-scope="scope">
                     <editor v-model="scope.row.extraVars" @init="editorInit" lang="yaml" theme="kuroir"
                             height="200" :options="options"></editor>

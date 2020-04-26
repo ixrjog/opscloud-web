@@ -51,14 +51,12 @@
               <el-row style="margin-bottom: 5px">
                 <el-select v-model="userId" filterable clearable :style="searchBarStyle"
                            remote reserve-keyword placeholder="搜索用户" :remote-method="getUser" :loading="getUserLoading">
-                  <el-option
-                    v-for="item in userOptions"
-                    :key="item.id"
-                    :label="item.displayName"
-                    :value="item.id">
+                  <el-option v-for="item in userOptions" :key="item.id" :label="item.displayName" :value="item.id">
                   </el-option>
                 </el-select>
-                <el-button @click="addDeptMember" style="margin-left: 5px" :disabled="departmentId == '' || userId == ''">添加</el-button>
+                <el-button @click="addDeptMember" style="margin-left: 5px"
+                           :disabled="departmentId == '' || userId == ''">添加
+                </el-button>
                 <el-tooltip class="item" effect="light" content="加入部门，成为此部门成员" placement="top">
                   <el-button @click="joinDeptMember" style="margin-left: 5px">加入</el-button>
                 </el-tooltip>
