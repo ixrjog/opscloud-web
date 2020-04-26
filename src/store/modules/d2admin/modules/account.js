@@ -38,6 +38,8 @@ export default {
               }, { root: true })
               // 用户登录后从持久化数据加载一系列的设置
               await dispatch('load')
+              // 用户登录后懒加载菜单
+              util.menu.init()
             } else {
               this.$message.error(res.msg)
             }
