@@ -18,7 +18,7 @@
                   :value="item.id">
                 </el-option>
               </el-select>
-              <el-button @click="fetchDepartmentTreeData" style="margin-left: 5px" :loading="searching">
+              <el-button @click="fetchDeptTreeData" style="margin-left: 5px" :loading="searching">
                 查询
               </el-button>
               <el-button @click="addDepartment">新增</el-button>
@@ -58,7 +58,10 @@
                     :value="item.id">
                   </el-option>
                 </el-select>
-                <el-button @click="addDeptMember" style="margin-left: 5px">加入</el-button>
+                <el-button @click="addDeptMember" style="margin-left: 5px" :disabled="departmentId == '' || userId == ''">添加</el-button>
+                <el-tooltip class="item" effect="light" content="加入部门，成为此部门成员" placement="top">
+                  <el-button @click="joinDeptMember" style="margin-left: 5px">加入</el-button>
+                </el-tooltip>
               </el-row>
             </div>
             <el-table :data="tableData" style="width: 100%" v-loading="memberLoading">
@@ -72,13 +75,13 @@
                 </template>
               </el-table-column>
               <el-table-column prop="email" label="邮箱"></el-table-column>
-              <el-table-column prop="isLeader" label="经理">
+              <el-table-column prop="isLeader" label="经理" width="80">
                 <template slot-scope="scope">
                   <el-tag type="success" v-if="scope.row.isLeader === 1" size="small">是</el-tag>
                   <el-tag type="info" v-if="scope.row.isLeader === 0" size="small">否</el-tag>
                 </template>
               </el-table-column>
-              <el-table-column prop="isApprovalAuthority" label="审批权">
+              <el-table-column prop="isApprovalAuthority" label="审批权" width="80">
                 <template slot-scope="scope">
                   <el-tag type="success" v-if="scope.row.isApprovalAuthority === 1" size="small">是</el-tag>
                   <el-tag type="info" v-if="scope.row.isApprovalAuthority === 0" size="small">否</el-tag>
@@ -102,7 +105,7 @@
         </el-col>
       </el-row>
       <DepartmentDialog ref="departmentDialog" :formStatus="formDepartmentStatus"
-                        @closeDepartmentDialog="fetchDepartmentTreeData"></DepartmentDialog>
+                        @closeDepartmentDialog="fetchDeptTreeData"></DepartmentDialog>
     </template>
   </d2-container>
 </template>
@@ -114,7 +117,7 @@
   // API
   import {
     queryDepartmentTree, dropDepartmentTree, queryDepartmentMemberPage,
-    addDepartmentMember, removeDepartmentMemberById, updateDepartmentMemberLeader,
+    addDepartmentMember, joinDepartmentMember, removeDepartmentMemberById, updateDepartmentMemberLeader,
     updateDepartmentMemberApproval, queryDepartmentById, queryDepartmentPage
   } from '@api/org/org.js'
   import { fuzzyQueryUserPage } from '@api/user/user.js'
@@ -166,7 +169,7 @@
       }
     },
     mounted () {
-      this.fetchDepartmentTreeData()
+      this.fetchDeptTreeData()
     },
     components: {
       DepartmentDialog
@@ -208,7 +211,22 @@
                 type: 'success',
                 message: '添加部门成员成功!'
               })
-              this.fetchDepartmentMemberData()
+              this.fetchDeptMemberData()
+            } else {
+              this.$message.error(res.msg)
+            }
+          })
+      },
+      joinDeptMember () {
+        if (this.departmentId === '') return
+        joinDepartmentMember(this.departmentId)
+          .then(res => {
+            if (res.success) {
+              this.$message({
+                type: 'success',
+                message: '加入部门成功!'
+              })
+              this.fetchDeptMemberData()
             } else {
               this.$message.error(res.msg)
             }
@@ -253,7 +271,7 @@
                 type: 'success',
                 message: '设置部门成员经理属性成功!'
               })
-              this.fetchDepartmentMemberData()
+              this.fetchDeptMemberData()
             } else {
               this.$message.error(res.msg)
             }
@@ -267,7 +285,7 @@
                 type: 'success',
                 message: '设置部门成员审批权属性成功!'
               })
-              this.fetchDepartmentMemberData()
+              this.fetchDeptMemberData()
             } else {
               this.$message.error(res.msg)
             }
@@ -281,7 +299,7 @@
                 type: 'success',
                 message: '移除部门成员成功!'
               })
-              this.fetchDepartmentMemberData()
+              this.fetchDeptMemberData()
             } else {
               this.$message.error(res.msg)
             }
@@ -297,7 +315,7 @@
                 type: 'success',
                 message: '设置成功!'
               })
-              this.fetchDepartmentTreeData()
+              this.fetchDeptTreeData()
             } else {
               this.$message.error(res.msg)
             }
@@ -307,15 +325,15 @@
         try {
           this.departmentId = node.key
           this.departmentName = node.label
-          this.fetchDepartmentMemberData()
+          this.fetchDeptMemberData()
         } catch (e) {
         }
       },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage
-        this.fetchDepartmentMemberData()
+        this.fetchDeptMemberData()
       },
-      fetchDepartmentTreeData () {
+      fetchDeptTreeData () {
         this.searching = true
         let parentId = this.treeDepartmentId === '' ? this.rootParentId : this.treeDepartmentId
         queryDepartmentTree(parentId)
@@ -324,7 +342,7 @@
             this.searching = false
           })
       },
-      fetchDepartmentMemberData () {
+      fetchDeptMemberData () {
         if (this.departmentId === null || this.departmentId === '') return
         this.memberLoading = true
         let requestBody = {

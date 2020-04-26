@@ -67,6 +67,13 @@ export function addDepartmentMember (departmentId, userId) {
   })
 }
 
+export function joinDepartmentMember (departmentId) {
+  return request({
+    url: '/org/department/member/join?departmentId=' + departmentId,
+    method: 'put'
+  })
+}
+
 export function removeDepartmentMemberById (id) {
   return request({
     url: '/org/department/member/remove?id=' + id,

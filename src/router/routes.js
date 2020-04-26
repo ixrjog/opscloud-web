@@ -65,6 +65,15 @@ const frameIn = [
           title: '标签配置'
         }
       },
+      {
+        path: '/workorder/mgmt',
+        name: 'workorder-mgmt',
+        component: () => import('@/pages/workorder/mgmt'),
+        meta: {
+          auth: true,
+          title: '工单配置'
+        }
+      },
       // server(group)
       {
         path: '/server',
