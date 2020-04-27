@@ -4,14 +4,18 @@
       <span>{{businessType === 2 ? formStatus.groupAttributeTitle : formStatus.serverAttributeTitle}}</span>
       <el-button style="float: right; padding: 3px 0" type="text">关闭</el-button>
     </div>
-    <el-collapse v-model="activeName" accordion>
+    <editor v-model="value" @init="editorInit"
+            @setCompletions="setCompletions"
+            autoComplete=true lang="yaml" theme="chrome" width="1000"
+            height="200" :options="options"></editor>
+    <el-collapse v-model="activeName" accordion v-if="false">
       <div v-for="(attributeGroup) in attributeGroups" :key="attributeGroup.groupName"
            class="text item">
         <el-collapse-item :title="attributeGroup.groupName" :name="attributeGroup.groupName">
           <!--                  <d2-highlight :code="attributeGroup.attributes"/>-->
           <!--                  width="500" height="100"-->
-          <editor v-model="attributeGroup.attributes" @init="editorInit" lang="yaml" theme="chrome"
-                  width="1000"
+          <editor v-model="attributeGroup.attributes" @init="editorInit"
+                   lang="yaml" theme="chrome" width="1000"
                   height="200" :options="options"></editor>
           <div style="margin-top: 5px">
             <el-button type="success" plain size="mini" @click="updateServerGroupAttribute(attributeGroup)">预览
@@ -36,6 +40,7 @@
   export default {
     data () {
       return {
+        value: '',
         businessId: '',
         businessType: '',
         activeName: '',
@@ -92,6 +97,20 @@
       },
       handleClick () {
         this.$emit('input', !this.value)
+      },
+      changeData: function (value) {
+        this.dataView = value
+        console.log(value)
+      },
+      setCompletions (editor, session, pos, prefix, callback) {
+        console.log(prefix)
+        let data = [
+          { meta: 'mock: dianhua', value: '@phone' }]
+        if (prefix.length === 0) {
+          return callback(null, [])
+        } else {
+          return callback(null, data)
+        }
       },
       updateServerGroupAttribute (attributeGroup) {
         if (this.businessType === 2) {
