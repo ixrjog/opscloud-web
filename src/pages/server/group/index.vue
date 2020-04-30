@@ -32,7 +32,7 @@
         <el-table-column prop="comment" label="描述"></el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
-            <el-button type="warning" plain size="mini" @click="updateItem(scope.row)">编辑</el-button>
+            <el-button type="warning" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
             <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -133,28 +133,22 @@
         })
       },
       addItem () {
-        this.formServerGroupStatus.operationType = true
-        this.formServerGroupStatus.visible = true
-        this.serverGroup = {
+        let serverGroup = {
           id: '',
           name: 'group_',
           inWorkorder: 0,
           grpType: '',
           comment: ''
         }
+        this.$refs.serverGroupDialog.initData(serverGroup, [])
+        this.formServerGroupStatus.operationType = true
+        this.formServerGroupStatus.visible = true
       },
-      updateItem (row) {
+      editItem (row) {
         var grpTypeOptions = []
         grpTypeOptions.push(row.serverGroupType)
         let serverGroup = Object.assign({}, row)
         this.$refs.serverGroupDialog.initData(serverGroup, grpTypeOptions)
-        // this.serverGroup = {
-        //   id: row.id,
-        //   name: row.name,
-        //   grpType: row.grpType,
-        //   comment: row.comment,
-        //   grpTypeOptions: grpTypeOptions
-        // }
         this.formServerGroupStatus.operationType = false
         this.formServerGroupStatus.visible = true
       },
