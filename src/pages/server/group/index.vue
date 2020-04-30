@@ -41,7 +41,7 @@
                      layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                      :page-size="pagination.pageSize">
       </el-pagination>
-      <ServerGroupDialog :formStatus="formServerGroupStatus" :formData="serverGroup"
+      <ServerGroupDialog :formStatus="formServerGroupStatus" ref="serverGroupDialog"
                          @closeServerGroupDialog="fetchData"></ServerGroupDialog>
     </template>
   </d2-container>
@@ -63,7 +63,6 @@
         searchBarStyle: {
           marginLeft: '5px'
         },
-        serverGroup: {},
         formServerGroupStatus: {
           visible: false,
           addTitle: '新增服务器组配置',
@@ -139,6 +138,7 @@
         this.serverGroup = {
           id: '',
           name: 'group_',
+          inWorkorder: 0,
           grpType: '',
           comment: ''
         }
@@ -146,13 +146,15 @@
       updateItem (row) {
         var grpTypeOptions = []
         grpTypeOptions.push(row.serverGroupType)
-        this.serverGroup = {
-          id: row.id,
-          name: row.name,
-          grpType: row.grpType,
-          comment: row.comment,
-          grpTypeOptions: grpTypeOptions
-        }
+        let serverGroup = Object.assign({}, row)
+        this.$refs.serverGroupDialog.initData(serverGroup, grpTypeOptions)
+        // this.serverGroup = {
+        //   id: row.id,
+        //   name: row.name,
+        //   grpType: row.grpType,
+        //   comment: row.comment,
+        //   grpTypeOptions: grpTypeOptions
+        // }
         this.formServerGroupStatus.operationType = false
         this.formServerGroupStatus.visible = true
       },

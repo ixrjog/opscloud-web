@@ -239,6 +239,15 @@ const frameIn = [
           title: 'Jumpserver资产管理'
         }
       },
+      {
+        path: '/workbench/workorder',
+        name: 'workbench-workorder',
+        component: () => import('@/pages/workbench/workorder'),
+        meta: {
+          auth: true,
+          title: '工作台-工单'
+        }
+      },
       // task
       {
         path: '/task/ansible-mgmt',

@@ -8,6 +8,13 @@ export function queryWorkorderGroupPage (data) {
   })
 }
 
+export function queryWorkbenchWorkorderGroup () {
+  return request({
+    url: '/workorder/group/query',
+    method: 'get'
+  })
+}
+
 export function deleteWorkorderGroupById (id) {
   return request({
     url: '/workorder/group/del?id=' + id,
