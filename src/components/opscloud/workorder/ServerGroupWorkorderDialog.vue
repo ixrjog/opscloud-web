@@ -17,9 +17,9 @@
                    style="margin-left: 10px">添加
         </el-button>
       </el-row>
-
+      <el-divider content-position="left">工单详情</el-divider>
       <el-row :gutter="24" style="margin-bottom: 5px">
-        <el-table :data="ticketEntrys" style="width: 100%" v-loading="loading">
+        <el-table :data="ticketEntries" style="width: 100%" v-loading="loading">
           <el-table-column prop="name" label="服务器组名称"></el-table-column>
           <el-table-column prop="comment" label="高级权限">
             <template slot-scope="scope">
@@ -37,14 +37,18 @@
           </el-table-column>
         </el-table>
       </el-row>
-
       <el-row :gutter="24" style="margin-top: 10px">
-        <el-steps active="2" align-center simple>
+        <el-input type="textarea" :rows="2" placeholder="申请说明" v-model="ticket.comment">
+        </el-input>
+      </el-row>
+      <el-divider></el-divider>
+      <el-row :gutter="24" style="margin-top: 10px">
+        <el-steps :active="active" align-center>
             <el-step :title="step.title" :description="step.description" v-for="step in approvalSteps" :key="step.title"></el-step>
         </el-steps>
       </el-row>
     </div>
-
+    <el-divider></el-divider>
     <div slot="footer" class="dialog-footer">
       <el-button size="mini" @click="formStatus.visible = false">关闭</el-button>
       <el-button type="primary" size="mini" @click="submitTicket">提交</el-button>
@@ -72,15 +76,20 @@
         searchTicketEntryLoading: false,
         ticketEntry: '',
         loading: false,
-        ticketEntrys: [],
+        ticketEntries: [],
+        active: 1,
         approvalSteps: [
           {
-            title: '步骤1:上级审批',
-            description: 'AAA'
+            title: '填写',
+            description: '填写完成后提交申请'
           },
           {
-            title: '步骤2:运维组审批',
-            description: 'BBB'
+            title: '上级审批',
+            description: '白衣'
+          },
+          {
+            title: '运维组审批',
+            description: 'CCC'
           }
         ]
       }
@@ -93,10 +102,10 @@
         if (ticket.workorder != null) {
           this.title = ticket.workorder.name
         }
-        if (ticket.ticketEntrys != null) {
-          this.ticketEntrys = ticket.ticketEntrys
+        if (ticket.ticketEntries != null) {
+          this.ticketEntries = ticket.ticketEntries
         } else {
-          this.ticketEntrys = []
+          this.ticketEntries = []
         }
       },
       queryPreTicketEntry (queryName) {

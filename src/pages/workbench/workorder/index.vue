@@ -15,7 +15,7 @@
                         <template slot-scope="scope">
                           <el-button type="success" plain size="mini" @click="previewReadme(scope.row)">帮助
                           </el-button>
-                          <el-button type="primary" plain size="mini" @click="createTicket(scope.row)">新建</el-button>
+                          <el-button type="primary" plain size="mini" @click="createTicket(scope.row)" :loading="ticketCreateing">新建</el-button>
                         </template>
                       </el-table-column>
                     </el-table>
@@ -51,7 +51,8 @@
         formServerGroupWorkorderStatus: {
           visible: false,
           operationType: true
-        }
+        },
+        ticketCreateing: false
       }
     },
     components: {
@@ -73,7 +74,7 @@
        * @param workorder
        */
       createTicket (workorder) {
-        console.log(workorder)
+        this.ticketCreateing = true
         let requestParam = {
           workorderKey: workorder.workorderKey
         }
@@ -93,6 +94,7 @@
               default:
                 this.$message.error('工单类型错误或未配置!')
             }
+            this.ticketCreateing = false
           })
       },
       fetchData () {
