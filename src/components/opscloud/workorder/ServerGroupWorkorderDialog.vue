@@ -43,8 +43,8 @@
       </el-row>
       <el-divider></el-divider>
       <el-row :gutter="24" style="margin-top: 10px">
-        <el-steps :active="active" align-center>
-            <el-step :title="step.title" :description="step.description" v-for="step in approvalSteps" :key="step.title"></el-step>
+        <el-steps :active="ticket.approvalDetail.active" align-center>
+            <el-step :title="step.title" :description="step.description" v-for="step in ticket.approvalDetail.approvalSteps" :key="step.title"></el-step>
         </el-steps>
       </el-row>
     </div>
@@ -77,7 +77,6 @@
         ticketEntry: '',
         loading: false,
         ticketEntries: [],
-        active: 1,
         approvalSteps: [
           {
             title: '填写',
