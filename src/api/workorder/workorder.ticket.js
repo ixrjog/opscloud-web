@@ -45,3 +45,43 @@ export function delWorkorderTicketEntryById (id) {
     method: 'delete'
   })
 }
+
+export function submitWorkorderTicket (data) {
+  return request({
+    url: '/workorder/ticket/submit',
+    method: 'put',
+    data
+  })
+}
+
+export function queryMyWorkorderTicketPage (data) {
+  return request({
+    url: '/workorder/ticket/my/page/query',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 审批同意
+ * @param data
+ * @returns {AxiosPromise}
+ */
+export function agreeWorkorderTicket (ticketId) {
+  return request({
+    url: '/workorder/ticket/agree?ticketId=' + ticketId,
+    method: 'put'
+  })
+}
+
+/**
+ * 审批拒绝
+ * @param data
+ * @returns {AxiosPromise}
+ */
+export function disagreeWorkorderTicket (ticketId) {
+  return request({
+    url: '/workorder/ticket/disagree?ticketId=' + ticketId,
+    method: 'put'
+  })
+}

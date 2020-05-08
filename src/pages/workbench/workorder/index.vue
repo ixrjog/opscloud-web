@@ -24,20 +24,23 @@
               </el-card>
             </el-col>
             <el-col :span="16">
-              <div class="grid-content bg-purple-light"></div>
+              <el-card shadow="never">
+                <TicketTable ref="ticketTable"></TicketTable>
+              </el-card>
             </el-col>
           </el-row>
         </el-tab-pane>
       </el-tabs>
-      <ServerGroupWorkorderDialog ref="serverGroupWorkorderDialog" :formStatus="formServerGroupWorkorderStatus"
-                                  @closeServerGroupWorkorderDialo="fetchData"></ServerGroupWorkorderDialog>
+      <TicketServerGroupDialog ref="ticketServerGroupDialog" :formStatus="formServerGroupStatus"
+                                  @closeTicketServerGroupDialog="fetchData"></TicketServerGroupDialog>
     </template>
   </d2-container>
 </template>
 
 <script>
   // Component
-  import ServerGroupWorkorderDialog from '@/components/opscloud/workorder/ServerGroupWorkorderDialog'
+  import TicketTable from '@/components/opscloud/workorder/TicketTable.vue'
+  import TicketServerGroupDialog from '@/components/opscloud/workorder/TicketServerGroupDialog'
 
   import { queryWorkbenchWorkorderGroup } from '@api/workorder/workorder.group.js'
   import { createWorkorderTicket } from '@api/workorder/workorder.ticket.js'
@@ -48,15 +51,18 @@
         tabActiveName: 'workorder',
         title: '我的工单',
         workorderGroups: [],
-        formServerGroupWorkorderStatus: {
+        // operationType  0 编辑模式  1 审批模式  2 完成模式
+        formServerGroupStatus: {
           visible: false,
-          operationType: true
+          operationType: 0
         },
-        ticketCreateing: false
+        ticketCreateing: false,
+        ticketTableData: []
       }
     },
     components: {
-      ServerGroupWorkorderDialog
+      TicketTable,
+      TicketServerGroupDialog
     },
     mounted () {
       this.getWorkbenchWorkorderGroup()
@@ -84,9 +90,9 @@
             ticket.workorder = workorder
             switch (workorder.workorderKey) {
               case 'SERVER_GROUP':
-                this.formServerGroupWorkorderStatus.visible = true
-                this.formServerGroupWorkorderStatus.operationType = false
-                this.$refs.serverGroupWorkorderDialog.initData(ticket)
+                this.formServerGroupStatus.visible = true
+                this.formServerGroupStatus.operationType = 0
+                this.$refs.ticketServerGroupDialog.initData(ticket)
                 break
               case 'SERVER_GROUP2':
                 // TODO
@@ -99,6 +105,7 @@
       },
       fetchData () {
         console.log('// TODO')
+        this.$refs.ticketTable.fetchData()
       }
     }
   }

@@ -248,6 +248,15 @@ const frameIn = [
           title: '工作台-工单'
         }
       },
+      {
+        path: '/workbench/xterm',
+        name: 'workbench-xterm',
+        component: () => import('@/pages/workbench/xterm'),
+        meta: {
+          auth: true,
+          title: '工作台-web终端'
+        }
+      },
       // task
       {
         path: '/task/ansible-mgmt',
