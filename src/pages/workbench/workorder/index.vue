@@ -7,21 +7,23 @@
           <el-row :gutter="20">
             <el-col :span="8">
               <el-card shadow="never">
-                <el-collapse v-for="workorderGroup in workorderGroups" :key="workorderGroup.id">
-                  <el-collapse-item :title="workorderGroup.name" :name="workorderGroup.name">
-                    <el-table :data="workorderGroup.workorders" stripe :show-header=false style="width: 100%">
-                      <el-table-column prop="name" label="工单名称"></el-table-column>
-                      <el-table-column fixed="right" label="操作" width="160">
-                        <template slot-scope="scope">
-                          <el-button type="success" plain size="mini" @click="previewReadme(scope.row)">帮助
-                          </el-button>
-                          <el-button type="primary" plain size="mini" @click="createTicket(scope.row)"
-                                     :loading="ticketCreateing">新建
-                          </el-button>
-                        </template>
-                      </el-table-column>
-                    </el-table>
-                  </el-collapse-item>
+                <el-collapse accordion v-model="activeNames">
+                  <div v-for="(workorderGroup,index) in workorderGroups" :key="workorderGroup.id">
+                    <el-collapse-item :title="workorderGroup.name" :name="index">
+                      <el-table :data="workorderGroup.workorders" stripe :show-header=false style="width: 100%">
+                        <el-table-column prop="name" label="工单名称"></el-table-column>
+                        <el-table-column fixed="right" label="操作" width="160">
+                          <template slot-scope="scope">
+                            <el-button type="success" plain size="mini" @click="previewReadme(scope.row)">帮助
+                            </el-button>
+                            <el-button type="primary" plain size="mini" @click="createTicket(scope.row)"
+                                       :loading="ticketCreateing">新建
+                            </el-button>
+                          </template>
+                        </el-table-column>
+                      </el-table>
+                    </el-collapse-item>
+                  </div>
                 </el-collapse>
               </el-card>
             </el-col>
@@ -36,7 +38,9 @@
       <TicketServerGroupDialog ref="ticketServerGroupDialog" :formStatus="formServerGroupStatus"
                                @closeTicketServerGroupDialog="fetchData"></TicketServerGroupDialog>
       <TicketUserGroupDialog ref="ticketUserGroupDialog" :formStatus="formUserGroupStatus"
-                               @closeTicketUserGroupDialog="fetchData"></TicketUserGroupDialog>
+                             @closeTicketUserGroupDialog="fetchData"></TicketUserGroupDialog>
+      <TicketAuthRoleDialog ref="ticketAuthRoleDialog" :formStatus="formAuthRoleStatus"
+                            @closeTicketAuthRoleDialog="fetchData"></TicketAuthRoleDialog>
     </template>
   </d2-container>
 </template>
@@ -46,6 +50,7 @@
   import TicketTable from '@/components/opscloud/workorder/TicketTable.vue'
   import TicketServerGroupDialog from '@/components/opscloud/workorder/TicketServerGroupDialog'
   import TicketUserGroupDialog from '@/components/opscloud/workorder/TicketUserGroupDialog'
+  import TicketAuthRoleDialog from '@/components/opscloud/workorder/TicketAuthRoleDialog'
 
   import { queryWorkbenchWorkorderGroup } from '@api/workorder/workorder.group.js'
   import { createWorkorderTicket } from '@api/workorder/workorder.ticket.js'
@@ -53,6 +58,7 @@
   export default {
     data () {
       return {
+        activeNames: [0],
         tabActiveName: 'workorder',
         title: '我的工单',
         workorderGroups: [],
@@ -65,6 +71,10 @@
           visible: false,
           operationType: 0
         },
+        formAuthRoleStatus: {
+          visible: false,
+          operationType: 1
+        },
         ticketCreateing: false,
         ticketTableData: []
       }
@@ -72,7 +82,8 @@
     components: {
       TicketTable,
       TicketServerGroupDialog,
-      TicketUserGroupDialog
+      TicketUserGroupDialog,
+      TicketAuthRoleDialog
     },
     mounted () {
       this.getWorkbenchWorkorderGroup()
@@ -108,6 +119,11 @@
                 this.formUserGroupStatus.visible = true
                 this.formUserGroupStatus.operationType = 0
                 this.$refs.ticketUserGroupDialog.initData(ticket)
+                break
+              case 'AUTH_ROLE':
+                this.formAuthRoleStatus.visible = true
+                this.formAuthRoleStatus.operationType = 0
+                this.$refs.ticketAuthRoleDialog.initData(ticket)
                 break
               default:
                 this.$message.error('工单类型错误或未配置!')

@@ -30,12 +30,15 @@
                              @closeTicketServerGroupDialog="fetchData"></TicketServerGroupDialog>
     <TicketUserGroupDialog ref="ticketUserGroupDialog" :formStatus="formUserGroupStatus"
                            @closeTicketUserGroupDialog="fetchData"></TicketUserGroupDialog>
+    <TicketAuthRoleDialog ref="ticketAuthRoleDialog" :formStatus="formAuthRoleStatus"
+                           @closeTicketAuthRoleDialog="fetchData"></TicketAuthRoleDialog>
   </div>
 </template>
 
 <script>
   import TicketServerGroupDialog from '@/components/opscloud/workorder/TicketServerGroupDialog'
   import TicketUserGroupDialog from '@/components/opscloud/workorder/TicketUserGroupDialog'
+  import TicketAuthRoleDialog from '@/components/opscloud/workorder/TicketAuthRoleDialog'
 
   // Filters
   import { getPhaseText, getPhaseType } from '@/filters/ticket.js'
@@ -57,6 +60,10 @@
           visible: false,
           operationType: 1
         },
+        formAuthRoleStatus: {
+          visible: false,
+          operationType: 1
+        },
         loading: false,
         pagination: {
           currentPage: 1,
@@ -74,7 +81,8 @@
     },
     components: {
       TicketServerGroupDialog,
-      TicketUserGroupDialog
+      TicketUserGroupDialog,
+      TicketAuthRoleDialog
     },
     filters: {
       getPhaseText,
@@ -98,6 +106,11 @@
             this.formUserGroupStatus.visible = true
             this.formUserGroupStatus.operationType = 0
             this.$refs.ticketUserGroupDialog.initData(ticket)
+            break
+          case 'AUTH_ROLE':
+            this.formAuthRoleStatus.visible = true
+            this.formAuthRoleStatus.operationType = 0
+            this.$refs.ticketAuthRoleDialog.initData(ticket)
             break
           default:
             this.$message.error('工单类型错误或未配置!')

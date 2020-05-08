@@ -6,7 +6,7 @@
         <el-row :gutter="24" style="margin-bottom: 5px" v-if="ticket.ticketPhase === 'CREATED_TICKET'">
           <el-select v-model="ticketEntry" filterable clearable
                      style="display: inline-block; max-width:200px; margin-left: 10px"
-                     remote reserve-keyword placeholder="输入关键词搜索用户组" :remote-method="queryPreTicketEntry"
+                     remote reserve-keyword placeholder="输入关键词搜索角色" :remote-method="queryPreTicketEntry"
                      :loading="searchTicketEntryLoading">
             <el-option
               v-for="item in ticketEntryOptions"
@@ -22,7 +22,7 @@
         <el-divider content-position="left">工单详情</el-divider>
         <el-row :gutter="24" style="margin-bottom: 5px">
           <el-table :data="ticketEntries" style="width: 100%" v-loading="loading">
-            <el-table-column prop="name" label="用户组名称"></el-table-column>
+            <el-table-column prop="name" label="角色名称"></el-table-column>
             <el-table-column prop="comment" label="描述"></el-table-column>
             <el-table-column fixed="right" label="操作" width="80">
               <template slot-scope="scope">
@@ -47,7 +47,9 @@
       <div slot="footer" class="dialog-footer">
         <!--        <el-tag style="display: inline-block; max-width:200px; margin-left: 10px">{{ticket.id}}#工单</el-tag>-->
         <el-button size="mini" @click="formStatus.visible = false">关闭</el-button>
-        <el-button type="primary" v-if="ticket.ticketPhase === 'CREATED_TICKET'" plain size="mini" @click="submitTicket">提交</el-button>
+        <el-button type="primary" v-if="ticket.ticketPhase === 'CREATED_TICKET'" plain size="mini"
+                   @click="submitTicket">提交
+        </el-button>
         <el-button type="success" v-if="ticket.isInApproval" plain size="mini" @click="agreeTicket">同意</el-button>
         <el-button type="danger" v-if="ticket.isInApproval" plain size="mini" @click="disagreeTicket">拒绝</el-button>
       </div>
@@ -58,7 +60,7 @@
 <script>
 
   import {
-    queryUserTicketUserGroupPage,
+    queryUserTicketAuthRolePage,
     addWorkorderTicketEntry,
     updateWorkorderTicketEntry,
     delWorkorderTicketEntryById,
@@ -81,14 +83,13 @@
         ticketEntries: []
       }
     },
-    components: {
-    },
-    name: 'TicketUserGroupDialog',
+    components: {},
+    name: 'TicketAuthRoleDialog',
     props: ['formStatus'],
     methods: {
       closeDialog () {
         this.formStatus.visible = false
-        this.$emit('closeTicketUserGroupDialog')
+        this.$emit('closeTicketAuthRoleDialog')
       },
       initData (ticket) {
         console.log(JSON.stringify(ticket))
@@ -203,7 +204,7 @@
           'page': 1,
           'length': 20
         }
-        queryUserTicketUserGroupPage(requestBody)
+        queryUserTicketAuthRolePage(requestBody)
           .then(res => {
             this.ticketEntryOptions = res.body
             this.searchTicketEntryLoading = false

@@ -103,3 +103,16 @@ export function queryUserTicketUserGroupPage (data) {
     data
   })
 }
+
+/**
+ * 工单配置-平台角色查询
+ * @param data
+ * @returns {AxiosPromise}
+ */
+export function queryUserTicketAuthRolePage (data) {
+  return request({
+    url: '/workorder/ticket/role/query',
+    method: 'post',
+    data
+  })
+}

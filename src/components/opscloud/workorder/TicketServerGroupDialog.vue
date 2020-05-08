@@ -94,6 +94,10 @@
     name: 'TicketServerGroupDialog',
     props: ['formStatus'],
     methods: {
+      closeDialog () {
+        this.formStatus.visible = false
+        this.$emit('closeTicketServerGroupDialog')
+      },
       initData (ticket) {
         console.log(JSON.stringify(ticket))
         this.ticket = ticket
@@ -116,8 +120,7 @@
                 message: '提交成功',
                 type: 'success'
               })
-              this.formStatus.visible = false
-              this.$emit('closeTicketServerGroupDialog')
+              this.closeDialog()
             } else {
               this.$message.error(res.msg)
             }
@@ -132,8 +135,7 @@
                 message: '审批同意已提交',
                 type: 'success'
               })
-              this.formStatus.visible = false
-              this.$emit('closeTicketServerGroupDialog')
+              this.closeDialog()
             } else {
               this.$message.error(res.msg)
             }
@@ -148,8 +150,7 @@
                 message: '审批拒绝已提交',
                 type: 'success'
               })
-              this.formStatus.visible = false
-              this.$emit('closeTicketServerGroupDialog')
+              this.closeDialog()
             } else {
               this.$message.error(res.msg)
             }
