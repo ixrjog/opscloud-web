@@ -22,15 +22,7 @@
         <el-divider content-position="left">工单详情</el-divider>
         <el-row :gutter="24" style="margin-bottom: 5px">
           <el-table :data="ticketEntries" style="width: 100%" v-loading="loading">
-            <el-table-column prop="name" label="服务器组名称"></el-table-column>
-            <el-table-column prop="comment" label="高级权限">
-              <template slot-scope="scope">
-                <el-checkbox v-model="scope.row.ticketEntry.needAdministratorAccount"
-                             @change="updateTicketEntry(scope.row)">
-                  需要管理员
-                </el-checkbox>
-              </template>
-            </el-table-column>
+            <el-table-column prop="name" label="用户组名称"></el-table-column>
             <el-table-column prop="comment" label="描述"></el-table-column>
             <el-table-column fixed="right" label="操作" width="80">
               <template slot-scope="scope">
@@ -53,7 +45,7 @@
       </div>
       <el-divider></el-divider>
       <div slot="footer" class="dialog-footer">
-<!--        <el-tag style="display: inline-block; max-width:200px; margin-left: 10px">{{ticket.id}}#工单</el-tag>-->
+        <!--        <el-tag style="display: inline-block; max-width:200px; margin-left: 10px">{{ticket.id}}#工单</el-tag>-->
         <el-button size="mini" @click="formStatus.visible = false">关闭</el-button>
         <el-button type="primary" v-if="ticket.ticketPhase === 'CREATED_TICKET'" plain size="mini" @click="submitTicket">提交</el-button>
         <el-button type="success" v-if="ticket.isInApproval" plain size="mini" @click="agreeTicket">同意</el-button>
@@ -66,7 +58,7 @@
 <script>
 
   import {
-    queryUserTicketServerGroupPage,
+    queryUserTicketUserGroupPage,
     addWorkorderTicketEntry,
     updateWorkorderTicketEntry,
     delWorkorderTicketEntryById,
@@ -91,7 +83,7 @@
     },
     components: {
     },
-    name: 'TicketServerGroupDialog',
+    name: 'TicketUserGroupDialog',
     props: ['formStatus'],
     methods: {
       initData (ticket) {
@@ -210,7 +202,7 @@
           'page': 1,
           'length': 20
         }
-        queryUserTicketServerGroupPage(requestBody)
+        queryUserTicketUserGroupPage(requestBody)
           .then(res => {
             this.ticketEntryOptions = res.body
             this.searchTicketEntryLoading = false

@@ -28,10 +28,10 @@
         </el-table-column>
         <el-table-column prop="name" label="用户组名称"></el-table-column>
         <el-table-column prop="users.length" label="成员数" width="100"></el-table-column>
-        <el-table-column prop="workflow" label="工作流" width="100">
+        <el-table-column prop="workflow" label="工单申请" width="100">
           <template slot-scope="scope">
-            <el-tag :type="scope.row.workflow === 0 ? 'success' : 'danger'" disable-transitions>{{scope.row.workflow ===
-              0 ? '不允许' : '允许'}}
+            <el-tag :type="scope.row.inWorkorder === 0 ? 'success' : 'danger'" disable-transitions>{{scope.row.inWorkorder ===
+              0 ? '禁止' : '允许'}}
             </el-tag>
           </template>
         </el-table-column>

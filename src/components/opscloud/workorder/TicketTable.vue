@@ -28,11 +28,14 @@
     </el-pagination>
     <TicketServerGroupDialog ref="ticketServerGroupDialog" :formStatus="formServerGroupStatus"
                              @closeTicketServerGroupDialog="fetchData"></TicketServerGroupDialog>
+    <TicketUserGroupDialog ref="ticketUserGroupDialog" :formStatus="formUserGroupStatus"
+                           @closeTicketUserGroupDialog="fetchData"></TicketUserGroupDialog>
   </div>
 </template>
 
 <script>
   import TicketServerGroupDialog from '@/components/opscloud/workorder/TicketServerGroupDialog'
+  import TicketUserGroupDialog from '@/components/opscloud/workorder/TicketUserGroupDialog'
 
   // Filters
   import { getPhaseText, getPhaseType } from '@/filters/ticket.js'
@@ -47,6 +50,10 @@
         tableData: [],
         role: {},
         formServerGroupStatus: {
+          visible: false,
+          operationType: 1
+        },
+        formUserGroupStatus: {
           visible: false,
           operationType: 1
         },
@@ -66,7 +73,8 @@
       this.fetchData()
     },
     components: {
-      TicketServerGroupDialog
+      TicketServerGroupDialog,
+      TicketUserGroupDialog
     },
     filters: {
       getPhaseText,
@@ -86,8 +94,10 @@
             this.formServerGroupStatus.operationType = operationType
             this.$refs.ticketServerGroupDialog.initData(ticket)
             break
-          case 'SERVER_GROUP2':
-            // TODO
+          case 'USER_GROUP':
+            this.formUserGroupStatus.visible = true
+            this.formUserGroupStatus.operationType = 0
+            this.$refs.ticketUserGroupDialog.initData(ticket)
             break
           default:
             this.$message.error('工单类型错误或未配置!')

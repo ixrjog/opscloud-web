@@ -8,14 +8,6 @@ export function createWorkorderTicket (data) {
   })
 }
 
-export function queryUserTicketServerGroupPage (data) {
-  return request({
-    url: '/workorder/ticket/server/group/query',
-    method: 'post',
-    data
-  })
-}
-
 export function addWorkorderTicketEntry (data) {
   return request({
     url: '/workorder/ticket/entry/add',
@@ -83,5 +75,31 @@ export function disagreeWorkorderTicket (ticketId) {
   return request({
     url: '/workorder/ticket/disagree?ticketId=' + ticketId,
     method: 'put'
+  })
+}
+
+/**
+ * 工单配置-服务器组查询
+ * @param data
+ * @returns {AxiosPromise}
+ */
+export function queryUserTicketServerGroupPage (data) {
+  return request({
+    url: '/workorder/ticket/server/group/query',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 工单配置-用户组查询
+ * @param data
+ * @returns {AxiosPromise}
+ */
+export function queryUserTicketUserGroupPage (data) {
+  return request({
+    url: '/workorder/ticket/user/group/query',
+    method: 'post',
+    data
   })
 }

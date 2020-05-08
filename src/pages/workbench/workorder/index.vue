@@ -15,7 +15,9 @@
                         <template slot-scope="scope">
                           <el-button type="success" plain size="mini" @click="previewReadme(scope.row)">帮助
                           </el-button>
-                          <el-button type="primary" plain size="mini" @click="createTicket(scope.row)" :loading="ticketCreateing">新建</el-button>
+                          <el-button type="primary" plain size="mini" @click="createTicket(scope.row)"
+                                     :loading="ticketCreateing">新建
+                          </el-button>
                         </template>
                       </el-table-column>
                     </el-table>
@@ -32,7 +34,9 @@
         </el-tab-pane>
       </el-tabs>
       <TicketServerGroupDialog ref="ticketServerGroupDialog" :formStatus="formServerGroupStatus"
-                                  @closeTicketServerGroupDialog="fetchData"></TicketServerGroupDialog>
+                               @closeTicketServerGroupDialog="fetchData"></TicketServerGroupDialog>
+      <TicketUserGroupDialog ref="ticketUserGroupDialog" :formStatus="formUserGroupStatus"
+                               @closeTicketUserGroupDialog="fetchData"></TicketUserGroupDialog>
     </template>
   </d2-container>
 </template>
@@ -41,6 +45,7 @@
   // Component
   import TicketTable from '@/components/opscloud/workorder/TicketTable.vue'
   import TicketServerGroupDialog from '@/components/opscloud/workorder/TicketServerGroupDialog'
+  import TicketUserGroupDialog from '@/components/opscloud/workorder/TicketUserGroupDialog'
 
   import { queryWorkbenchWorkorderGroup } from '@api/workorder/workorder.group.js'
   import { createWorkorderTicket } from '@api/workorder/workorder.ticket.js'
@@ -56,13 +61,18 @@
           visible: false,
           operationType: 0
         },
+        formUserGroupStatus: {
+          visible: false,
+          operationType: 0
+        },
         ticketCreateing: false,
         ticketTableData: []
       }
     },
     components: {
       TicketTable,
-      TicketServerGroupDialog
+      TicketServerGroupDialog,
+      TicketUserGroupDialog
     },
     mounted () {
       this.getWorkbenchWorkorderGroup()
@@ -94,8 +104,10 @@
                 this.formServerGroupStatus.operationType = 0
                 this.$refs.ticketServerGroupDialog.initData(ticket)
                 break
-              case 'SERVER_GROUP2':
-                // TODO
+              case 'USER_GROUP':
+                this.formUserGroupStatus.visible = true
+                this.formUserGroupStatus.operationType = 0
+                this.$refs.ticketUserGroupDialog.initData(ticket)
                 break
               default:
                 this.$message.error('工单类型错误或未配置!')

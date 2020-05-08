@@ -14,9 +14,9 @@
     </el-form>
     <el-form :model="formData">
       <el-form-item label="工作流" :label-width="formStatus.labelWidth">
-        <el-select v-model="formData.workflow" placeholder="选择类型">
+        <el-select v-model="formData.inWorkorder" placeholder="选择类型">
           <el-option
-            v-for="item in workflowOptions"
+            v-for="item in workorderOptions"
             :key="item.value"
             :label="item.label"
             :value="item.value">
@@ -43,9 +43,9 @@
   export default {
     data () {
       return {
-        workflowOptions: [{
+        workorderOptions: [{
           value: 0,
-          label: '不允许'
+          label: '禁止'
         }, {
           value: 1,
           label: '允许'
