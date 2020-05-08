@@ -314,6 +314,15 @@ const frameIn = [
         }
       },
       {
+        path: '/org',
+        name: 'org',
+        component: () => import('@/pages/org'),
+        meta: {
+          auth: true,
+          title: '组织架构'
+        }
+      },
+      {
         path: '/org/department',
         name: 'org-department',
         component: () => import('@/pages/org/department'),

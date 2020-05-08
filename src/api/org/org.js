@@ -15,6 +15,13 @@ export function queryDepartmentTree (parentId) {
   })
 }
 
+export function queryOrgChartByParentId (parentId) {
+  return request({
+    url: '/org/chart/query?parentId=' + parentId,
+    method: 'get'
+  })
+}
+
 export function dropDepartmentTree (draggingParentId, dropParentId, dropType) {
   return request({
     url: '/org/department/tree/drop?draggingParentId=' + draggingParentId + '&dropParentId=' + dropParentId + '&dropType=' + dropType,
