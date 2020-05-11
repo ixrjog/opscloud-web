@@ -5,7 +5,7 @@
         <h1>{{title}}</h1>
       </div>
       <div>
-        <organization-chart :datasource="ds" :pan="true" :zoom="true" direction="l2r" :style="chartStyle"></organization-chart>
+        <organization-chart :datasource="ds" :pan="true" :zoom="true" :style="chartStyle"></organization-chart>
       </div>
     </template>
   </d2-container>

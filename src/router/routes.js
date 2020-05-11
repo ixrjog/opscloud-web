@@ -251,7 +251,7 @@ const frameIn = [
       {
         path: '/workbench/xterm',
         name: 'workbench-xterm',
-        component: () => import('@/pages/workbench/xterm'),
+        component: () => import('@/pages/workbench/xterm/index'),
         meta: {
           auth: true,
           title: '工作台-web终端'
