@@ -26,7 +26,7 @@
                 :value="item.value">
               </el-option>
             </el-select>
-            <el-button @click="handlerBatchCmd" :style="loginStyle">命令同步</el-button>
+            <el-button @click="handlerBatchCmd" :type="handlerBatchType" :style="loginStyle" plain>命令同步</el-button>
             <el-button @click="handlerLogin" :style="loginStyle">批量登录</el-button>
             <el-button @click="handlerClose" :style="loginStyle">全部关闭</el-button>
           </el-row>
@@ -109,7 +109,9 @@
         xterms: [],
         xtermMap: {},
         xtermWidth: 0,
-        xtermHeight: 308
+        xtermHeight: 308,
+        isBatch: false,
+        handlerBatchType: ''
       }
     },
     mounted () {
@@ -123,8 +125,8 @@
     },
     methods: {
       initTermInstance (hostname) {
-        var that = this
-        console.log(hostname)
+        let _this = this
+        // console.log(hostname)
         var id = hostname
         this.xtermWidth = document.getElementById(id).clientWidth
         let cols = Math.floor(this.xtermWidth / 7.2981)
@@ -158,33 +160,45 @@
         fitAddon.fit()
         term.focus()
         term.onData(function (cmd) {
+          console.log(cmd)
           var commond = {
             data: cmd,
             status: 'COMMAND',
             instanceId: id
           }
-          that.socketOnSend(JSON.stringify(commond))
+          _this.socketOnSend(JSON.stringify(commond))
         })
         this.xtermMap[id] = term
       },
-      handlerBatchCmd (e) {
-        let _this = this
-        document.onkeydown = function (e) {
-          // 事件对象兼容
-          let e1 = e || event || window.event
-          // console.log(e1)
-          for (var i = 0; i < _this.xterms.length; i++) {
-            let id = _this.xterms[i]
-            var command = {
-              data: e1.key,
-              keyCode: e1.keyCode,
-              status: 'BATCH_COMMAND',
-              // status: 'COMMAND',
-              instanceId: id
-            }
-            _this.socketOnSend(JSON.stringify(command))
-          }
+      handlerBatchCmd () {
+        this.isBatch = !this.isBatch
+        if (this.isBatch) {
+          this.handlerBatchType = 'success'
+        } else {
+          this.handlerBatchType = ''
         }
+        var batchCommand = {
+          status: 'BATCH_COMMAND',
+          isBatch: this.isBatch
+        }
+        this.socketOnSend(JSON.stringify(batchCommand))
+        // let _this = this
+        // document.onkeydown = function (e) {
+        //   // 事件对象兼容
+        //   let e1 = e || event || window.event
+        //   // console.log(e1)
+        //   for (var i = 0; i < _this.xterms.length; i++) {
+        //     let id = _this.xterms[i]
+        //     var command = {
+        //       data: e1.key,
+        //       keyCode: e1.keyCode,
+        //       status: 'BATCH_COMMAND',
+        //       // status: 'COMMAND',
+        //       instanceId: id
+        //     }
+        //     _this.socketOnSend(JSON.stringify(command))
+        //   }
+        // }
       },
       handlerLogout (id) {
         var logout = {
