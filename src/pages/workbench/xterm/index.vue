@@ -67,7 +67,8 @@
     props: {
       socketURI: {
         type: String,
-        default: 'ws://127.0.0.1:8080/oc3/ws/xterm'
+        default: process.env.VUE_APP_WS_API + 'ws/xterm'
+       //  default: 'ws://127.0.0.1:8080/oc3/ws/xterm'
       }
     },
     data () {
