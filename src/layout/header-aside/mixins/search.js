@@ -37,24 +37,24 @@ export default {
      * 接收点击搜索按钮
      */
     handleSearchClick () {
-      this.searchToggle()
-      if (this.searchActive) {
-        setTimeout(() => {
-          if (this.$refs.panelSearch) {
-            this.$refs.panelSearch.focus()
-          }
-        }, 500)
-      }
+      // this.searchToggle()
+      // if (this.searchActive) {
+      //   setTimeout(() => {
+      //     if (this.$refs.panelSearch) {
+      //       this.$refs.panelSearch.focus()
+      //     }
+      //   }, 500)
+      // }
     },
     searchPanelOpen () {
-      if (!this.searchActive) {
-        this.searchSet(true)
-        setTimeout(() => {
-          if (this.$refs.panelSearch) {
-            this.$refs.panelSearch.focus()
-          }
-        }, 500)
-      }
+      // if (!this.searchActive) {
+      //   this.searchSet(true)
+      //   setTimeout(() => {
+      //     if (this.$refs.panelSearch) {
+      //       this.$refs.panelSearch.focus()
+      //     }
+      //   }, 500)
+      // }
     },
     // 关闭搜索面板
     searchPanelClose () {
