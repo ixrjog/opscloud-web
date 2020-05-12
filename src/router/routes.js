@@ -249,9 +249,18 @@ const frameIn = [
         }
       },
       {
+        path: '/workbench/jump',
+        name: 'workbench-jump',
+        component: () => import('@/pages/workbench/jump'),
+        meta: {
+          auth: true,
+          title: '工作台-堡垒机'
+        }
+      },
+      {
         path: '/workbench/xterm',
         name: 'workbench-xterm',
-        component: () => import('@/pages/workbench/xterm/index'),
+        component: () => import('@/pages/workbench/xterm'),
         meta: {
           auth: true,
           title: '工作台-web终端'
