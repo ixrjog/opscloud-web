@@ -10,7 +10,7 @@
         </el-col>
         <el-col :span="xtermSpan">
           <el-row style="margin-bottom: 5px;margin-left: 2px">
-            <el-select v-model="layoutMode" filterable reserve-keyword>
+            <el-select v-model="layoutMode" filterable reserve-keyword @change="handlerResize">
               <el-option
                 v-for="item in layoutModeOptions"
                 :key="item.value"
@@ -55,14 +55,13 @@
 </template>
 
 <script>
+  import util from '@/libs/util'
   // Component
   import ServerTree from '@/components/opscloud/tree/ServerTree'
   // X-Terminal
   import 'xterm/css/xterm.css'
   import { Terminal } from 'xterm'
   import { FitAddon } from 'xterm-addon-fit'
-
-  import util from '@/libs/util'
 
   export default {
     props: {
@@ -127,7 +126,7 @@
       initTermInstance (hostname) {
         let _this = this
         // console.log(hostname)
-        var id = hostname
+        let id = hostname
         this.xtermWidth = document.getElementById(id).clientWidth
         let cols = Math.floor(this.xtermWidth / 7.2981)
         const term = new Terminal({
@@ -160,7 +159,7 @@
         fitAddon.fit()
         term.focus()
         term.onData(function (cmd) {
-          console.log(cmd)
+          // console.log(cmd)
           var commond = {
             data: cmd,
             status: 'COMMAND',
@@ -169,6 +168,45 @@
           _this.socketOnSend(JSON.stringify(commond))
         })
         this.xtermMap[id] = term
+      },
+      // ESIZE
+      handlerResize () {
+        if (this.layoutMode === 0) {
+          this.layoutSpan = 12
+        } else {
+          this.layoutSpan = 24
+        }
+        this.$nextTick(() => {
+          for (let instanceId in this.xtermMap) {
+            let xtermWidth = document.getElementById(instanceId).scrollWidth
+            let xtermHeight = document.getElementById(instanceId).scrollHeight
+            let cols = Math.floor(this.xtermWidth / 7.2981)
+            let rows = Math.floor(this.xtermHeight / 14.4166)
+            this.xtermMap[instanceId].onResize(cols, rows)
+            // this.xtermMap[instanceId].geometry = [cols, rows]
+            let xtermResize = {
+              status: 'RESIZE',
+              instanceId: instanceId,
+              xtermWidth: xtermWidth,
+              xtermHeight: xtermHeight
+            }
+            this.socketOnSend(JSON.stringify(xtermResize))
+            console.log(this.xtermMap[instanceId])
+            // this.xtermMap[instanceId].dispose()
+            this.xtermMap[instanceId]._addonManager._addons[0].instance.dispose()
+            // 获取对象的高度和宽度
+            let fitAddon = new FitAddon()
+            this.xtermMap[instanceId].loadAddon(fitAddon)
+           // this.xtermMap[instanceId].activate()
+            try {
+              fitAddon.fit()
+            } catch (e) {
+            }
+            this.xtermMap[instanceId].focus()
+            // 滚动到底部
+            this.xtermMap[instanceId].scrollToBottom()
+          }
+        })
       },
       handlerBatchCmd () {
         this.isBatch = !this.isBatch
@@ -228,8 +266,8 @@
         this.xtermSpan = 16
       },
       handlerTest () {
-        console.log(document.getElementById('xxxx').clientWidth)
-        console.log(document.getElementById('xxxx').clientHeight)
+        // console.log(document.getElementById('xxxx').clientWidth)
+        //  console.log(document.getElementById('xxxx').clientHeight)
       },
       handlerLogin () {
         this.pageStatus = 1
