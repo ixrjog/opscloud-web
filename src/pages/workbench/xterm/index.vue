@@ -26,9 +26,11 @@
                 :value="item.value">
               </el-option>
             </el-select>
-            <el-button @click="handlerBatchCmd" :type="handlerBatchType" :style="loginStyle" plain>命令同步</el-button>
-            <el-button @click="handlerLogin" :style="loginStyle">批量登录</el-button>
-            <el-button @click="handlerClose" :style="loginStyle">全部关闭</el-button>
+            <el-button @click="handlerBatchCmd" v-if="pageStatus === 1" :type="handlerBatchType" :style="loginStyle"
+                       plain>命令同步
+            </el-button>
+            <el-button @click="handlerLogin" v-if="pageStatus === 0" :style="loginStyle">批量登录</el-button>
+            <el-button @click="handlerClose" v-if="pageStatus === 1" :style="loginStyle">全部关闭</el-button>
           </el-row>
           <el-row>
             <div v-for="xterm in xterms" :key="xterm">
@@ -182,7 +184,6 @@
             let xtermHeight = document.getElementById(instanceId).scrollHeight
             let cols = Math.floor(this.xtermWidth / 7.2981)
             let rows = Math.floor(this.xtermHeight / 14.4166)
-            this.xtermMap[instanceId].onResize(cols, rows)
             // this.xtermMap[instanceId].geometry = [cols, rows]
             let xtermResize = {
               status: 'RESIZE',
@@ -197,12 +198,13 @@
             // 获取对象的高度和宽度
             let fitAddon = new FitAddon()
             this.xtermMap[instanceId].loadAddon(fitAddon)
-           // this.xtermMap[instanceId].activate()
+            // this.xtermMap[instanceId].activate()
             try {
               fitAddon.fit()
             } catch (e) {
             }
             this.xtermMap[instanceId].focus()
+            this.xtermMap[instanceId].onResize(cols, rows)
             // 滚动到底部
             this.xtermMap[instanceId].scrollToBottom()
           }
@@ -278,6 +280,8 @@
           this.layoutSpan = 24
         }
         this.xtermMap = {}
+        this.isBatch = false
+        this.handlerBatchType = ''
         this.initSocket()
       },
       initSocket () {
