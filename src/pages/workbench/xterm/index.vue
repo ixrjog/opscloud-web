@@ -129,7 +129,8 @@
         xtermWidth: 0,
         xtermHeight: 308,
         isBatch: false,
-        handlerBatchType: ''
+        handlerBatchType: '',
+        timer: null // 心跳定时器
       }
     },
     mounted () {
@@ -142,12 +143,31 @@
         }
       } catch (e) {
       }
+      clearInterval(this.timer)
     },
     components: {
       ServerTree,
       DocDialog
     },
     methods: {
+      setTimer () {
+        if (this.timer == null) {
+          this.timer = setInterval(() => {
+            this.handlerSSHHeartbeat()
+            // console.log('开始定时...每10秒执行一次')
+          }, 10000)
+        }
+      },
+      // SSH send NO-OP
+      handlerSSHHeartbeat () {
+        let heartbeat = {
+          status: 'HEARTBEAT'
+        }
+        try {
+          this.socketOnSend(JSON.stringify(heartbeat))
+        } catch (e) {
+        }
+      },
       handlerPreviewUserDoc () {
         queryUserDocByType(1)
           .then(res => {
@@ -164,6 +184,7 @@
         //  let cols = Math.floor(this.xtermWidth / 7.2981)
         const term = new Terminal({
           rendererType: 'canvas', // 渲染类型
+          allowTransparency: true,
           fontSize: 11,
           // cols: cols,
           rows: 21,
@@ -328,6 +349,7 @@
         this.xtermMap = {}
         this.pageStatus = 0
         this.xtermSpan = 16
+        clearInterval(this.timer)
       },
       handlerTest () {
         // console.log(document.getElementById('xxxx').clientWidth)
@@ -345,6 +367,7 @@
         this.isBatch = false
         this.handlerBatchType = ''
         this.initSocket()
+        this.setTimer()
       },
       initSocket () {
         this.socket = new WebSocket(this.socketURI)
