@@ -143,11 +143,11 @@
         // console.log(hostname)
         let id = hostname
         this.xtermWidth = document.getElementById(id).clientWidth
-        let cols = Math.floor(this.xtermWidth / 7.2981)
+        //  let cols = Math.floor(this.xtermWidth / 7.2981)
         const term = new Terminal({
           rendererType: 'canvas', // 渲染类型
           fontSize: 11,
-          cols: cols,
+          // cols: cols,
           rows: 21,
           // theme: 'default',
           theme: {
@@ -156,7 +156,7 @@
             cursor: 'help'// 设置光标
           },
           termName: 'xterm',
-          geometry: [cols, 21],
+         //  geometry: [cols, 21],
           visualBell: false,
           popOnBell: false,
           scrollback: 1000,
@@ -195,8 +195,8 @@
           for (let instanceId in this.xtermMap) {
             let xtermWidth = document.getElementById(instanceId).scrollWidth
             let xtermHeight = document.getElementById(instanceId).scrollHeight
-            let cols = Math.floor(this.xtermWidth / 7.2981)
-            let rows = Math.floor(this.xtermHeight / 14.4166)
+            // let cols = Math.floor(this.xtermWidth / 7.2981)
+            // let rows = Math.floor(this.xtermHeight / 14.4166)
             // this.xtermMap[instanceId].geometry = [cols, rows]
             let xtermResize = {
               status: 'RESIZE',
@@ -205,7 +205,7 @@
               xtermHeight: xtermHeight
             }
             this.socketOnSend(JSON.stringify(xtermResize))
-            //console.log(this.xtermMap[instanceId])
+            // console.log(this.xtermMap[instanceId])
             // this.xtermMap[instanceId].dispose()
             this.xtermMap[instanceId]._addonManager._addons[0].instance.dispose()
             // 获取对象的高度和宽度
@@ -217,7 +217,7 @@
             } catch (e) {
             }
             this.xtermMap[instanceId].focus()
-            this.xtermMap[instanceId].onResize(cols, rows)
+            // this.xtermMap[instanceId].onResize(cols, rows)
             // 滚动到底部
             this.xtermMap[instanceId].scrollToBottom()
           }
@@ -278,7 +278,7 @@
           xtermWidth: this.xtermWidth,
           xtermHeight: this.xtermHeight
         }
-        //console.log(duplicateSession)
+        // console.log(duplicateSession)
         this.xterms.push(instanceId)
         this.$nextTick(() => {
           this.initTermInstance(instanceId)
