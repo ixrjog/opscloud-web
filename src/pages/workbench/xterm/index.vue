@@ -29,6 +29,7 @@
             <el-button @click="handlerBatchCmd" v-if="pageStatus === 1" :type="handlerBatchType" :style="loginStyle"
                        plain>命令同步
             </el-button>
+            <el-button @click="handlerPreviewUserDoc" :style="loginStyle">用户文档</el-button>
             <el-button @click="handlerLogin" v-if="pageStatus === 0" :style="loginStyle">批量登录</el-button>
             <el-button @click="handlerClose" v-if="pageStatus === 1" :style="loginStyle">全部关闭</el-button>
           </el-row>
@@ -60,6 +61,7 @@
           </el-row>
         </el-col>
       </el-row>
+      <DocDialog ref="docDialog" :formStatus="formDocStatus"></DocDialog>
     </template>
   </d2-container>
 </template>
@@ -67,11 +69,15 @@
 <script>
   import util from '@/libs/util'
   // Component
+  // Component
+  import DocDialog from '@/components/opscloud/dialog/DocDialog.vue'
   import ServerTree from '@/components/opscloud/tree/ServerTree'
   // X-Terminal
   import 'xterm/css/xterm.css'
   import { Terminal } from 'xterm'
   import { FitAddon } from 'xterm-addon-fit'
+
+  import { queryUserDocByType } from '@api/doc/doc.js'
 
   export default {
     props: {
@@ -83,6 +89,9 @@
     },
     data () {
       return {
+        formDocStatus: {
+          visible: false
+        },
         // 页面状态0 选择   1 登录状态
         pageStatus: 0,
         xtermSpan: 16,
@@ -135,9 +144,18 @@
       }
     },
     components: {
-      ServerTree
+      ServerTree,
+      DocDialog
     },
     methods: {
+      handlerPreviewUserDoc () {
+        queryUserDocByType(1)
+          .then(res => {
+            // 返回数据
+            this.formDocStatus.visible = true
+            this.$refs.docDialog.initData(res.body)
+          })
+      },
       initTermInstance (hostname) {
         let _this = this
         // console.log(hostname)
@@ -156,7 +174,7 @@
             cursor: 'help'// 设置光标
           },
           termName: 'xterm',
-         //  geometry: [cols, 21],
+          //  geometry: [cols, 21],
           visualBell: false,
           popOnBell: false,
           scrollback: 1000,
@@ -184,7 +202,6 @@
         })
         this.xtermMap[id] = term
       },
-      // ESIZE
       handlerResize () {
         if (this.layoutMode === 0) {
           this.layoutSpan = 12
@@ -361,8 +378,6 @@
           } catch (e) {
             this.$message.error('登录失败，未选择服务器或其它原因')
           }
-          // this.initTerm(0)
-          // this.initTerm(1)
         }
       },
       socketOnClose () {
@@ -380,8 +395,7 @@
       },
       socketOnMessage () {
         this.socket.onmessage = (message) => {
-          var messageJson = JSON.parse(message.data)
-
+          let messageJson = JSON.parse(message.data)
           for (var index = 0; index < messageJson.length; index++) {
             this.xtermMap[messageJson[index].instanceId].write(messageJson[index].output)
           }

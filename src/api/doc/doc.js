@@ -6,3 +6,18 @@ export function queryDocByKey (key) {
     method: 'get'
   })
 }
+
+export function queryUserDocByType (docType) {
+  return request({
+    url: '/doc/user/type/query?docType=' + docType,
+    method: 'get'
+  })
+}
+
+export function saveUserDoc (data) {
+  return request({
+    url: '/doc/user/save',
+    method: 'put',
+    data
+  })
+}
