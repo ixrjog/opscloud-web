@@ -39,8 +39,16 @@
                   <el-card shadow="hover" body-style="padding: 2px" style="margin-right: 10px;margin-bottom: 10px">
                     <div slot="header" class="clearfix" style="height: 15px">
                       <span> <el-tag> {{ xterm }}</el-tag></span>
-                      <el-button style="float: right; padding: 3px 0" type="text" @click="handlerLogout(xterm)">Logout
-                      </el-button>
+                      <el-tooltip class="item" effect="light" content="退出" placement="top-start">
+                        <el-button style="float: right; padding: 3px 0" type="text" @click="handlerLogout(xterm)">
+                          Logout
+                        </el-button>
+                      </el-tooltip>
+                      <el-tooltip class="item" effect="light" content="复制会话" placement="top-start">
+                        <el-button style="float: right; padding: 3px 0;margin-right: 20px" type="text"
+                                   @click="handlerDuplicateSession(xterm)">Duplicate
+                        </el-button>
+                      </el-tooltip>
                     </div>
                     <!--                    style="border-right:2px solid #e0e0e0; border-left:2px solid #e0e0e0; border-bottom:2px solid #e0e0e0; border-top:1px solid #e0e0e0;margin-top:10px;margin-left: 10px"-->
                     <div :id="xterm" class="xterm">
@@ -118,8 +126,13 @@
     mounted () {
     },
     beforeDestroy () {
-      this.socket.close()
-      this.term.dispose()
+      try {
+        this.socket.close()
+        for (let instanceId in this.xtermMap) {
+          this.xtermMap[instanceId].dispose()
+        }
+      } catch (e) {
+      }
     },
     components: {
       ServerTree
@@ -192,7 +205,7 @@
               xtermHeight: xtermHeight
             }
             this.socketOnSend(JSON.stringify(xtermResize))
-            console.log(this.xtermMap[instanceId])
+            //console.log(this.xtermMap[instanceId])
             // this.xtermMap[instanceId].dispose()
             this.xtermMap[instanceId]._addonManager._addons[0].instance.dispose()
             // 获取对象的高度和宽度
@@ -240,8 +253,40 @@
         //   }
         // }
       },
+      getUUID () {
+        var s = []
+        var hexDigits = '0123456789abcdef'
+        for (var i = 0; i < 36; i++) {
+          s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1)
+        }
+        s[14] = '4' // bits 12-15 of the time_hi_and_version field to 0010
+        s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1) // bits 6-7 of the clock_seq_hi_and_reserved to 01
+        s[8] = s[13] = s[18] = s[23] = '-'
+        var uuid = s.join('')
+        return uuid
+      },
+      handlerDuplicateSession (id) {
+        // 计算 instanceId  源id  server-prod-1#1
+        const instanceId = id.split('#')[0] + '#' + this.getUUID()
+
+        let duplicateSession = {
+          status: 'DUPLICATE_SESSION',
+          duplicateInstanceId: id,
+          token: util.cookies.get('token'),
+          loginUserType: this.loginUserType,
+          instanceId: instanceId,
+          xtermWidth: this.xtermWidth,
+          xtermHeight: this.xtermHeight
+        }
+        //console.log(duplicateSession)
+        this.xterms.push(instanceId)
+        this.$nextTick(() => {
+          this.initTermInstance(instanceId)
+          this.socketOnSend(JSON.stringify(duplicateSession))
+        })
+      },
       handlerLogout (id) {
-        var logout = {
+        let logout = {
           status: 'LOGOUT',
           instanceId: id
         }
@@ -302,11 +347,10 @@
               instanceIds.forEach(hostname => {
                 this.initTermInstance(hostname)
               })
-              const token = util.cookies.get('token')
               let initXterm = {
                 uuid: uuid,
-                token: token,
-                loginUserType: 0,
+                token: util.cookies.get('token'),
+                loginUserType: this.loginUserType,
                 instanceIds: instanceIds,
                 status: 'INITIAL',
                 xtermWidth: this.xtermWidth,
