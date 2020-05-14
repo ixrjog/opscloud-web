@@ -57,18 +57,24 @@
                   用户组<i class="header-icon el-icon-info"></i>(角色授权)
                 </template>
                 <div class="tag-group">
-                  <el-tag style="margin-left: 5px"
-                          v-for="item in formUserDetail.userGroups"
-                          :key="item.id">{{ item.name }}
-                  </el-tag>
+                   <span v-for="item in formUserDetail.userGroups" :key="item.id">
+                    <template>
+                       <el-tooltip class="item" effect="light" :content="item.comment || '没有填写'" placement="bottom">
+                         <el-tag style="margin-left: 5px">{{ item.name }}</el-tag>
+                       </el-tooltip>
+                    </template>
+                  </span>
                 </div>
               </el-collapse-item>
-              <el-collapse-item title="服务器组">
+              <el-collapse-item title="服务器组（红色标签拥有管理员权限）">
                 <div class="tag-group">
-                  <el-tag style="margin-left: 5px"
-                          v-for="item in formUserDetail.serverGroups"
-                          :key="item.id">{{ item.name }}
-                  </el-tag>
+                  <span v-for="item in formUserDetail.serverGroups" :key="item.id">
+                    <template>
+                      <el-tooltip class="item" effect="light" :content="item.comment || '没有填写'" placement="bottom">
+                        <el-tag style="margin-left: 5px" :type=" item.isAdmin ? 'danger': '' ">{{ item.name }}</el-tag>
+                      </el-tooltip>
+                    </template>
+                  </span>
                 </div>
               </el-collapse-item>
               <el-collapse-item title="AliyunRAM授权策略">
@@ -82,11 +88,14 @@
                 </template>
                 <el-col>
                   <el-tag v-if="formUserDetail.credentialMap != null && formUserDetail.credentialMap.sshPubKey != null"
-                          style="margin-left: 5px">{{ formUserDetail.credentialMap.sshPubKey.title }} {{ formUserDetail.credentialMap.sshPubKey.fingerprint }}
+                          style="margin-left: 5px">{{ formUserDetail.credentialMap.sshPubKey.title }} {{
+                    formUserDetail.credentialMap.sshPubKey.fingerprint }}
                   </el-tag>
-                  <el-tooltip class="item" effect="light" content="堡垒机公钥已推送" placement="top" v-show="formUserDetail.attributeMap != null && formUserDetail.attributeMap.jumpserverPubkey">
+                  <el-tooltip class="item" effect="light" content="堡垒机公钥已推送" placement="top"
+                              v-show="formUserDetail.attributeMap != null && formUserDetail.attributeMap.jumpserverPubkey">
                     <el-tag type="success"
-                            style="margin-left: 5px">堡垒机</el-tag>
+                            style="margin-left: 5px">堡垒机
+                    </el-tag>
                   </el-tooltip>
                 </el-col>
                 <el-button style="margin-top: 5px" size="mini" @click="editSSHKey">编辑</el-button>
@@ -97,12 +106,12 @@
                 </template>
                 <el-table :data="formUserDetail.apiTokens" style="width: 100%">
                   <el-table-column prop="tokenId" label="id" width="240"></el-table-column>
-<!--                  <el-table-column prop="token" label="api-token"></el-table-column>-->
+                  <!--                  <el-table-column prop="token" label="api-token"></el-table-column>-->
                   <el-table-column prop="expiredTime" label="过期时间"></el-table-column>
                   <el-table-column prop="comment" label="描述"></el-table-column>
                   <el-table-column fixed="right" label="操作" width="80">
                     <template slot-scope="scope">
-<!--                      <el-button style="float: right; padding: 3px 0" type="text"  @click="delItem(scope.row)">修改基本信息</el-button>-->
+                      <!--                      <el-button style="float: right; padding: 3px 0" type="text"  @click="delItem(scope.row)">修改基本信息</el-button>-->
                       <el-button plain size="mini" @click="delApiToken(scope.row)">删除</el-button>
                     </template>
                   </el-table-column>

@@ -79,16 +79,13 @@
 
   import { queryUserDocByType } from '@api/doc/doc.js'
 
+  const xtermUrl = 'ws/xterm'
+
   export default {
-    props: {
-      socketURI: {
-        type: String,
-        default: process.env.VUE_APP_WS_API + 'ws/xterm'
-        //  default: 'ws://127.0.0.1:8080/oc3/ws/xterm'
-      }
-    },
+    props: {},
     data () {
       return {
+        socketURI: '',
         formDocStatus: {
           visible: false
         },
@@ -133,6 +130,7 @@
       }
     },
     mounted () {
+      this.initWebSocketURL()
     },
     beforeDestroy () {
       try {
@@ -149,6 +147,16 @@
       DocDialog
     },
     methods: {
+      initWebSocketURL () {
+        if (process.env.NODE_ENV === 'development') {
+          this.socketURI = process.env.VUE_APP_WS_API + xtermUrl
+        } else {
+          let host = window.location.host
+          let httpProtocol = window.location.href.split('://')[0]
+          const socketURI = (httpProtocol === 'http' ? 'ws' : 'wss') + '://' + host + '/oc3/' + xtermUrl
+          this.socketURI = socketURI
+        }
+      },
       setTimer () {
         if (this.timer == null) {
           this.timer = setInterval(() => {
