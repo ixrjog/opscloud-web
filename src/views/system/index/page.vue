@@ -3,7 +3,7 @@
     <d2-page-cover>
       <d2-icon-svg class="logo" name="d2-admin"/>
       <template slot="footer">
-        <div class="btn-group">
+        <div class="btn-group" v-if="false">
           <span class="btn-group__btn" @click="$open('https://github.com/d2-projects')">开源组织</span> |
           <span class="btn-group__btn" @click="$open('https://d2.pub/zh/doc/d2-admin')">文档</span> |
           <span class="btn-group__btn" @click="$open('https://github.com/d2-projects/d2-admin-start-kit')">简化版</span> |

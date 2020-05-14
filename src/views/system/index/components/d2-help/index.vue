@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="false">
     <el-button type="primary" @click="dialogVisible = true" plain round>
       <d2-icon name="question-circle-o" class="d2-mr-5"/>
       需要帮助吗
