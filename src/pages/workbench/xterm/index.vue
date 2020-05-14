@@ -92,19 +92,18 @@
         formDocStatus: {
           visible: false
         },
-        // 页面状态0 选择   1 登录状态
-        pageStatus: 0,
+        pageStatus: 0, // 页面状态: 0 选择 1 登录状态
         xtermSpan: 16,
         loginStyle: {
           marginLeft: '5px'
         },
         title: 'Web-XTerminal',
-        uuid: '',
+        uuid: '', // 服务器树资源权限校验
         options: {
           stripe: true
         },
-        layoutMode: 0,
-        layoutSpan: 12,
+        layoutMode: 0, // 当前布局模式
+        layoutSpan: 12, // 布局宽度
         layoutModeOptions: [
           {
             value: 0,
@@ -114,7 +113,7 @@
             label: '单列布局'
           }
         ],
-        loginUserType: 0,
+        loginUserType: 0, // 登录用户类型
         loginUserTypeOptions: [
           {
             value: 0,
@@ -143,7 +142,7 @@
         }
       } catch (e) {
       }
-      clearInterval(this.timer)
+      clearInterval(this.timer) // 销毁定时器
     },
     components: {
       ServerTree,
@@ -158,7 +157,9 @@
           }, 10000)
         }
       },
-      // SSH send NO-OP
+      /**
+       * 发送空心跳 避免阿里云SLB会话断开
+       */
       handlerSSHHeartbeat () {
         let heartbeat = {
           status: 'HEARTBEAT'
@@ -178,7 +179,6 @@
       },
       initTermInstance (hostname) {
         let _this = this
-        // console.log(hostname)
         let id = hostname
         this.xtermWidth = document.getElementById(id).clientWidth
         //  let cols = Math.floor(this.xtermWidth / 7.2981)
@@ -187,7 +187,7 @@
           allowTransparency: true,
           fontSize: 11,
           // cols: cols,
-          rows: 21,
+          // rows: 21,
           // theme: 'default',
           theme: {
             foreground: 'white', // 字体
@@ -198,7 +198,7 @@
           //  geometry: [cols, 21],
           visualBell: false,
           popOnBell: false,
-          scrollback: 1000,
+          scrollback: 1000, // 最大滚动行数
           screenKeys: false,
           debug: false,
           cancelEvents: false,
@@ -213,8 +213,7 @@
         fitAddon.fit()
         term.focus()
         term.onData(function (cmd) {
-          // console.log(cmd)
-          var commond = {
+          let commond = {
             data: cmd,
             status: 'COMMAND',
             instanceId: id
@@ -223,6 +222,9 @@
         })
         this.xtermMap[id] = term
       },
+      /**
+       * 后端调整体型
+       */
       handlerResize () {
         if (this.layoutMode === 0) {
           this.layoutSpan = 12
@@ -231,25 +233,17 @@
         }
         this.$nextTick(() => {
           for (let instanceId in this.xtermMap) {
-            let xtermWidth = document.getElementById(instanceId).scrollWidth
-            let xtermHeight = document.getElementById(instanceId).scrollHeight
-            // let cols = Math.floor(this.xtermWidth / 7.2981)
-            // let rows = Math.floor(this.xtermHeight / 14.4166)
-            // this.xtermMap[instanceId].geometry = [cols, rows]
             let xtermResize = {
               status: 'RESIZE',
               instanceId: instanceId,
-              xtermWidth: xtermWidth,
-              xtermHeight: xtermHeight
+              xtermWidth: document.getElementById(instanceId).scrollWidth,
+              xtermHeight: document.getElementById(instanceId).scrollHeight
             }
             this.socketOnSend(JSON.stringify(xtermResize))
-            // console.log(this.xtermMap[instanceId])
-            // this.xtermMap[instanceId].dispose()
             this.xtermMap[instanceId]._addonManager._addons[0].instance.dispose()
             // 获取对象的高度和宽度
             let fitAddon = new FitAddon()
             this.xtermMap[instanceId].loadAddon(fitAddon)
-            // this.xtermMap[instanceId].activate()
             try {
               fitAddon.fit()
             } catch (e) {
@@ -261,6 +255,9 @@
           }
         })
       },
+      /**
+       * 后端设置批量输入（服务端广播输入）
+       */
       handlerBatchCmd () {
         this.isBatch = !this.isBatch
         if (this.isBatch) {
@@ -273,24 +270,32 @@
           isBatch: this.isBatch
         }
         this.socketOnSend(JSON.stringify(batchCommand))
-        // let _this = this
-        // document.onkeydown = function (e) {
-        //   // 事件对象兼容
-        //   let e1 = e || event || window.event
-        //   // console.log(e1)
-        //   for (var i = 0; i < _this.xterms.length; i++) {
-        //     let id = _this.xterms[i]
-        //     var command = {
-        //       data: e1.key,
-        //       keyCode: e1.keyCode,
-        //       status: 'BATCH_COMMAND',
-        //       // status: 'COMMAND',
-        //       instanceId: id
-        //     }
-        //     _this.socketOnSend(JSON.stringify(command))
-        //   }
-        // }
+        /**
+         * 按键事件监听的实现方式，需要按键转码
+         * let _this = this
+         document.onkeydown = function (e) {
+             // 事件对象兼容
+             let e1 = e || event || window.event
+             // console.log(e1)
+             for (var i = 0; i < _this.xterms.length; i++) {
+                let id = _this.xterms[i]
+                var command = {
+                    data: e1.key,
+                    keyCode: e1.keyCode,
+                    status: 'BATCH_COMMAND',
+                    // status: 'COMMAND',
+                    instanceId: id
+                   }
+                _this.socketOnSend(JSON.stringify(command))
+              }
+            }
+         */
       },
+      /**
+       * 获取一个uuid
+       * 用于会话复制后的重命名
+       * @returns {string}
+       */
       getUUID () {
         var s = []
         var hexDigits = '0123456789abcdef'
@@ -303,6 +308,10 @@
         var uuid = s.join('')
         return uuid
       },
+      /**
+       * 复制会话，重开一个终端（支持变更用户类型）
+       * @param id
+       */
       handlerDuplicateSession (id) {
         // 计算 instanceId  源id  server-prod-1#1
         const instanceId = id.split('#')[0] + '#' + this.getUUID()
@@ -323,6 +332,10 @@
           this.socketOnSend(JSON.stringify(duplicateSession))
         })
       },
+      /**
+       * 单个终端退出
+       * @param id
+       */
       handlerLogout (id) {
         let logout = {
           status: 'LOGOUT',
@@ -339,6 +352,7 @@
             break
           }
         }
+        this.$message.warning(id + '终端已关闭')
       },
       handlerClose () {
         var close = {
@@ -351,10 +365,9 @@
         this.xtermSpan = 16
         clearInterval(this.timer)
       },
-      handlerTest () {
-        // console.log(document.getElementById('xxxx').clientWidth)
-        //  console.log(document.getElementById('xxxx').clientHeight)
-      },
+      /**
+       * 批量登录
+       */
       handlerLogin () {
         this.pageStatus = 1
         this.xtermSpan = 24
@@ -369,6 +382,9 @@
         this.initSocket()
         this.setTimer()
       },
+      /**
+       * WS初始化
+       */
       initSocket () {
         this.socket = new WebSocket(this.socketURI)
         this.socketOnClose()
@@ -377,13 +393,12 @@
         this.socketOnMessage()
       },
       socketOnOpen () {
-        this.socket.onopen = () => {
-          // 链接成功后
+        this.socket.onopen = () => { // 链接成功后
           try {
             let instanceIds = this.$refs.serverTree.getCheckedKeys(true)
             let uuid = this.$refs.serverTree.getUuid()
             this.xterms = instanceIds
-            this.$nextTick(() => {
+            this.$nextTick(() => { // 需要延迟执行
               instanceIds.forEach(hostname => {
                 this.initTermInstance(hostname)
               })
@@ -405,7 +420,6 @@
       },
       socketOnClose () {
         this.socket.onclose = () => {
-          // console.log('close socket')
         }
       },
       socketOnError () {

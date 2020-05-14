@@ -16,7 +16,7 @@
     </el-tooltip>
     <el-card style="margin-top: 5px" class="box-card" shadow="never">
       <div slot="header" class="clearfix">
-        <span>ServerTree</span>
+        <span><i class="fa fa-list" aria-hidden="true"></i></span>
         <el-tag style="float: right" disable-transitions>Size: {{ serverSize }}</el-tag>
       </div>
       <el-tree :data="serverTree.tree" show-checkbox ref="myServerTree" node-key="id"></el-tree>
