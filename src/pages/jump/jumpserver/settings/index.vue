@@ -18,17 +18,17 @@
                   <el-form :model="settings">
                     <el-tooltip content="推送权限的账户" placement="top-start" effect="light">
                       <el-form-item label="管理账户" :label-width="labelWidth" :required="true">
-                      <template>
-                        <el-select v-model="settings.assetsAdminuserId" placeholder="请选择" clearable>
-                          <el-option
-                            v-for="item in settings.assetsAdminusers"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.id">
-                          </el-option>
-                        </el-select>
-                      </template>
-                    </el-form-item>
+                        <template>
+                          <el-select v-model="settings.assetsAdminuserId" placeholder="请选择" clearable>
+                            <el-option
+                              v-for="item in settings.assetsAdminusers"
+                              :key="item.id"
+                              :label="item.name"
+                              :value="item.id">
+                            </el-option>
+                          </el-select>
+                        </template>
+                      </el-form-item>
                     </el-tooltip>
                     <el-tooltip content="普通用户登录系统的账户(不支持sudo)" placement="top-start" effect="light">
                       <el-form-item label="低权限系统账户" :label-width="labelWidth" :required="true">
@@ -90,7 +90,9 @@
                       <el-table-column prop="name" label="显示名"></el-table-column>
                       <el-table-column fixed="right" label="操作" width="80">
                         <template slot-scope="scope">
-                          <el-button type="danger" plain size="mini" @click="revokeItem(scope.row)" v-if="scope.row.username != 'admin'">撤销</el-button>
+                          <el-button type="danger" plain size="mini" @click="revokeItem(scope.row)"
+                                     v-if="scope.row.username != 'admin'">撤销
+                          </el-button>
                         </template>
                       </el-table-column>
                     </el-table>
@@ -115,6 +117,11 @@
                     <el-table-column prop="sshPort" label="ssh"></el-table-column>
                     <el-table-column prop="httpPort" label="http"></el-table-column>
                     <el-table-column prop="sessions" label="会话"></el-table-column>
+                    <el-table-column fixed="right" label="操作" width="80">
+                      <template slot-scope="scope">
+                        <el-button type="primary" plain size="mini" @click="handlerXTerm(scope.row)">登录</el-button>
+                      </template>
+                    </el-table-column>
                   </el-table>
                 </el-card>
               </el-col>
@@ -152,13 +159,15 @@
           </el-tab-pane>
         </el-tabs>
       </el-col>
+      <XTerm :formStatus="formXtermStatus" ref="xtermDialog"></XTerm>
     </template>
   </d2-container>
 </template>
 
 <script>
   // Component
-  // import ServerAttributeCard from '@/components/opscloud/card/ServerAttributeCard'
+  // XTerm
+  import XTerm from '@/components/opscloud/xterm/XTerm'
 
   import doc from '@/static/md/jump.jumpserver.settings.md'
   // Filters
@@ -171,6 +180,9 @@
   export default {
     data () {
       return {
+        formXtermStatus: {
+          visible: false
+        },
         searchBarHeadStyle: {
           display: 'inline-block',
           maxWidth: '200px'
@@ -213,6 +225,9 @@
       this.fetchAdminUserData()
       this.fetchTerminalSessionData()
     },
+    components: {
+      XTerm
+    },
     filters: {
       getUserRoleType,
       getUserRoleText,
@@ -242,6 +257,14 @@
           .then(res => {
             this.settings = res.body
           })
+      },
+      handlerXTerm (row) {
+        this.formXtermStatus.visible = true
+        let server = {
+          name: row.name,
+          pirvateIp: row.remoteAddr
+        }
+        this.$refs.xtermDialog.initData(server)
       },
       saveSettings () {
         saveSettings(this.settings)

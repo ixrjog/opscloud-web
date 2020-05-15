@@ -104,6 +104,7 @@
             <!--            </el-button>-->
             <el-button type="primary" plain size="mini" @click="editTag(scope.row)">标签</el-button>
             <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
+            <el-button type="primary" plain size="mini" @click="handlerXTerm(scope.row)">登录</el-button>
             <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -117,6 +118,7 @@
       <!-- tag编辑-->
       <TagTransferDialog :formStatus="formTagTransferStatus" :formData="tagTransfer"
                          @closeTagTransferDialog="fetchData"></TagTransferDialog>
+      <XTerm :formStatus="formXtermStatus" ref="xtermDialog"></XTerm>
     </template>
   </d2-container>
 </template>
@@ -125,6 +127,8 @@
   // Component
   import ServerDialog from '@/components/opscloud/dialog/ServerDialog'
   import TagTransferDialog from '@/components/opscloud/dialog/TagTransferDialog'
+  // XTerm
+  import XTerm from '@/components/opscloud/xterm/XTerm'
   // Filters
   import { getLoginTypeText, getMonitorStatusText, getMonitorStatusType, getServerTypeText } from '@/filters/server.js'
   // API
@@ -154,6 +158,9 @@
           operationType: true,
           addTitle: '新增服务器配置',
           updateTitle: '更新服务器配置'
+        },
+        formXtermStatus: {
+          visible: false
         },
         tableData: [],
         options: {
@@ -185,7 +192,8 @@
     },
     components: {
       ServerDialog,
-      TagTransferDialog
+      TagTransferDialog,
+      XTerm
     },
     filters: {
       getLoginTypeText,
@@ -214,6 +222,10 @@
       },
       handleClick () {
         this.$emit('input', !this.value)
+      },
+      handlerXTerm (row) {
+        this.formXtermStatus.visible = true
+        this.$refs.xtermDialog.initData(row)
       },
       delItem (row) {
         this.$confirm('此操作将删除当前配置?', '提示', {
