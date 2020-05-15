@@ -26,11 +26,17 @@
                 :value="item.value">
               </el-option>
             </el-select>
-            <el-button @click="handlerBatchCmd" v-if="pageStatus === 1" :type="handlerBatchType" :style="loginStyle"
-                       plain>命令同步
-            </el-button>
-            <el-button @click="handlerPreviewUserDoc" :style="loginStyle">用户文档</el-button>
-            <el-button @click="handlerResize" v-if="pageStatus === 1" :style="loginStyle">调整大小</el-button>
+            <el-tooltip class="item" effect="light" content="任意窗口输入指令同步到所有终端" placement="bottom">
+              <el-button @click="handlerBatchCmd" v-if="pageStatus === 1" :type="handlerBatchType" :style="loginStyle"
+                         plain>命令同步
+              </el-button>
+            </el-tooltip>
+            <el-tooltip class="item" effect="light" content="您的个人文档，用于记录常用指令" placement="bottom">
+              <el-button @click="handlerPreviewUserDoc" :style="loginStyle">用户文档</el-button>
+            </el-tooltip>
+            <el-tooltip class="item" effect="light" content="修复终端字符错位" placement="bottom">
+              <el-button @click="handlerResize" v-if="pageStatus === 1" :style="loginStyle">调整大小</el-button>
+            </el-tooltip>
             <el-button @click="handlerLogin" v-if="pageStatus === 0" :style="loginStyle">批量登录</el-button>
             <el-button @click="handlerClose" v-if="pageStatus === 1" :style="loginStyle">全部关闭</el-button>
           </el-row>
@@ -121,6 +127,9 @@
             label: '系统管理员'
           }
         ],
+        // 插件容器
+        addonMap: [],
+        // XTerm
         xterms: [],
         xtermMap: {},
         xtermWidth: 0,
@@ -189,14 +198,10 @@
       initTermInstance (hostname) {
         let _this = this
         let id = hostname
-        this.xtermWidth = document.getElementById(id).clientWidth
-        //  let cols = Math.floor(this.xtermWidth / 7.2981)
         const term = new Terminal({
           rendererType: 'canvas', // 渲染类型
           allowTransparency: true,
           fontSize: 11,
-          // cols: cols,
-          // rows: 21,
           // theme: 'default',
           theme: {
             foreground: 'white', // 字体
@@ -204,7 +209,6 @@
             cursor: 'help'// 设置光标
           },
           termName: 'xterm',
-          //  geometry: [cols, 21],
           visualBell: false,
           popOnBell: false,
           scrollback: 1000, // 最大滚动行数
@@ -215,11 +219,11 @@
           cursorBlink: true, // 光标闪烁
           convertEol: true // 启用时，光标将设置为下一行的开头
         })
-        const fitAddon = new FitAddon()
-        term.loadAddon(fitAddon)
+        _this.addonMap[id] = new FitAddon()
+        term.loadAddon(_this.addonMap[id])
         term.open(document.getElementById(id))
         // 获取对象的高度和宽度
-        fitAddon.fit()
+        _this.addonMap[id].fit()
         term.focus()
         term.onData(function (cmd) {
           let commond = {
@@ -249,18 +253,13 @@
           let xtermResize = {
             status: 'RESIZE',
             instanceId: instanceId,
-            xtermWidth: document.getElementById(instanceId).clientWidth - 22,
+            xtermWidth: document.getElementById(instanceId).clientWidth - 22, // 边界扣除
             xtermHeight: document.getElementById(instanceId).clientHeight
           }
           this.socketOnSend(JSON.stringify(xtermResize))
-          this.xtermMap[instanceId]._addonManager._addons[0].instance.dispose()
+          // this.xtermMap[instanceId]._addonManager._addons[0].instance.dispose()
           // 获取对象的高度和宽度
-          let fitAddon = new FitAddon()
-          this.xtermMap[instanceId].loadAddon(fitAddon)
-          try {
-            fitAddon.fit()
-          } catch (e) {
-          }
+          this.addonMap[instanceId].fit()
           // 滚动到底部
           this.xtermMap[instanceId].scrollToBottom()
         }
