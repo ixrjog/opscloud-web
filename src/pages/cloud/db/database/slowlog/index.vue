@@ -107,17 +107,38 @@
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline class="table-expand">
-              <el-form-item label="描述" v-show="props.row.dbDescription != null && props.row.dbDescription != ''">
-                <span>{{ props.row.dbDescription }}</span>
+              <el-form-item label="平均执行时间(秒)" v-show="props.row.avgExecutionTime != null && props.row.avgExecutionTime != ''">
+                <span>{{ props.row.avgExecutionTime }}</span>
               </el-form-item>
-              <el-form-item label="备注" v-show="props.row.comment != null && props.row.comment != ''">
-                <span>{{ props.row.comment }}</span>
+              <el-form-item label="最大执行时长(秒)" v-show="props.row.maxExecutionTime != null && props.row.maxExecutionTime != ''">
+                <span>{{ props.row.maxExecutionTime }}</span>
               </el-form-item>
-              <el-form-item label="状态">
-                <span>{{ props.row.dbStatus }}</span>
+              <el-form-item label="最大锁定时长(秒)"  v-show="props.row.maxLockTime != null">
+                <span>{{ props.row.maxLockTime }}</span>
               </el-form-item>
-              <el-form-item label="字符集">
-                <span>{{ props.row.characterSetName }}</span>
+              <el-form-item label="MySQL总执行次数" v-show="props.row.mySQLTotalExecutionCounts != null">
+                <span>{{ props.row.mySQLTotalExecutionCounts }}</span>
+              </el-form-item>
+              <el-form-item label="MySQL总执行时间(秒)" v-show="props.row.mySQLTotalExecutionTimes != null">
+                <span>{{ props.row.mySQLTotalExecutionTimes }}</span>
+              </el-form-item>
+              <el-form-item label="解析SQL最大行数" v-show="props.row.parseMaxRowCount != null">
+                <span>{{ props.row.parseMaxRowCount }}</span>
+              </el-form-item>
+              <el-form-item label="解析SQL总行数" v-show="props.row.parseTotalRowCounts != null">
+                <span>{{ props.row.parseTotalRowCounts }}</span>
+              </el-form-item>
+              <el-form-item label="返回SQL最大行数" v-show="props.row.returnMaxRowCount != null">
+                <span>{{ props.row.returnMaxRowCount }}</span>
+              </el-form-item>
+              <el-form-item label="返回SQL总行数" v-show="props.row.returnTotalRowCounts != null">
+              <span>{{ props.row.returnTotalRowCounts }}</span>
+              </el-form-item>
+              <el-form-item label="锁定总时长(秒)" v-show="props.row.totalLockTimes != null">
+                <span>{{ props.row.totalLockTimes }}</span>
+              </el-form-item>
+              <el-form-item label="数据报表生成日期" v-show="props.row.reportTime != null">
+                <span>{{ props.row.reportTime }}</span>
               </el-form-item>
             </el-form>
           </template>

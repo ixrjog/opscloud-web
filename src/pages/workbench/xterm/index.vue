@@ -10,7 +10,7 @@
         </el-col>
         <el-col :span="xtermSpan">
           <el-row style="margin-bottom: 5px;margin-left: 2px">
-            <el-select v-model="layoutMode" filterable reserve-keyword @change="handlerResize">
+            <el-select v-model="layoutMode" filterable reserve-keyword @change="handlerChangeLayout">
               <el-option
                 v-for="item in layoutModeOptions"
                 :key="item.value"
@@ -30,6 +30,7 @@
                        plain>命令同步
             </el-button>
             <el-button @click="handlerPreviewUserDoc" :style="loginStyle">用户文档</el-button>
+            <el-button @click="handlerResize" v-if="pageStatus === 1" :style="loginStyle">调整大小</el-button>
             <el-button @click="handlerLogin" v-if="pageStatus === 0" :style="loginStyle">批量登录</el-button>
             <el-button @click="handlerClose" v-if="pageStatus === 1" :style="loginStyle">全部关闭</el-button>
           </el-row>
@@ -230,38 +231,39 @@
         })
         this.xtermMap[id] = term
       },
-      /**
-       * 后端调整体型
-       */
-      handlerResize () {
+      handlerChangeLayout () {
         if (this.layoutMode === 0) {
           this.layoutSpan = 12
         } else {
           this.layoutSpan = 24
         }
         this.$nextTick(() => {
-          for (let instanceId in this.xtermMap) {
-            let xtermResize = {
-              status: 'RESIZE',
-              instanceId: instanceId,
-              xtermWidth: document.getElementById(instanceId).scrollWidth,
-              xtermHeight: document.getElementById(instanceId).scrollHeight
-            }
-            this.socketOnSend(JSON.stringify(xtermResize))
-            this.xtermMap[instanceId]._addonManager._addons[0].instance.dispose()
-            // 获取对象的高度和宽度
-            let fitAddon = new FitAddon()
-            this.xtermMap[instanceId].loadAddon(fitAddon)
-            try {
-              fitAddon.fit()
-            } catch (e) {
-            }
-            this.xtermMap[instanceId].focus()
-            // this.xtermMap[instanceId].onResize(cols, rows)
-            // 滚动到底部
-            this.xtermMap[instanceId].scrollToBottom()
-          }
+          this.handlerResize()
         })
+      },
+      /**
+       * 后端调整体型
+       */
+      handlerResize () {
+        for (let instanceId in this.xtermMap) {
+          let xtermResize = {
+            status: 'RESIZE',
+            instanceId: instanceId,
+            xtermWidth: document.getElementById(instanceId).clientWidth - 22,
+            xtermHeight: document.getElementById(instanceId).clientHeight
+          }
+          this.socketOnSend(JSON.stringify(xtermResize))
+          this.xtermMap[instanceId]._addonManager._addons[0].instance.dispose()
+          // 获取对象的高度和宽度
+          let fitAddon = new FitAddon()
+          this.xtermMap[instanceId].loadAddon(fitAddon)
+          try {
+            fitAddon.fit()
+          } catch (e) {
+          }
+          // 滚动到底部
+          this.xtermMap[instanceId].scrollToBottom()
+        }
       },
       /**
        * 后端设置批量输入（服务端广播输入）
