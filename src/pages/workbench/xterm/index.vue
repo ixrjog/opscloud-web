@@ -34,6 +34,7 @@
             <el-tooltip class="item" effect="light" content="您的个人文档，用于记录常用指令" placement="bottom">
               <el-button @click="handlerPreviewUserDoc" :style="loginStyle">用户文档</el-button>
             </el-tooltip>
+            <el-button @click="handlerSetting" v-if="pageStatus === 0" :style="loginStyle">终端设置</el-button>
             <el-tooltip class="item" effect="light" content="修复终端字符错位" placement="bottom">
               <el-button @click="handlerResize" v-if="pageStatus === 1" :style="loginStyle">调整大小</el-button>
             </el-tooltip>
@@ -69,6 +70,7 @@
         </el-col>
       </el-row>
       <DocDialog ref="docDialog" :formStatus="formDocStatus"></DocDialog>
+      <UserXTermSetting ref="userXTermSetting"  @closeUserXTermSetting="setXTermSetting" :formStatus="formSettingStatus"></UserXTermSetting>
     </template>
   </d2-container>
 </template>
@@ -76,23 +78,30 @@
 <script>
   import util from '@/libs/util'
   // Component
-  // Component
   import DocDialog from '@/components/opscloud/dialog/DocDialog.vue'
   import ServerTree from '@/components/opscloud/tree/ServerTree'
+  import UserXTermSetting from '@/components/opscloud/setting/UserXTermSetting'
+
   // X-Terminal
   import 'xterm/css/xterm.css'
   import { Terminal } from 'xterm'
   import { FitAddon } from 'xterm-addon-fit'
 
+  // API
   import { queryUserDocByType } from '@api/doc/doc.js'
+  import { queryUserSettingByGroup } from '@api/user/user.setting.js'
 
   const xtermUrl = 'ws/xterm'
+  const settingGroup = 'XTERM'
 
   export default {
     props: {},
     data () {
       return {
         socketURI: '',
+        formSettingStatus: {
+          visible: false
+        },
         formDocStatus: {
           visible: false
         },
@@ -127,11 +136,15 @@
             label: '系统管理员'
           }
         ],
-        // 插件容器
-        addonMap: [],
+        addonMap: [], // 插件容器
         // XTerm
         xterms: [],
         xtermMap: {},
+        xtermTheme: { // 终端主题
+          foreground: '#FFFFFF', // 字体
+          background: '#606266', // 背景色
+          cursor: 'help'// 设置光标
+        },
         xtermWidth: 0,
         xtermHeight: 308,
         isBatch: false,
@@ -140,6 +153,7 @@
       }
     },
     mounted () {
+      this.setXTermSetting()
       this.initWebSocketURL()
     },
     beforeDestroy () {
@@ -154,9 +168,28 @@
     },
     components: {
       ServerTree,
-      DocDialog
+      DocDialog,
+      UserXTermSetting
     },
     methods: {
+      setXTermSetting () {
+        queryUserSettingByGroup(settingGroup)
+          .then(res => {
+            if (res.success) {
+              this.xtermTheme.foreground = res.body['XTERM_FOREGROUND']
+              this.xtermTheme.background = res.body['XTERM_BACKGROUND']
+            } else {
+              this.$message.error(res.msg)
+            }
+          })
+      },
+      handlerSetting () {
+        let xtermSettingMap = {}
+        xtermSettingMap['XTERM_FOREGROUND'] = this.xtermTheme.foreground
+        xtermSettingMap['XTERM_BACKGROUND'] = this.xtermTheme.background
+        this.formSettingStatus.visible = true
+        this.$refs.userXTermSetting.initData(xtermSettingMap)
+      },
       initWebSocketURL () {
         if (process.env.NODE_ENV === 'development') {
           this.socketURI = process.env.VUE_APP_WS_API + xtermUrl
@@ -203,11 +236,7 @@
           allowTransparency: true,
           fontSize: 11,
           // theme: 'default',
-          theme: {
-            foreground: 'white', // 字体
-            background: '#5b5d66', // 背景色
-            cursor: 'help'// 设置光标
-          },
+          theme: this.xtermTheme,
           termName: 'xterm',
           visualBell: false,
           popOnBell: false,

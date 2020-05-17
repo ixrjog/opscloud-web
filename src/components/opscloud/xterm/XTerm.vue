@@ -166,7 +166,6 @@
             xtermHeight: document.getElementById(instanceId).clientHeight
           }
           this.socketOnSend(JSON.stringify(xtermResize))
-          // this.xtermMap[instanceId]._addonManager._addons[0].instance.dispose()
           // 获取对象的高度和宽度
           this.addonMap[instanceId].fit()
           // 滚动到底部
