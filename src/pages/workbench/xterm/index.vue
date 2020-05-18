@@ -70,7 +70,8 @@
         </el-col>
       </el-row>
       <DocDialog ref="docDialog" :formStatus="formDocStatus"></DocDialog>
-      <UserXTermSetting ref="userXTermSetting"  @closeUserXTermSetting="setXTermSetting" :formStatus="formSettingStatus"></UserXTermSetting>
+      <UserXTermSetting ref="userXTermSetting" @closeUserXTermSetting="setXTermSetting"
+                        :formStatus="formSettingStatus"></UserXTermSetting>
     </template>
   </d2-container>
 </template>
@@ -145,8 +146,8 @@
           background: '#606266', // 背景色
           cursor: 'help'// 设置光标
         },
-        xtermWidth: 0,
-        xtermHeight: 308,
+        xtermWidth: 784,
+        xtermHeight: 336,
         isBatch: false,
         handlerBatchType: '',
         timer: null // 心跳定时器
@@ -172,12 +173,18 @@
       UserXTermSetting
     },
     methods: {
+      /**
+       * 设置终端主题色彩
+       */
       setXTermSetting () {
         queryUserSettingByGroup(settingGroup)
           .then(res => {
             if (res.success) {
-              this.xtermTheme.foreground = res.body['XTERM_FOREGROUND']
-              this.xtermTheme.background = res.body['XTERM_BACKGROUND']
+              try {
+                this.xtermTheme.foreground = res.body['XTERM_FOREGROUND']
+                this.xtermTheme.background = res.body['XTERM_BACKGROUND']
+              } catch (e) {
+              }
             } else {
               this.$message.error(res.msg)
             }
@@ -252,7 +259,6 @@
         term.loadAddon(_this.addonMap[id])
         term.open(document.getElementById(id))
         // 获取对象的高度和宽度
-        _this.addonMap[id].fit()
         term.focus()
         term.onData(function (cmd) {
           let commond = {
@@ -279,16 +285,16 @@
        */
       handlerResize () {
         for (let instanceId in this.xtermMap) {
+          this.addonMap[instanceId].fit() // 获取对象的高度和宽度
           let xtermResize = {
             status: 'RESIZE',
             instanceId: instanceId,
-            xtermWidth: document.getElementById(instanceId).clientWidth - 22, // 边界扣除
+            xtermWidth: this.addonMap[instanceId]._terminal.cols * 7, // 自动计算宽度
             xtermHeight: document.getElementById(instanceId).clientHeight
           }
           this.socketOnSend(JSON.stringify(xtermResize))
-          // this.xtermMap[instanceId]._addonManager._addons[0].instance.dispose()
-          // 获取对象的高度和宽度
-          this.addonMap[instanceId].fit()
+          this.xtermMap[instanceId].focus()
+
           // 滚动到底部
           this.xtermMap[instanceId].scrollToBottom()
         }
@@ -314,7 +320,6 @@
          document.onkeydown = function (e) {
              // 事件对象兼容
              let e1 = e || event || window.event
-             // console.log(e1)
              for (var i = 0; i < _this.xterms.length; i++) {
                 let id = _this.xterms[i]
                 var command = {
@@ -335,15 +340,15 @@
        * @returns {string}
        */
       getUUID () {
-        var s = []
-        var hexDigits = '0123456789abcdef'
+        let s = []
+        let hexDigits = '0123456789abcdef'
         for (var i = 0; i < 36; i++) {
           s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1)
         }
         s[14] = '4' // bits 12-15 of the time_hi_and_version field to 0010
         s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1) // bits 6-7 of the clock_seq_hi_and_reserved to 01
         s[8] = s[13] = s[18] = s[23] = '-'
-        var uuid = s.join('')
+        let uuid = s.join('')
         return uuid
       },
       /**
@@ -353,17 +358,15 @@
       handlerDuplicateSession (id) {
         // 计算 instanceId  源id  server-prod-1#1
         const instanceId = id.split('#')[0] + '#' + this.getUUID()
-
         let duplicateSession = {
           status: 'DUPLICATE_SESSION',
           duplicateInstanceId: id,
           token: util.cookies.get('token'),
           loginUserType: this.loginUserType,
           instanceId: instanceId,
-          xtermWidth: this.xtermWidth,
-          xtermHeight: this.xtermHeight
+          xtermWidth: this.addonMap[id.split('#')[0]]._terminal.cols * 7,
+          xtermHeight: document.getElementById(id.split('#')[0]).clientHeight
         }
-        // console.log(duplicateSession)
         this.xterms.push(instanceId)
         this.$nextTick(() => {
           this.initTermInstance(instanceId)
@@ -409,11 +412,7 @@
       handlerLogin () {
         this.pageStatus = 1
         this.xtermSpan = 24
-        if (this.layoutMode === 0) {
-          this.layoutSpan = 12
-        } else {
-          this.layoutSpan = 24
-        }
+        this.layoutSpan = this.layoutMode === 0 ? 12 : 24
         this.xtermMap = {}
         this.isBatch = false
         this.handlerBatchType = ''
@@ -446,10 +445,13 @@
                 loginUserType: this.loginUserType,
                 instanceIds: instanceIds,
                 status: 'INITIAL',
-                xtermWidth: this.xtermWidth,
-                xtermHeight: this.xtermHeight
+                xtermWidth: 0,
+                xtermHeight: 308
               }
               this.socketOnSend(JSON.stringify(initXterm))
+            })
+            this.$nextTick(() => {
+              this.handlerResize()
             })
           } catch (e) {
             this.$message.error('登录失败，未选择服务器或其它原因')
@@ -479,3 +481,12 @@
     }
   }
 </script>
+
+<style>
+  .el-card__header {
+    padding: 10px 10px;
+    border-bottom: 1px solid #EBEEF5;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+</style>

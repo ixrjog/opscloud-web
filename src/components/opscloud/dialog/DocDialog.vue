@@ -3,10 +3,9 @@
     <el-form :model="userDoc">
 <!--      <el-input v-model="userDoc.docTitle" placeholder="" disabled></el-input>-->
       <d2-markdown :source="userDoc.docContent" v-if="operationType === 0"/>
-      <d2-highlight :code="userDoc.docContent" v-show="false" lang="sh" style="margin-top: 5px"/>
+      <d2-highlight/>
       <editor v-model="userDoc.docContent" @init="editorInit" theme="kuroir" lang="markdown" v-if="operationType === 1"
               height="400"></editor>
-
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="handlerEdit" v-if="operationType === 0">编辑</el-button>

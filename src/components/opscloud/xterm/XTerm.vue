@@ -159,15 +159,15 @@
        */
       handlerResize () {
         for (let instanceId in this.xtermMap) {
+          // 获取对象的高度和宽度
+          this.addonMap[instanceId].fit()
           let xtermResize = {
             status: 'RESIZE',
             instanceId: instanceId,
-            xtermWidth: document.getElementById(instanceId).clientWidth - 22, // 边界扣除
+            xtermWidth: this.addonMap[instanceId]._terminal.cols * 7, // 边界扣除
             xtermHeight: document.getElementById(instanceId).clientHeight
           }
           this.socketOnSend(JSON.stringify(xtermResize))
-          // 获取对象的高度和宽度
-          this.addonMap[instanceId].fit()
           // 滚动到底部
           this.xtermMap[instanceId].scrollToBottom()
         }
@@ -202,8 +202,8 @@
           duplicateInstanceId: this.server.name,
           token: util.cookies.get('token'),
           instanceId: instanceId,
-          xtermWidth: 0,
-          xtermHeight: 308
+          xtermWidth: this.addonMap[instanceId.split('#')[0]]._terminal.cols * 7,
+          xtermHeight: document.getElementById(instanceId.split('#')[0]).clientHeight
         }
         // console.log(duplicateSession)
         this.xterms.push(instanceId)
@@ -281,6 +281,9 @@
                 xtermHeight: 308
               }
               this.socketOnSend(JSON.stringify(initXterm))
+              this.$nextTick(() => {
+                this.handlerResize()
+              })
             })
           } catch (e) {
             this.$message.error('登录失败，未选择服务器或其它原因')
