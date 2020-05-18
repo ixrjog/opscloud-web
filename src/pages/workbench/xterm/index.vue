@@ -79,7 +79,7 @@
 <script>
   import util from '@/libs/util'
   // Component
-  import DocDialog from '@/components/opscloud/dialog/DocDialog.vue'
+  import DocDialog from '@/components/opscloud/doc/DocDialog.vue'
   import ServerTree from '@/components/opscloud/tree/ServerTree'
   import UserXTermSetting from '@/components/opscloud/setting/UserXTermSetting'
 
@@ -104,6 +104,7 @@
           visible: false
         },
         formDocStatus: {
+          readMode: false, // 阅读模式
           visible: false
         },
         pageStatus: 0, // 页面状态: 0 选择 1 登录状态

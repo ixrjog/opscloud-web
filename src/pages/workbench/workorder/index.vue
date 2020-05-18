@@ -14,7 +14,7 @@
                         <el-table-column prop="name" label="工单名称"></el-table-column>
                         <el-table-column fixed="right" label="操作" width="160">
                           <template slot-scope="scope">
-                            <el-button type="success" plain size="mini" @click="previewReadme(scope.row)">帮助
+                            <el-button type="success" plain size="mini" @click=" handlerPreviewDoc(scope.row)">帮助
                             </el-button>
                             <el-button type="primary" plain size="mini" @click="createTicket(scope.row)"
                                        :loading="ticketCreateing">新建
@@ -35,6 +35,7 @@
           </el-row>
         </el-tab-pane>
       </el-tabs>
+      <DocDialog ref="docDialog" :formStatus="formDocStatus"></DocDialog>
       <TicketServerGroupDialog ref="ticketServerGroupDialog" :formStatus="formServerGroupStatus"
                                @closeTicketServerGroupDialog="fetchData"></TicketServerGroupDialog>
       <TicketUserGroupDialog ref="ticketUserGroupDialog" :formStatus="formUserGroupStatus"
@@ -51,13 +52,21 @@
   import TicketServerGroupDialog from '@/components/opscloud/workorder/TicketServerGroupDialog'
   import TicketUserGroupDialog from '@/components/opscloud/workorder/TicketUserGroupDialog'
   import TicketAuthRoleDialog from '@/components/opscloud/workorder/TicketAuthRoleDialog'
+  // doc
+  import DocDialog from '@/components/opscloud/doc/DocDialog.vue'
 
   import { queryWorkbenchWorkorderGroup } from '@api/workorder/workorder.group.js'
   import { createWorkorderTicket } from '@api/workorder/workorder.ticket.js'
 
+  import { queryDocById } from '@api/doc/doc.js'
+
   export default {
     data () {
       return {
+        formDocStatus: {
+          readMode: true, // 阅读模式
+          visible: false
+        },
         activeNames: [0],
         tabActiveName: 'workorder',
         title: '我的工单',
@@ -80,6 +89,7 @@
       }
     },
     components: {
+      DocDialog,
       TicketTable,
       TicketServerGroupDialog,
       TicketUserGroupDialog,
@@ -94,6 +104,17 @@
         queryWorkbenchWorkorderGroup()
           .then(res => {
             this.workorderGroups = res.body
+          })
+      },
+      handlerPreviewDoc (workorder) {
+        queryDocById(workorder.readmeId)
+          .then(res => {
+            // 返回数据
+            let doc = {
+              docContent: res.body.previewDoc
+            }
+            this.$refs.docDialog.initData(doc)
+            this.formDocStatus.visible = true
           })
       },
       /**

@@ -7,6 +7,13 @@ export function queryDocByKey (key) {
   })
 }
 
+export function queryDocById (id) {
+  return request({
+    url: '/doc/id/query?id=' + id,
+    method: 'get'
+  })
+}
+
 export function queryUserDocByType (docType) {
   return request({
     url: '/doc/user/type/query?docType=' + docType,

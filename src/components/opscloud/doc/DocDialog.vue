@@ -1,16 +1,15 @@
 <template>
-  <el-dialog title="文档" :visible.sync="formStatus.visible">
+  <el-dialog title="帮助文档" :visible.sync="formStatus.visible" @close="handlerClose">
     <el-form :model="userDoc">
-<!--      <el-input v-model="userDoc.docTitle" placeholder="" disabled></el-input>-->
       <d2-markdown :source="userDoc.docContent" v-if="operationType === 0"/>
       <d2-highlight/>
       <editor v-model="userDoc.docContent" @init="editorInit" theme="kuroir" lang="markdown" v-if="operationType === 1"
               height="400"></editor>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="handlerEdit" v-if="operationType === 0">编辑</el-button>
-      <el-button @click="handlerSave" v-if="operationType === 1">保存</el-button>
-      <el-button @click="formStatus.visible = false">关闭</el-button>
+      <el-button @click="handlerEdit" v-if="!formStatus.readMode && operationType === 0">编辑</el-button>
+      <el-button @click="handlerSave" v-if="!formStatus.readMode && operationType === 1">保存</el-button>
+      <el-button @click="handlerClose">关闭</el-button>
     </div>
   </el-dialog>
 </template>
@@ -22,13 +21,9 @@
   export default {
     data () {
       return {
-        userDoc: '',
-        // userDoc: {
-        //   docTitle: '????',
-        //   docContent: ''
-        // },
+        userDoc: {},
         // 0 查看 1 编辑
-        operationType: 0,
+        operationType: -1,
         labelWidth: '100px',
         options: {
           stripe: true
@@ -56,8 +51,13 @@
         // ed.setReadOnly(true)
       },
       initData (userDoc) {
-        this.operationType = 0
         this.userDoc = userDoc
+        this.operationType = 0
+      },
+      handlerClose () {
+        this.operationType = -1
+        this.userDoc = {}
+        this.formStatus.visible = false
       },
       handlerEdit () {
         this.operationType = 1
