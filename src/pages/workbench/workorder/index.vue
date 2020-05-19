@@ -6,6 +6,9 @@
         <el-tab-pane label="工单" name="workorder">
           <el-row :gutter="20">
             <el-col :span="8">
+              <el-alert title="您尚未加入部门" type="warning" show-icon style="margin-bottom: 5px"
+                        description="前往 用户管理-部门管理，选中部门后点加入" :closable="false" v-if="userDeptWarning">
+              </el-alert>
               <el-card shadow="never">
                 <el-collapse accordion v-model="activeNames">
                   <div v-for="(workorderGroup,index) in workorderGroups" :key="workorderGroup.id">
@@ -14,7 +17,7 @@
                         <el-table-column prop="name" label="工单名称"></el-table-column>
                         <el-table-column fixed="right" label="操作" width="160">
                           <template slot-scope="scope">
-                            <el-button type="success" plain size="mini" @click=" handlerPreviewDoc(scope.row)">帮助
+                            <el-button type="success" plain size="mini" @click="handlerPreviewDoc(scope.row)">帮助
                             </el-button>
                             <el-button type="primary" plain size="mini" @click="createTicket(scope.row)"
                                        :loading="ticketCreateing">新建
@@ -57,12 +60,14 @@
 
   import { queryWorkbenchWorkorderGroup } from '@api/workorder/workorder.group.js'
   import { createWorkorderTicket } from '@api/workorder/workorder.ticket.js'
+  import { checkUserInTheDepartment } from '@api/org/org.js'
 
   import { queryDocById } from '@api/doc/doc.js'
 
   export default {
     data () {
       return {
+        userDeptWarning: false,
         formDocStatus: {
           readMode: true, // 阅读模式
           visible: false
@@ -97,9 +102,18 @@
     },
     mounted () {
       this.getWorkbenchWorkorderGroup()
+      this.setUserInTheDepartment()
       // this.$refs.workorderGroupTable.fetchData()
     },
     methods: {
+      setUserInTheDepartment () {
+        checkUserInTheDepartment()
+          .then(res => {
+            if (!res.success) {
+              this.userDeptWarning = true
+            }
+          })
+      },
       getWorkbenchWorkorderGroup () {
         queryWorkbenchWorkorderGroup()
           .then(res => {

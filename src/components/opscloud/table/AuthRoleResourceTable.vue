@@ -1,7 +1,8 @@
 <template>
   <div>
     <el-select v-model="queryParam.roleId" filterable clearable
-               remote reserve-keyword placeholder="输入关键词搜索角色" :remote-method="getRole" :loading="loading" style="display: inline-block; max-width:200px">
+               remote reserve-keyword placeholder="输入关键词搜索角色" :remote-method="getRole"
+               style="display: inline-block; max-width:200px">
       <el-option
         v-for="item in roleOptions"
         :key="item.id"
@@ -10,7 +11,8 @@
       </el-option>
     </el-select>
     <el-select v-model="queryParam.groupId" filterable clearable
-               remote reserve-keyword placeholder="输入关键词搜索资源组" :remote-method="getGroup" :loading="loading" style="margin-left: 5px">
+               remote reserve-keyword placeholder="输入关键词搜索资源组" :remote-method="getGroup"
+               style="margin-left: 5px">
       <el-option
         v-for="item in groupOptions"
         :key="item.id"
@@ -25,7 +27,7 @@
         <div>
           <h3>未绑定资源</h3>
         </div>
-        <el-table :data="tableUnbindData" style="width: 100%">
+        <el-table :data="tableUnbindData" style="width: 100%" :loading="unbindLoading">
           <el-table-column prop="resourceName" label="资源路径"></el-table-column>
           <el-table-column prop="comment" label="描述"></el-table-column>
           <el-table-column fixed="right" label="操作" width="280">
@@ -34,16 +36,17 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination background @current-change="paginationCurrentChange"
-                       layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
-                       :page-size="pagination.pageSize">
+        <el-pagination background @current-change="unbindPaginationCurrentChange"
+                       layout="prev, pager, next" :total="unbindPagination.total"
+                       :current-page="unbindPagination.currentPage"
+                       :page-size="unbindPagination.pageSize">
         </el-pagination>
       </el-col>
       <el-col :span="12" v-if="tableBindData.length != 0">
         <div>
           <h3>已绑定资源</h3>
         </div>
-        <el-table :data="tableBindData" style="width: 100%">
+        <el-table :data="tableBindData" style="width: 100%" :loading="bindLoading">
           <el-table-column prop="resourceName" label="资源路径"></el-table-column>
           <el-table-column prop="comment" label="描述"></el-table-column>
           <el-table-column fixed="right" label="操作" width="280">
@@ -52,9 +55,10 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination background @current-change="paginationCurrentChange"
-                       layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
-                       :page-size="pagination.pageSize">
+        <el-pagination background @current-change="bindPaginationCurrentChange"
+                       layout="prev, pager, next" :total="bindPagination.total"
+                       :current-page="bindPagination.currentPage"
+                       :page-size="bindPagination.pageSize">
         </el-pagination>
       </el-col>
     </el-row>
@@ -65,7 +69,13 @@
   // API
   import { queryRolePage } from '@api/auth/auth.role.js'
   import { queryGroupPage } from '@api/auth/auth.group.js'
-  import { queryRoleBindResourcePage, queryRoleUnbindResourcePage, bindRoleResource, unbindRoleResource } from '@api/auth/auth.role.resource.js'
+  import {
+    queryRoleBindResourcePage,
+    queryRoleUnbindResourcePage,
+    bindRoleResource,
+    unbindRoleResource
+  } from '@api/auth/auth.role.resource.js'
+
   export default {
     name: 'AuthRoleResourceTable',
     data () {
@@ -80,8 +90,14 @@
         //   labelPosition: 'left',
         //   saveLoading: false
         // },
-        loading: false,
-        pagination: {
+        bindLoading: false,
+        unbindLoading: false,
+        bindPagination: {
+          currentPage: 1,
+          pageSize: 10,
+          total: 0
+        },
+        unbindPagination: {
           currentPage: 1,
           pageSize: 10,
           total: 0
@@ -141,25 +157,35 @@
             })
         }, 600)
       },
-      paginationCurrentChange (currentPage) {
-        this.pagination.currentPage = currentPage
-        this.fetchData()
+      bindPaginationCurrentChange (currentPage) {
+        this.bindPagination.currentPage = currentPage
+        this.fetchBindData()
+      },
+      unbindPaginationCurrentChange (currentPage) {
+        this.unbindPagination.currentPage = currentPage
+        this.fetchUnbindData()
       },
       fetchData () {
-        this.loading = true
+        this.fetchBindData()
+        this.fetchUnbindData()
+      },
+      fetchBindData () {
+        this.bindLoading = true
         // 绑定的资源
-        queryRoleBindResourcePage(this.queryParam.roleId, this.queryParam.groupId, this.pagination.currentPage, this.pagination.pageSize)
+        queryRoleBindResourcePage(this.queryParam.roleId, this.queryParam.groupId, this.bindPagination.currentPage, this.bindPagination.pageSize)
           .then(res => {
             this.tableBindData = res.body.data
-            this.pagination.total = res.body.totalNum
-            this.loading = false
+            this.bindPagination.total = res.body.totalNum
+            this.bindLoading = false
           })
-        // 未绑定的资源
-        queryRoleUnbindResourcePage(this.queryParam.roleId, this.queryParam.groupId, this.pagination.currentPage, this.pagination.pageSize)
+      },
+      fetchUnbindData () {
+        this.unbindLoading = true
+        queryRoleUnbindResourcePage(this.queryParam.roleId, this.queryParam.groupId, this.unbindPagination.currentPage, this.unbindPagination.pageSize)
           .then(res => {
             this.tableUnbindData = res.body.data
-            this.pagination.total = res.body.totalNum
-            this.loading = false
+            this.unbindPagination.total = res.body.totalNum
+            this.unbindLoading = false
           })
       }
     }

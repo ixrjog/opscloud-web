@@ -101,3 +101,10 @@ export function updateDepartmentMemberApproval (id) {
     method: 'put'
   })
 }
+
+export function checkUserInTheDepartment () {
+  return request({
+    url: '/org/department/user/check',
+    method: 'get'
+  })
+}
