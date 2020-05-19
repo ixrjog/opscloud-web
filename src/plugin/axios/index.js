@@ -2,6 +2,7 @@ import store from '@/store'
 import axios from 'axios'
 import { Message } from 'element-ui'
 import util from '@/libs/util'
+import router from '@/router'
 
 // 创建一个错误
 function errorCreate (msg) {
@@ -72,7 +73,11 @@ service.interceptors.response.use(
         case 0:
           // [ 示例 ] code === 0 代表没有错误
           return dataAxios
-        case 10001:
+        case 401:
+          router.push({
+            name: 'login'
+          })
+          break
         case 10101:
         case 10102:
         case 10103:
