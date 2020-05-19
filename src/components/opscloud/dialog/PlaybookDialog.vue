@@ -12,7 +12,7 @@
           </el-form-item>
           <el-form-item label="内容" :label-width="formStatus.labelWidth" :required="true">
             <editor v-model="playbookData.playbook" @init="editorInit" lang="yaml" theme="chrome"
-                    width="700" height="400"></editor>
+                    width="100%" height="400"></editor>
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -20,7 +20,7 @@
         <el-form :model="playbookData">
           <el-form-item label="vars" :label-width="formStatus.labelWidth">
             <editor v-model="playbookData.extraVars" @init="editorInit" lang="yaml" theme="chrome"
-                    width="500" height="500"></editor>
+                    width="100%" height="500"></editor>
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -28,7 +28,7 @@
         <el-form :model="playbookData">
           <el-form-item label="tags" :label-width="formStatus.labelWidth">
             <editor v-model="playbookData.tags" @init="editorInit" lang="yaml" theme="chrome"
-                    width="500" height="500"></editor>
+                    width="100%" height="500"></editor>
           </el-form-item>
         </el-form>
       </el-tab-pane>

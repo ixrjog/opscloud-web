@@ -25,7 +25,7 @@
           </el-form-item>
           <el-form-item label="内容" :label-width="formStatus.labelWidth" :required="true">
             <editor v-model="scriptData.scriptContent" @init="editorInit" lang="yaml" theme="chrome"
-                    width="700" height="400"></editor>
+                    width="100%" height="400"></editor>
           </el-form-item>
         </el-form>
       </el-tab-pane>
