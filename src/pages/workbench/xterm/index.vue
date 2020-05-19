@@ -387,13 +387,16 @@
         let term = this.xtermMap[id]
         term.dispose()
         delete (this.xtermMap[id])
-        for (var i = 0; i < this.xterms.length; i++) {
-          let instanceId = this.xterms[i]
-          if (instanceId === id) {
-            this.xterms.splice(i, 1)
-            break
-          }
-        }
+        // for (var i = 0; i < this.xterms.length; i++) {
+        //   let instanceId = this.xterms[i]
+        //   if (instanceId === id) {
+        //     this.xterms.splice(i, 1)
+        //     break
+        //   }
+        // }
+        this.xterms = this.xterms.filter(function (n) {
+          return n !== id
+        })
         this.$message.warning(id + '终端已关闭')
       },
       handlerClose () {
@@ -474,9 +477,14 @@
       socketOnMessage () {
         this.socket.onmessage = (message) => {
           let messageJson = JSON.parse(message.data)
-          for (var index = 0; index < messageJson.length; index++) {
-            this.xtermMap[messageJson[index].instanceId].write(messageJson[index].output)
-          }
+          // for (var index = 0; index < messageJson.length; index++) {
+          //   this.xtermMap[messageJson[index].instanceId].write(messageJson[index].output)
+          // }
+          let _this = this
+          messageJson.map(function (n) {
+            console.log(n)
+            _this.xtermMap[n.instanceId].write(n.output)
+          })
         }
       }
     }

@@ -10,7 +10,8 @@
       <el-table-column prop="resourceName" label="资源名称"></el-table-column>
       <el-table-column prop="inWorkorder" label="工作流" width="100">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.inWorkorder === 0 ? 'success' : 'danger'" disable-transitions>{{scope.row.inWorkorder === 0 ?
+          <el-tag :type="scope.row.inWorkorder === 0 ? 'success' : 'danger'" disable-transitions>{{scope.row.inWorkorder
+            === 0 ?
             '禁止' : '允许'}}
           </el-tag>
         </template>
@@ -19,6 +20,7 @@
       <el-table-column fixed="right" label="操作" width="280">
         <template slot-scope="scope">
           <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
+          <el-button type="primary" plain size="mini" @click="editMenu(scope.row)">菜单</el-button>
           <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -29,12 +31,14 @@
     </el-pagination>
     <!-- role编辑-->
     <RoleDialog :formStatus="formRoleStatus" :formData="role" @closeRoleDialog="fetchData"></RoleDialog>
+    <MenuDialog :formStatus="formMenuStatus" ref="menuDialog"></MenuDialog>
   </div>
 </template>
 
 <script>
 
   import RoleDialog from '@/components/opscloud/dialog/RoleDialog'
+  import MenuDialog from '@/components/opscloud/dialog/MenuDialog'
   // API
   import { queryRolePage, deleteRoleById } from '@api/auth/auth.role.js'
 
@@ -44,6 +48,9 @@
       return {
         tableData: [],
         role: {},
+        formMenuStatus: {
+          visible: false
+        },
         formRoleStatus: {
           visible: false,
           labelWidth: '150px',
@@ -68,7 +75,8 @@
       this.fetchData()
     },
     components: {
-      RoleDialog
+      RoleDialog,
+      MenuDialog
     },
     methods: {
       handleClick () {
@@ -80,6 +88,11 @@
         this.formRoleStatus.operationType = false
         // role
         this.role = Object.assign({}, row)
+      },
+      editMenu (row) {
+        // form
+        this.formMenuStatus.visible = true
+        this.$refs.menuDialog.initData(row.id)
       },
       addItem () {
         this.formRoleStatus.operationType = true

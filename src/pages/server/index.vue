@@ -6,7 +6,7 @@
       </div>
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
-          <el-input v-model="queryParam.queryName" placeholder="输入关键字查询" :style="searchBarHeadStyle"/>
+          <el-input v-model.trim="queryParam.queryName" placeholder="输入关键字查询" :style="searchBarHeadStyle"/>
           <el-select v-model="queryParam.serverGroupId" filterable clearable :style="searchBarStyle"
                      remote reserve-keyword placeholder="搜索服务器组" :remote-method="getServerGroup" :loading="loading">
             <el-option
@@ -142,7 +142,8 @@
       return {
         searchBarHeadStyle: {
           display: 'inline-block',
-          maxWidth: '200px'
+          maxWidth: '200px',
+          marginLeft: '10px'
         },
         searchBarStyle: {
           marginLeft: '5px'
@@ -261,7 +262,10 @@
           })
         queryBusinessTag(this.businessType, this.tagTransfer.businessId, '')
           .then(res => {
-            for (var index = 0; index < res.body.length; index++) {
+            // for (var index = 0; index < res.body.length; index++) {
+            //   this.tagTransfer.serverTag.push(res.body[index].id)
+            // }
+            for (let index in res.body) {
               this.tagTransfer.serverTag.push(res.body[index].id)
             }
           })
