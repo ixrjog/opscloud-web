@@ -18,7 +18,10 @@
           </el-button>
           <el-button type="primary" v-if="!scope.row.isInApproval" plain size="mini" @click="editTicket(scope.row)">编辑
           </el-button>
-          <el-button type="success" v-if="scope.row.isInApproval && scope.row.isAllowApproval" plain size="mini" @click="approvalTicket(scope.row)">审批
+          <el-button type="success" v-if="scope.row.isInApproval && scope.row.isAllowApproval" plain size="mini"
+                     @click="approvalTicket(scope.row)">审批
+          </el-button>
+          <el-button type="danger" v-if="scope.row.isAllowDelete" plain size="mini" @click="delTicket(scope.row.id)">删除
           </el-button>
         </template>
       </el-table-column>
@@ -32,7 +35,7 @@
     <TicketUserGroupDialog ref="ticketUserGroupDialog" :formStatus="formUserGroupStatus"
                            @closeTicketUserGroupDialog="fetchData"></TicketUserGroupDialog>
     <TicketAuthRoleDialog ref="ticketAuthRoleDialog" :formStatus="formAuthRoleStatus"
-                           @closeTicketAuthRoleDialog="fetchData"></TicketAuthRoleDialog>
+                          @closeTicketAuthRoleDialog="fetchData"></TicketAuthRoleDialog>
   </div>
 </template>
 
@@ -45,7 +48,7 @@
   import { getPhaseText, getPhaseType } from '@/filters/ticket.js'
 
   // API
-  import { queryMyWorkorderTicketPage } from '@api/workorder/workorder.ticket.js'
+  import { queryMyWorkorderTicketPage, delWorkorderTicketById } from '@api/workorder/workorder.ticket.js'
 
   export default {
     name: 'TicketTable',
@@ -90,6 +93,20 @@
       getPhaseType
     },
     methods: {
+      delTicket (id) {
+        delWorkorderTicketById(id)
+          .then(res => {
+            if (res.success) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.fetchData()
+            } else {
+              this.$message.error(res.msg)
+            }
+          })
+      },
       previewTicket (ticket) {
         this.operationTicket(ticket, 2)
       },

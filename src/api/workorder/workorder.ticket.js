@@ -31,6 +31,13 @@ export function queryWorkorderTicket (id) {
   })
 }
 
+export function delWorkorderTicketById (id) {
+  return request({
+    url: '/workorder/ticket/del?id=' + id,
+    method: 'delete'
+  })
+}
+
 export function delWorkorderTicketEntryById (id) {
   return request({
     url: '/workorder/ticket/entry/del?id=' + id,
