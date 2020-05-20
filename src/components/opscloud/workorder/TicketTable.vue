@@ -14,10 +14,11 @@
       <el-table-column prop="ago" label="申请时间"></el-table-column>
       <el-table-column fixed="right" label="操作" width="280">
         <template slot-scope="scope">
+          <el-button type="success" plain size="mini" @click="previewTicket(scope.row)">查看
+          </el-button>
           <el-button type="primary" v-if="!scope.row.isInApproval" plain size="mini" @click="editTicket(scope.row)">编辑
           </el-button>
-          <el-button type="success" v-if="scope.row.isInApproval" plain size="mini" @click="approvalTicket(scope.row)">
-            审批
+          <el-button type="success" v-if="scope.row.isInApproval && scope.row.isAllowApproval" plain size="mini" @click="approvalTicket(scope.row)">审批
           </el-button>
         </template>
       </el-table-column>
@@ -89,6 +90,9 @@
       getPhaseType
     },
     methods: {
+      previewTicket (ticket) {
+        this.operationTicket(ticket, 2)
+      },
       editTicket (ticket) {
         this.operationTicket(ticket, 0)
       },
@@ -104,12 +108,12 @@
             break
           case 'USER_GROUP':
             this.formUserGroupStatus.visible = true
-            this.formUserGroupStatus.operationType = 0
+            this.formUserGroupStatus.operationType = operationType
             this.$refs.ticketUserGroupDialog.initData(ticket)
             break
           case 'AUTH_ROLE':
             this.formAuthRoleStatus.visible = true
-            this.formAuthRoleStatus.operationType = 0
+            this.formAuthRoleStatus.operationType = operationType
             this.$refs.ticketAuthRoleDialog.initData(ticket)
             break
           default:

@@ -53,11 +53,13 @@
       </div>
       <el-divider></el-divider>
       <div slot="footer" class="dialog-footer">
-<!--        <el-tag style="display: inline-block; max-width:200px; margin-left: 10px">{{ticket.id}}#工单</el-tag>-->
+        <!--        <el-tag style="display: inline-block; max-width:200px; margin-left: 10px">{{ticket.id}}#工单</el-tag>-->
+        <span style="margin-right: 10px" v-if="formStatus.operationType != 2">
+          <el-button type="primary" v-if="ticket.ticketPhase === 'CREATED_TICKET'" plain size="mini" @click="submitTicket">提交</el-button>
+          <el-button type="success" v-if="ticket.isInApproval" plain size="mini" @click="agreeTicket">同意</el-button>
+          <el-button type="danger" v-if="ticket.isInApproval" plain size="mini" @click="disagreeTicket">拒绝</el-button>
+        </span>
         <el-button size="mini" @click="formStatus.visible = false">关闭</el-button>
-        <el-button type="primary" v-if="ticket.ticketPhase === 'CREATED_TICKET'" plain size="mini" @click="submitTicket">提交</el-button>
-        <el-button type="success" v-if="ticket.isInApproval" plain size="mini" @click="agreeTicket">同意</el-button>
-        <el-button type="danger" v-if="ticket.isInApproval" plain size="mini" @click="disagreeTicket">拒绝</el-button>
       </div>
     </el-dialog>
   </div>
@@ -89,8 +91,7 @@
         ticketEntries: []
       }
     },
-    components: {
-    },
+    components: {},
     name: 'TicketServerGroupDialog',
     props: ['formStatus'],
     methods: {
