@@ -46,6 +46,14 @@ export function submitWorkorderTicket (data) {
   })
 }
 
+export function queryWorkorderTicketPage (data) {
+  return request({
+    url: '/workorder/ticket/page/query',
+    method: 'post',
+    data
+  })
+}
+
 export function queryMyWorkorderTicketPage (data) {
   return request({
     url: '/workorder/ticket/my/page/query',

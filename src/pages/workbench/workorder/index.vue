@@ -37,6 +37,9 @@
             </el-col>
           </el-row>
         </el-tab-pane>
+        <el-tab-pane label="工单管理" name="workorderMgmt">
+            <TicketMgmtTable ref="ticketTable"></TicketMgmtTable>
+        </el-tab-pane>
       </el-tabs>
       <DocDialog ref="docDialog" :formStatus="formDocStatus"></DocDialog>
       <TicketServerGroupDialog ref="ticketServerGroupDialog" :formStatus="formServerGroupStatus"
@@ -52,6 +55,7 @@
 <script>
   // Component
   import TicketTable from '@/components/opscloud/workorder/TicketTable.vue'
+  import TicketMgmtTable from '@/components/opscloud/workorder/TicketMgmtTable.vue'
   import TicketServerGroupDialog from '@/components/opscloud/workorder/TicketServerGroupDialog'
   import TicketUserGroupDialog from '@/components/opscloud/workorder/TicketUserGroupDialog'
   import TicketAuthRoleDialog from '@/components/opscloud/workorder/TicketAuthRoleDialog'
@@ -96,6 +100,7 @@
     components: {
       DocDialog,
       TicketTable,
+      TicketMgmtTable,
       TicketServerGroupDialog,
       TicketUserGroupDialog,
       TicketAuthRoleDialog
