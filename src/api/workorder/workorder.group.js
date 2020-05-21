@@ -21,3 +21,11 @@ export function deleteWorkorderGroupById (id) {
     method: 'delete'
   })
 }
+
+export function saveWorkorderGroup (data) {
+  return request({
+    url: '/workorder/group/save',
+    method: 'post',
+    data
+  })
+}

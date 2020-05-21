@@ -17,12 +17,14 @@
                    layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                    :page-size="pagination.pageSize">
     </el-pagination>
-    <ScriptDialog :formStatus="formStatus" ref="scriptDialog"
-                  @closeScriptDialog="fetchData"></ScriptDialog>
+    <WorkorderGroupDialog :formStatus="formStatus" ref="workorderGroupDialog"
+                          @closeWorkorderGroupDialog="fetchData"></WorkorderGroupDialog>
   </div>
 </template>
 
 <script>
+
+  import WorkorderGroupDialog from '@/components/opscloud/workorder/WorkorderGroupDialog.vue'
 
   // API
   import { deleteWorkorderGroupById, queryWorkorderGroupPage } from '@api/workorder/workorder.group.js'
@@ -32,9 +34,8 @@
       return {
         formStatus: {
           visible: false,
-          addTitle: '新增script配置',
-          updateTitle: '更新script配置',
-          labelWidth: '100px',
+          addTitle: '新增工单组配置',
+          updateTitle: '更新工单组配置',
           operationType: true
         },
         tableData: [],
@@ -58,25 +59,25 @@
       this.fetchData()
     },
     components: {
+      WorkorderGroupDialog
     },
     methods: {
       addItem () {
-        let scriptData = {
+        let workorderGroupData = {
           id: '',
           name: '',
-          scriptLang: 'sh',
-          scriptLock: 0,
-          scriptContent: ''
+          comment: '',
+          workorderType: 0
         }
         this.formStatus.operationType = true
         this.formStatus.visible = true
-        this.$refs.scriptDialog.initData(scriptData)
+        this.$refs.workorderGroupDialog.initData(workorderGroupData)
       },
       editItem (row) {
-        let scriptData = Object.assign({}, row)
+        let workorderGroupData = Object.assign({}, row)
         this.formStatus.operationType = false
         this.formStatus.visible = true
-        this.$refs.scriptDialog.initData(scriptData)
+        this.$refs.workorderGroupDialog.initData(workorderGroupData)
       },
       delItem (row) {
         this.$confirm('此操作将删除当前配置?', '提示', {
