@@ -445,11 +445,10 @@
         if (memberList === undefined || JSON.stringify(memberList) === '{}') {
           return []
         }
-        console.log(JSON.stringify(memberList))
-        var childrens = []
+        let childrens = []
         for (var i = 0; i < memberList.length; i++) {
-          var member = memberList[i]
-          var name = member.hostname
+          let member = memberList[i]
+          let name = member.hostname
           if (member.privateIp !== null && member.privateIp !== '') {
             name = name + ' (' + member.privateIp + ' )'
           }

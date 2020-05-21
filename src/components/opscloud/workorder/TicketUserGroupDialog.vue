@@ -91,7 +91,6 @@
         this.$emit('closeTicketUserGroupDialog')
       },
       initData (ticket) {
-        console.log(JSON.stringify(ticket))
         this.ticket = ticket
         if (ticket.workorder != null) {
           this.title = ticket.workorder.name

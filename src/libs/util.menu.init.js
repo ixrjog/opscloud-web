@@ -7,7 +7,6 @@ const menu = {}
 
 menu.init = function () {
   const token = util.cookies.get('token')
-  console.log(token)
   if (token && token !== 'undefined') {
     return request({
       url: process.env.VUE_APP_API + 'auth/menu/query',

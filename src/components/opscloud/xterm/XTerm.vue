@@ -205,7 +205,6 @@
           xtermWidth: this.addonMap[instanceId.split('#')[0]]._terminal.cols * 7,
           xtermHeight: document.getElementById(instanceId.split('#')[0]).clientHeight
         }
-        // console.log(duplicateSession)
         this.xterms.push(instanceId)
         let server = {
           name: instanceId,
@@ -310,7 +309,6 @@
           let messageJson = JSON.parse(message.data)
           let _this = this
           messageJson.map(function (n) {
-            console.log(n)
             _this.xtermMap[n.instanceId].write(n.output)
           })
         }

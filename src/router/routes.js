@@ -74,6 +74,15 @@ const frameIn = [
           title: '工单配置'
         }
       },
+      {
+        path: '/setting/keybox',
+        name: 'setting-keybox',
+        component: () => import('@/pages/setting/keybox'),
+        meta: {
+          auth: true,
+          title: '密钥配置'
+        }
+      },
       // server(group)
       {
         path: '/server',

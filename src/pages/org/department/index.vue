@@ -245,8 +245,6 @@
       },
       // 编辑部门
       editDepartment (node, data) {
-        // queryDepartmentById
-        console.log(node.key)
         queryDepartmentById(node.key)
           .then(res => {
             if (res.success) {
@@ -259,7 +257,7 @@
       },
       // 删除部门
       delDepartment (node, data) {
-        console.log(node.key)
+       // console.log(node.key)
       },
       setDeptMemberLeader (row) {
         updateDepartmentMemberLeader(row.id)
