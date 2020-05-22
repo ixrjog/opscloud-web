@@ -51,6 +51,7 @@
           </el-col>
           <!-- 用户资源详情-->
           <el-col :span="14">
+            <el-card class="box-card" shadow="never">
             <el-collapse accordion>
               <el-collapse-item>
                 <template slot="title">
@@ -78,9 +79,7 @@
                 </div>
               </el-collapse-item>
               <el-collapse-item title="AliyunRAM授权策略">
-                <div>简化流程：设计简洁直观的操作流程；</div>
-                <div>清晰明确：语言表达清晰且表意明确，让用户快速理解进而作出决策；</div>
-                <div>帮助用户识别：界面简单直白，让用户快速识别而非回忆，减少用户记忆负担。</div>
+                <div>功能未上线；</div>
               </el-collapse-item>
               <el-collapse-item>
                 <template slot="title">
@@ -119,6 +118,7 @@
                 <el-button style="margin-top: 5px" size="mini" @click="addApiToken">申请</el-button>
               </el-collapse-item>
             </el-collapse>
+            </el-card>
           </el-col>
         </el-row>
         <!-- 用户资源详情-->
@@ -278,5 +278,12 @@
     margin-right: 0;
     margin-bottom: 0;
     width: 50%;
+  }
+
+  .el-card__header {
+    padding: 10px 10px;
+    border-bottom: 1px solid #EBEEF5;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
   }
 </style>

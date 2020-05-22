@@ -22,7 +22,7 @@
     </el-select>
     <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
 
-    <el-row>
+    <el-row :gutter="20">
       <el-col :span="12" v-if="tableUnbindData.length != 0">
         <div>
           <h3>未绑定资源</h3>
