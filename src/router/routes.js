@@ -332,6 +332,15 @@ const frameIn = [
         }
       },
       {
+        path: '/user/retired',
+        name: 'user-retired',
+        component: () => import('@/pages/user/retired'),
+        meta: {
+          auth: true,
+          title: '用户离职管理'
+        }
+      },
+      {
         path: '/org',
         name: 'org',
         component: () => import('@/pages/org'),

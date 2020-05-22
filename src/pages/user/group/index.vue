@@ -30,7 +30,7 @@
         <el-table-column prop="users.length" label="成员数" width="100"></el-table-column>
         <el-table-column prop="workflow" label="工单申请" width="100">
           <template slot-scope="scope">
-            <el-tag :type="scope.row.inWorkorder === 0 ? 'success' : 'danger'" disable-transitions>{{scope.row.inWorkorder ===
+            <el-tag :type="scope.row.inWorkorder === 0 ? 'danger' : 'success'" disable-transitions>{{scope.row.inWorkorder ===
               0 ? '禁止' : '允许'}}
             </el-tag>
           </template>

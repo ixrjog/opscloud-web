@@ -6,8 +6,7 @@
       </div>
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
-          <el-input v-model="queryParam.queryName" placeholder="输入关键字模糊查询"
-                    style="display: inline-block; max-width:200px;margin-left: 10px"/>
+          <el-input v-model="queryParam.queryName" placeholder="输入关键字模糊查询" style="display: inline-block; max-width:200px;margin-left: 10px"/>
           <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
           <el-button @click="syncLdapUser" style="margin-left: 5px">同步</el-button>
           <el-button @click="addItem" style="margin-left: 5px">新建</el-button>
@@ -57,15 +56,12 @@
           <template slot-scope="scope">
             <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
             <el-tooltip class="item" effect="light" content="用户组授权" placement="top-start">
-              <el-button type="primary" plain size="mini" icon="el-icon-user-solid" @click="editUserGroup(scope.row)">
-                授权
-              </el-button>
+              <el-button type="primary" plain size="mini" icon="el-icon-user-solid" @click="editUserGroup(scope.row)">授权</el-button>
             </el-tooltip>
             <el-tooltip class="item" effect="light" content="服务器组授权" placement="top-start">
-              <el-button type="primary" plain size="mini" icon="fa fa-server" @click="editServerGroup(scope.row)">授权
-              </el-button>
+              <el-button type="primary" plain size="mini" icon="fa fa-server" @click="editServerGroup(scope.row)">授权</el-button>
             </el-tooltip>
-            <el-button type="danger" plain size="mini" @click="retireUser(scope.row)">离职</el-button>
+            <el-button v-if="false" type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -76,11 +72,9 @@
       <!-- user编辑对话框 -->
       <UserDialog :formStatus="formUserStatus" :formData="user" @closeUserDialog="fetchData"></UserDialog>
       <!-- 用户组授权编辑对话框-->
-      <UserUserGroupDialog ref="userUserGroupDialog" :formStatus="formUserUserGroupStatus"
-                           @closeUserUserGroupDialog="fetchData"></UserUserGroupDialog>
+      <UserUserGroupDialog ref="userUserGroupDialog" :formStatus="formUserUserGroupStatus" @closeUserUserGroupDialog="fetchData"></UserUserGroupDialog>
       <!-- 服务器组授权编辑对话框-->
-      <UserServerGroupDialog ref="userServerGroupDialog" :formStatus="formUserServerGroupStatus"
-                             @closeUserServerGroupDialog="fetchData"></UserServerGroupDialog>
+      <UserServerGroupDialog ref="userServerGroupDialog" :formStatus="formUserServerGroupStatus" @closeUserServerGroupDialog="fetchData"></UserServerGroupDialog>
     </template>
   </d2-container>
 </template>
@@ -91,7 +85,7 @@
   import UserUserGroupDialog from '@/components/opscloud/dialog/UserUserGroupDialog'
   import UserServerGroupDialog from '@/components/opscloud/dialog/UserServerGroupDialog'
   // API
-  import { fuzzyQueryUserPage, syncUser, retireUserById } from '@api/user/user.js'
+  import { fuzzyQueryUserPage, deleteUserById, syncUser } from '@api/user/user.js'
 
   export default {
     data () {
@@ -125,10 +119,9 @@
           total: 0
         },
         queryParam: {
-          queryName: '',
-          isActive: false
+          queryName: ''
         },
-        title: '用户管理'
+        title: '用户离职管理'
       }
     },
     mounted () {
@@ -140,23 +133,26 @@
       UserServerGroupDialog
     },
     methods: {
-      retireUser (row) {
-        this.$confirm('确认用户离职操作?', '提示', {
+      handleClick () {
+        this.$emit('input', !this.value)
+      },
+      delItem (row) {
+        this.$confirm('此操作将删除当前配置?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          retireUserById(row.id).then(res => {
+          deleteUserById(row.id).then(res => {
             this.fetchData()
             this.$message({
               type: 'success',
-              message: '离职成功!'
+              message: '删除成功!'
             })
           })
         }).catch(() => {
           this.$message({
             type: 'info',
-            message: '已取消操作'
+            message: '已取消删除'
           })
         })
       },
@@ -228,6 +224,7 @@
         var requestBody = {
           'queryName': this.queryParam.queryName,
           'extend': 1,
+          'isActive': false,
           'page': this.pagination.currentPage,
           'length': this.pagination.pageSize
         }

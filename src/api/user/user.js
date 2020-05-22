@@ -50,6 +50,18 @@ export function updateUser (data) {
   })
 }
 
+/**
+ * 离职
+ * @param id
+ * @returns {AxiosPromise}
+ */
+export function retireUserById (id) {
+  return request({
+    url: '/user/retire?id=' + id,
+    method: 'put'
+  })
+}
+
 export function deleteUserById (id) {
   return request({
     url: '/user/del?id=' + id,
