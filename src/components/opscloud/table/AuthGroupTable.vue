@@ -1,9 +1,12 @@
 <template>
   <div>
-    <el-input v-model="queryParam.groupCode" placeholder="资源组名称" style="display: inline-block; max-width:200px"/>
-    <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
-    <el-button @click="addItem" style="margin-left: 5px">新增</el-button>
-
+    <div style="margin-bottom: 5px">
+      <el-row :gutter="24" style="margin-bottom: 5px">
+        <el-input v-model="queryParam.groupCode" placeholder="资源组名称" style="display: inline-block; max-width:200px"/>
+        <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
+        <el-button @click="addItem" style="margin-left: 5px">新增</el-button>
+      </el-row>
+    </div>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="groupCode" label="资源组名称"></el-table-column>
       <el-table-column prop="comment" label="描述"></el-table-column>
@@ -27,6 +30,7 @@
   import ResourceGroupDialog from '@/components/opscloud/dialog/ResourceGroupDialog'
   // API
   import { queryGroupPage, deleteGroupById } from '@api/auth/auth.group.js'
+
   export default {
     name: 'AuthGroupTable',
     data () {

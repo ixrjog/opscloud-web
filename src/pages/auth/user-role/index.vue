@@ -6,7 +6,7 @@
       </div>
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
-            <el-input v-model="queryParam.username" placeholder="用户名" style="display: inline-block; max-width:200px"/>
+            <el-input v-model="queryParam.username" placeholder="用户名" style="display: inline-block; max-width:200px; margin-left: 10px"/>
             <el-select v-model="queryParam.roleId" filterable clearable
                        remote reserve-keyword placeholder="输入关键词搜索角色" :remote-method="getRole" :loading="loading" style="margin-left: 5px">
               <el-option

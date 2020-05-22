@@ -6,7 +6,7 @@
       </div>
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
-            <el-input v-model="queryParam.envName" placeholder="名称" style="display: inline-block; max-width:200px"/>
+            <el-input v-model="queryParam.envName" placeholder="名称" style="display: inline-block; max-width:200px; marginLeft: 10px"/>
             <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
             <el-button @click="addItem" style="margin-left: 5px">新增</el-button>
         </el-row>

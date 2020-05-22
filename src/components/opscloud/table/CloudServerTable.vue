@@ -1,19 +1,22 @@
 <template>
   <div>
-    <el-input v-model="queryParam.serverName" placeholder="服务器名称" style="display: inline-block; max-width:200px"/>
-    <el-input v-model="queryParam.queryIp" placeholder="ip"
-              style="display: inline-block; max-width:200px; margin-left: 5px"/>
-    <el-select v-model="queryParam.serverStatus" clearable placeholder="状态" style="margin-left: 5px">
-      <el-option
-        v-for="item in statusOptions"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value">
-      </el-option>
-    </el-select>
-    <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
-    <el-button @click="handleSync" style="margin-left: 5px" :loading="syncLoading">同步</el-button>
-
+    <div style="margin-bottom: 5px">
+      <el-row :gutter="24" style="margin-bottom: 5px">
+        <el-input v-model="queryParam.serverName" placeholder="服务器名称" style="display: inline-block; max-width:200px; margin-left: 10px"/>
+        <el-input v-model="queryParam.queryIp" placeholder="ip"
+                  style="display: inline-block; max-width:200px; margin-left: 5px"/>
+        <el-select v-model="queryParam.serverStatus" clearable placeholder="状态" style="margin-left: 5px">
+          <el-option
+            v-for="item in statusOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
+        <el-button @click="handleSync" style="margin-left: 5px" :loading="syncLoading">同步</el-button>
+      </el-row>
+    </div>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column type="expand">
         <template slot-scope="props">

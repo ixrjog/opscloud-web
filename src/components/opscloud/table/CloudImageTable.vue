@@ -1,17 +1,20 @@
 <template>
   <div>
-    <el-input v-model="queryParam.queryName" placeholder="关键字查询" style="display: inline-block; max-width:200px"/>
-    <el-select v-model="queryParam.isActive" clearable placeholder="有效" style="margin-left: 5px">
-      <el-option
-        v-for="item in activeOptions"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value">
-      </el-option>
-    </el-select>
-    <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
-    <el-button @click="handleSync" style="margin-left: 5px" :loading="syncLoading">同步</el-button>
-
+    <div style="margin-bottom: 5px">
+      <el-row :gutter="24" style="margin-bottom: 5px">
+        <el-input v-model="queryParam.queryName" placeholder="关键字查询" style="display: inline-block; max-width:200px"/>
+        <el-select v-model="queryParam.isActive" clearable placeholder="有效" style="margin-left: 5px">
+          <el-option
+            v-for="item in activeOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
+        <el-button @click="handleSync" style="margin-left: 5px" :loading="syncLoading">同步</el-button>
+      </el-row>
+    </div>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column type="expand">
         <template slot-scope="props">

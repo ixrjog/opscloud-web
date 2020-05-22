@@ -58,7 +58,8 @@
       return {
         searchBarHeadStyle: {
           display: 'inline-block',
-          maxWidth: '200px'
+          maxWidth: '200px',
+          marginLeft: '10px'
         },
         searchBarStyle: {
           marginLeft: '5px'

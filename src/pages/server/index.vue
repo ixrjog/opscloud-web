@@ -7,7 +7,7 @@
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
           <el-input v-model.trim="queryParam.queryName" placeholder="输入关键字查询" :style="searchBarHeadStyle"/>
-          <el-select v-model="queryParam.serverGroupId" filterable clearable :style="searchBarStyle"
+          <el-select v-model="queryParam.serverGroupId" filterable clearable id="xxx"
                      remote reserve-keyword placeholder="搜索服务器组" :remote-method="getServerGroup" :loading="loading">
             <el-option
               v-for="item in serverGroupOptions"
@@ -352,4 +352,5 @@
     margin-bottom: 0;
     width: 50%;
   }
+
 </style>
