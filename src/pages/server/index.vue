@@ -69,7 +69,7 @@
                 <span>{{ props.row.area }}</span>
               </el-form-item>
               <el-form-item label="监控状态">
-                <el-tag disable-transitions :type=" props.row.monitorStatus | getMonitorStatusType ">{{
+                <el-tag disable-transitions :type="props.row.monitorStatus | getMonitorStatusType ">{{
                   props.row.monitorStatus | getMonitorStatusText}}
                 </el-tag>
               </el-form-item>
@@ -77,22 +77,32 @@
           </template>
         </el-table-column>
         <el-table-column prop="name" label="名称"></el-table-column>
-        <el-table-column prop="serialNumber" label="序号" width="60"></el-table-column>
+        <el-table-column prop="serialNumber" label="序号" width="80"></el-table-column>
         <el-table-column prop="publicIp" label="公网ip"></el-table-column>
         <el-table-column prop="privateIp" label="私网ip"></el-table-column>
-        <el-table-column prop="name" label="环境">
+        <el-table-column prop="name" label="环境" width="80">
           <template slot-scope="scope">
             <el-tag disable-transitions :style="{ color: scope.row.env.color }">{{scope.row.env.envName}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="isActive" label="有效" width="80">
+          <template slot-scope="scope">
+            <el-tag disable-transitions :type="scope.row.isActive ? 'success' : 'info'">{{scope.row.isActive ?
+              '有效':'无效'}}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="serverStatus" label="状态" width="80">
+          <template slot-scope="scope">
+            <el-tag disable-transitions :type="scope.row.serverStatus | getServerStatusType ">{{
+              scope.row.serverStatus | getServerStatusText}}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="tags" label="标签">
           <template slot-scope="scope">
             <div class="tag-group">
-              <el-tag style="margin-left: 5px"
-                      v-for="item in scope.row.tags"
-                      :key="item.id"
-                      :style="{ color: item.color }">
-                {{ item.tagKey }}
+              <el-tag style="margin-left: 5px" v-for="item in scope.row.tags" :key="item.id" :style="{ color: item.color }">{{ item.tagKey }}
               </el-tag>
             </div>
           </template>
@@ -130,7 +140,10 @@
   // XTerm
   import XTerm from '@/components/opscloud/xterm/XTerm'
   // Filters
-  import { getLoginTypeText, getMonitorStatusText, getMonitorStatusType, getServerTypeText } from '@/filters/server.js'
+  import {
+    getLoginTypeText, getMonitorStatusText, getMonitorStatusType, getServerTypeText, getServerStatusType,
+    getServerStatusText
+  } from '@/filters/server.js'
   // API
   import { queryEnvPage } from '@api/env/env.js'
   import { queryBusinessTag, queryTagPage } from '@api/tag/tag.js'
@@ -200,7 +213,9 @@
       getLoginTypeText,
       getMonitorStatusText,
       getMonitorStatusType,
-      getServerTypeText
+      getServerTypeText,
+      getServerStatusType,
+      getServerStatusText
     },
     methods: {
       getTag (tagKey) {
