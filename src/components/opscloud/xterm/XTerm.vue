@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :title="title" :visible.sync="formStatus.visible" @close='handlerExit'>
+  <el-dialog :title="title" :visible.sync="formStatus.visible" width="80%" @close='handlerExit'>
     <div v-for="xterm in xterms" :key="xterm">
       <template>
         <el-col :span="24">
@@ -36,7 +36,10 @@
   import { Terminal } from 'xterm'
   import { FitAddon } from 'xterm-addon-fit'
 
+  import { queryUserSettingByGroup } from '@api/user/user.setting.js'
+
   const xtermUrl = 'ws/xterm'
+  const settingGroup = 'XTERM'
 
   export default {
     data () {
@@ -49,13 +52,19 @@
         // XTerm
         xterms: [],
         xtermMap: {},
-        timer: null // 心跳定时器
+        timer: null, // 心跳定时器
+        xtermTheme: { // 终端主题
+          foreground: '#FFFFFF', // 字体
+          background: '#606266', // 背景色
+          cursor: 'help'// 设置光标
+        }
       }
     },
     name: 'XTerm',
     props: ['formStatus'],
     mixins: [],
     mounted () {
+      this.setXTermSetting()
       this.initWebSocketURL()
     },
     beforeDestroy () {
@@ -69,6 +78,23 @@
       clearInterval(this.timer) // 销毁定时器
     },
     methods: {
+      /**
+       * 设置终端主题色彩
+       */
+      setXTermSetting () {
+        queryUserSettingByGroup(settingGroup)
+          .then(res => {
+            if (res.success) {
+              try {
+                this.xtermTheme.foreground = res.body['XTERM_FOREGROUND']
+                this.xtermTheme.background = res.body['XTERM_BACKGROUND']
+              } catch (e) {
+              }
+            } else {
+              this.$message.error(res.msg)
+            }
+          })
+      },
       handlerExit () {
         this.handlerClose()
         try {
@@ -121,12 +147,7 @@
           rendererType: 'canvas', // 渲染类型
           allowTransparency: true,
           fontSize: 11,
-          // theme: 'default',
-          theme: {
-            foreground: 'white', // 字体
-            background: '#5b5d66', // 背景色
-            cursor: 'help'// 设置光标
-          },
+          theme: this.xtermTheme,
           termName: 'xterm',
           visualBell: false,
           popOnBell: false,
