@@ -194,29 +194,12 @@
         }
       },
       /**
-       * 获取一个uuid
-       * 用于会话复制后的重命名
-       * @returns {string}
-       */
-      getUUID () {
-        var s = []
-        var hexDigits = '0123456789abcdef'
-        for (var i = 0; i < 36; i++) {
-          s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1)
-        }
-        s[14] = '4' // bits 12-15 of the time_hi_and_version field to 0010
-        s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1) // bits 6-7 of the clock_seq_hi_and_reserved to 01
-        s[8] = s[13] = s[18] = s[23] = '-'
-        var uuid = s.join('')
-        return uuid
-      },
-      /**
        * 复制会话，重开一个终端（支持变更用户类型）
        * @param id
        */
       handlerDuplicateSession () {
         // 计算 instanceId  源id  server-prod-1#1
-        const instanceId = this.server.name + '#' + this.getUUID()
+        const instanceId = this.server.name + '#' + util.uuid()
 
         let duplicateSession = {
           status: 'DUPLICATE_SESSION_IP',
@@ -249,20 +232,13 @@
         let term = this.xtermMap[id]
         term.dispose()
         delete (this.xtermMap[id])
-        for (var i = 0; i < this.xterms.length; i++) {
-          // let instanceId = this.xterms[i]
-          // if (instanceId === id) {
-          //   this.xterms.splice(i, 1)
-          //   break
-          // }
-          this.xterms = this.xterms.filter(function (n) {
-            return n !== id
-          })
-        }
+        this.xterms = this.xterms.filter(function (n) {
+          return n !== id
+        })
         this.$message.warning(id + '终端已关闭')
       },
       handlerClose () {
-        var close = {
+        let close = {
           status: 'CLOSE'
         }
         this.socketOnSend(JSON.stringify(close))
