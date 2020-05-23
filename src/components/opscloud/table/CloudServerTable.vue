@@ -1,8 +1,8 @@
 <template>
   <div>
     <div style="margin-bottom: 5px">
-      <el-row :gutter="24" style="margin-bottom: 5px">
-        <el-input v-model="queryParam.serverName" placeholder="服务器名称" style="display: inline-block; max-width:200px; margin-left: 10px"/>
+      <el-row :gutter="24" style="margin-bottom: 5px; margin-left: 0px">
+        <el-input v-model="queryParam.serverName" placeholder="服务器名称" style="display: inline-block; max-width:200px;"/>
         <el-input v-model="queryParam.queryIp" placeholder="ip"
                   style="display: inline-block; max-width:200px; margin-left: 5px"/>
         <el-select v-model="queryParam.serverStatus" clearable placeholder="状态" style="margin-left: 5px">

@@ -203,6 +203,36 @@
   import { fuzzyQueryCloudImagePage } from '@api/cloud/cloud.image.js'
   import { queryCloudVPCPage, queryCloudVPCSecurityGroupPage } from '@api/cloud/cloud.vpc.js'
 
+  const aliyunDiskOptions = [{
+    value: 'cloud_efficiency',
+    label: '高效云盘'
+  }, {
+    value: 'cloud_ssd',
+    label: 'SSD云盘'
+  }, {
+    value: 'cloud_essd',
+    label: '高性能SSD云盘'
+  }]
+
+  const diskOptions = {
+    sysDisk: {
+      size: 40,
+      category: 'cloud_efficiency'
+    },
+    dataDisk: {
+      size: 0,
+      category: 'cloud_efficiency'
+    }
+  }
+  // ace
+  const aceOptions = {
+    // vue2-ace-editor编辑器配置自动补全等
+    enableBasicAutocompletion: true,
+    enableSnippets: true,
+    // 自动补全
+    enableLiveAutocompletion: true
+  }
+
   export default {
     name: 'CloudInstanceTemplateDialog',
     data () {
@@ -267,34 +297,10 @@
           pageSize: 10,
           total: 0
         },
-        aliyunDiskOptions: [{
-          value: 'cloud_efficiency',
-          label: '高效云盘'
-        }, {
-          value: 'cloud_ssd',
-          label: 'SSD云盘'
-        }, {
-          value: 'cloud_essd',
-          label: '高性能SSD云盘'
-        }],
-        disk: {
-          sysDisk: {
-            size: 40,
-            category: 'cloud_efficiency'
-          },
-          dataDisk: {
-            size: 0,
-            category: 'cloud_efficiency'
-          }
-        },
+        aliyunDiskOptions: aliyunDiskOptions,
+        disk: diskOptions,
         // ace
-        aceOptions: {
-          // vue2-ace-editor编辑器配置自动补全等
-          enableBasicAutocompletion: true,
-          enableSnippets: true,
-          // 自动补全
-          enableLiveAutocompletion: true
-        }
+        aceOptions: aceOptions
       }
     },
     props: ['formStatus'],
@@ -358,16 +364,7 @@
         if (templateData.instanceTemplate != null && templateData.instanceTemplate.disk !== null) {
           this.data = templateData.instanceTemplate.disk
         } else {
-          this.disk = {
-            sysDisk: {
-              size: 40,
-              category: 'cloud_efficiency'
-            },
-            dataDisk: {
-              size: 0,
-              category: 'cloud_efficiency'
-            }
-          }
+          this.disk = diskOptions
         }
         this.getRegion()
         this.getCpu()
@@ -404,7 +401,7 @@
       },
       fetchInstanceTypeData () {
         this.instanceTypeTableLoading = true
-        var requestBody = Object.assign({}, this.queryInstanceTypeParam)
+        let requestBody = Object.assign({}, this.queryInstanceTypeParam)
         requestBody.cloudType = this.cloudType
         requestBody.page = this.instanceTypePagination.currentPage
         requestBody.length = this.instanceTypePagination.pageSize
@@ -417,7 +414,7 @@
       },
       fetchImageData () {
         this.imageTableLoading = true
-        var imageQueryParam = {
+        let imageQueryParam = {
           queryName: this.queryImageParam.queryName,
           cloudType: this.formStatus.cloudType,
           isActive: 1,
@@ -432,23 +429,22 @@
             this.imageTableLoading = false
           })
       },
-      convertVswitchData () {
+      convertVSWData () {
         if (this.vpcTableData === null || this.vpcTableData.length === 0) return
-        for (var i = 0; i < this.vpcTableData.length; i++) {
-          var vswitchData = []
-          var row = this.vpcTableData[i]
-          for (var key in row.vswitchMap) {
-            var children = []
-            var vswList = row.vswitchMap[key]
-            for (var index in vswList) {
-              var vsw = vswList[index]
-              var vswChildren = {
+        for (let row of this.vpcTableData) {
+          let vswitchData = []
+          for (let key in row.vswitchMap) {
+            let children = []
+            let vswList = row.vswitchMap[key]
+            for (let index in vswList) {
+              let vsw = vswList[index]
+              let vswChildren = {
                 vswitchId: vsw.vswitchId,
                 label: vsw.vswitchName + ' (' + vsw.cidrBlock + ' : ' + vsw.availableIpAddressCount + ')'
               }
               children.push(vswChildren)
             }
-            var zone = {
+            let zone = {
               label: key + ' (' + children.length + ')',
               children: children
             }
@@ -459,11 +455,11 @@
       },
       fetchVPCData () {
         this.vpcTableLoading = true
-        var zoneIds = []
+        let zoneIds = []
         if (this.templateData.instanceTemplate !== null && this.templateData.instanceTemplate.zoneIds !== null) {
           zoneIds = this.templateData.instanceTemplate.zoneIds
         }
-        var vpcQueryParam = {
+        let vpcQueryParam = {
           queryName: this.queryVPCParam.queryName,
           cloudType: this.formStatus.cloudType,
           isActive: 1,
@@ -478,12 +474,12 @@
             this.vpcTableData = res.body.data
             this.vpcPagination.total = res.body.totalNum
             this.vpcTableLoading = false
-            this.convertVswitchData()
+            this.convertVSWData()
           })
       },
       fetchVPCSecurityGroupData () {
         this.vpcSecurityGroupTableLoading = true
-        var vpcSecurityGroupQueryParam = {
+        let vpcSecurityGroupQueryParam = {
           queryName: this.queryVPCSecurityGroupParam.queryName,
           isActive: 1,
           extend: 1,
@@ -518,7 +514,7 @@
         }
         // 保存实例类型
         if (this.typeId !== '') {
-          var instance = {
+          let instance = {
             typeId: this.typeId
           }
           this.templateData.instanceTemplate.instance = instance

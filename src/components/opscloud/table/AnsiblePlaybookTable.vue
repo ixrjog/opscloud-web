@@ -1,49 +1,47 @@
 <template>
-    <div>
-      <div style="margin-bottom: 5px">
-        <el-row :gutter="24" style="margin-bottom: 5px">
-        <el-input v-model="queryParam.queryName" placeholder="关键字查询" style="display: inline-block; max-width:200px"/>
-        <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
-        <el-button @click="addItem" style="margin-left: 5px">新建</el-button>
-        </el-row>
-      </div>
-        <el-table :data="tableData" style="width: 100%">
-            <el-table-column type="expand">
-                <template slot-scope="props">
-                    <el-form label-position="left" inline class="table-expand">
-                        <el-form-item label="tags">
-                            <editor v-model="props.row.tags" @init="editorInit" lang="yaml" theme="kuroir"
-                                    width="400" height="100" :options="options"></editor>
-                        </el-form-item>
-                    </el-form>
-                </template>
-            </el-table-column>
-            <el-table-column prop="name" label="名称" width="200px"></el-table-column>
-            <el-table-column prop="playbook" label="playbook"  width="600px">
-                <template slot-scope="scope">
-                    <editor v-model="scope.row.playbook" @init="editorInit" lang="yaml" theme="kuroir"
-                            height="200" :options="options"></editor>
-                </template>
-            </el-table-column>
-            <el-table-column prop="vars" label="vars"  width="400px">
-                <template slot-scope="scope">
-                    <editor v-model="scope.row.extraVars" @init="editorInit" lang="yaml" theme="kuroir"
-                            height="200" :options="options"></editor>
-                </template>
-            </el-table-column>
-            <el-table-column fixed="right" label="操作" width="280">
-                <template slot-scope="scope">
-                    <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
-                    <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-        <el-pagination background @current-change="paginationCurrentChange"
-                       layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
-                       :page-size="pagination.pageSize">
-        </el-pagination>
-        <PlaybookDialog :formStatus="formStatus" ref="playbookDialog" @closePlaybookDialog="fetchData"></PlaybookDialog>
-    </div>
+  <div>
+    <el-row :gutter="24" style="margin-bottom: 5px; margin-left: 0px">
+      <el-input v-model="queryParam.queryName" placeholder="关键字查询" style="display: inline-block; max-width:200px"/>
+      <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
+      <el-button @click="addItem" style="margin-left: 5px">新建</el-button>
+    </el-row>
+    <el-table :data="tableData" style="width: 100%">
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-form label-position="left" inline class="table-expand">
+            <el-form-item label="tags">
+              <editor v-model="props.row.tags" @init="editorInit" lang="yaml" theme="kuroir"
+                      width="400" height="100" :options="options"></editor>
+            </el-form-item>
+          </el-form>
+        </template>
+      </el-table-column>
+      <el-table-column prop="name" label="名称" width="200px"></el-table-column>
+      <el-table-column prop="playbook" label="playbook" width="600px">
+        <template slot-scope="scope">
+          <editor v-model="scope.row.playbook" @init="editorInit" lang="yaml" theme="kuroir"
+                  height="200" :options="options"></editor>
+        </template>
+      </el-table-column>
+      <el-table-column prop="vars" label="vars" width="400px">
+        <template slot-scope="scope">
+          <editor v-model="scope.row.extraVars" @init="editorInit" lang="yaml" theme="kuroir"
+                  height="200" :options="options"></editor>
+        </template>
+      </el-table-column>
+      <el-table-column fixed="right" label="操作" width="280">
+        <template slot-scope="scope">
+          <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
+          <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-pagination background @current-change="paginationCurrentChange"
+                   layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
+                   :page-size="pagination.pageSize">
+    </el-pagination>
+    <PlaybookDialog :formStatus="formStatus" ref="playbookDialog" @closePlaybookDialog="fetchData"></PlaybookDialog>
+  </div>
 </template>
 
 <script>
@@ -158,18 +156,18 @@
 </script>
 
 <style>
-    .table-expand {
-        font-size: 0;
-    }
+  .table-expand {
+    font-size: 0;
+  }
 
-    .table-expand label {
-        width: 150px;
-        color: #99a9bf;
-    }
+  .table-expand label {
+    width: 150px;
+    color: #99a9bf;
+  }
 
-    .table-expand .el-form-item {
-        margin-right: 0;
-        margin-bottom: 0;
-        width: 50%;
-    }
+  .table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+  }
 </style>

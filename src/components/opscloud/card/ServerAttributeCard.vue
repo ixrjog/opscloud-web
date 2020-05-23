@@ -33,6 +33,14 @@
   import { queryServerGroupAttribute, saveServerGroupAttribute } from '@api/server/server.group.js'
   import { queryServerAttribute, saveServerAttribute } from '@api/server/server.js'
 
+  const options = {
+    // vue2-ace-editor编辑器配置自动补全等
+    enableBasicAutocompletion: true,
+    enableSnippets: true,
+    // 自动补全
+    enableLiveAutocompletion: true
+  }
+
   export default {
     data () {
       return {
@@ -42,16 +50,10 @@
         attributeGroups: [],
         loading: false,
         // ace
-        options: {
-          // vue2-ace-editor编辑器配置自动补全等
-          enableBasicAutocompletion: true,
-          enableSnippets: true,
-          // 自动补全
-          enableLiveAutocompletion: true
-        }
+        options: options
       }
     },
-    name: 'server-attribute-card',
+    name: 'ServerAttributeCard',
     props: ['formStatus'],
     mixins: [],
     mounted () {

@@ -7,7 +7,7 @@
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
           <el-input v-model.trim="queryParam.queryName" placeholder="输入关键字查询" :style="searchBarHeadStyle"/>
-          <el-select v-model="queryParam.serverGroupId" filterable clearable id="xxx"
+          <el-select v-model="queryParam.serverGroupId" filterable clearable :style="searchBarStyle"
                      remote reserve-keyword placeholder="搜索服务器组" :remote-method="getServerGroup" :loading="loading">
             <el-option
               v-for="item in serverGroupOptions"
@@ -22,6 +22,22 @@
               :key="item.id"
               :label="item.envName"
               :value="item.envType">
+            </el-option>
+          </el-select>
+          <el-select v-model="queryParam.isActive" clearable placeholder="有效" :style="searchBarStyle">
+            <el-option
+              v-for="item in activeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <el-select v-model="queryParam.serverStatus" clearable placeholder="状态" :style="searchBarStyle">
+            <el-option
+              v-for="item in serverStatusOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
             </el-option>
           </el-select>
           <el-select
@@ -102,7 +118,8 @@
         <el-table-column prop="tags" label="标签">
           <template slot-scope="scope">
             <div class="tag-group">
-              <el-tag style="margin-left: 5px" v-for="item in scope.row.tags" :key="item.id" :style="{ color: item.color }">{{ item.tagKey }}
+              <el-tag style="margin-left: 5px" v-for="item in scope.row.tags" :key="item.id"
+                      :style="{ color: item.color }">{{ item.tagKey }}
               </el-tag>
             </div>
           </template>
@@ -150,6 +167,25 @@
   import { queryServerGroupPage } from '@api/server/server.group.js'
   import { fuzzyQueryServerPage, deleteServerById } from '@api/server/server.js'
 
+  const activeOptions = [{
+    value: true,
+    label: '有效'
+  }, {
+    value: false,
+    label: '无效'
+  }]
+
+  const serverStatusOptions = [{
+    value: 0,
+    label: '离线'
+  }, {
+    value: 1,
+    label: '在线'
+  }, {
+    value: -1,
+    label: '未知'
+  }]
+
   export default {
     data () {
       return {
@@ -190,13 +226,17 @@
           queryName: '',
           serverGroupId: '',
           envType: '',
-          tagId: ''
+          tagId: '',
+          isActive: '',
+          serverStatus: ''
         },
         title: '服务器信息',
         tagOptions: [],
         envTypeOptions: [],
         serverGroupOptions: [],
-        businessType: 1
+        businessType: 1,
+        activeOptions: activeOptions,
+        serverStatusOptions: serverStatusOptions
       }
     },
     mounted () {
@@ -277,9 +317,6 @@
           })
         queryBusinessTag(this.businessType, this.tagTransfer.businessId, '')
           .then(res => {
-            // for (var index = 0; index < res.body.length; index++) {
-            //   this.tagTransfer.serverTag.push(res.body[index].id)
-            // }
             for (let index in res.body) {
               this.tagTransfer.serverTag.push(res.body[index].id)
             }
@@ -288,8 +325,8 @@
       },
       editItem (row) {
         // server
-        var serverData = Object.assign({}, row)
-        var serverGroupOptions = []
+        let serverData = Object.assign({}, row)
+        let serverGroupOptions = []
         serverGroupOptions.push(serverData.serverGroup)
         // form
         this.formServerStatus.visible = true
@@ -299,7 +336,7 @@
       addItem () {
         this.formServerStatus.operationType = true
         this.formServerStatus.visible = true
-        var serverData = {
+        let serverData = {
           serverGroup: '',
           id: '',
           name: '',
@@ -332,15 +369,10 @@
       },
       fetchData () {
         this.loading = true
-        var requestBody = {
-          'queryName': this.queryParam.queryName,
-          'extend': 1,
-          'serverGroupId': this.queryParam.serverGroupId,
-          'envType': this.queryParam.envType,
-          'tagId': this.queryParam.tagId,
-          'page': this.pagination.currentPage,
-          'length': this.pagination.pageSize
-        }
+        let requestBody = Object.assign({}, this.queryParam)
+        requestBody.extend = 1
+        requestBody.page = this.pagination.currentPage
+        requestBody.length = this.pagination.pageSize
         fuzzyQueryServerPage(requestBody)
           .then(res => {
             this.tableData = res.body.data

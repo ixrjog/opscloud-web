@@ -82,14 +82,6 @@
       return {
         tableUnbindData: [],
         tableBindData: [],
-        // options: {
-        //   stripe: true
-        // },
-        // formOptions: {
-        //   labelWidth: '80px',
-        //   labelPosition: 'left',
-        //   saveLoading: false
-        // },
         bindLoading: false,
         unbindLoading: false,
         bindPagination: {

@@ -1,14 +1,12 @@
 <template>
   <div>
-    <div style="margin-bottom: 5px">
-      <el-row :gutter="24" style="margin-bottom: 5px">
-        <el-input v-model="queryParam.roleName" placeholder="角色名称" style="display: inline-block; max-width:200px"/>
-        <el-input v-model="queryParam.resourceName" placeholder="资源名称"
-                  style="display: inline-block; max-width:200px; margin-left: 5px"/>
-        <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
-        <el-button @click="addItem" style="margin-left: 5px">新增</el-button>
-      </el-row>
-    </div>
+    <el-row :gutter="24" style="margin-bottom: 5px; margin-left: 0px">
+      <el-input v-model="queryParam.roleName" placeholder="角色名称" style="display: inline-block; max-width:200px"/>
+      <el-input v-model="queryParam.resourceName" placeholder="资源名称"
+                style="display: inline-block; max-width:200px; margin-left: 5px"/>
+      <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
+      <el-button @click="addItem" style="margin-left: 5px">新增</el-button>
+    </el-row>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="roleName" label="名称"></el-table-column>
       <el-table-column prop="resourceName" label="资源名称"></el-table-column>

@@ -53,7 +53,7 @@
       },
       saveInfo () {
         setTimeout(() => {
-          var requestBody = {}
+          let requestBody = {}
           requestBody = Object.assign({}, this.formData)
           delete requestBody.env
           updateCloudDBDatabase(requestBody)
