@@ -340,7 +340,7 @@
           privateIp: '',
           serverType: 0,
           area: '',
-          serialNumber: 1,
+          serialNumber: 0,
           monitorStatus: -1,
           comment: '',
           // options
