@@ -1,8 +1,8 @@
 <template>
   <div>
     <el-row :gutter="24" style="margin-bottom: 5px; margin-left: 0px">
-      <el-input v-model="queryParam.queryName" placeholder="关键字查询" style="display: inline-block; max-width:200px"/>
-      <el-select v-model="queryParam.isActive" clearable placeholder="有效" style="margin-left: 5px">
+      <el-input v-model="queryParam.queryName" placeholder="关键字查询" class="input-search-bar"/>
+      <el-select v-model="queryParam.isActive" clearable placeholder="有效" class="search-bar">
         <el-option
           v-for="item in activeOptions"
           :key="item.value"
@@ -10,8 +10,8 @@
           :value="item.value">
         </el-option>
       </el-select>
-      <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
-      <el-button @click="handleSync" style="margin-left: 5px" :loading="syncLoading">同步</el-button>
+      <el-button @click="fetchData" class="search-bar">查询</el-button>
+      <el-button @click="handleSync" class="search-bar" :loading="syncLoading">同步</el-button>
     </el-row>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column type="expand">
@@ -241,5 +241,15 @@
     margin-right: 0;
     margin-bottom: 0;
     width: 50%;
+  }
+
+  .input-search-bar {
+    display: inline-block;
+    max-width: 200px;
+    margin-right: 5px;
+  }
+
+  .search-bar {
+    margin-right: 5px;
   }
 </style>

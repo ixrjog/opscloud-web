@@ -4,21 +4,19 @@
       <div>
         <h1>环境类型</h1>
       </div>
-      <div style="margin-bottom: 5px">
-        <el-row :gutter="24" style="margin-bottom: 5px">
-            <el-input v-model="queryParam.envName" placeholder="名称" style="display: inline-block; max-width:200px; marginLeft: 10px"/>
-            <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
-            <el-button @click="addItem" style="margin-left: 5px">新增</el-button>
-        </el-row>
-      </div>
+      <el-row :gutter="24" style="margin-bottom: 5px">
+        <el-input v-model="queryParam.envName" placeholder="名称" class="input-bar"/>
+        <el-button @click="fetchData" class="button">查询</el-button>
+        <el-button @click="addItem" class="button">新增</el-button>
+      </el-row>
       <el-table :data="tableData" style="width: 100%">
         <el-table-column prop="name" label="名称">
           <template slot-scope="scope">
             <el-tag disable-transitions :style="{ color: scope.row.color }">{{scope.row.envName}}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="envType" label="类型值" ></el-table-column>
-        <el-table-column prop="comment" label="描述" ></el-table-column>
+        <el-table-column prop="envType" label="类型值"></el-table-column>
+        <el-table-column prop="comment" label="描述"></el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
             <el-button type="warning" plain size="mini" @click="updateItem(scope.row)">编辑</el-button>
@@ -27,7 +25,8 @@
         </el-table-column>
       </el-table>
       <el-pagination background @current-change="paginationCurrentChange"
-                     layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage" :page-size="pagination.pageSize">
+                     layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
+                     :page-size="pagination.pageSize">
       </el-pagination>
       <EnvDialog :formStatus="formEnvStatus" :formData="env" @closeEnvDialog="fetchData"></EnvDialog>
     </template>
@@ -146,3 +145,15 @@
     }
   }
 </script>
+
+<style>
+  .input-bar {
+    display: inline-block;
+    max-width: 200px;
+    margin-left: 10px;
+  }
+
+  .button {
+    margin-left: 5px;
+  }
+</style>

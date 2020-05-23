@@ -4,10 +4,9 @@
       <div>
         <h1>{{title}}</h1>
       </div>
-      <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
-          <el-input v-model.trim="queryParam.queryName" placeholder="输入关键字查询" :style="searchBarHeadStyle"/>
-          <el-select v-model="queryParam.serverGroupId" filterable clearable :style="searchBarStyle"
+          <el-input v-model.trim="queryParam.queryName" placeholder="输入关键字查询" class="input-bar"/>
+          <el-select v-model="queryParam.serverGroupId" filterable clearable class="select-bar"
                      remote reserve-keyword placeholder="搜索服务器组" :remote-method="getServerGroup" :loading="loading">
             <el-option
               v-for="item in serverGroupOptions"
@@ -16,7 +15,7 @@
               :value="item.id">
             </el-option>
           </el-select>
-          <el-select v-model="queryParam.envType" clearable placeholder="环境" :style="searchBarStyle">
+          <el-select v-model="queryParam.envType" clearable placeholder="环境" class="select-bar">
             <el-option
               v-for="item in envTypeOptions"
               :key="item.id"
@@ -24,7 +23,7 @@
               :value="item.envType">
             </el-option>
           </el-select>
-          <el-select v-model="queryParam.isActive" clearable placeholder="有效" :style="searchBarStyle">
+          <el-select v-model="queryParam.isActive" clearable placeholder="有效" class="select-bar">
             <el-option
               v-for="item in activeOptions"
               :key="item.value"
@@ -32,7 +31,7 @@
               :value="item.value">
             </el-option>
           </el-select>
-          <el-select v-model="queryParam.serverStatus" clearable placeholder="状态" :style="searchBarStyle">
+          <el-select v-model="queryParam.serverStatus" clearable placeholder="状态" class="select-bar">
             <el-option
               v-for="item in serverStatusOptions"
               :key="item.value"
@@ -41,7 +40,7 @@
             </el-option>
           </el-select>
           <el-select
-            v-model="queryParam.tagId" filterable clearable remote reserve-keyword :style="searchBarStyle"
+            v-model="queryParam.tagId" filterable clearable remote reserve-keyword class="select-bar"
             placeholder="请输入关键词搜索标签" :remote-method="getTag" :loading="loading">
             <el-option
               v-for="item in tagOptions"
@@ -50,10 +49,9 @@
               :value="item.id">
             </el-option>
           </el-select>
-          <el-button @click="fetchData" :style="searchBarStyle">查询</el-button>
-          <el-button @click="addItem" :style="searchBarStyle">新增</el-button>
+          <el-button @click="fetchData" class="buuton">查询</el-button>
+          <el-button @click="addItem" class="buuton">新增</el-button>
         </el-row>
-      </div>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column type="expand">
           <template slot-scope="props">
@@ -116,11 +114,13 @@
           </template>
         </el-table-column>
         <el-table-column prop="tags" label="标签">
-          <template slot-scope="scope">
+          <template slot-scope="prop">
             <div class="tag-group">
-              <el-tag style="margin-left: 5px" v-for="item in scope.row.tags" :key="item.id"
-                      :style="{ color: item.color }">{{ item.tagKey }}
-              </el-tag>
+              <div v-for="item in prop.row.tags" :key="item.id">
+                <el-tooltip class="item" effect="light" :content="item.comment" placement="top-start">
+                  <el-tag style="margin-left: 5px" :style="{ color: item.color }">{{ item.tagKey }}</el-tag>
+                </el-tooltip>
+              </div>
             </div>
           </template>
         </el-table-column>
@@ -189,14 +189,6 @@
   export default {
     data () {
       return {
-        searchBarHeadStyle: {
-          display: 'inline-block',
-          maxWidth: '200px',
-          marginLeft: '10px'
-        },
-        searchBarStyle: {
-          marginLeft: '5px'
-        },
         tagTransfer: {},
         formTagTransferStatus: {
           visible: false,
@@ -400,4 +392,17 @@
     width: 50%;
   }
 
+  .input-bar {
+    display: inline-block;
+    max-width: 200px;
+    margin-left: 10px;
+  }
+
+  .select-bar {
+    margin-left: 5px;
+  }
+
+  .buuton {
+    margin-left: 5px;
+  }
 </style>

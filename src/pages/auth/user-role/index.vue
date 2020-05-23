@@ -6,9 +6,9 @@
       </div>
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
-            <el-input v-model="queryParam.username" placeholder="用户名" style="display: inline-block; max-width:200px; margin-left: 10px"/>
+            <el-input v-model="queryParam.username" placeholder="用户名" class="input-search-bar"/>
             <el-select v-model="queryParam.roleId" filterable clearable
-                       remote reserve-keyword placeholder="输入关键词搜索角色" :remote-method="getRole" :loading="loading" style="margin-left: 5px">
+                       remote reserve-keyword placeholder="输入关键词搜索角色" :remote-method="getRole" :loading="loading" class="search-bar">
               <el-option
                 v-for="item in roleOptions"
                 :key="item.id"
@@ -16,8 +16,8 @@
                 :value="item.id">
               </el-option>
             </el-select>
-            <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
-            <el-button @click="addItem" style="margin-left: 5px">新增</el-button>
+            <el-button @click="fetchData" class="search-bar">查询</el-button>
+            <el-button @click="addItem" class="search-bar">新增</el-button>
         </el-row>
       </div>
       <el-table :data="tableData" style="width: 100%">
@@ -145,3 +145,16 @@
     }
   }
 </script>
+
+<style>
+  .input-search-bar {
+    display: inline-block;
+    max-width: 200px;
+    margin-left: 10px;
+  }
+
+  .search-bar {
+    margin-left: 5px;
+  }
+
+</style>

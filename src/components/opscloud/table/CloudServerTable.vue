@@ -1,22 +1,19 @@
 <template>
   <div>
-    <div style="margin-bottom: 5px">
-      <el-row :gutter="24" style="margin-bottom: 5px; margin-left: 0px">
-        <el-input v-model="queryParam.serverName" placeholder="服务器名称" style="display: inline-block; max-width:200px;"/>
-        <el-input v-model="queryParam.queryIp" placeholder="ip"
-                  style="display: inline-block; max-width:200px; margin-left: 5px"/>
-        <el-select v-model="queryParam.serverStatus" clearable placeholder="状态" style="margin-left: 5px">
-          <el-option
-            v-for="item in statusOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
-        <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
-        <el-button @click="handleSync" style="margin-left: 5px" :loading="syncLoading">同步</el-button>
-      </el-row>
-    </div>
+    <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
+      <el-input v-model="queryParam.serverName" placeholder="服务器名称" class="input-search-bar"/>
+      <el-input v-model="queryParam.queryIp" placeholder="ip" class="input-search-bar"/>
+      <el-select v-model="queryParam.serverStatus" clearable placeholder="状态" class="search-bar">
+        <el-option
+          v-for="item in statusOptions"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value">
+        </el-option>
+      </el-select>
+      <el-button @click="fetchData" class="search-bar">查询</el-button>
+      <el-button @click="handleSync" class="search-bar" :loading="syncLoading">同步</el-button>
+    </el-row>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column type="expand">
         <template slot-scope="props">
@@ -73,7 +70,8 @@
           <!--            <el-button type="primary" plain size="mini" @click="updateItemNeedAuth(scope.row)">{{scope.row.needAuth ===-->
           <!--              0 ? '鉴权' : '不鉴权'}}-->
           <!--            </el-button>-->
-          <el-button type="primary" plain size="mini" @click="addItem(scope.row)" v-show="scope.row.serverStatus == 0">导入
+          <el-button type="primary" plain size="mini" @click="addItem(scope.row)" v-show="scope.row.serverStatus == 0">
+            导入
           </el-button>
           <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
         </template>
@@ -247,5 +245,14 @@
     margin-right: 0;
     margin-bottom: 0;
     width: 50%;
+  }
+
+  .input-search-bar {
+    display: inline-block;
+    max-width: 200px;
+  }
+
+  .search-bar {
+    margin-right: 5px;
   }
 </style>

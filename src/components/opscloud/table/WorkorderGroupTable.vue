@@ -1,10 +1,9 @@
 <template>
   <div>
-    <el-row :gutter="24" style="margin-bottom: 5px; margin-left: 0px">
-      <el-input v-model="queryParam.queryName" placeholder="关键字查询"
-                style="display: inline-block; max-width:200px;"/>
-      <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
-      <el-button @click="addItem">新增</el-button>
+    <el-row :gutter="24" style="margin-bottom: 5px;">
+      <el-input v-model="queryParam.queryName" placeholder="关键字查询" class="input-bar"/>
+      <el-button @click="fetchData" class="button">查询</el-button>
+      <el-button @click="addItem" class="button">新增</el-button>
     </el-row>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="name" label="名称"></el-table-column>
@@ -136,5 +135,15 @@
     margin-right: 0;
     margin-bottom: 0;
     width: 50%;
+  }
+
+  .input-bar {
+    display: inline-block;
+    max-width: 200px;
+    margin-left: 12px;
+  }
+
+  .button {
+    margin-left: 5px;
   }
 </style>

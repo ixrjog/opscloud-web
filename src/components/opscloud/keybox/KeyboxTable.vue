@@ -1,18 +1,18 @@
 <template>
   <div>
-    <div style="margin-bottom: 5px">
-      <el-row :gutter="24" style="margin-bottom: 5px">
-        <el-input v-model="queryParam.queryName" placeholder="系统账户查询" style="display: inline-block; max-width:200px; margin-left: 10px"/>
-        <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
-        <el-button @click="addItem">新增</el-button>
-      </el-row>
-    </div>
+    <el-row :gutter="24" style="margin-bottom: 5px">
+      <el-input v-model="queryParam.queryName" placeholder="系统账户查询" class="input-bar"/>
+      <el-button @click="fetchData" class="button">查询</el-button>
+      <el-button @click="addItem" class="button">新增</el-button>
+    </el-row>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="title" label="标题"></el-table-column>
       <el-table-column prop="systemUser" label="系统账户"></el-table-column>
       <el-table-column prop="keyType" label="密钥类型">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.keyType === 0 ? 'success': 'info'"> {{ scope.row.keyType === 0 ? 'sshKey': 'password' }} </el-tag>
+          <el-tag :type="scope.row.keyType === 0 ? 'success': 'info'"> {{ scope.row.keyType === 0 ? 'sshKey': 'password'
+            }}
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="fingerprint" label="指纹"></el-table-column>
@@ -27,7 +27,7 @@
                    :page-size="pagination.pageSize">
     </el-pagination>
     <KeyboxDialog :formStatus="formStatus" ref="keyboxDialog"
-                          @closeKeyboxDialog="fetchData"></KeyboxDialog>
+                  @closeKeyboxDialog="fetchData"></KeyboxDialog>
   </div>
 </template>
 
@@ -125,5 +125,15 @@
     margin-right: 0;
     margin-bottom: 0;
     width: 50%;
+  }
+
+  .input-bar {
+    display: inline-block;
+    max-width: 200px;
+    margin-left: 10px;
+  }
+
+  .button {
+    margin-left: 5px;
   }
 </style>
