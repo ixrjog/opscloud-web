@@ -249,6 +249,15 @@ const frameIn = [
         }
       },
       {
+        path: '/term/session',
+        name: 'term-session',
+        component: () => import('@/pages/term/session'),
+        meta: {
+          auth: true,
+          title: 'Web终端会话管理'
+        }
+      },
+      {
         path: '/workbench/workorder',
         name: 'workbench-workorder',
         component: () => import('@/pages/workbench/workorder'),

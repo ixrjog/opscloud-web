@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :title="formStatus.operationType ? formStatus.addTitle : formStatus.updateTitle" :visible.sync="formStatus.visible" :before-close="closeDialog" >
+  <el-dialog :title="formStatus.operationType ? formStatus.addTitle : formStatus.updateTitle" :visible.sync="formStatus.visible" :before-close="closeDialog">
     <el-form :model="formData">
       <el-form-item label="用户名" :label-width="formStatus.labelWidth" :required="true">
         <el-input v-model="formData.username" placeholder="请输入内容" :disabled="!formStatus.operationType"></el-input>

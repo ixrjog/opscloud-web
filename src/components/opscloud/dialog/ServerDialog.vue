@@ -108,6 +108,9 @@
         envTypeOptions: [],
         serverGroupOptions: [],
         serverData: {},
+        state: {
+          loginUser: ''
+        },
         serverTypeOptions: [{
           value: 0,
           label: 'server'
@@ -154,7 +157,7 @@
         this.getEnvType()
         // 尝试选择匹配服务器组
         if (JSON.stringify(this.serverData.serverGroup) === '{}') {
-          var queryName = this.serverData.name.replace(new RegExp('-[0-9]+$'), '')
+          let queryName = this.serverData.name.replace(new RegExp('-[0-9]+$'), '')
           queryServerGroupPage(queryName, '', 1, 20)
             .then(res => {
               this.serverGroupOptions = res.body.data
