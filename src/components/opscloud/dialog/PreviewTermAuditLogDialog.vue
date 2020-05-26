@@ -1,8 +1,5 @@
 <template>
   <el-dialog :title="title" :visible.sync="formStatus.visible" :before-close="handlerCloseDialog">
-<!--    <el-form-item label="路径" :label-width="labelWidth">-->
-<!--      <el-input v-model="sessionInstance.auditLog.path"></el-input>-->
-<!--    </el-form-item>-->
     <el-col :span="24">
       <el-card shadow="hover" body-style="padding: 2px" style="margin-right: 10px;margin-bottom: 10px">
         <div slot="header" class="clearfix" style="height: 15px">
@@ -25,6 +22,9 @@
   import { FitAddon } from 'xterm-addon-fit'
 
   import { querySessionInstanceById } from '@api/term/term.session.js'
+  import { queryUserSettingByGroup } from '@api/user/user.setting.js'
+
+  const settingGroup = 'XTERM'
 
   export default {
     data () {
@@ -33,15 +33,38 @@
         xterm: 'auditXterm',
         term: null,
         sessionInstance: '',
-        labelWidth: '100px'
+        labelWidth: '100px',
+        xtermTheme: { // 终端主题
+          foreground: '#FFFFFF', // 字体
+          background: '#606266', // 背景色
+          cursor: 'help'// 设置光标
+        }
       }
     },
     name: 'PreviewTermAuditLogDialog',
     props: ['formStatus'],
     mixins: [],
     mounted () {
+      this.setXTermSetting()
     },
     methods: {
+      /**
+       * 设置终端主题色彩
+       */
+      setXTermSetting () {
+        queryUserSettingByGroup(settingGroup)
+          .then(res => {
+            if (res.success) {
+              try {
+                this.xtermTheme.foreground = res.body['XTERM_FOREGROUND']
+                this.xtermTheme.background = res.body['XTERM_BACKGROUND']
+              } catch (e) {
+              }
+            } else {
+              this.$message.error(res.msg)
+            }
+          })
+      },
       handlerCloseDialog () {
         this.sessionInstance = ''
         this.term.dispose()
@@ -60,7 +83,7 @@
           rendererType: 'canvas', // 渲染类型
           allowTransparency: true,
           fontSize: 11,
-          // theme: this.xtermTheme,
+          theme: this.xtermTheme,
           termName: 'xterm',
           visualBell: false,
           popOnBell: false,
