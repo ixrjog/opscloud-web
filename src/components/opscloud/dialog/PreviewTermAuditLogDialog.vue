@@ -80,7 +80,7 @@
       },
       handlerAuditLog () {
         const term = new Terminal({
-          rendererType: 'canvas', // 渲染类型
+          rendererType: 'canvas', // 渲染类型 canvas dom
           allowTransparency: true,
           fontSize: 11,
           theme: this.xtermTheme,
@@ -91,9 +91,10 @@
           screenKeys: false,
           debug: false,
           cancelEvents: false,
-          cursorStyle: 'underline', // 光标样式
-          cursorBlink: true, // 光标闪烁
-          convertEol: true // 启用时，光标将设置为下一行的开头
+          cursorStyle: 'bar', // 光标样式
+          cursorBlink: false, // 光标闪烁
+          convertEol: true, // 启用时，光标将设置为下一行的开头
+          disableStdin: true // 是否应禁用输入
         })
         let fitAddon = new FitAddon()
         term.loadAddon(fitAddon)
@@ -107,3 +108,12 @@
     }
   }
 </script>
+
+<style>
+  .el-card__header {
+    padding: 10px 10px;
+    border-bottom: 1px solid #EBEEF5;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+</style>
