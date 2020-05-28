@@ -114,21 +114,18 @@
           </template>
         </el-table-column>
         <el-table-column prop="tags" label="标签">
-          <template slot-scope="prop">
+          <template slot-scope="props">
             <div class="tag-group">
-              <div v-for="item in prop.row.tags" :key="item.id">
+              <span v-for="item in props.row.tags" :key="item.id">
                 <el-tooltip class="item" effect="light" :content="item.comment" placement="top-start">
                   <el-tag style="margin-left: 5px" :style="{ color: item.color }">{{ item.tagKey }}</el-tag>
                 </el-tooltip>
-              </div>
+              </span>
             </div>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
-            <!--            <el-button type="primary" plain size="mini" @click="updateItemNeedAuth(scope.row)">{{scope.row.needAuth ===-->
-            <!--              0 ? '鉴权' : '不鉴权'}}-->
-            <!--            </el-button>-->
             <el-button type="primary" plain size="mini" @click="editTag(scope.row)">标签</el-button>
             <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
             <el-button type="primary" plain size="mini" @click="handlerXTerm(scope.row)">登录</el-button>
