@@ -1,6 +1,6 @@
 <template>
   <el-dialog :title="formStatus.operationType ? formStatus.addTitle : formStatus.updateTitle"
-             :visible.sync="formStatus.visible">
+             :visible.sync="formStatus.visible" @before-close="handlerCloseDialog">
     <el-form :model="serverData">
       <el-form-item label="名称" :label-width="formStatus.labelWidth" :required="true">
         <el-input v-model="serverData.name" placeholder="请输入内容"></el-input>
@@ -89,7 +89,7 @@
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button size="mini" @click="formStatus.visible = false">取消</el-button>
+      <el-button size="mini" @click="handlerCloseDialog">取消</el-button>
       <el-button type="primary" size="mini" @click="saveInfo">确定</el-button>
     </div>
   </el-dialog>
@@ -101,6 +101,34 @@
   import { addServer, updateServer } from '@api/server/server.js'
   import { queryServerGroupPage } from '@api/server/server.group.js'
 
+  const serverTypeOptions = [{
+    value: 0,
+    label: 'server'
+  }, {
+    value: 1,
+    label: 'vmware vm'
+  }, {
+    value: 2,
+    label: 'aliyun ecs'
+  }, {
+    value: 3,
+    label: 'aws ec2'
+  }, {
+    value: 4,
+    label: 'tencent cvm'
+  }, {
+    value: 5,
+    label: 'vmware esxi'
+  }]
+
+  const loginTypeOptions = [{
+    value: 0,
+    label: 'key'
+  }, {
+    value: 1,
+    label: 'passwd'
+  }]
+
   export default {
     data () {
       return {
@@ -111,32 +139,8 @@
         state: {
           loginUser: ''
         },
-        serverTypeOptions: [{
-          value: 0,
-          label: 'server'
-        }, {
-          value: 1,
-          label: 'vmware vm'
-        }, {
-          value: 2,
-          label: 'aliyun ecs'
-        }, {
-          value: 3,
-          label: 'aws ec2'
-        }, {
-          value: 4,
-          label: 'tencent cvm'
-        }, {
-          value: 5,
-          label: 'vmware esxi'
-        }],
-        loginTypeOptions: [{
-          value: 0,
-          label: 'key'
-        }, {
-          value: 1,
-          label: 'passwd'
-        }]
+        serverTypeOptions: serverTypeOptions,
+        loginTypeOptions: loginTypeOptions
       }
     },
     name: 'server-dialog',
@@ -145,6 +149,10 @@
     mounted () {
     },
     methods: {
+      handlerCloseDialog () {
+        this.formStatus.visible = false
+        this.$emit('closeServerDialog')
+      },
       getEnvType () {
         queryEnvPage('', '', 1, 20)
           .then(res => {
@@ -195,8 +203,7 @@
                   message: '成功',
                   type: 'success'
                 })
-                this.formStatus.visible = false
-                this.$emit('closeServerDialog')
+                this.handlerCloseDialog()
               })
           } else {
             updateServer(requestBody)
@@ -206,8 +213,7 @@
                   message: '成功',
                   type: 'success'
                 })
-                this.formStatus.visible = false
-                this.$emit('closeServerDialog')
+                this.handlerCloseDialog()
               })
           }
         }, 600)
