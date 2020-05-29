@@ -40,14 +40,14 @@
                 <el-table-column prop="hostname" label="主机名"></el-table-column>
                 <el-table-column prop="publicIp" label="公网ip"></el-table-column>
                 <el-table-column prop="ip" label="私网ip"></el-table-column>
-                <!--                  <el-table-column prop="ip" label="私网ip"></el-table-column>-->
-                <!--                  <el-table-column prop="role" label="角色">-->
-                <!--                    <template slot-scope="scope">-->
-                <!--                      <el-tag class="filters" :type="scope.row.role | getUserRoleType" size="small ">-->
-                <!--                        {{scope.row.role | getUserRoleText}}-->
-                <!--                      </el-tag>-->
-                <!--                    </template>-->
-                <!--                  </el-table-column>-->
+
+                <el-table-column prop="isActive" label="有效">
+                  <template slot-scope="props">
+                    <el-tag :type="props.row.isActive ? 'success' : 'info'" size="small">{{props.row.isActive ? '有效':
+                      '无效'}}
+                    </el-tag>
+                  </template>
+                </el-table-column>
                 <el-table-column prop="comment" label="描述"></el-table-column>
                 <el-table-column fixed="right" label="操作" width="280">
                   <template slot-scope="scope">
@@ -81,6 +81,17 @@
   // API
   import { fuzzyQueryAssetPage, syncAsset, queryAssetsNodePage } from '@api/jump/jump.jumpserver.asset.js'
 
+  const activeOptions=[{
+      value: -1,
+      label: '全部'
+    }, {
+      value: 1,
+      label: '有效'
+    }, {
+      value: 0,
+      label: '无效'
+    }]
+
   export default {
     data () {
       return {
@@ -92,16 +103,7 @@
           marginLeft: '5px'
         },
         assetsNodeOptions: [],
-        activeOptions: [{
-          value: -1,
-          label: '全部'
-        }, {
-          value: 1,
-          label: '有效'
-        }, {
-          value: 0,
-          label: '无效'
-        }],
+        activeOptions: activeOptions,
         // 资产
         assetPagination: {
           currentPage: 1,
@@ -117,7 +119,7 @@
         syncAssetLoading: false,
         assetLoading: false,
         assetTableData: [],
-        title: 'Jumpserver资产管理'
+        title: 'Jump资产管理'
       }
     },
     mounted () {

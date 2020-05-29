@@ -73,6 +73,13 @@
                     </template>
                   </el-table-column>
                   <el-table-column prop="usersUsergroups.length" label="授权用户组"></el-table-column>
+                  <el-table-column prop="publicKey" label="公钥">
+                    <template slot-scope="scope">
+                      <el-tag :type="scope.row.publicKey === '' ? 'info': 'success' " size="small ">
+                        {{scope.row.publicKey === '' ? '未录入' : '已录入'}}
+                      </el-tag>
+                    </template>
+                  </el-table-column>
                   <el-table-column prop="isActive" label="有效">
                     <template slot-scope="scope">
                       <el-tag class="filters" :type="scope.row.isActive | getActiveType" size="small ">
@@ -146,7 +153,7 @@
           value: 0,
           label: '无效'
         }],
-        title: 'Jumpserver用户管理'
+        title: 'Jump用户管理'
       }
     },
     mounted () {
