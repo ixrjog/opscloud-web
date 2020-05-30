@@ -18,7 +18,7 @@
                 :value="item.value">
               </el-option>
             </el-select>
-            <el-select v-model="loginUserType" filterable reserve-keyword :style="loginStyle">
+            <el-select v-model="loginUserType" filterable reserve-keyword style="margin-left: 5px">
               <el-option
                 v-for="item in loginUserTypeOptions"
                 :key="item.value"
@@ -27,19 +27,19 @@
               </el-option>
             </el-select>
             <el-tooltip class="item" effect="light" content="任意窗口输入指令同步到所有终端" placement="bottom">
-              <el-button @click="handlerBatchCmd" v-if="pageStatus === 1" :type="handlerBatchType" :style="loginStyle"
+              <el-button @click="handlerBatchCmd" v-if="pageStatus === 1" :type="handlerBatchType"
                          plain>命令同步
               </el-button>
             </el-tooltip>
             <el-tooltip class="item" effect="light" content="您的个人文档，用于记录常用指令" placement="bottom">
-              <el-button @click="handlerPreviewUserDoc" :style="loginStyle">用户文档</el-button>
+              <el-button @click="handlerPreviewUserDoc">用户文档</el-button>
             </el-tooltip>
-            <el-button @click="handlerSetting" v-if="pageStatus === 0" :style="loginStyle">终端设置</el-button>
+            <el-button @click="handlerSetting" v-if="pageStatus === 0">终端设置</el-button>
             <el-tooltip class="item" effect="light" content="修复终端字符错位" placement="bottom">
-              <el-button @click="handlerResize" v-if="pageStatus === 1" :style="loginStyle">调整大小</el-button>
+              <el-button @click="handlerResize" v-if="pageStatus === 1">调整大小</el-button>
             </el-tooltip>
-            <el-button @click="handlerLogin" v-if="pageStatus === 0" :style="loginStyle">批量登录</el-button>
-            <el-button @click="handlerClose" v-if="pageStatus === 1" :style="loginStyle">全部关闭</el-button>
+            <el-button @click="handlerLogin" v-if="pageStatus === 0">批量登录</el-button>
+            <el-button @click="handlerClose" v-if="pageStatus === 1">全部关闭</el-button>
           </el-row>
           <el-row>
             <div v-for="xterm in xterms" :key="xterm">
@@ -60,7 +60,7 @@
                       </el-tooltip>
                     </div>
                     <!--                    style="border-right:2px solid #e0e0e0; border-left:2px solid #e0e0e0; border-bottom:2px solid #e0e0e0; border-top:1px solid #e0e0e0;margin-top:10px;margin-left: 10px"-->
-                    <div :id="xterm" class="xterm">
+                    <div :id="xterm" class="xterm" width="100%">
                     </div>
                   </el-card>
                 </el-col>
@@ -95,6 +95,26 @@
   const xtermUrl = 'ws/xterm'
   const settingGroup = 'XTERM'
 
+  const layoutModeOptions = [
+    {
+      value: 0,
+      label: '双列布局'
+    }, {
+      value: 1,
+      label: '单列布局'
+    }
+  ]
+
+  const loginUserTypeOptions = [
+    {
+      value: 0,
+      label: '普通用户'
+    }, {
+      value: 1,
+      label: '系统管理员'
+    }
+  ]
+
   export default {
     props: {},
     data () {
@@ -109,9 +129,9 @@
         },
         pageStatus: 0, // 页面状态: 0 选择 1 登录状态
         xtermSpan: 16,
-        loginStyle: {
-          marginLeft: '5px'
-        },
+        // loginStyle: {
+        //   marginLeft: '5px'
+        // },
         title: 'Web-XTerminal',
         uuid: '', // 服务器树资源权限校验
         options: {
@@ -119,29 +139,16 @@
         },
         layoutMode: 0, // 当前布局模式
         layoutSpan: 12, // 布局宽度
-        layoutModeOptions: [
-          {
-            value: 0,
-            label: '双列布局'
-          }, {
-            value: 1,
-            label: '单列布局'
-          }
-        ],
+        layoutModeOptions: layoutModeOptions,
         loginUserType: 0, // 登录用户类型
-        loginUserTypeOptions: [
-          {
-            value: 0,
-            label: '普通用户'
-          }, {
-            value: 1,
-            label: '系统管理员'
-          }
-        ],
+        loginUserTypeOptions: loginUserTypeOptions,
         addonMap: [], // 插件容器
         // XTerm
         xterms: [],
         xtermMap: {},
+        xtermSize: {
+          rows: 30
+        },
         xtermTheme: { // 终端主题
           foreground: '#FFFFFF', // 字体
           background: '#606266', // 背景色
@@ -184,6 +191,7 @@
               try {
                 this.xtermTheme.foreground = res.body['XTERM_FOREGROUND']
                 this.xtermTheme.background = res.body['XTERM_BACKGROUND']
+                this.xtermSize.rows = res.body['XTERM_ROWS'] || 30
               } catch (e) {
               }
             } else {
@@ -195,6 +203,7 @@
         let xtermSettingMap = {}
         xtermSettingMap['XTERM_FOREGROUND'] = this.xtermTheme.foreground
         xtermSettingMap['XTERM_BACKGROUND'] = this.xtermTheme.background
+        xtermSettingMap['XTERM_ROWS'] = this.xtermSize.rows
         this.formSettingStatus.visible = true
         this.$refs.userXTermSetting.initData(xtermSettingMap)
       },
@@ -243,7 +252,7 @@
           rendererType: 'canvas', // 渲染类型
           allowTransparency: true,
           fontSize: 11,
-          // theme: 'default',
+          rows: this.xtermSize.rows,
           theme: this.xtermTheme,
           termName: 'xterm',
           visualBell: false,
@@ -272,11 +281,7 @@
         this.xtermMap[id] = term
       },
       handlerChangeLayout () {
-        if (this.layoutMode === 0) {
-          this.layoutSpan = 12
-        } else {
-          this.layoutSpan = 24
-        }
+        this.layoutSpan = this.layoutMode === 0 ? 12 : 24
         this.$nextTick(() => {
           this.handlerResize()
         })
@@ -286,19 +291,22 @@
        */
       handlerResize () {
         for (let instanceId in this.xtermMap) {
-          this.addonMap[instanceId].fit() // 获取对象的高度和宽度
-          let xtermResize = {
-            status: 'RESIZE',
-            instanceId: instanceId,
-            xtermWidth: this.addonMap[instanceId]._terminal.cols * 7, // 自动计算宽度
-            xtermHeight: document.getElementById(instanceId).clientHeight
-          }
-          this.socketOnSend(JSON.stringify(xtermResize))
-          this.xtermMap[instanceId].focus()
-
-          // 滚动到底部
-          this.xtermMap[instanceId].scrollToBottom()
+          this.handlerResizeByInstanceId(instanceId)
         }
+      },
+      handlerResizeByInstanceId (instanceId) {
+        this.addonMap[instanceId].fit() // 获取对象的高度和宽度
+        let xtermResize = {
+          status: 'RESIZE',
+          instanceId: instanceId,
+          xtermWidth: this.addonMap[instanceId]._terminal.cols * 7, // 自动计算宽度
+          xtermHeight: document.getElementById(instanceId).clientHeight
+        }
+        this.socketOnSend(JSON.stringify(xtermResize))
+        this.xtermMap[instanceId].focus()
+
+        // 滚动到底部
+        this.xtermMap[instanceId].scrollToBottom()
       },
       /**
        * 后端设置批量输入（服务端广播输入）
@@ -355,6 +363,7 @@
         this.$nextTick(() => {
           this.initTermInstance(instanceId)
           this.socketOnSend(JSON.stringify(duplicateSession))
+          this.handlerResizeByInstanceId(instanceId)
         })
       },
       /**
@@ -458,7 +467,7 @@
           // }
           let _this = this
           messageJson.map(function (n) {
-            console.log(n)
+            // console.log(n)
             _this.xtermMap[n.instanceId].write(n.output)
           })
         }
@@ -473,5 +482,9 @@
     border-bottom: 1px solid #EBEEF5;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
+  }
+
+  .el-button {
+    margin-left: 5px
   }
 </style>
