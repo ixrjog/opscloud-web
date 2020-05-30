@@ -20,6 +20,13 @@ export function syncUser () {
   })
 }
 
+export function syncUserById (id) {
+  return request({
+    url: '/jump/jumpserver/user/id/sync?id=' + id,
+    method: 'get'
+  })
+}
+
 export function setUserActive (id) {
   return request({
     url: '/jump/jumpserver/user/active/set?id=' + id,

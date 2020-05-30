@@ -262,7 +262,7 @@
         this.formXtermStatus.visible = true
         let server = {
           name: row.name,
-          pirvateIp: row.remoteAddr
+          privateIp: row.remoteAddr
         }
         this.$refs.xtermDialog.initData(server)
       },
