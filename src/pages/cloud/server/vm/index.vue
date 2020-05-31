@@ -1,7 +1,7 @@
 <template>
   <d2-container>
     <h1>{{title}}</h1>
-    <CloudServerTable :formStatus="formCloudServerStatus" ref="cloudServerTable"></CloudServerTable>
+    <CloudServerTable :formStatus="formStatus" ref="cloudServerTable"></CloudServerTable>
   </d2-container>
 </template>
 
@@ -12,7 +12,7 @@
   export default {
     data () {
       return {
-        formCloudServerStatus: {
+        formStatus: {
           cloudServerKey: 'VcsaVMCloudServer',
           serverType: 1,
           showCpuColumn: true,

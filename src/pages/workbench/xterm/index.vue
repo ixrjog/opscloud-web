@@ -47,7 +47,7 @@
                 <el-col :span="layoutSpan">
                   <el-card shadow="hover" body-style="padding: 2px" style="margin-right: 10px;margin-bottom: 10px">
                     <div slot="header" class="clearfix" style="height: 15px">
-                      <span> <el-tag> {{ xterm }}</el-tag></span>
+                      <span><el-tag>{{ xterm }}</el-tag></span>
                       <el-tooltip class="item" effect="light" content="退出" placement="top-start">
                         <el-button style="float: right; padding: 3px 0" type="text" @click="handlerLogout(xterm)">
                           Logout
@@ -70,8 +70,7 @@
         </el-col>
       </el-row>
       <DocDialog ref="docDialog" :formStatus="formDocStatus"></DocDialog>
-      <UserXTermSetting ref="userXTermSetting" @closeUserXTermSetting="setXTermSetting"
-                        :formStatus="formSettingStatus"></UserXTermSetting>
+      <UserXTermSetting ref="userXTermSetting" @closeUserXTermSetting="setXTermSetting" :formStatus="formSettingStatus"></UserXTermSetting>
     </template>
   </d2-container>
 </template>
@@ -129,9 +128,6 @@
         },
         pageStatus: 0, // 页面状态: 0 选择 1 登录状态
         xtermSpan: 16,
-        // loginStyle: {
-        //   marginLeft: '5px'
-        // },
         title: 'Web-XTerminal',
         uuid: '', // 服务器树资源权限校验
         options: {
@@ -304,7 +300,6 @@
         }
         this.socketOnSend(JSON.stringify(xtermResize))
         this.xtermMap[instanceId].focus()
-
         // 滚动到底部
         this.xtermMap[instanceId].scrollToBottom()
       },
@@ -360,6 +355,7 @@
           xtermHeight: document.getElementById(id.split('#')[0]).clientHeight
         }
         this.xterms.push(instanceId)
+
         this.$nextTick(() => {
           this.initTermInstance(instanceId)
           this.socketOnSend(JSON.stringify(duplicateSession))
@@ -453,7 +449,6 @@
       },
       socketOnError () {
         this.socket.onerror = () => {
-          // console.log('socket 链接失败')
         }
       },
       socketOnSend (data) {
@@ -462,12 +457,8 @@
       socketOnMessage () {
         this.socket.onmessage = (message) => {
           let messageJson = JSON.parse(message.data)
-          // for (var index = 0; index < messageJson.length; index++) {
-          //   this.xtermMap[messageJson[index].instanceId].write(messageJson[index].output)
-          // }
           let _this = this
           messageJson.map(function (n) {
-            // console.log(n)
             _this.xtermMap[n.instanceId].write(n.output)
           })
         }
