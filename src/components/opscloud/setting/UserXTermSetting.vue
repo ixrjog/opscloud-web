@@ -10,6 +10,11 @@
         <el-color-picker v-model="xtermSettingMap['XTERM_BACKGROUND']"></el-color-picker>
       </el-form-item>
     </el-form>
+    <el-form :model="xtermSettingMap">
+      <el-form-item label="终端行数" :label-width="labelWidth">
+        <el-input-number v-model="xtermSettingMap['XTERM_ROWS']" :min="22" :max="60" label="终端行数"></el-input-number>
+      </el-form-item>
+    </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button size="mini" @click="formStatus.visible = false">取消</el-button>
       <el-button size="mini" type="primary" @click="handlerSaveSetting">确定</el-button>

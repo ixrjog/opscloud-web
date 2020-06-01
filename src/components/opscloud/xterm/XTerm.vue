@@ -53,6 +53,9 @@
         xterms: [],
         xtermMap: {},
         timer: null, // 心跳定时器
+        xtermSize: {
+          rows: 30
+        },
         xtermTheme: { // 终端主题
           foreground: '#FFFFFF', // 字体
           background: '#606266', // 背景色
@@ -88,6 +91,7 @@
               try {
                 this.xtermTheme.foreground = res.body['XTERM_FOREGROUND']
                 this.xtermTheme.background = res.body['XTERM_BACKGROUND']
+                this.xtermSize.rows = res.body['XTERM_ROWS'] || 30
               } catch (e) {
               }
             } else {
@@ -147,6 +151,7 @@
           rendererType: 'canvas', // 渲染类型
           allowTransparency: true,
           fontSize: 11,
+          rows: this.xtermSize.rows,
           theme: this.xtermTheme,
           termName: 'xterm',
           visualBell: false,
