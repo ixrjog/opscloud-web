@@ -1,20 +1,24 @@
 <template>
   <el-dialog :title="formStatus.operationType ? formStatus.addTitle : formStatus.updateTitle"
              :visible.sync="formStatus.visible">
-    <el-form :model="formData">
+    <el-form :model="roleData">
       <el-form-item label="名称" :label-width="formStatus.labelWidth">
-        <el-input v-model="formData.roleName" placeholder="请输入内容"></el-input>
+        <el-input v-model="roleData.roleName" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
-
-    <el-form :model="formData">
+    <el-form :model="roleData">
+      <el-form-item label="访问级别" :label-width="formStatus.labelWidth">
+        <el-input v-model="roleData.accessLevel" placeholder="请输入内容"></el-input>
+      </el-form-item>
+    </el-form>
+    <el-form :model="roleData">
       <el-form-item label="资源路径" :label-width="formStatus.labelWidth">
-        <el-input v-model="formData.resourceName" placeholder="请输入内容"></el-input>
+        <el-input v-model="roleData.resourceName" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
-      <el-form-item label="工作流" :label-width="formStatus.labelWidth">
-        <el-select v-model="formData.inWorkorder" placeholder="选择类型">
+    <el-form :model="roleData">
+      <el-form-item label="工单申请" :label-width="formStatus.labelWidth">
+        <el-select v-model="roleData.inWorkorder" placeholder="选择类型">
           <el-option
             v-for="item in workorderOptions"
             :key="item.value"
@@ -24,9 +28,9 @@
         </el-select>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
+    <el-form :model="roleData">
       <el-form-item label="描述" :label-width="formStatus.labelWidth">
-        <el-input v-model="formData.comment" placeholder="请输入内容"></el-input>
+        <el-input v-model="roleData.comment" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -43,6 +47,7 @@
   export default {
     data () {
       return {
+        roleData: '',
         workorderOptions: [{
           value: 0,
           label: '禁止'
@@ -52,19 +57,19 @@
         }]
       }
     },
-    name: 'role-dialog',
-    props: ['formStatus', 'formData'],
+    name: 'RoleDialog',
+    props: ['formStatus'],
     mixins: [],
     mounted () {
     },
     methods: {
-      handleClick () {
-        this.$emit('input', !this.value)
+      initData (roleData) {
+        this.roleData = roleData
       },
       saveInfo () {
         setTimeout(() => {
           var requestBody = {}
-          requestBody = Object.assign({}, this.formData)
+          requestBody = Object.assign({}, this.roleData)
           if (this.formStatus.operationType) {
             addRole(requestBody)
               .then(res => {

@@ -9,8 +9,9 @@
     </el-row>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="roleName" label="名称"></el-table-column>
+      <el-table-column prop="accessLevel" label="访问级别"></el-table-column>
       <el-table-column prop="resourceName" label="资源名称"></el-table-column>
-      <el-table-column prop="inWorkorder" label="工作流" width="100">
+      <el-table-column prop="inWorkorder" label="工单申请" width="100">
         <template slot-scope="scope">
           <el-tag :type="scope.row.inWorkorder === 0 ? 'success' : 'danger'" disable-transitions>{{scope.row.inWorkorder
             === 0 ?
@@ -32,7 +33,7 @@
                    :page-size="pagination.pageSize">
     </el-pagination>
     <!-- role编辑-->
-    <RoleDialog :formStatus="formRoleStatus" :formData="role" @closeRoleDialog="fetchData"></RoleDialog>
+    <RoleDialog ref="roleDialog" :formStatus="formRoleStatus" @closeRoleDialog="fetchData"></RoleDialog>
     <MenuDialog :formStatus="formMenuStatus" ref="menuDialog"></MenuDialog>
   </div>
 </template>
@@ -49,7 +50,6 @@
     data () {
       return {
         tableData: [],
-        role: {},
         formMenuStatus: {
           visible: false
         },
@@ -85,11 +85,9 @@
         this.$emit('input', !this.value)
       },
       editItem (row) {
-        // form
+        this.$refs.roleDialog.initData(Object.assign({}, row))
         this.formRoleStatus.visible = true
         this.formRoleStatus.operationType = false
-        // role
-        this.role = Object.assign({}, row)
       },
       editMenu (row) {
         // form
@@ -97,15 +95,17 @@
         this.$refs.menuDialog.initData(row.id)
       },
       addItem () {
-        this.formRoleStatus.operationType = true
-        this.formRoleStatus.visible = true
-        this.role = {
+        let role = {
           id: '',
           roleName: '',
+          accessLevel: 0,
           resourceName: '',
           workflow: 0,
           comment: ''
         }
+        this.$refs.roleDialog.initData(role)
+        this.formRoleStatus.operationType = true
+        this.formRoleStatus.visible = true
       },
       delItem (row) {
         this.$confirm('此操作将删除当前配置?', '提示', {
