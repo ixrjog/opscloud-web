@@ -100,6 +100,9 @@
   import { queryEnvPage } from '@api/env/env.js'
   import { addServer, updateServer } from '@api/server/server.js'
   import { queryServerGroupPage } from '@api/server/server.group.js'
+  import { querySettingMapByName } from '@api/setting/setting.js'
+
+  const accountSettingName = 'SERVER_ACCOUNT'
 
   const serverTypeOptions = [{
     value: 0,
@@ -136,19 +139,23 @@
         envTypeOptions: [],
         serverGroupOptions: [],
         serverData: {},
-        state: {
-          loginUser: ''
-        },
+        loginUser: '',
         serverTypeOptions: serverTypeOptions,
         loginTypeOptions: loginTypeOptions
       }
     },
-    name: 'server-dialog',
+    name: 'ServerDialog',
     props: ['formStatus'],
     mixins: [],
     mounted () {
     },
     methods: {
+      setAccountSetting () {
+        querySettingMapByName(accountSettingName)
+          .then(res => {
+            this.serverData.loginUser = res.body[accountSettingName]
+          })
+      },
       handlerCloseDialog () {
         this.formStatus.visible = false
         this.$emit('closeServerDialog')
@@ -163,6 +170,7 @@
         this.serverData = serverData
         this.serverGroupOptions = serverGroupOptions
         this.getEnvType()
+        this.setAccountSetting()
         // 尝试选择匹配服务器组
         if (JSON.stringify(this.serverData.serverGroup) === '{}') {
           let queryName = this.serverData.name.replace(new RegExp('-[0-9]+$'), '')
