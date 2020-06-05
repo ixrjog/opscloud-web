@@ -9,11 +9,10 @@
           <el-tab-pane label="用户管理">
             <!--用户搜索-->
             <div style="margin-bottom: 5px">
-              <!--            :gutter="24"-->
               <el-row style="margin-bottom: 5px">
-                <el-input v-model="queryUserParam.queryName" placeholder="名称" :style="searchBarHeadStyle"
+                <el-input v-model="queryUserParam.queryName" placeholder="名称"
                           style="display: inline-block; max-width:200px"/>
-                <el-select v-model="queryUserParam.isActive" clearable placeholder="用户是否有效" :style="searchBarStyle">
+                <el-select v-model="queryUserParam.isActive" clearable placeholder="用户是否有效">
                   <el-option
                     v-for="item in activeOptions"
                     :key="item.value"
@@ -21,8 +20,8 @@
                     :value="item.value">
                   </el-option>
                 </el-select>
-                <el-button @click="fetchUserData" :style="searchBarStyle">查询</el-button>
-                <el-button @click="syncUser" :style="searchBarStyle" :loading="syncUserLoading">同步</el-button>
+                <el-button @click="fetchUserData">查询</el-button>
+                <el-button @click="syncUser" :loading="syncUserLoading">同步</el-button>
               </el-row>
             </div>
             <!--用户table-->
@@ -93,7 +92,7 @@
                     <el-button type="primary" plain size="mini" @click="setItemActive(scope.row.id)">
                       {{!scope.row.isActive | getActiveText}}
                     </el-button>
-                    <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
+                    <el-button type="danger" plain size="mini" @click="handlerDelUser(scope.row)">删除</el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -115,24 +114,21 @@
 </template>
 
 <script>
-  // Component
-  // import ServerAttributeCard from '@/components/opscloud/card/ServerAttributeCard'
   // Filters
   import { getUserRoleType, getUserRoleText } from '@/filters/jumpserver.js'
   import { getActiveType, getActiveText } from '@/filters/public.js'
   // API
-  import { fuzzyQueryUserPage, syncUser, setUserActive, syncUserById } from '@api/jump/jump.jumpserver.user.js'
+  import {
+    fuzzyQueryUserPage,
+    syncUser,
+    setUserActive,
+    syncUserById,
+    delUserByUsername
+  } from '@api/jump/jump.jumpserver.user.js'
 
   export default {
     data () {
       return {
-        searchBarHeadStyle: {
-          display: 'inline-block',
-          maxWidth: '200px'
-        },
-        searchBarStyle: {
-          marginLeft: '5px'
-        },
         userTableData: [],
         userLoading: false,
         userPagination: {
@@ -207,9 +203,19 @@
             })
           })
       },
+      handlerDelUser (row) {
+        delUserByUsername(row.username)
+          .then(res => {
+            this.fetchUserData()
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+          })
+      },
       fetchUserData () {
         this.userLoading = true
-        var requestBody = {
+        let requestBody = {
           'queryName': this.queryUserParam.queryName,
           'extend': 1,
           'isActive': this.queryUserParam.isActive,
@@ -241,5 +247,15 @@
     margin-right: 0;
     margin-bottom: 0;
     width: 50%;
+  }
+
+  .el-input {
+    display: inline-block;
+    max-width: 200px;
+  }
+
+  .el-select {
+    margin-left: 5px;
+    margin-right: 5px;
   }
 </style>

@@ -20,6 +20,13 @@ export function syncAsset () {
   })
 }
 
+export function delAssetByAssetId (assetId) {
+  return request({
+    url: '/jump/jumpserver/asset/del?assetId=' + assetId,
+    method: 'delete'
+  })
+}
+
 export function queryAssetsNodePage (value, page, length) {
   return request({
     url: '/jump/jumpserver/assetsNode/page/query?value=' + value + '&page=' + page + '&length=' + length,

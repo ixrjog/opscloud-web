@@ -34,6 +34,13 @@ export function setUserActive (id) {
   })
 }
 
+export function delUserByUsername (username) {
+  return request({
+    url: '/jump/jumpserver/user/del?username=' + username,
+    method: 'delete'
+  })
+}
+
 /**
  * 查询管理员/普通用户
  * @param data

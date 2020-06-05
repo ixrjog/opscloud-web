@@ -11,9 +11,9 @@
             <div style="margin-bottom: 5px">
               <!--            :gutter="24"-->
               <el-row style="margin-bottom: 5px">
-                <el-input v-model="queryAssetParam.queryName" placeholder="名称" :style="searchBarHeadStyle"
+                <el-input v-model="queryAssetParam.queryName" placeholder="名称"
                           style="display: inline-block; max-width:200px"/>
-                <el-select v-model="queryAssetParam.assetsNodeId" filterable clearable :style="searchBarStyle"
+                <el-select v-model="queryAssetParam.assetsNodeId" filterable clearable
                            remote reserve-keyword placeholder="搜索资产节点" :remote-method="getAssetsNode">
                   <el-option
                     v-for="item in assetsNodeOptions"
@@ -22,7 +22,7 @@
                     :value="item.id">
                   </el-option>
                 </el-select>
-                <el-select v-model="queryAssetParam.isActive" clearable placeholder="用户是否有效" :style="searchBarStyle">
+                <el-select v-model="queryAssetParam.isActive" clearable placeholder="用户是否有效">
                   <el-option
                     v-for="item in activeOptions"
                     :key="item.value"
@@ -30,8 +30,8 @@
                     :value="item.value">
                   </el-option>
                 </el-select>
-                <el-button @click="fetchAssetData" :style="searchBarStyle">查询</el-button>
-                <el-button @click="syncAsset" :style="searchBarStyle" :loading="syncAssetLoading">同步</el-button>
+                <el-button @click="fetchAssetData">查询</el-button>
+                <el-button @click="syncAsset" :loading="syncAssetLoading">同步</el-button>
               </el-row>
             </div>
             <!--资产table-->
@@ -42,8 +42,8 @@
                 <el-table-column prop="ip" label="私网ip"></el-table-column>
 
                 <el-table-column prop="isActive" label="有效">
-                  <template slot-scope="props">
-                    <el-tag :type="props.row.isActive ? 'success' : 'info'" size="small">{{props.row.isActive ? '有效':
+                  <template slot-scope="scope">
+                    <el-tag :type="scope.row.isActive ? 'success' : 'info'" size="small">{{scope.row.isActive ? '有效':
                       '无效'}}
                     </el-tag>
                   </template>
@@ -51,8 +51,7 @@
                 <el-table-column prop="comment" label="描述"></el-table-column>
                 <el-table-column fixed="right" label="操作" width="280">
                   <template slot-scope="scope">
-                    <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
-                    <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
+                    <el-button type="danger" plain size="mini" @click="handlerDelAsset(scope.row)">删除</el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -79,12 +78,15 @@
   // Filters
   import { getUserRoleType, getUserRoleText } from '@/filters/jumpserver.js'
   // API
-  import { fuzzyQueryAssetPage, syncAsset, queryAssetsNodePage } from '@api/jump/jump.jumpserver.asset.js'
+  import {
+    fuzzyQueryAssetPage,
+    syncAsset,
+    queryAssetsNodePage,
+    delAssetByAssetId
+  } from '@api/jump/jump.jumpserver.asset.js'
 
-  const activeOptions=[{
-      value: -1,
-      label: '全部'
-    }, {
+  const activeOptions = [
+    {
       value: 1,
       label: '有效'
     }, {
@@ -95,13 +97,6 @@
   export default {
     data () {
       return {
-        searchBarHeadStyle: {
-          display: 'inline-block',
-          maxWidth: '200px'
-        },
-        searchBarStyle: {
-          marginLeft: '5px'
-        },
         assetsNodeOptions: [],
         activeOptions: activeOptions,
         // 资产
@@ -113,7 +108,7 @@
         queryAssetParam: {
           assetsNodeId: '',
           queryName: '',
-          isActive: -1,
+          isActive: '',
           extend: 0
         },
         syncAssetLoading: false,
@@ -156,6 +151,16 @@
             this.syncAssetLoading = false
           })
       },
+      handlerDelAsset (row) {
+        delAssetByAssetId(row.id)
+          .then(res => {
+            this.fetchAssetData()
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+          })
+      },
       fetchAssetData () {
         this.assetLoading = true
         var requestBody = Object.assign({}, this.queryAssetParam)
@@ -171,3 +176,30 @@
     }
   }
 </script>
+
+<style>
+  .table-expand {
+    font-size: 0;
+  }
+
+  .table-expand label {
+    width: 150px;
+    color: #99a9bf;
+  }
+
+  .table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+  }
+
+  .el-input {
+    display: inline-block;
+    max-width: 200px;
+  }
+
+  .el-select {
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+</style>
