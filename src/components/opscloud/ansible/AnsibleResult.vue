@@ -110,6 +110,7 @@
         this.timer = null
         this.activeName = 'execute'
         this.taskId = taskId
+        this.queryTask()
         this.setTimer()
       },
       handlerXTerm (item) {

@@ -313,12 +313,21 @@ const frameIn = [
         }
       },
       {
-        path: '/task/ansible',
-        name: 'task-ansible',
+        path: '/task/playbook',
+        name: 'task-playbook',
         component: () => import('@/pages/task/playbook'),
         meta: {
           auth: true,
           title: 'Playbook'
+        }
+      },
+      {
+        path: '/task/history',
+        name: 'task-history',
+        component: () => import('@/pages/task/history'),
+        meta: {
+          auth: true,
+          title: 'History'
         }
       },
       // user

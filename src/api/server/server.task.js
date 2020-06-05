@@ -127,3 +127,11 @@ export function previewAnsibleHosts () {
     method: 'get'
   })
 }
+
+export function queryServerTaskHistoryPage (data) {
+  return request({
+    url: '/server/task/history/page/query',
+    method: 'post',
+    data
+  })
+}
