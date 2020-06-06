@@ -241,7 +241,7 @@
           })
       },
       initTermInstance (hostname) {
-        let _this = this
+        let that = this
         let id = hostname
         const term = new Terminal({
           rendererType: 'canvas', // 渲染类型
@@ -260,8 +260,8 @@
           cursorBlink: true, // 光标闪烁
           convertEol: true // 启用时，光标将设置为下一行的开头
         })
-        _this.addonMap[id] = new FitAddon()
-        term.loadAddon(_this.addonMap[id])
+        that.addonMap[id] = new FitAddon()
+        term.loadAddon(that.addonMap[id])
         term.open(document.getElementById(id))
         // 获取对象的高度和宽度
         term.focus()
@@ -271,7 +271,7 @@
             status: 'COMMAND',
             instanceId: id
           }
-          _this.socketOnSend(JSON.stringify(commond))
+          that.socketOnSend(JSON.stringify(commond))
         })
         this.xtermMap[id] = term
       },
@@ -456,9 +456,9 @@
       socketOnMessage () {
         this.socket.onmessage = (message) => {
           let messageJson = JSON.parse(message.data)
-          let _this = this
+          let that = this
           messageJson.map(function (n) {
-            _this.xtermMap[n.instanceId].write(n.output)
+            that.xtermMap[n.instanceId].write(n.output)
           })
         }
       }
