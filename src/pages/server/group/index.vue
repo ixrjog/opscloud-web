@@ -146,7 +146,7 @@
         this.formServerGroupStatus.visible = true
       },
       editItem (row) {
-        var grpTypeOptions = []
+        let grpTypeOptions = []
         grpTypeOptions.push(row.serverGroupType)
         let serverGroup = Object.assign({}, row)
         this.$refs.serverGroupDialog.initData(serverGroup, grpTypeOptions)
