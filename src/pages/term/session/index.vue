@@ -71,11 +71,12 @@
             <el-table-column prop="instanceId" label="实例id"></el-table-column>
             <el-table-column prop="hostIp" label="主机">
             </el-table-column>
-            <el-table-column prop="isClosed" label="会话状态">
+            <el-table-column prop="isClosed" label="会话状态" width="80px">
               <template slot-scope="props">
                 <el-tag :type="props.row.isClosed ? 'info': 'success'">{{ props.row.isClosed ? '已关闭' : '活跃' }}</el-tag>
               </template>
             </el-table-column>
+            <el-table-column prop="outputFileSize" label="日志" width="80px"></el-table-column>
             <el-table-column prop="closeTime" label="关闭时间"></el-table-column>
             <el-table-column fixed="right" label="操作" width="100">
               <template slot-scope="scope">
