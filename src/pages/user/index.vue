@@ -74,7 +74,7 @@
                      :page-size="pagination.pageSize">
       </el-pagination>
       <!-- user编辑对话框 -->
-      <UserDialog :formStatus="formUserStatus" :formData="user" @closeUserDialog="fetchData"></UserDialog>
+      <UserDialog :formStatus="formUserStatus" @closeUserDialog="fetchData"></UserDialog>
       <!-- 用户组授权编辑对话框-->
       <UserUserGroupDialog ref="userUserGroupDialog" :formStatus="formUserUserGroupStatus"
                            @closeUserUserGroupDialog="fetchData"></UserUserGroupDialog>
@@ -96,7 +96,6 @@
   export default {
     data () {
       return {
-        user: {},
         formUserStatus: {
           visible: false,
           labelWidth: '150px',
@@ -161,34 +160,24 @@
         })
       },
       editItem (row) {
-        // form
+        // user
+        let user = Object.assign({}, row)
+        this.$refs.userUserGroupDialog.initData(user)
         this.formUserStatus.visible = true
         this.formUserStatus.operationType = false
-        // user
-        this.user = Object.assign({}, row)
       },
       editUserGroup (row) {
-        // form
+        let user = Object.assign({}, row)
+        this.$refs.userUserGroupDialog.initData(user)
         this.formUserUserGroupStatus.visible = true
-        // user
-        this.user = Object.assign({}, row)
-        // 调用子组件的方法
-        this.$refs.userUserGroupDialog.initData(this.user)
       },
       editServerGroup (row) {
-        // form
+        let user = Object.assign({}, row)
+        this.$refs.userServerGroupDialog.initData(user)
         this.formUserServerGroupStatus.visible = true
-        // user
-        this.user = Object.assign({}, row)
-        // 调用子组件的方法
-        this.$refs.userServerGroupDialog.initData(this.user)
       },
       addItem () {
-        // form
-        this.formUserStatus.visible = true
-        this.formUserStatus.operationType = true
-        // user
-        this.user = {
+        let user = {
           id: '',
           username: '',
           name: '',
@@ -198,6 +187,10 @@
           phone: '',
           comment: ''
         }
+        this.$refs.userUserGroupDialog.initData(user)
+        // form
+        this.formUserStatus.visible = true
+        this.formUserStatus.operationType = true
       },
       handleDialogCancel (done) {
         this.$message({

@@ -20,7 +20,7 @@
       </el-form-item>
     </el-form>
     <el-form :model="serverGroupData">
-      <el-form-item label="工单" :label-width="formStatus.labelWidth" :required="true">
+      <el-form-item label="工单申请" :label-width="formStatus.labelWidth" :required="true">
         <el-select v-model="serverGroupData.inWorkorder" placeholder="选择类型">
           <el-option
             v-for="item in workorderOptions"
@@ -48,19 +48,21 @@
   import { queryServerGroupTypePage } from '@api/server/server.group.type.js'
   import { addServerGroup, updateServerGroup } from '@api/server/server.group.js'
 
+  const workorderOptions = [{
+    value: 0,
+    label: '禁止工单申请'
+  }, {
+    value: 1,
+    label: '允许工单申请'
+  }]
+
   export default {
     data () {
       return {
         serverGroupData: '',
         grpTypeOptions: [],
         loading: false,
-        workorderOptions: [{
-          value: 0,
-          label: '禁止工单申请'
-        }, {
-          value: 1,
-          label: '允许工单申请'
-        }]
+        workorderOptions: workorderOptions
       }
     },
     name: 'tag-dialog',

@@ -6,7 +6,8 @@
       </div>
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
-          <el-input v-model="queryParam.name" placeholder="输入关键字查询用户组" style="display: inline-block; max-width:200px; margin-left: 10px"/>
+          <el-input v-model="queryParam.name" placeholder="输入关键字查询用户组"
+                    style="display: inline-block; max-width:200px; margin-left: 10px"/>
           <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
           <el-button @click="syncLdapUserGroup" style="margin-left: 5px">同步</el-button>
         </el-row>
@@ -30,7 +31,8 @@
         <el-table-column prop="users.length" label="成员数" width="100"></el-table-column>
         <el-table-column prop="workflow" label="工单申请" width="100">
           <template slot-scope="scope">
-            <el-tag :type="scope.row.inWorkorder === 0 ? 'danger' : 'success'" disable-transitions>{{scope.row.inWorkorder ===
+            <el-tag :type="scope.row.inWorkorder === 0 ? 'danger' : 'success'" disable-transitions>
+              {{scope.row.inWorkorder ===
               0 ? '禁止' : '允许'}}
             </el-tag>
           </template>
@@ -48,7 +50,7 @@
                      :page-size="pagination.pageSize">
       </el-pagination>
       <!-- userGroup编辑对话框-->
-      <UserGroupDialog :formStatus="formGroupStatus" :formData="group" @closeDialog="fetchData"></UserGroupDialog>
+      <UserGroupDialog  ref="userGroupDialog" :formStatus="formGroupStatus" @closeDialog="fetchData"></UserGroupDialog>
       <!-- userGroup编辑对话框-->
     </template>
   </d2-container>
@@ -64,7 +66,6 @@
   export default {
     data () {
       return {
-        group: {},
         formGroupStatus: {
           visible: false,
           labelWidth: '150px',
@@ -117,24 +118,22 @@
         })
       },
       editItem (row) {
-        // form
+        this.$refs.userGroupDialog.initData(Object.assign({}, row))
         this.formGroupStatus.visible = true
         this.formGroupStatus.operationType = false
-        // user
-        this.group = Object.assign({}, row)
       },
       addItem () {
-        // form
-        this.formGroupStatus.visible = true
-        this.formGroupStatus.operationType = true
         // user
-        this.group = {
+        let userGroup = {
           id: '',
           name: '',
           grpType: 0,
           workflow: 0,
           comment: ''
         }
+        this.$refs.userGroupDialog.initData(userGroup)
+        this.formGroupStatus.visible = true
+        this.formGroupStatus.operationType = true
       },
       handleDialogCancel (done) {
         this.$message({
