@@ -74,7 +74,7 @@
                      :page-size="pagination.pageSize">
       </el-pagination>
       <!-- user编辑对话框 -->
-      <UserDialog :formStatus="formUserStatus" @closeUserDialog="fetchData"></UserDialog>
+      <UserDialog ref="userDialog" :formStatus="formUserStatus" @closeDialog="fetchData"></UserDialog>
       <!-- 用户组授权编辑对话框-->
       <UserUserGroupDialog ref="userUserGroupDialog" :formStatus="formUserUserGroupStatus"
                            @closeUserUserGroupDialog="fetchData"></UserUserGroupDialog>
@@ -162,7 +162,7 @@
       editItem (row) {
         // user
         let user = Object.assign({}, row)
-        this.$refs.userUserGroupDialog.initData(user)
+        this.$refs.userDialog.initData(user)
         this.formUserStatus.visible = true
         this.formUserStatus.operationType = false
       },
@@ -187,7 +187,7 @@
           phone: '',
           comment: ''
         }
-        this.$refs.userUserGroupDialog.initData(user)
+        this.$refs.userDialog.initData(user)
         // form
         this.formUserStatus.visible = true
         this.formUserStatus.operationType = true

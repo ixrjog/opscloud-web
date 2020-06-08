@@ -1,45 +1,46 @@
 <template>
-  <el-dialog :title="formStatus.operationType ? formStatus.addTitle : formStatus.updateTitle" :visible.sync="formStatus.visible" :before-close="closeDialog">
-    <el-form :model="formData">
+  <el-dialog :title="formStatus.operationType ? formStatus.addTitle : formStatus.updateTitle"
+             :visible.sync="formStatus.visible" :before-close="closeDialog">
+    <el-form :model="user">
       <el-form-item label="用户名" :label-width="formStatus.labelWidth" :required="true">
-        <el-input v-model="formData.username" placeholder="请输入内容" :disabled="!formStatus.operationType"></el-input>
+        <el-input v-model="user.username" placeholder="请输入内容" :disabled="!formStatus.operationType"></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
+    <el-form :model="user">
       <el-form-item label="密码" :label-width="formStatus.labelWidth" :required="formStatus.operationType">
         <el-input v-model="password" clearable placeholder="请输入内容">
           <el-button slot="append" icon="el-icon-key" @click="getUserRandomPassword"></el-button>
         </el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
+    <el-form :model="user">
       <el-form-item label="显示名" :label-width="formStatus.labelWidth" :required="true">
-        <el-input v-model="formData.displayName" placeholder="请输入内容"></el-input>
+        <el-input v-model="user.displayName" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
+    <el-form :model="user">
       <el-form-item label="姓名" :label-width="formStatus.labelWidth">
-        <el-input v-model="formData.name" placeholder="请输入内容"></el-input>
+        <el-input v-model="user.name" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
+    <el-form :model="user">
       <el-form-item label="电话" :label-width="formStatus.labelWidth">
-        <el-input v-model="formData.phone" placeholder="请输入内容"></el-input>
+        <el-input v-model="user.phone" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
+    <el-form :model="user">
       <el-form-item label="邮箱" :label-width="formStatus.labelWidth" :required="true">
-        <el-input v-model="formData.email" placeholder="请输入内容"></el-input>
+        <el-input v-model="user.email" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
+    <el-form :model="user">
       <el-form-item label="微信" :label-width="formStatus.labelWidth">
-        <el-input v-model="formData.wechat" placeholder="请输入内容"></el-input>
+        <el-input v-model="user.wechat" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
+    <el-form :model="user">
       <el-form-item label="留言" :label-width="formStatus.labelWidth">
-        <el-input v-model="formData.comment" placeholder="请输入内容"></el-input>
+        <el-input v-model="user.comment" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -57,18 +58,22 @@
   export default {
     data () {
       return {
+        user: '',
         password: ''
       }
     },
-    name: 'user-dialog',
-    props: ['formStatus', 'formData'],
+    name: 'UserDialog',
+    props: ['formStatus'],
     mounted () {
     },
     methods: {
       closeDialog () {
         this.password = ''
         this.formStatus.visible = false
-        this.$emit('closeUserDialog')
+        this.$emit('closeDialog')
+      },
+      initData (user) {
+        this.user = user
       },
       handleClick () {
         this.$emit('input', !this.value)
@@ -81,7 +86,7 @@
       },
       saveInfo () {
         setTimeout(() => {
-          var requestBody = Object.assign({}, this.formData)
+          var requestBody = Object.assign({}, this.user)
           requestBody.password = this.password
           if (this.formStatus.operationType) {
             createUser(requestBody)
