@@ -46,8 +46,8 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination background @current-change="paginationCurrentChange"
-                   layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
+    <el-pagination background @current-change="paginationCurrentChange" :page-sizes="[10, 15, 20, 25, 30]" @size-change="handleSizeChange"
+                   layout="sizes, prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                    :page-size="pagination.pageSize">
     </el-pagination>
     <ResourceDialog :formStatus="formResourceStatus" ref="resourceDialog"
@@ -56,10 +56,29 @@
 </template>
 
 <script>
+  import { mapState, mapActions } from 'vuex'
   import ResourceDialog from '@/components/opscloud/dialog/ResourceDialog'
   // API
   import { queryGroupPage } from '@api/auth/auth.group.js'
   import { queryResourcePage, deleteResourceById, updateResourceNeedAuth } from '@api/auth/auth.resource.js'
+
+ const authOptions = [{
+    value: -1,
+    label: '全部'
+  }, {
+    value: 0,
+    label: '开放'
+  }, {
+    value: 1,
+    label: '鉴权'
+  }]
+ const needAuthOptions = [{
+    value: 0,
+    label: '不鉴权'
+  }, {
+    value: 1,
+    label: '鉴权'
+  }]
 
   export default {
     name: 'AuthGroupTable',
@@ -85,27 +104,18 @@
           resourceName: '',
           needAuth: ''
         },
-        authOptions: [{
-          value: -1,
-          label: '全部'
-        }, {
-          value: 0,
-          label: '开放'
-        }, {
-          value: 1,
-          label: '鉴权'
-        }],
-        needAuthOptions: [{
-          value: 0,
-          label: '不鉴权'
-        }, {
-          value: 1,
-          label: '鉴权'
-        }],
+        authOptions: authOptions,
+        needAuthOptions: needAuthOptions,
         groupOptions: []
       }
     },
+    computed: {
+      ...mapState('d2admin/user', [
+        'info'
+      ])
+    },
     mounted () {
+      this.initPageSize()
       this.fetchData()
       this.getGroup('')
     },
@@ -113,6 +123,20 @@
       ResourceDialog
     },
     methods: {
+      ...mapActions({
+        setPageSize: 'd2admin/user/set'
+      }),
+      handleSizeChange (size) {
+        this.pagination.pageSize = size
+        this.info.pageSize = size
+        this.setPageSize(this.info)
+        this.fetchData()
+      },
+      initPageSize () {
+        if (typeof (this.info.pageSize) !== 'undefined') {
+          this.pagination.pageSize = this.info.pageSize
+        }
+      },
       getGroup (groupCode) {
         queryGroupPage(groupCode, 1, 10)
           .then(res => {
@@ -150,7 +174,7 @@
         })
       },
       updateItemNeedAuth (row) {
-        var requestBody = {
+        let requestBody = {
           'id': row.id,
           'needAuth': row.needAuth === 0 ? 1 : 0
         }
@@ -167,7 +191,7 @@
       addItem () {
         this.formResourceStatus.operationType = true
         this.formResourceStatus.visible = true
-        var resource = {
+        let resource = {
           id: '',
           groupId: '',
           resourceName: '',
@@ -177,8 +201,8 @@
         this.$refs.resourceDialog.initData(resource, [])
       },
       editItem (row) {
-        var resource = Object.assign({}, row)
-        var groupOptions = []
+        let resource = Object.assign({}, row)
+        let groupOptions = []
         groupOptions.push(resource.group)
         this.formResourceStatus.operationType = false
         this.formResourceStatus.visible = true

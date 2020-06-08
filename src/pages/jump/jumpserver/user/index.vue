@@ -20,13 +20,13 @@
                     :value="item.value">
                   </el-option>
                 </el-select>
-                <el-button @click="fetchUserData">查询</el-button>
+                <el-button @click="fetchData">查询</el-button>
                 <el-button @click="syncUser" :loading="syncUserLoading">同步</el-button>
               </el-row>
             </div>
             <!--用户table-->
             <el-row style="margin-bottom: 5px">
-              <el-table :data="userTableData" style="width: 100%" v-loading="userLoading">
+              <el-table :data="tableData" style="width: 100%" v-loading="userLoading">
                 <el-table-column type="expand">
                   <template slot-scope="props">
                     <el-form label-position="left" inline class="table-expand">
@@ -97,10 +97,11 @@
                 </el-table-column>
               </el-table>
               <!--用户翻页-->
-              <el-pagination background @current-change="userPaginationCurrentChange"
-                             layout="prev, pager, next" :total="userPagination.total"
-                             :current-page="userPagination.currentPage"
-                             :page-size="userPagination.pageSize">
+              <el-pagination background @current-change="paginationCurrentChange" :page-sizes="[10, 15, 20, 25, 30]"
+                             @size-change="handleSizeChange"
+                             layout="sizes, prev, pager, next" :total="pagination.total"
+                             :current-page="pagination.currentPage"
+                             :page-size="pagination.pageSize">
               </el-pagination>
             </el-row>
           </el-tab-pane>
@@ -114,6 +115,7 @@
 </template>
 
 <script>
+  import { mapState, mapActions } from 'vuex'
   // Filters
   import { getUserRoleType, getUserRoleText } from '@/filters/jumpserver.js'
   import { getActiveType, getActiveText } from '@/filters/public.js'
@@ -126,12 +128,23 @@
     delUserByUsername
   } from '@api/jump/jump.jumpserver.user.js'
 
+  const activeOptions = [{
+    value: -1,
+    label: '全部'
+  }, {
+    value: 1,
+    label: '有效'
+  }, {
+    value: 0,
+    label: '无效'
+  }]
+
   export default {
     data () {
       return {
-        userTableData: [],
+        tableData: [],
         userLoading: false,
-        userPagination: {
+        pagination: {
           currentPage: 1,
           pageSize: 10,
           total: 0
@@ -141,21 +154,18 @@
           isActive: -1
         },
         syncUserLoading: false,
-        activeOptions: [{
-          value: -1,
-          label: '全部'
-        }, {
-          value: 1,
-          label: '有效'
-        }, {
-          value: 0,
-          label: '无效'
-        }],
+        activeOptions: activeOptions,
         title: 'Jump用户管理'
       }
     },
     mounted () {
-      this.fetchUserData()
+      this.initPageSize()
+      this.fetchData()
+    },
+    computed: {
+      ...mapState('d2admin/user', [
+        'info'
+      ])
     },
     filters: {
       getUserRoleType,
@@ -167,15 +177,29 @@
     //   ServerAttributeCard
     // },
     methods: {
-      userPaginationCurrentChange (currentPage) {
-        this.userPagination.currentPage = currentPage
-        this.fetchUserData()
+      ...mapActions({
+        setPageSize: 'd2admin/user/set'
+      }),
+      handleSizeChange (size) {
+        this.pagination.pageSize = size
+        this.info.pageSize = size
+        this.setPageSize(this.info)
+        this.fetchData()
+      },
+      initPageSize () {
+        if (typeof (this.info.pageSize) !== 'undefined') {
+          this.pagination.pageSize = this.info.pageSize
+        }
+      },
+      paginationCurrentChange (currentPage) {
+        this.pagination.currentPage = currentPage
+        this.fetchData()
       },
       syncUser () {
         this.syncUserLoading = true
         syncUser()
           .then(res => {
-            this.fetchUserData()
+            this.fetchData()
             this.$message({
               type: 'success',
               message: '同步完成!'
@@ -186,7 +210,7 @@
       handlerSyncUser (id) {
         syncUserById(id)
           .then(res => {
-            this.fetchUserData()
+            this.fetchData()
             this.$message({
               type: 'success',
               message: '同步完成!'
@@ -196,7 +220,7 @@
       setItemActive (id) {
         setUserActive(id)
           .then(res => {
-            this.fetchUserData()
+            this.fetchData()
             this.$message({
               type: 'success',
               message: '设置成功!'
@@ -206,26 +230,26 @@
       handlerDelUser (row) {
         delUserByUsername(row.username)
           .then(res => {
-            this.fetchUserData()
+            this.fetchData()
             this.$message({
               type: 'success',
               message: '删除成功!'
             })
           })
       },
-      fetchUserData () {
+      fetchData () {
         this.userLoading = true
         let requestBody = {
           'queryName': this.queryUserParam.queryName,
           'extend': 1,
           'isActive': this.queryUserParam.isActive,
-          'page': this.userPagination.currentPage,
-          'length': this.userPagination.pageSize
+          'page': this.pagination.currentPage,
+          'length': this.pagination.pageSize
         }
         fuzzyQueryUserPage(requestBody)
           .then(res => {
-            this.userTableData = res.body.data
-            this.userPagination.total = res.body.totalNum
+            this.tableData = res.body.data
+            this.pagination.total = res.body.totalNum
             this.userLoading = false
           })
       }

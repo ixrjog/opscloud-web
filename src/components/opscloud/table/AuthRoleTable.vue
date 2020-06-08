@@ -28,8 +28,8 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination background @current-change="paginationCurrentChange"
-                   layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
+    <el-pagination background @current-change="paginationCurrentChange" :page-sizes="[10, 15, 20, 25, 30]" @size-change="handleSizeChange"
+                   layout="sizes, prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                    :page-size="pagination.pageSize">
     </el-pagination>
     <!-- role编辑-->
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-
+  import { mapState, mapActions } from 'vuex'
   import RoleDialog from '@/components/opscloud/dialog/RoleDialog'
   import MenuDialog from '@/components/opscloud/dialog/MenuDialog'
   // API
@@ -73,7 +73,13 @@
         title: '角色配置'
       }
     },
+    computed: {
+      ...mapState('d2admin/user', [
+        'info'
+      ])
+    },
     mounted () {
+      this.initPageSize()
       this.fetchData()
     },
     components: {
@@ -81,8 +87,19 @@
       MenuDialog
     },
     methods: {
-      handleClick () {
-        this.$emit('input', !this.value)
+      ...mapActions({
+        setPageSize: 'd2admin/user/set'
+      }),
+      handleSizeChange (size) {
+        this.pagination.pageSize = size
+        this.info.pageSize = size
+        this.setPageSize(this.info)
+        this.fetchData()
+      },
+      initPageSize () {
+        if (typeof (this.info.pageSize) !== 'undefined') {
+          this.pagination.pageSize = this.info.pageSize
+        }
       },
       editItem (row) {
         this.$refs.roleDialog.initData(Object.assign({}, row))

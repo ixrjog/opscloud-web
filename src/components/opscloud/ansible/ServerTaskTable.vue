@@ -40,15 +40,15 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination background @current-change="paginationCurrentChange"
-                   layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
+    <el-pagination background @current-change="paginationCurrentChange" :page-sizes="[10, 15, 20, 25, 30]" @size-change="handleSizeChange"
+                   layout="sizes, prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                    :page-size="pagination.pageSize">
     </el-pagination>
   </div>
 </template>
 
 <script>
-
+  import { mapState, mapActions } from 'vuex'
   // Filters
   import { getServerTaskText } from '@/filters/task.js'
 
@@ -88,11 +88,31 @@
     filters: {
       getServerTaskText
     },
+    computed: {
+      ...mapState('d2admin/user', [
+        'info'
+      ])
+    },
     mounted () {
+      this.initPageSize()
       this.fetchData()
     },
     components: {},
     methods: {
+      ...mapActions({
+        setPageSize: 'd2admin/user/set'
+      }),
+      handleSizeChange (size) {
+        this.pagination.pageSize = size
+        this.info.pageSize = size
+        this.setPageSize(this.info)
+        this.fetchData()
+      },
+      initPageSize () {
+        if (typeof (this.info.pageSize) !== 'undefined') {
+          this.pagination.pageSize = this.info.pageSize
+        }
+      },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage
         this.fetchData()

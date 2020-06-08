@@ -44,16 +44,13 @@
             <el-table-column prop="closeTime" label="关闭时间"></el-table-column>
             <el-table-column fixed="right" label="操作" width="100">
               <template slot-scope="scope">
-                <!--            <el-button type="primary" plain size="mini" @click="editTag(scope.row)">标签</el-button>-->
-                <!--            <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>-->
                 <el-button type="primary" plain size="mini" @click="handlerSetSessionInstances(scope.row)">查看
                 </el-button>
-                <!--            <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>-->
               </template>
             </el-table-column>
           </el-table>
-          <el-pagination background @current-change="paginationCurrentChange"
-                         layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
+          <el-pagination background @current-change="paginationCurrentChange"  :page-sizes="[10, 15, 20, 25, 30]" @size-change="handleSizeChange"
+                         layout="sizes, prev, pager, next"  :total="pagination.total" :current-page="pagination.currentPage"
                          :page-size="pagination.pageSize">
           </el-pagination>
         </el-col>
@@ -94,6 +91,7 @@
 </template>
 
 <script>
+  import { mapState, mapActions } from 'vuex'
 
   import PreviewTermAuditLogDialog from '@/components/opscloud/dialog/PreviewTermAuditLogDialog'
   // API
@@ -130,13 +128,33 @@
         closeOptions: closeOptions
       }
     },
+    computed: {
+      ...mapState('d2admin/user', [
+        'info'
+      ])
+    },
     mounted () {
+      this.initPageSize()
       this.fetchData()
     },
     components: {
       PreviewTermAuditLogDialog
     },
     methods: {
+      ...mapActions({
+        setPageSize: 'd2admin/user/set'
+      }),
+      handleSizeChange (size) {
+        this.pagination.pageSize = size
+        this.info.pageSize = size
+        this.setPageSize(this.info)
+        this.fetchData()
+      },
+      initPageSize () {
+        if (typeof (this.info.pageSize) !== 'undefined') {
+          this.pagination.pageSize = this.info.pageSize
+        }
+      },
       handlerPreviewAuditLog (row) {
         this.$refs.previewTermAuditLogDialog.initData(row.id)
         this.formStatus.visible = true

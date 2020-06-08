@@ -241,7 +241,7 @@
       },
       fetchData () {
         this.loading = true
-        var requestBody = {
+        let requestBody = {
           'queryName': this.queryParam.queryName,
           'extend': 1,
           'page': this.pagination.currentPage,

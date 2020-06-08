@@ -36,8 +36,8 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination background @current-change="unbindPaginationCurrentChange"
-                       layout="prev, pager, next" :total="unbindPagination.total"
+        <el-pagination background @current-change="unbindPaginationCurrentChange" :page-sizes="[10, 15, 20, 25, 30]" @size-change="handleSizeChange"
+                       layout="sizes, prev, pager, next"  :total="unbindPagination.total"
                        :current-page="unbindPagination.currentPage"
                        :page-size="unbindPagination.pageSize">
         </el-pagination>
@@ -55,8 +55,8 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination background @current-change="bindPaginationCurrentChange"
-                       layout="prev, pager, next" :total="bindPagination.total"
+        <el-pagination background @current-change="bindPaginationCurrentChange" :page-sizes="[10, 15, 20, 25, 30]" @size-change="handleSizeChange"
+                       layout="sizes, prev, pager, next"  :total="bindPagination.total"
                        :current-page="bindPagination.currentPage"
                        :page-size="bindPagination.pageSize">
         </el-pagination>
@@ -66,6 +66,7 @@
 </template>
 
 <script>
+  import { mapState, mapActions } from 'vuex'
   // API
   import { queryRolePage } from '@api/auth/auth.role.js'
   import { queryGroupPage } from '@api/auth/auth.group.js'
@@ -102,11 +103,33 @@
         groupOptions: []
       }
     },
+    computed: {
+      ...mapState('d2admin/user', [
+        'info'
+      ])
+    },
     mounted () {
+      this.initPageSize()
       this.getRole('')
       this.getGroup('')
     },
     methods: {
+      ...mapActions({
+        setPageSize: 'd2admin/user/set'
+      }),
+      handleSizeChange (size) {
+        this.bindPagination.pageSize = size
+        this.unbindPagination.pageSize = size
+        this.info.pageSize = size
+        this.setPageSize(this.info)
+        this.fetchData()
+      },
+      initPageSize () {
+        if (typeof (this.info.pageSize) !== 'undefined') {
+          this.bindPagination.pageSize = this.info.pageSize
+          this.unbindPagination.pageSize = this.info.pageSize
+        }
+      },
       getRole (roleName) {
         queryRolePage(roleName, '', 1, 20)
           .then(res => {

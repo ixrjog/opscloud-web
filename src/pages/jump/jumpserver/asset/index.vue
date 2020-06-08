@@ -30,13 +30,13 @@
                     :value="item.value">
                   </el-option>
                 </el-select>
-                <el-button @click="fetchAssetData">查询</el-button>
+                <el-button @click="fetchData">查询</el-button>
                 <el-button @click="syncAsset" :loading="syncAssetLoading">同步</el-button>
               </el-row>
             </div>
             <!--资产table-->
             <el-row style="margin-bottom: 5px">
-              <el-table :data="assetTableData" style="width: 100%" v-loading="assetLoading">
+              <el-table :data="tableData" style="width: 100%" v-loading="assetLoading">
                 <el-table-column prop="hostname" label="主机名"></el-table-column>
                 <el-table-column prop="publicIp" label="公网ip"></el-table-column>
                 <el-table-column prop="ip" label="私网ip"></el-table-column>
@@ -56,10 +56,10 @@
                 </el-table-column>
               </el-table>
               <!--资产翻页-->
-              <el-pagination background @current-change="assetPaginationCurrentChange"
-                             layout="prev, pager, next" :total="assetPagination.total"
-                             :current-page="assetPagination.currentPage"
-                             :page-size="assetPagination.pageSize">
+              <el-pagination background @current-change="paginationCurrentChange"  :page-sizes="[10, 15, 20, 25, 30]" @size-change="handleSizeChange"
+                             layout="sizes, prev, pager, next" :total="pagination.total"
+                             :current-page="pagination.currentPage"
+                             :page-size="pagination.pageSize">
               </el-pagination>
             </el-row>
 
@@ -84,6 +84,7 @@
     queryAssetsNodePage,
     delAssetByAssetId
   } from '@api/jump/jump.jumpserver.asset.js'
+  import { mapActions, mapState } from 'vuex'
 
   const activeOptions = [
     {
@@ -100,7 +101,7 @@
         assetsNodeOptions: [],
         activeOptions: activeOptions,
         // 资产
-        assetPagination: {
+        pagination: {
           currentPage: 1,
           pageSize: 10,
           total: 0
@@ -113,12 +114,18 @@
         },
         syncAssetLoading: false,
         assetLoading: false,
-        assetTableData: [],
+        tableData: [],
         title: 'Jump资产管理'
       }
     },
+    computed: {
+      ...mapState('d2admin/user', [
+        'info'
+      ])
+    },
     mounted () {
-      this.fetchAssetData()
+      this.initPageSize()
+      this.fetchData()
       this.getAssetsNode('')
     },
     filters: {
@@ -129,21 +136,35 @@
     //   ServerAttributeCard
     // },
     methods: {
+      ...mapActions({
+        setPageSize: 'd2admin/user/set'
+      }),
+      handleSizeChange (size) {
+        this.pagination.pageSize = size
+        this.info.pageSize = size
+        this.setPageSize(this.info)
+        this.fetchData()
+      },
+      initPageSize () {
+        if (typeof (this.info.pageSize) !== 'undefined') {
+          this.pagination.pageSize = this.info.pageSize
+        }
+      },
       getAssetsNode (value) {
         queryAssetsNodePage(value, 1, 20)
           .then(res => {
             this.assetsNodeOptions = res.body.data
           })
       },
-      assetPaginationCurrentChange (currentPage) {
-        this.assetPagination.currentPage = currentPage
-        this.fetchAssetData()
+      paginationCurrentChange (currentPage) {
+        this.pagination.currentPage = currentPage
+        this.fetchData()
       },
       syncAsset () {
         this.syncAssetLoading = true
         syncAsset()
           .then(res => {
-            this.fetchAssetData()
+            this.fetchData()
             this.$message({
               type: 'success',
               message: '同步完成!'
@@ -154,22 +175,22 @@
       handlerDelAsset (row) {
         delAssetByAssetId(row.id)
           .then(res => {
-            this.fetchAssetData()
+            this.fetchData()
             this.$message({
               type: 'success',
               message: '删除成功!'
             })
           })
       },
-      fetchAssetData () {
+      fetchData () {
         this.assetLoading = true
-        var requestBody = Object.assign({}, this.queryAssetParam)
-        requestBody.page = this.assetPagination.currentPage
-        requestBody.length = this.assetPagination.pageSize
+        let requestBody = Object.assign({}, this.queryAssetParam)
+        requestBody.page = this.pagination.currentPage
+        requestBody.length = this.pagination.pageSize
         fuzzyQueryAssetPage(requestBody)
           .then(res => {
-            this.assetTableData = res.body.data
-            this.assetPagination.total = res.body.totalNum
+            this.tableData = res.body.data
+            this.pagination.total = res.body.totalNum
             this.assetLoading = false
           })
       }

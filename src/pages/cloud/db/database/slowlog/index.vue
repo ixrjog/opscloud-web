@@ -150,8 +150,8 @@
         </el-table-column>
         <el-table-column prop="mySQLTotalExecutionTimes" label="总执行时间" width="100"></el-table-column>
       </el-table>
-      <el-pagination background @current-change="slowLogPaginationCurrentChange" v-show="this.database !== null"
-                     layout="prev, pager, next" :total="slowLogPagination.total" :current-page="slowLogPagination.currentPage"
+      <el-pagination background @current-change="slowLogPaginationCurrentChange" v-show="this.database !== null"  :page-sizes="[10, 15, 20, 25, 30]" @size-change="handleSizeChange"
+                     layout="sizes, prev, pager, next" :total="slowLogPagination.total" :current-page="slowLogPagination.currentPage"
                      :page-size="slowLogPagination.pageSize">
       </el-pagination>
     </template>
@@ -159,7 +159,7 @@
 </template>
 
 <script>
-
+  import { mapState, mapActions } from 'vuex'
   // Filters
   import { getCloudDBTypeTagType, getCloudDBTypeTagText } from '@/filters/cloud.js'
   // API
@@ -253,7 +253,13 @@
         }
       }
     },
+    computed: {
+      ...mapState('d2admin/user', [
+        'info'
+      ])
+    },
     mounted () {
+      this.initPageSize()
       this.fetchData()
       this.getEnvType()
       this.getTag('')
@@ -264,6 +270,20 @@
       getCloudDBTypeTagText
     },
     methods: {
+      ...mapActions({
+        setPageSize: 'd2admin/user/set'
+      }),
+      handleSizeChange (size) {
+        this.pagination.pageSize = size
+        this.info.pageSize = size
+        this.setPageSize(this.info)
+        this.fetchData()
+      },
+      initPageSize () {
+        if (typeof (this.info.pageSize) !== 'undefined') {
+          this.pagination.pageSize = this.info.pageSize
+        }
+      },
       getTag (tagKey) {
         queryTagPage(tagKey, 1, 100)
           .then(res => {

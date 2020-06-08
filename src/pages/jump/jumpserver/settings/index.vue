@@ -147,8 +147,8 @@
                 <el-table-column prop="dateStart" label="会话开始时间"></el-table-column>
               </el-table>
               <!--会话翻页-->
-              <el-pagination background @current-change="terminalSessionPaginationCurrentChange"
-                             layout="prev, pager, next" :total="terminalSessionPagination.total"
+              <el-pagination background @current-change="terminalSessionPaginationCurrentChange" :page-sizes="[10, 15, 20, 25, 30]" @size-change="handleSizeChange"
+                             layout="sizes, prev, pager, next" :total="terminalSessionPagination.total"
                              :current-page="terminalSessionPagination.currentPage"
                              :page-size="terminalSessionPagination.pageSize">
               </el-pagination>
@@ -165,6 +165,7 @@
 </template>
 
 <script>
+  import { mapState, mapActions } from 'vuex'
   // Component
   // XTerm
   import XTerm from '@/components/opscloud/xterm/XTerm'
@@ -219,7 +220,13 @@
         doc
       }
     },
+    computed: {
+      ...mapState('d2admin/user', [
+        'info'
+      ])
+    },
     mounted () {
+      this.initPageSize()
       this.getSettings()
       this.getTerminal()
       this.fetchAdminUserData()
@@ -238,6 +245,20 @@
     //   ServerAttributeCard
     // },
     methods: {
+      ...mapActions({
+        setPageSize: 'd2admin/user/set'
+      }),
+      handleSizeChange (size) {
+        this.terminalSessionPagination.pageSize = size
+        this.info.pageSize = size
+        this.setPageSize(this.info)
+        this.fetchTerminalSessionData()
+      },
+      initPageSize () {
+        if (typeof (this.info.pageSize) !== 'undefined') {
+          this.terminalSessionPagination.pageSize = this.info.pageSize
+        }
+      },
       getUser (queryName) {
         this.searchUserLoading = true
         var requestBody = {
