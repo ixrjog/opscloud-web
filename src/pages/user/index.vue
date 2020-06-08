@@ -70,7 +70,8 @@
         </el-table-column>
       </el-table>
       <el-pagination background @current-change="paginationCurrentChange"
-                     layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
+                     :page-sizes="[10, 15, 20, 25, 30]" @size-change="handleSizeChange"
+                     layout="sizes, prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                      :page-size="pagination.pageSize">
       </el-pagination>
       <!-- user编辑对话框 -->
@@ -86,6 +87,8 @@
 </template>
 
 <script>
+  import { mapState, mapActions } from 'vuex'
+
   // Component
   import UserDialog from '@/components/opscloud/dialog/UserDialog'
   import UserUserGroupDialog from '@/components/opscloud/dialog/UserUserGroupDialog'
@@ -130,7 +133,13 @@
         title: '用户管理'
       }
     },
+    computed: {
+      ...mapState('d2admin/user', [
+        'info'
+      ])
+    },
     mounted () {
+      this.initPageSize()
       this.fetchData()
     },
     components: {
@@ -139,6 +148,20 @@
       UserServerGroupDialog
     },
     methods: {
+      ...mapActions({
+        setPageSize: 'd2admin/user/set'
+      }),
+      handleSizeChange (size) {
+        this.pagination.pageSize = size
+        this.info.pageSize = size
+        this.setPageSize(this.info)
+        this.fetchData()
+      },
+      initPageSize () {
+        if (typeof (this.info.pageSize) !== 'undefined') {
+          this.pagination.pageSize = this.info.pageSize
+        }
+      },
       retireUser (row) {
         this.$confirm('确认用户离职操作?', '提示', {
           confirmButtonText: '确定',
