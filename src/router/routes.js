@@ -222,6 +222,15 @@ const frameIn = [
         }
       },
       {
+        path: '/cloud/aliyun/ram',
+        name: 'cloud-aliyun-ram',
+        component: () => import('@/pages/cloud/aliyun/ram'),
+        meta: {
+          auth: true,
+          title: '访问控制'
+        }
+      },
+      {
         path: '/jump/jumpserver/settings',
         name: 'jump-jumpserver-settings',
         component: () => import('@/pages/jump/jumpserver/settings'),

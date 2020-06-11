@@ -23,3 +23,29 @@ export function getCloudDBTypeTagText (value) {
       return '未定义'
   }
 }
+
+export function getRAMUserType (value) {
+  switch (value) {
+    case 0:
+      return 'info'
+    case 1:
+      return 'primary'
+    case 2:
+      return 'danger'
+    default:
+      return 'danger'
+  }
+}
+
+export function getRAMUserTypeText (value) {
+  switch (value) {
+    case 0:
+      return '默认'
+    case 1:
+      return '用户'
+    case 2:
+      return '系统'
+    default:
+      return '未定义'
+  }
+}

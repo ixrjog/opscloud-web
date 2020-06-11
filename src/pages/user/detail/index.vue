@@ -52,12 +52,12 @@
           <!-- 用户资源详情-->
           <el-col :span="14">
             <el-card class="box-card" shadow="never">
-            <el-collapse accordion>
-              <el-collapse-item>
-                <template slot="title">
-                  用户组<i class="header-icon el-icon-info"></i>(角色授权)
-                </template>
-                <div class="tag-group">
+              <el-collapse accordion>
+                <el-collapse-item>
+                  <template slot="title">
+                    用户组<i class="header-icon el-icon-info"></i>(角色授权)
+                  </template>
+                  <div class="tag-group">
                    <span v-for="item in formUserDetail.userGroups" :key="item.id">
                     <template>
                        <el-tooltip class="item" effect="light" :content="item.comment || '没有填写'" placement="bottom">
@@ -65,10 +65,10 @@
                        </el-tooltip>
                     </template>
                   </span>
-                </div>
-              </el-collapse-item>
-              <el-collapse-item title="服务器组（红色标签拥有管理员权限）">
-                <div class="tag-group">
+                  </div>
+                </el-collapse-item>
+                <el-collapse-item title="服务器组（红色标签拥有管理员权限）">
+                  <div class="tag-group">
                   <span v-for="item in formUserDetail.serverGroups" :key="item.id">
                     <template>
                       <el-tooltip class="item" effect="light" :content="item.comment || '没有填写'" placement="bottom">
@@ -76,48 +76,63 @@
                       </el-tooltip>
                     </template>
                   </span>
-                </div>
-              </el-collapse-item>
-              <el-collapse-item title="AliyunRAM授权策略">
-                <div>功能未上线；</div>
-              </el-collapse-item>
-              <el-collapse-item>
-                <template slot="title">
-                  SSH密钥<i class="header-icon el-icon-info"></i>(堡垒机,Gitlab)
-                </template>
-                <el-col>
-                  <el-tag v-if="formUserDetail.credentialMap != null && formUserDetail.credentialMap.sshPubKey != null"
-                          style="margin-left: 5px">{{ formUserDetail.credentialMap.sshPubKey.title }} {{
-                    formUserDetail.credentialMap.sshPubKey.fingerprint }}
-                  </el-tag>
-                  <el-tooltip class="item" effect="light" content="堡垒机公钥已推送" placement="top"
-                              v-show="formUserDetail.attributeMap != null && formUserDetail.attributeMap.jumpserverPubkey">
-                    <el-tag type="success"
-                            style="margin-left: 5px">堡垒机
+                  </div>
+                </el-collapse-item>
+                <el-collapse-item title="阿里云RAM账户授权策略">
+                  <el-table :data="formUserDetail.ramUsers" style="width: 100%">
+                    <el-table-column prop="ramAccount" label="账户"></el-table-column>
+                    <el-table-column prop="accessKeys" label="ak" width="80"></el-table-column>
+                    <el-table-column prop="expiredTime" label="策略">
+                      <template slot-scope="props">
+                        <div class="tag-group">
+                          <div v-for="item in props.row.policies" :key="item.id">
+                            <el-tooltip class="item" effect="light" :content="item.description" placement="top-start">
+                              <el-tag style="margin-left: 5px">{{ item.policyName }}</el-tag>
+                            </el-tooltip>
+                          </div>
+                        </div>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </el-collapse-item>
+                <el-collapse-item>
+                  <template slot="title">
+                    SSH密钥<i class="header-icon el-icon-info"></i>(堡垒机,Gitlab)
+                  </template>
+                  <el-col>
+                    <el-tag
+                      v-if="formUserDetail.credentialMap != null && formUserDetail.credentialMap.sshPubKey != null"
+                      style="margin-left: 5px">{{ formUserDetail.credentialMap.sshPubKey.title }} {{
+                      formUserDetail.credentialMap.sshPubKey.fingerprint }}
                     </el-tag>
-                  </el-tooltip>
-                </el-col>
-                <el-button style="margin-top: 5px" size="mini" @click="editSSHKey">编辑</el-button>
-              </el-collapse-item>
-              <el-collapse-item>
-                <template slot="title">
-                  开发者令牌<i class="header-icon el-icon-info"></i>(API-Token)
-                </template>
-                <el-table :data="formUserDetail.apiTokens" style="width: 100%">
-                  <el-table-column prop="tokenId" label="id" width="240"></el-table-column>
-                  <!--                  <el-table-column prop="token" label="api-token"></el-table-column>-->
-                  <el-table-column prop="expiredTime" label="过期时间"></el-table-column>
-                  <el-table-column prop="comment" label="描述"></el-table-column>
-                  <el-table-column fixed="right" label="操作" width="80">
-                    <template slot-scope="scope">
-                      <!--                      <el-button style="float: right; padding: 3px 0" type="text"  @click="delItem(scope.row)">修改基本信息</el-button>-->
-                      <el-button plain size="mini" @click="delApiToken(scope.row)">删除</el-button>
-                    </template>
-                  </el-table-column>
-                </el-table>
-                <el-button style="margin-top: 5px" size="mini" @click="addApiToken">申请</el-button>
-              </el-collapse-item>
-            </el-collapse>
+                    <el-tooltip class="item" effect="light" content="堡垒机公钥已推送" placement="top"
+                                v-show="formUserDetail.attributeMap != null && formUserDetail.attributeMap.jumpserverPubkey">
+                      <el-tag type="success"
+                              style="margin-left: 5px">堡垒机
+                      </el-tag>
+                    </el-tooltip>
+                  </el-col>
+                  <el-button style="margin-top: 5px" size="mini" @click="editSSHKey">编辑</el-button>
+                </el-collapse-item>
+                <el-collapse-item>
+                  <template slot="title">
+                    开发者令牌<i class="header-icon el-icon-info"></i>(API-Token)
+                  </template>
+                  <el-table :data="formUserDetail.apiTokens" style="width: 100%">
+                    <el-table-column prop="tokenId" label="id" width="240"></el-table-column>
+                    <!--                  <el-table-column prop="token" label="api-token"></el-table-column>-->
+                    <el-table-column prop="expiredTime" label="过期时间"></el-table-column>
+                    <el-table-column prop="comment" label="描述"></el-table-column>
+                    <el-table-column fixed="right" label="操作" width="80">
+                      <template slot-scope="scope">
+                        <!--                      <el-button style="float: right; padding: 3px 0" type="text"  @click="delItem(scope.row)">修改基本信息</el-button>-->
+                        <el-button plain size="mini" @click="delApiToken(scope.row)">删除</el-button>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                  <el-button style="margin-top: 5px" size="mini" @click="addApiToken">申请</el-button>
+                </el-collapse-item>
+              </el-collapse>
             </el-card>
           </el-col>
         </el-row>
