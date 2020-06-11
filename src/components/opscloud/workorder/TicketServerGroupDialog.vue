@@ -4,13 +4,13 @@
       <div style="margin-bottom: 5px">
         <el-divider content-position="left" v-if="ticket.ticketPhase === 'CREATED_TICKET'">配置选项</el-divider>
         <el-row :gutter="24" style="margin-bottom: 5px" v-if="ticket.ticketPhase === 'CREATED_TICKET'">
-          <el-select v-model="ticketEntry" filterable clearable
+          <el-select v-model="ticketEntry" filterable clearable value-key="name"
                      style="display: inline-block; max-width:200px; margin-left: 10px"
                      remote reserve-keyword placeholder="输入关键词搜索服务器组" :remote-method="queryPreTicketEntry"
                      :loading="searchTicketEntryLoading">
             <el-option
               v-for="item in ticketEntryOptions"
-              :key="item.id"
+              :key="item.name"
               :label="item.name"
               :value="item">
             </el-option>
@@ -55,7 +55,8 @@
       <div slot="footer" class="dialog-footer">
         <!--        <el-tag style="display: inline-block; max-width:200px; margin-left: 10px">{{ticket.id}}#工单</el-tag>-->
         <span style="margin-right: 10px" v-if="formStatus.operationType != 2">
-          <el-button type="primary" v-if="ticket.ticketPhase === 'CREATED_TICKET'" plain size="mini" @click="submitTicket">提交</el-button>
+          <el-button type="primary" v-if="ticket.ticketPhase === 'CREATED_TICKET'" plain size="mini"
+                     @click="submitTicket">提交</el-button>
           <el-button type="success" v-if="ticket.isInApproval" plain size="mini" @click="agreeTicket">同意</el-button>
           <el-button type="danger" v-if="ticket.isInApproval" plain size="mini" @click="disagreeTicket">拒绝</el-button>
         </span>

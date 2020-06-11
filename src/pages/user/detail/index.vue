@@ -80,7 +80,13 @@
                 </el-collapse-item>
                 <el-collapse-item title="阿里云RAM账户授权策略">
                   <el-table :data="formUserDetail.ramUsers" style="width: 100%">
-                    <el-table-column prop="ramAccount" label="账户"></el-table-column>
+                    <el-table-column prop="ramAccount" label="账户">
+                      <template slot-scope="props">
+                        <el-tooltip class="item" effect="light" content="点击打开登录连接" placement="top-start">
+                          <el-button style="padding: 3px 0" type="text" @click="handlerOpenLoginUrl(props.row)">{{ props.row.ramAccount }}</el-button>
+                        </el-tooltip>
+                      </template>
+                    </el-table-column>
                     <el-table-column prop="accessKeys" label="ak" width="80"></el-table-column>
                     <el-table-column prop="expiredTime" label="策略">
                       <template slot-scope="props">
@@ -205,8 +211,8 @@
       UserSSHKeyDialog
     },
     methods: {
-      handleClick () {
-        this.$emit('input', !this.value)
+      handlerOpenLoginUrl (row) {
+        window.open(row.ramAccountLoginUrl)
       },
       editItem () {
         // form

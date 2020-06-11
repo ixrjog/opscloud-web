@@ -30,7 +30,7 @@
               </el-form-item>
               <el-form-item label="用户组">
                 <div class="tag-group">
-                  <el-tag style="margin-left: 5px"
+                  <el-tag style="margin-right: 5px"
                           v-for="item in props.row.userGroups"
                           :key="item.id">{{ item.name }}
                   </el-tag>
@@ -38,7 +38,7 @@
               </el-form-item>
               <el-form-item label="服务器组">
                 <div class="tag-group">
-                  <el-tag style="margin-left: 5px"
+                  <el-tag style="margin-right: 5px"
                           v-for="item in props.row.serverGroups"
                           :key="item.id">{{ item.name }}
                   </el-tag>
@@ -52,6 +52,7 @@
         <el-table-column prop="email" label="邮箱"></el-table-column>
         <el-table-column prop="userGroups.length" label="用户组"></el-table-column>
         <el-table-column prop="serverGroups.length" label="服务器组"></el-table-column>
+        <el-table-column prop="ramUsers.length" label="阿里云RAM账户"></el-table-column>
         <el-table-column fixed="right" label="操作" width="380">
           <template slot-scope="scope">
             <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
@@ -270,6 +271,6 @@
   .table-expand .el-form-item {
     margin-right: 0;
     margin-bottom: 0;
-    width: 50%;
+    width: 100%;
   }
 </style>

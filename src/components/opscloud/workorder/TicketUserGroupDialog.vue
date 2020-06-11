@@ -4,13 +4,13 @@
       <div style="margin-bottom: 5px">
         <el-divider content-position="left" v-if="ticket.ticketPhase === 'CREATED_TICKET'">配置选项</el-divider>
         <el-row :gutter="24" style="margin-bottom: 5px" v-if="ticket.ticketPhase === 'CREATED_TICKET'">
-          <el-select v-model="ticketEntry" filterable clearable
+          <el-select v-model="ticketEntry" filterable clearable value-key="name"
                      style="display: inline-block; max-width:200px; margin-left: 10px"
                      remote reserve-keyword placeholder="输入关键词搜索用户组" :remote-method="queryPreTicketEntry"
                      :loading="searchTicketEntryLoading">
             <el-option
               v-for="item in ticketEntryOptions"
-              :key="item.id"
+              :key="item.name"
               :label="item.name"
               :value="item">
             </el-option>

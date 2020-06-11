@@ -53,6 +53,7 @@
         <el-table-column prop="email" label="邮箱"></el-table-column>
         <el-table-column prop="userGroups.length" label="用户组"></el-table-column>
         <el-table-column prop="serverGroups.length" label="服务器组"></el-table-column>
+        <el-table-column prop="ramUsers.length" label="阿里云RAM账户"></el-table-column>
         <el-table-column fixed="right" label="操作" width="380">
           <template slot-scope="scope">
             <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
