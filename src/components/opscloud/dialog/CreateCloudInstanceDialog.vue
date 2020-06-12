@@ -205,7 +205,8 @@
     <div slot="footer" class="dialog-footer">
       <el-button size="mini" @click="closeDialog">关闭</el-button>
       <el-button type="primary" size="mini" v-if="activeStep !== 'disk'" @click="handlerNext">下一步</el-button>
-      <el-button type="primary" size="mini" v-if="activeStep === 'disk'" @click="handlerCreate">创建</el-button>
+      <el-button type="primary" size="mini" v-if="activeStep === 'disk'" :loading="creating" @click="handlerCreate">创建
+      </el-button>
     </div>
   </el-dialog>
 </template>
@@ -344,7 +345,8 @@
         securityGroupLoading: false,
         vswitchData: [],
         vswitchTree: [],
-        completedPercentage: 0
+        completedPercentage: 0,
+        creating: false
       }
     },
     props: ['formStatus'],
@@ -355,12 +357,9 @@
     },
     methods: {
       setTimer () {
-        if (this.timer == null) {
-          this.timer = setInterval(() => {
-            this.queryTask()
-            console.log('开始定时...每3秒执行一次')
-          }, 3000)
-        }
+        this.timer = setInterval(() => {
+          this.queryTask()
+        }, 5000)
       },
       setAccountSetting () {
         querySettingMapByName(accountSettingName)
@@ -465,7 +464,7 @@
           return []
         }
         let childrens = []
-        for (let member in memberList.length) {
+        for (let member of memberList) {
           let name = member.hostname
           if (member.privateIp !== null && member.privateIp !== '') {
             name = name + ' (' + member.privateIp + ' )'
@@ -512,6 +511,9 @@
                 ]
               }
               this.initMyChart(data)
+            }
+            if (taskDetail.taskPhase === 'FINALIZED') {
+              clearInterval(this.timer)
             }
           })
       },
@@ -626,6 +628,7 @@
           })
       },
       handlerCreate () {
+        this.creating = true
         let requestBody = Object.assign({}, this.createInstanceData)
         requestBody.disk = this.disk
         try {
@@ -643,7 +646,6 @@
               })
               this.activeName = 'task'
               this.setTimer()
-              // this.templateData = res.body
             }
           })
       },

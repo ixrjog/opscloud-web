@@ -130,7 +130,7 @@
           this.ticketEntries = []
         }
       },
-      handlerSelAccount(){
+      handlerSelAccount () {
         this.queryPreTicketEntry('')
       },
       submitTicket () {

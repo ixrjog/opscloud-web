@@ -125,12 +125,10 @@
         }
       },
       setTimer () {
-        if (this.timer == null) {
-          this.timer = setInterval(() => {
-            this.handlerSSHHeartbeat()
-            // console.log('开始定时...每10秒执行一次')
-          }, 10000)
-        }
+        this.timer = setInterval(() => {
+          this.handlerSSHHeartbeat()
+          // console.log('开始定时...每10秒执行一次')
+        }, 10000)
       },
       /**
        * 发送空心跳 避免阿里云SLB会话断开
