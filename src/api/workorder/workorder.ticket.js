@@ -131,3 +131,16 @@ export function queryUserTicketAuthRolePage (data) {
     data
   })
 }
+
+/**
+ * 工单配置-RAM策略查询
+ * @param data
+ * @returns {AxiosPromise}
+ */
+export function queryUserTicketRAMPolicyPage (data) {
+  return request({
+    url: '/workorder/ticket/ram/policy/query',
+    method: 'post',
+    data
+  })
+}

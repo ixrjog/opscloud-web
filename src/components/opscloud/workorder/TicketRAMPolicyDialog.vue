@@ -4,15 +4,28 @@
       <div style="margin-bottom: 5px">
         <el-divider content-position="left" v-if="ticket.ticketPhase === 'CREATED_TICKET'">配置选项</el-divider>
         <el-row :gutter="24" style="margin-bottom: 5px" v-if="ticket.ticketPhase === 'CREATED_TICKET'">
-          <el-select v-model="ticketEntry" filterable clearable value-key="name"
+          <el-select v-model="accountUid" filterable clearable class="select" @change="handlerSelAccount"
+                     remote reserve-keyword placeholder="选择阿里云账户">
+            <el-option
+              v-for="item in accountOptions"
+              :key="item.uid"
+              :label="item.name"
+              :value="item.uid">
+              <span style="float: left">{{ item.name }}</span>
+              <span style="float: right; color: #8492a6; font-size: 13px">{{ item.uid }}</span>
+            </el-option>
+          </el-select>
+          <el-select v-model="ticketEntry" filterable clearable value-key="name" v-show="accountUid != ''"
                      style="display: inline-block; max-width:200px; margin-left: 10px"
-                     remote reserve-keyword placeholder="输入关键词搜索服务器组" :remote-method="queryPreTicketEntry"
+                     remote reserve-keyword placeholder="输入关键词搜索策略" :remote-method="queryPreTicketEntry"
                      :loading="searchTicketEntryLoading">
             <el-option
               v-for="item in ticketEntryOptions"
-              :key="item.name"
+              :key="item.businessId"
               :label="item.name"
               :value="item">
+              <span style="float: left">{{ item.name }}</span>
+              <span style="float: right; color: #8492a6; font-size: 13px">{{ item.comment }}</span>
             </el-option>
           </el-select>
           <el-button type="success" :disabled="ticketEntry === ''" plain size="mini" @click="addTicketEntry()"
@@ -22,15 +35,9 @@
         <el-divider content-position="left">工单详情</el-divider>
         <el-row :gutter="24" style="margin-bottom: 5px">
           <el-table :data="ticketEntries" style="width: 100%" v-loading="loading">
-            <el-table-column prop="name" label="服务器组名称"></el-table-column>
-            <el-table-column prop="comment" label="高级权限">
-              <template slot-scope="scope">
-                <el-checkbox v-model="scope.row.ticketEntry.needAdministratorAccount"
-                             @change="updateTicketEntry(scope.row)">
-                  需要管理员
-                </el-checkbox>
-              </template>
-            </el-table-column>
+            <el-table-column prop="ticketEntry.ramPolicy.accountUid" label="主账户uid" width="150"></el-table-column>
+            <el-table-column prop="ticketEntry.ramPolicy.accountName" label="账户名称" width="80"></el-table-column>
+            <el-table-column prop="name" label="策略名称"></el-table-column>
             <el-table-column prop="comment" label="描述"></el-table-column>
             <el-table-column fixed="right" label="操作" width="80">
               <template slot-scope="scope">
@@ -68,8 +75,9 @@
 
 <script>
 
+  import { queryAliyunAccount } from '@api/cloud/cloud.js'
   import {
-    queryUserTicketServerGroupPage,
+    queryUserTicketRAMPolicyPage,
     addWorkorderTicketEntry,
     updateWorkorderTicketEntry,
     delWorkorderTicketEntryById,
@@ -89,16 +97,27 @@
         searchTicketEntryLoading: false,
         ticketEntry: '',
         loading: false,
-        ticketEntries: []
+        ticketEntries: [],
+        accountUid: '',
+        accountOptions: []
       }
     },
     components: {},
-    name: 'TicketServerGroupDialog',
+    name: 'TicketRAMPolicyDialog',
     props: ['formStatus'],
+    mounted () {
+      this.getAliyunAccount()
+    },
     methods: {
       closeDialog () {
         this.formStatus.visible = false
         this.$emit('closeDialog')
+      },
+      getAliyunAccount () {
+        queryAliyunAccount()
+          .then(res => {
+            this.accountOptions = res.body
+          })
       },
       initData (ticket) {
         this.ticket = ticket
@@ -110,6 +129,8 @@
         } else {
           this.ticketEntries = []
         }
+      },
+      handlerSelAccount(){
         this.queryPreTicketEntry('')
       },
       submitTicket () {
@@ -208,11 +229,12 @@
         let requestBody = {
           'queryName': queryName,
           'workorderTicketId': this.ticket.id,
+          'accountUid': this.accountUid,
           'userId': 0,
           'page': 1,
-          'length': 20
+          'length': 10
         }
-        queryUserTicketServerGroupPage(requestBody)
+        queryUserTicketRAMPolicyPage(requestBody)
           .then(res => {
             this.ticketEntryOptions = res.body
             this.searchTicketEntryLoading = false

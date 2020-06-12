@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog :title="title" :visible.sync="formStatus.visible">
+    <el-dialog :title="title" :visible.sync="formStatus.visible" :before-close="closeDialog">
       <div style="margin-bottom: 5px">
         <el-divider content-position="left" v-if="ticket.ticketPhase === 'CREATED_TICKET'">配置选项</el-divider>
         <el-row :gutter="24" style="margin-bottom: 5px" v-if="ticket.ticketPhase === 'CREATED_TICKET'">
@@ -88,7 +88,7 @@
     methods: {
       closeDialog () {
         this.formStatus.visible = false
-        this.$emit('closeTicketUserGroupDialog')
+        this.$emit('closeDialog')
       },
       initData (ticket) {
         this.ticket = ticket

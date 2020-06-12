@@ -42,12 +42,10 @@
         </el-tab-pane>
       </el-tabs>
       <DocDialog ref="docDialog" :formStatus="formDocStatus"></DocDialog>
-      <TicketServerGroupDialog ref="ticketServerGroupDialog" :formStatus="formServerGroupStatus"
-                               @closeTicketServerGroupDialog="fetchData"></TicketServerGroupDialog>
-      <TicketUserGroupDialog ref="ticketUserGroupDialog" :formStatus="formUserGroupStatus"
-                             @closeTicketUserGroupDialog="fetchData"></TicketUserGroupDialog>
-      <TicketAuthRoleDialog ref="ticketAuthRoleDialog" :formStatus="formAuthRoleStatus"
-                            @closeTicketAuthRoleDialog="fetchData"></TicketAuthRoleDialog>
+      <TicketServerGroupDialog ref="ticketServerGroupDialog" :formStatus="formServerGroupStatus" @closeDialog="fetchData"></TicketServerGroupDialog>
+      <TicketUserGroupDialog ref="ticketUserGroupDialog" :formStatus="formUserGroupStatus" @closeDialog="fetchData"></TicketUserGroupDialog>
+      <TicketAuthRoleDialog ref="ticketAuthRoleDialog" :formStatus="formAuthRoleStatus" @closeDialog="fetchData"></TicketAuthRoleDialog>
+      <TicketRAMPolicyDialog ref="ticketRAMPolicyDialog" :formStatus="formRAMPolicyStatus" @closeDialog="fetchData"></TicketRAMPolicyDialog>
     </template>
   </d2-container>
 </template>
@@ -59,6 +57,7 @@
   import TicketServerGroupDialog from '@/components/opscloud/workorder/TicketServerGroupDialog'
   import TicketUserGroupDialog from '@/components/opscloud/workorder/TicketUserGroupDialog'
   import TicketAuthRoleDialog from '@/components/opscloud/workorder/TicketAuthRoleDialog'
+  import TicketRAMPolicyDialog from '@/components/opscloud/workorder/TicketRAMPolicyDialog'
   // doc
   import DocDialog from '@/components/opscloud/doc/DocDialog.vue'
 
@@ -91,7 +90,11 @@
         },
         formAuthRoleStatus: {
           visible: false,
-          operationType: 1
+          operationType: 0
+        },
+        formRAMPolicyStatus: {
+          visible: false,
+          operationType: 0
         },
         ticketCreateing: false,
         ticketTableData: []
@@ -103,12 +106,12 @@
       TicketMgmtTable,
       TicketServerGroupDialog,
       TicketUserGroupDialog,
-      TicketAuthRoleDialog
+      TicketAuthRoleDialog,
+      TicketRAMPolicyDialog
     },
     mounted () {
       this.getWorkbenchWorkorderGroup()
       this.setUserInTheDepartment()
-      // this.$refs.workorderGroupTable.fetchData()
     },
     methods: {
       setUserInTheDepartment () {
@@ -164,6 +167,11 @@
                 this.formAuthRoleStatus.visible = true
                 this.formAuthRoleStatus.operationType = 0
                 this.$refs.ticketAuthRoleDialog.initData(ticket)
+                break
+              case 'RAM_POLICY':
+                this.formRAMPolicyStatus.visible = true
+                this.formRAMPolicyStatus.operationType = 0
+                this.$refs.ticketRAMPolicyDialog.initData(ticket)
                 break
               default:
                 this.$message.error('工单类型错误或未配置!')

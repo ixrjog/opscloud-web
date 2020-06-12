@@ -30,12 +30,10 @@
                    layout="sizes, prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                    :page-size="pagination.pageSize">
     </el-pagination>
-    <TicketServerGroupDialog ref="ticketServerGroupDialog" :formStatus="formServerGroupStatus"
-                             @closeTicketServerGroupDialog="fetchData"></TicketServerGroupDialog>
-    <TicketUserGroupDialog ref="ticketUserGroupDialog" :formStatus="formUserGroupStatus"
-                           @closeTicketUserGroupDialog="fetchData"></TicketUserGroupDialog>
-    <TicketAuthRoleDialog ref="ticketAuthRoleDialog" :formStatus="formAuthRoleStatus"
-                          @closeTicketAuthRoleDialog="fetchData"></TicketAuthRoleDialog>
+    <TicketServerGroupDialog ref="ticketServerGroupDialog" :formStatus="formServerGroupStatus" @closeTicketDialog="fetchData"></TicketServerGroupDialog>
+    <TicketUserGroupDialog ref="ticketUserGroupDialog" :formStatus="formUserGroupStatus" @closeTicketDialog="fetchData"></TicketUserGroupDialog>
+    <TicketAuthRoleDialog ref="ticketAuthRoleDialog" :formStatus="formAuthRoleStatus" @closeTicketDialog="fetchData"></TicketAuthRoleDialog>
+    <TicketRAMPolicyDialog ref="ticketRAMPolicyDialog" :formStatus="formRAMPolicyStatus" @closeDialog="fetchData"></TicketRAMPolicyDialog>
   </div>
 </template>
 
@@ -45,6 +43,7 @@
   import TicketServerGroupDialog from '@/components/opscloud/workorder/TicketServerGroupDialog'
   import TicketUserGroupDialog from '@/components/opscloud/workorder/TicketUserGroupDialog'
   import TicketAuthRoleDialog from '@/components/opscloud/workorder/TicketAuthRoleDialog'
+  import TicketRAMPolicyDialog from '@/components/opscloud/workorder/TicketRAMPolicyDialog'
 
   // Filters
   import { getPhaseText, getPhaseType } from '@/filters/ticket.js'
@@ -70,6 +69,10 @@
           visible: false,
           operationType: 1
         },
+        formRAMPolicyStatus: {
+          visible: false,
+          operationType: 0
+        },
         loading: false,
         pagination: {
           currentPage: 1,
@@ -94,7 +97,8 @@
     components: {
       TicketServerGroupDialog,
       TicketUserGroupDialog,
-      TicketAuthRoleDialog
+      TicketAuthRoleDialog,
+      TicketRAMPolicyDialog
     },
     filters: {
       getPhaseText,
@@ -154,6 +158,11 @@
             this.formAuthRoleStatus.visible = true
             this.formAuthRoleStatus.operationType = operationType
             this.$refs.ticketAuthRoleDialog.initData(ticket)
+            break
+          case 'RAM_POLICY':
+            this.formRAMPolicyStatus.visible = true
+            this.formRAMPolicyStatus.operationType = 0
+            this.$refs.ticketRAMPolicyDialog.initData(ticket)
             break
           default:
             this.$message.error('工单类型错误或未配置!')
