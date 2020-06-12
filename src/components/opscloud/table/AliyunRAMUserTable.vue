@@ -1,6 +1,17 @@
 <template>
   <div>
     <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
+      <el-select v-model="queryParam.accountUid" filterable clearable class="select"
+                 remote reserve-keyword placeholder="选择主账户">
+        <el-option
+          v-for="item in accountOptions"
+          :key="item.uid"
+          :label="item.name"
+          :value="item.uid">
+          <span style="float: left">{{ item.name }}</span>
+          <span style="float: right; color: #8492a6; font-size: 13px">{{ item.uid }}</span>
+        </el-option>
+      </el-select>
       <el-input v-model="queryParam.queryName" placeholder="关键字查询" class="input"/>
       <el-select v-model="queryParam.hasKeys" clearable placeholder="拥有AK" class="select">
         <el-option
@@ -67,6 +78,7 @@
   // Filters
   import { getRAMUserType, getRAMUserTypeText } from '@/filters/cloud.js'
   // API
+  import { queryAliyunAccount } from '@api/cloud/cloud.js'
   import { queryAliyunRAMUserPage, syncAliyunRAMUser } from '@api/cloud/aliyun.ram.user.js'
 
   const hasKeysOptions = [
@@ -92,18 +104,21 @@
           total: 0
         },
         queryParam: {
+          accountUid: '',
           extend: 1,
           hasKeys: '',
           queryName: ''
         },
         hasKeysOptions: hasKeysOptions,
-        syncLoading: false
+        syncLoading: false,
+        accountOptions: []
       }
     },
     name: 'AliyunRAMUserTable',
     mounted () {
       this.initPageSize()
       this.fetchData()
+      this.getAliyunAccount()
     },
     computed: {
       ...mapState('d2admin/user', [
@@ -129,6 +144,12 @@
         if (typeof (this.info.pageSize) !== 'undefined') {
           this.pagination.pageSize = this.info.pageSize
         }
+      },
+      getAliyunAccount () {
+        queryAliyunAccount()
+          .then(res => {
+            this.accountOptions = res.body
+          })
       },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage
