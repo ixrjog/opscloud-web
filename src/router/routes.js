@@ -231,6 +231,15 @@ const frameIn = [
         }
       },
       {
+        path: '/cloud/aliyun/log',
+        name: 'cloud-aliyun-log',
+        component: () => import('@/pages/cloud/aliyun/log'),
+        meta: {
+          auth: true,
+          title: '日志服务'
+        }
+      },
+      {
         path: '/jump/jumpserver/settings',
         name: 'jump-jumpserver-settings',
         component: () => import('@/pages/jump/jumpserver/settings'),

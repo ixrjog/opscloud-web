@@ -198,7 +198,7 @@
       addItem (row) {
         this.formServerStatus.operationType = true
         this.formServerStatus.visible = true
-        var serverData = {
+        let serverData = {
           serverGroup: {},
           id: '',
           name: (row.serverName != null ? row.serverName : row.instanceName),
