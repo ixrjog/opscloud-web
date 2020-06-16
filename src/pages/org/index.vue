@@ -19,6 +19,8 @@
   // API
   import { queryOrgChartByParentId } from '@api/org/org.js'
 
+  const queryOrgChartBySetting = -1
+
   export default {
     data () {
       return {
@@ -32,24 +34,25 @@
           textAlign: 'left',
           direction: '12r'
         },
-        title: '技术部-组织架构',
+        title: '组织架构',
         options: {
           'data': this.ds,
           'nodeContent': 'title',
           'direction': 'l2r',
           'pan': true
-        }
+        },
+        orgChartId: queryOrgChartBySetting
       }
     },
     mounted () {
-      this.fetchOrgChartData()
+      this.fetchData()
     },
     components: {
       OrganizationChart
     },
     methods: {
-      fetchOrgChartData () {
-        queryOrgChartByParentId(9)
+      fetchData () {
+        queryOrgChartByParentId(this.orgChartId)
           .then(res => {
             this.ds = res.body
           })
