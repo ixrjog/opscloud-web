@@ -2,8 +2,8 @@
   <div>
     <div style="margin-bottom: 5px">
       <el-row :gutter="24" style="margin-bottom: 5px">
-        <el-input v-model.trim="queryParam.username" placeholder="输入用户名" :style="searchBarHeadStyle"/>
-        <el-select v-model="queryParam.ticketPhase" clearable placeholder="阶段" style="margin-left: 5px">
+        <el-input v-model.trim="queryParam.username" placeholder="输入用户名" class="input"/>
+        <el-select v-model="queryParam.ticketPhase" clearable placeholder="阶段" class="select">
           <el-option
             v-for="item in ticketPhaseOptions"
             :key="item.value"
@@ -11,7 +11,7 @@
             :value="item.value">
           </el-option>
         </el-select>
-        <el-select v-model="queryParam.ticketStatus" clearable placeholder="状态" style="margin-left: 5px">
+        <el-select v-model="queryParam.ticketStatus" clearable placeholder="状态" class="select">
           <el-option
             v-for="item in ticketStatusOptions"
             :key="item.value"
@@ -19,7 +19,7 @@
             :value="item.value">
           </el-option>
         </el-select>
-        <el-button @click="fetchData" :style="searchBarStyle">查询</el-button>
+        <el-button @click="fetchData" class="botton">查询</el-button>
       </el-row>
     </div>
     <el-table :data="tableData" style="width: 100%; margin-left: 10px">
@@ -51,12 +51,10 @@
                    layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                    :page-size="pagination.pageSize">
     </el-pagination>
-    <TicketServerGroupDialog ref="ticketServerGroupDialog" :formStatus="formServerGroupStatus"
-                             @closeTicketServerGroupDialog="fetchData"></TicketServerGroupDialog>
-    <TicketUserGroupDialog ref="ticketUserGroupDialog" :formStatus="formUserGroupStatus"
-                           @closeTicketUserGroupDialog="fetchData"></TicketUserGroupDialog>
-    <TicketAuthRoleDialog ref="ticketAuthRoleDialog" :formStatus="formAuthRoleStatus"
-                          @closeTicketAuthRoleDialog="fetchData"></TicketAuthRoleDialog>
+    <TicketServerGroupDialog ref="ticketServerGroupDialog" :formStatus="formServerGroupStatus" @closeDialog="fetchData"></TicketServerGroupDialog>
+    <TicketUserGroupDialog ref="ticketUserGroupDialog" :formStatus="formUserGroupStatus" @closeDialog="fetchData"></TicketUserGroupDialog>
+    <TicketAuthRoleDialog ref="ticketAuthRoleDialog" :formStatus="formAuthRoleStatus" @closeDialog="fetchData"></TicketAuthRoleDialog>
+    <TicketRAMPolicyDialog ref="ticketRAMPolicyDialog" :formStatus="formRAMPolicyStatus" @closeDialog="fetchData"></TicketRAMPolicyDialog>
   </div>
 </template>
 
@@ -64,6 +62,7 @@
   import TicketServerGroupDialog from '@/components/opscloud/workorder/TicketServerGroupDialog'
   import TicketUserGroupDialog from '@/components/opscloud/workorder/TicketUserGroupDialog'
   import TicketAuthRoleDialog from '@/components/opscloud/workorder/TicketAuthRoleDialog'
+  import TicketRAMPolicyDialog from '@/components/opscloud/workorder/TicketRAMPolicyDialog'
 
   // Filters
   import { getPhaseText, getPhaseType } from '@/filters/ticket.js'
@@ -75,14 +74,6 @@
     name: 'TicketMgmtTable',
     data () {
       return {
-        searchBarHeadStyle: {
-          display: 'inline-block',
-          maxWidth: '200px',
-          marginLeft: '20px'
-        },
-        searchBarStyle: {
-          marginLeft: '5px'
-        },
         tableData: [],
         role: {},
         formServerGroupStatus: {
@@ -96,6 +87,10 @@
         formAuthRoleStatus: {
           visible: false,
           operationType: 1
+        },
+        formRAMPolicyStatus: {
+          visible: false,
+          operationType: 0
         },
         loading: false,
         pagination: {
@@ -144,7 +139,8 @@
     components: {
       TicketServerGroupDialog,
       TicketUserGroupDialog,
-      TicketAuthRoleDialog
+      TicketAuthRoleDialog,
+      TicketRAMPolicyDialog
     },
     filters: {
       getPhaseText,
@@ -191,6 +187,11 @@
             this.formAuthRoleStatus.operationType = operationType
             this.$refs.ticketAuthRoleDialog.initData(ticket)
             break
+          case 'RAM_POLICY':
+            this.formRAMPolicyStatus.visible = true
+            this.formRAMPolicyStatus.operationType = 0
+            this.$refs.ticketRAMPolicyDialog.initData(ticket)
+            break
           default:
             this.$message.error('工单类型错误或未配置!')
         }
@@ -217,4 +218,18 @@
 
 <style scoped>
 
+  .input {
+    display: inline-block;
+    max-width: 200px;
+    margin-left: 20px;
+    margin-right: 5px;
+  }
+
+  .select {
+    margin-right: 5px;
+  }
+
+  button {
+    margin-right: 5px;
+  }
 </style>
