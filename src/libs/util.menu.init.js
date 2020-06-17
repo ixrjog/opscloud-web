@@ -4,12 +4,13 @@ import store from '@/store/index'
 import menuAside from '@/menu/aside'
 
 const menu = {}
+// url: process.env.VUE_APP_API + 'auth/menu/query',
 
 menu.init = function () {
   const token = util.cookies.get('token')
   if (token && token !== 'undefined') {
     return request({
-      url: process.env.VUE_APP_API + 'auth/menu/query',
+      url: 'auth/menu/query',
       method: 'get'
     })
       .then(async res => {
