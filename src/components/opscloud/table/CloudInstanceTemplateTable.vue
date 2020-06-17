@@ -61,9 +61,7 @@
     <CloudInstanceTemplateDialog :formStatus="formTemplateStatus"
                                  ref="cloudInstanceTemplateDialog"
                                  @closeCloudInstanceTemplateDialog="fetchData"></CloudInstanceTemplateDialog>
-    <CreateCloudInstanceDialog :formStatus="formCreateInstanceStatus"
-                               ref="createCloudInstanceDialog"
-                               @closeCloudInstanceTemplateDialog="fetchData">
+    <CreateCloudInstanceDialog :formStatus="formCreateInstanceStatus" ref="createCloudInstanceDialog" @closeCloudInstanceTemplateDialog="fetchData">
     </CreateCloudInstanceDialog>
   </div>
 </template>
@@ -169,7 +167,7 @@
         })
       },
       editItem (row) {
-        var templateData = Object.assign({}, row)
+        let templateData = Object.assign({}, row)
         this.formTemplateStatus.operationType = false
         this.formTemplateStatus.visible = true
         this.formTemplateStatus.cloudType = this.formStatus.cloudType
@@ -179,7 +177,7 @@
         this.formTemplateStatus.operationType = true
         this.formTemplateStatus.visible = true
         this.formTemplateStatus.cloudType = this.formStatus.cloudType
-        var templateData = {
+        let templateData = {
           id: '',
           templateName: '',
           cloudType: 2,
@@ -198,12 +196,12 @@
       createInstance (row) {
         this.formCreateInstanceStatus.visible = true
         this.formCreateInstanceStatus.cloudType = this.formStatus.cloudType
-        var templateData = Object.assign({}, row)
+        let templateData = Object.assign({}, row)
         this.$refs.createCloudInstanceDialog.initData(this.formStatus.cloudType, templateData)
       },
       fetchData () {
         this.loading = true
-        var requestBody = Object.assign({}, this.queryParam)
+        let requestBody = Object.assign({}, this.queryParam)
         requestBody.cloudType = this.formStatus.cloudType
         requestBody.page = this.pagination.currentPage
         requestBody.length = this.pagination.pageSize

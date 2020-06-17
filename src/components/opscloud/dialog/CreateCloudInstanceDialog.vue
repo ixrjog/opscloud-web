@@ -581,7 +581,7 @@
         this.createInstanceData = {
           templateId: templateData.id,
           serverGroupId: '',
-          securityGroupId: templateData.securityGroupId,
+          securityGroupId: templateData.securityGroupId === null ? 0 : templateData.securityGroupId,
           imageId: templateData.imageId,
           serverName: '',
           loginUser: 'root',
