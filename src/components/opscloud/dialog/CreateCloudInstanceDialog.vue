@@ -130,7 +130,7 @@
             <el-tooltip content="仅在选择的可用区内创建实例(必须在可用区内创建虚拟交换机)" placement="bottom" effect="light">
               <el-radio v-model="createInstanceData.zonePattern" label="single">手动</el-radio>
             </el-tooltip>
-            <el-select v-model="createInstanceData.zoneId" placeholder="请选择" @change="selectionZone"
+            <el-select v-model="createInstanceData.zoneId" placeholder="请选择" @change="handlerSelZone"
                        :disabled="createInstanceData.zonePattern === 'auto'">
               <el-option
                 v-for="item in templateData.instanceZones"
@@ -464,7 +464,8 @@
           return []
         }
         let childrens = []
-        for (let member of memberList) {
+
+        memberList.forEach(member => {
           let name = member.hostname
           if (member.privateIp !== null && member.privateIp !== '') {
             name = name + ' (' + member.privateIp + ' )'
@@ -474,7 +475,7 @@
             value: member.seq
           }
           childrens.push(children)
-        }
+        })
         return childrens
       },
       queryTask () {
@@ -507,8 +508,7 @@
                 }, {
                   name: 'finalized',
                   children: this.convertTaskData(memberMap.FINALIZED)
-                }
-                ]
+                }]
               }
               this.initMyChart(data)
             }
@@ -525,13 +525,13 @@
       },
       convertVswitchData () {
         this.vswitchTree = []
-        for (let vsw in this.vswitchData) {
+        this.vswitchData.forEach(e => {
           let vswitch = {
-            vswitchId: vsw.vswitchId,
-            label: vsw.vswitchName + ' ( 可用ip: ' + vsw.availableIpAddressCount + ' )'
+            vswitchId: e.vswitchId,
+            label: e.vswitchName + ' ( 可用ip: ' + e.availableIpAddressCount + ' )'
           }
           this.vswitchTree.push(vswitch)
-        }
+        })
       },
       getTemplateVSwitch (zoneId) {
         queryCloudInstanceTemplateVSwitch(this.templateData.id, zoneId)
@@ -540,7 +540,7 @@
             this.convertVswitchData()
           })
       },
-      selectionZone () {
+      handlerSelZone () {
         if (this.createInstanceData.zoneId !== '' && this.createInstanceData.zonePattern === 'single') {
           this.getTemplateVSwitch(this.createInstanceData.zoneId)
         }
@@ -614,7 +614,7 @@
         this.imageOptions.push(templateData.cloudImage)
       },
       fetchImageData () {
-        var imageQueryParam = {
+        let imageQueryParam = {
           queryName: this.queryImageParam.queryName,
           cloudType: this.formStatus.cloudType,
           isActive: 1,
