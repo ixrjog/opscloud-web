@@ -75,9 +75,6 @@
       initData (user) {
         this.user = user
       },
-      handleClick () {
-        this.$emit('input', !this.value)
-      },
       getUserRandomPassword () {
         getRandomPassword()
           .then(res => {
@@ -86,7 +83,7 @@
       },
       saveInfo () {
         setTimeout(() => {
-          var requestBody = Object.assign({}, this.user)
+          let requestBody = Object.assign({}, this.user)
           requestBody.password = this.password
           if (this.formStatus.operationType) {
             createUser(requestBody)

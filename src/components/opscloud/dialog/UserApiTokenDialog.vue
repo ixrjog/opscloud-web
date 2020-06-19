@@ -1,20 +1,20 @@
 <template>
   <el-dialog :title="formStatus.title" :visible.sync="formStatus.visible" :before-close="closeDialog">
-    <el-form :model="formData">
+    <el-form :model="userApiToken">
       <el-form-item label="id" :label-width="formStatus.labelWidth">
         <el-input v-model="tokenId" placeholder="自动生成无需输入" readonly></el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
+    <el-form :model="userApiToken">
       <el-form-item label="api-token" :label-width="formStatus.labelWidth">
         <el-input v-model="apiToken" clearable placeholder="自动生成无需输入" readonly>
         </el-input>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
+    <el-form :model="userApiToken">
       <el-form-item label="过期时间" :label-width="formStatus.labelWidth" :required="true">
         <el-date-picker
-          v-model="formData.expiredTime" value-format="yyyy-MM-dd HH:mm:ss"
+          v-model="userApiToken.expiredTime" value-format="yyyy-MM-dd HH:mm:ss"
           align="right"
           type="date"
           placeholder="选择日期"
@@ -22,9 +22,9 @@
         </el-date-picker>
       </el-form-item>
     </el-form>
-    <el-form :model="formData">
+    <el-form :model="userApiToken">
       <el-form-item label="描述" :label-width="formStatus.labelWidth" :required="true">
-        <el-input v-model="formData.comment" placeholder="请输入内容"></el-input>
+        <el-input v-model="userApiToken.comment" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -42,6 +42,7 @@
   export default {
     data () {
       return {
+        userApiToken: {},
         tokenId: '',
         apiToken: '',
         pickerOptions: {
@@ -97,8 +98,8 @@
         }
       }
     },
-    name: 'user-api-token-dialog',
-    props: ['formStatus', 'formData'],
+    name: 'UserApiTokenDialog',
+    props: ['formStatus'],
     mixins: [],
     mounted () {
     },
@@ -106,18 +107,18 @@
     },
     methods: {
       closeDialog () {
-        this.formData = {}
+        this.userApiToken = {}
         this.tokenId = ''
         this.apiToken = ''
         this.formStatus.visible = false
-        this.$emit('closeUserApiTokenDialog')
+        this.$emit('closeDialog')
       },
-      handleClick () {
-        this.$emit('input', !this.value)
+      initData (userApiToken) {
+        this.userApiToken = userApiToken
       },
       saveItem () {
         setTimeout(() => {
-          applyApiToken(this.formData)
+          applyApiToken(this.userApiToken)
             .then(res => {
               // 返回数据
               if (res.success) {

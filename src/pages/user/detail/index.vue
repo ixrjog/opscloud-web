@@ -83,7 +83,9 @@
                     <el-table-column prop="ramAccount" label="账户">
                       <template slot-scope="props">
                         <el-tooltip class="item" effect="light" content="点击打开登录连接" placement="top-start">
-                          <el-button style="padding: 3px 0" type="text" @click="handlerOpenLoginUrl(props.row)">{{ props.row.ramAccount }}</el-button>
+                          <el-button style="padding: 3px 0" type="text" @click="handlerOpenLoginUrl(props.row)">{{
+                            props.row.ramAccount }}
+                          </el-button>
                         </el-tooltip>
                       </template>
                     </el-table-column>
@@ -145,10 +147,10 @@
         <!-- 用户资源详情-->
       </div>
       <!--用户编辑-->
-      <UserDialog :formStatus="formUserStatus" :formData="user" @closeUserDialog="fetchData"></UserDialog>
+      <UserDialog :formStatus="formUserStatus" ref="userDialog" @closeUserDialog="fetchData"></UserDialog>
       <!-- api-token申请对话框 -->
-      <UserApiTokenDialog :formStatus="formUserApiTokenStatus" :formData="userApiToken"
-                          @closeUserApiTokenDialog="fetchData"></UserApiTokenDialog>
+      <UserApiTokenDialog :formStatus="formUserApiTokenStatus" ref="userApiTokenDialog"
+                          @closeDialog="fetchData"></UserApiTokenDialog>
       <!-- ssh-pubkey编辑对话框 -->
       <UserSSHKeyDialog :formStatus="formUserSSHKeyStatus" ref="userSSHKeyDialog"
                         @closeUserSSHKeyDialog="fetchData"></UserSSHKeyDialog>
@@ -182,8 +184,6 @@
           labelWidth: '100px',
           title: '申请ApiToken'
         },
-        userApiToken: {},
-        userSSHKey: {},
         formUserSSHKeyStatus: {
           visible: false,
           labelWidth: '100px',
@@ -219,7 +219,7 @@
         this.formUserStatus.visible = true
         this.formUserStatus.operationType = false
         // user
-        this.user = Object.assign({}, this.formUserDetail)
+        this.$refs.userDialog.initData(Object.assign({}, this.formUserDetail))
       },
       delApiToken (row) {
         this.$confirm('此操作将删除当前配置?', '提示', {
@@ -244,20 +244,22 @@
       addApiToken () {
         // form
         this.formUserApiTokenStatus.visible = true
-        this.userApiToken = {
+        let userApiToken = {
           id: '',
           tokenId: '',
           token: '',
           expiredTime: '',
           comment: ''
         }
+        this.$refs.userApiTokenDialog.initData(userApiToken)
       },
       editSSHKey () {
         // form
+        let userSSHKey = {}
         if (this.formUserDetail.credentialMap.sshPubKey != null) {
-          this.userSSHKey = Object.assign({}, this.formUserDetail.credentialMap.sshPubKey)
+          userSSHKey = Object.assign({}, this.formUserDetail.credentialMap.sshPubKey)
         } else {
-          this.userSSHKey = {
+          userSSHKey = {
             id: '',
             userId: this.formUserDetail.id,
             username: this.formUserDetail.username,
@@ -266,7 +268,7 @@
             credentialType: 2 // ssh pub-key
           }
         }
-        this.$refs.userSSHKeyDialog.initData(this.userSSHKey)
+        this.$refs.userSSHKeyDialog.initData(userSSHKey)
         this.formUserSSHKeyStatus.visible = true
       },
       paginationCurrentChange (currentPage) {
