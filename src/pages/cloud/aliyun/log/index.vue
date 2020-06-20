@@ -4,10 +4,10 @@
     <el-tabs v-model="activeName">
       <el-tab-pane label=配置 name="options">
         <el-row :gutter="20">
-          <el-col :span="12">
+          <el-col :span="10">
             <AliyunLogTable ref="aliyunLogTable" @handlerSelLog="handlerSelLog"></AliyunLogTable>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="14">
             <AliyunLogMemberTable ref="aliyunLogMemberTable"></AliyunLogMemberTable>
           </el-col>
         </el-row>

@@ -7,9 +7,15 @@
     </el-row>
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
       <el-table-column prop="accountUid" label="主账户uid" v-if="false"></el-table-column>
-      <el-table-column prop="project" label="日志项目"></el-table-column>
-      <el-table-column prop="logstore" label="日志库"></el-table-column>
-      <el-table-column prop="config" label="logtail配置"></el-table-column>
+      <el-table-column prop="project" label="日志服务配置">
+        <template slot-scope="scope">
+          <div>日志项目: {{ scope.row.project}}</div>
+          <div>日志库: {{ scope.row.logstore}}</div>
+          <div>logtail配置: {{ scope.row.config}}</div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="logstore" label="日志库" v-if="false"></el-table-column>
+      <el-table-column prop="config" label="logtail配置" v-if="false"></el-table-column>
       <el-table-column prop="memberSize" label="成员" width="80">
         <template slot-scope="props">
           <el-tag style="margin-left: 5px">{{ props.row.memberSize }}</el-tag>

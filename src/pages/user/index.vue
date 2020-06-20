@@ -129,7 +129,7 @@
         },
         queryParam: {
           queryName: '',
-          isActive: false
+          isActive: true
         },
         title: '用户管理'
       }
@@ -244,6 +244,7 @@
         this.loading = true
         let requestBody = {
           'queryName': this.queryParam.queryName,
+          'isActive': this.queryParam.isActive,
           'extend': 1,
           'page': this.pagination.currentPage,
           'length': this.pagination.pageSize
