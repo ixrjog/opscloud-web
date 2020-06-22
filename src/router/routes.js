@@ -167,6 +167,15 @@ const frameIn = [
         }
       },
       {
+        path: '/cloud/server/cvm',
+        name: 'cloud-server-cvm',
+        component: () => import('@/pages/cloud/server/cvm'),
+        meta: {
+          auth: true,
+          title: 'CVM主机管理'
+        }
+      },
+      {
         path: '/cloud/server/esxi',
         name: 'cloud-server-esxi',
         component: () => import('@/pages/cloud/server/esxi'),

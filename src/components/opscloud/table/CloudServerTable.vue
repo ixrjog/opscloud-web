@@ -1,9 +1,9 @@
 <template>
   <div>
     <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
-      <el-input v-model="queryParam.serverName" placeholder="服务器名称" class="input-search-bar"/>
-      <el-input v-model="queryParam.queryIp" placeholder="ip" class="input-search-bar"/>
-      <el-select v-model="queryParam.serverStatus" clearable placeholder="状态" class="search-bar">
+      <el-input v-model="queryParam.serverName" placeholder="服务器名称" class="input"/>
+      <el-input v-model="queryParam.queryIp" placeholder="ip" class="input"/>
+      <el-select v-model="queryParam.serverStatus" clearable placeholder="状态" class="search">
         <el-option
           v-for="item in statusOptions"
           :key="item.value"
@@ -11,8 +11,8 @@
           :value="item.value">
         </el-option>
       </el-select>
-      <el-button @click="fetchData" class="search-bar">查询</el-button>
-      <el-button @click="handleSync" class="search-bar" :loading="syncLoading">同步</el-button>
+      <el-button @click="fetchData" class="button">查询</el-button>
+      <el-button @click="handleSync" class="button" :loading="syncLoading">同步</el-button>
     </el-row>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column type="expand">
@@ -70,14 +70,16 @@
           <!--            <el-button type="primary" plain size="mini" @click="updateItemNeedAuth(scope.row)">{{scope.row.needAuth ===-->
           <!--              0 ? '鉴权' : '不鉴权'}}-->
           <!--            </el-button>-->
-          <el-button type="primary" plain size="mini" @click="addItem(scope.row)" v-show="scope.row.serverStatus == 0">
+          <el-button type="primary" plain size="mini" @click="handlerRowAdd(scope.row)"
+                     v-show="scope.row.serverStatus == 0">
             导入
           </el-button>
-          <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
+          <el-button type="danger" plain size="mini" @click="handlerRowDel(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination background @current-change="paginationCurrentChange" :page-sizes="[10, 15, 20, 25, 30]" @size-change="handleSizeChange"
+    <el-pagination background @current-change="paginationCurrentChange" :page-sizes="[10, 15, 20, 25, 30]"
+                   @size-change="handleSizeChange"
                    layout="sizes, prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                    :page-size="pagination.pageSize">
     </el-pagination>
@@ -94,6 +96,20 @@
   // API
   import { queryCloudServerPage, syncCloudServerByKey, deleteCloudServerById } from '@api/cloud/cloud.server.js'
   import { mapActions, mapState } from 'vuex'
+
+  const statusOptions = [{
+    value: 0,
+    label: '新建(未录入)'
+  }, {
+    value: 1,
+    label: '已录入'
+  }, {
+    value: 2,
+    label: '标记删除'
+  }, {
+    value: 3,
+    label: '服务器表未删除但云服务器已销毁'
+  }]
 
   export default {
     data () {
@@ -120,28 +136,11 @@
           queryIp: '',
           serverStatus: ''
         },
-        statusOptions: [{
-          value: 0,
-          label: '新建(未录入)'
-        }, {
-          value: 1,
-          label: '已录入'
-        }, {
-          value: 2,
-          label: '标记删除'
-        }, {
-          value: 3,
-          label: '服务器表未删除但云服务器已销毁'
-        }],
+        statusOptions: statusOptions,
         syncLoading: false
-        // cloudServerKey: 'AliyunECSCloudServer',
-        // serverType: 2,
-        // title: 'Aliyun:ECS实例管理',
-        // showCpuColumn: true,
-        // showMemoryColumn: true
       }
     },
-    name: 'cloud-server-table',
+    name: 'CloudServerTable',
     props: ['formStatus'],
     mounted () {
       this.initPageSize()
@@ -175,7 +174,7 @@
           this.pagination.pageSize = this.info.pageSize
         }
       },
-      delItem (row) {
+      handlerRowDel (row) {
         this.$confirm('此操作将删除当前配置?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -195,7 +194,7 @@
           })
         })
       },
-      addItem (row) {
+      handlerRowAdd (row) {
         this.formServerStatus.operationType = true
         this.formServerStatus.visible = true
         let serverData = {
@@ -265,12 +264,17 @@
     width: 50%;
   }
 
-  .input-search-bar {
+  .input {
     display: inline-block;
     max-width: 200px;
+    margin-right: 5px;
   }
 
-  .search-bar {
+  .search {
     margin-right: 5px;
+  }
+
+  .button {
+    margin-left: 5px;
   }
 </style>
