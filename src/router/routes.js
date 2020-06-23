@@ -83,6 +83,15 @@ const frameIn = [
           title: '密钥配置'
         }
       },
+      {
+        path: '/setting/global',
+        name: 'setting-global',
+        component: () => import('@/pages/setting/global'),
+        meta: {
+          auth: true,
+          title: '全局参数'
+        }
+      },
       // server(group)
       {
         path: '/server',

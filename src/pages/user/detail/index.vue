@@ -119,6 +119,12 @@
                               style="margin-left: 5px">堡垒机
                       </el-tag>
                     </el-tooltip>
+                    <el-tooltip class="item" effect="light" content="Gitlab公钥已推送" placement="top"
+                                v-show="formUserDetail.attributeMap != null && formUserDetail.attributeMap.gitlabPubkey">
+                      <el-tag type="success"
+                              style="margin-left: 5px">Gitlab
+                      </el-tag>
+                    </el-tooltip>
                   </el-col>
                   <el-button style="margin-top: 5px" size="mini" @click="editSSHKey">编辑</el-button>
                 </el-collapse-item>
