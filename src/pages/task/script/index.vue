@@ -9,7 +9,7 @@
           <ServerTree ref="serverTree"></ServerTree>
         </el-col>
         <el-col :span="16">
-          <el-select v-model="script" filterable :style="searchBarStyle"
+          <el-select v-model.trim="script" filterable :style="searchBarStyle"
                      @change="selectScript" value-key="id" reserve-keyword
                      remote placeholder="搜索script" :remote-method="getScript"
                      :loading="scriptSearching">

@@ -3,12 +3,12 @@
              :visible.sync="formStatus.visible">
     <el-form :model="formData">
       <el-form-item label="名称" :label-width="formStatus.labelWidth">
-        <el-input v-model="formData.dbName" placeholder="请输入内容" readonly></el-input>
+        <el-input v-model.trim="formData.dbName" placeholder="请输入内容" readonly></el-input>
       </el-form-item>
     </el-form>
     <el-form :model="formData">
       <el-form-item label="环境" :label-width="formStatus.labelWidth">
-        <el-select v-model="formData.envType" filterable clearable
+        <el-select v-model.trim="formData.envType" filterable clearable
                    remote reserve-keyword
                    :loading="loading">
           <el-option
@@ -22,7 +22,7 @@
     </el-form>
     <el-form :model="formData">
       <el-form-item label="描述" :label-width="formStatus.labelWidth">
-        <el-input v-model="formData.comment" placeholder="请输入内容"></el-input>
+        <el-input v-model.trim="formData.comment" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">

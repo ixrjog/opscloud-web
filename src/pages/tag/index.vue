@@ -5,7 +5,7 @@
         <h1>标签配置</h1>
       </div>
       <el-row :gutter="24" style="margin-bottom: 5px">
-        <el-input v-model="queryParam.tagKey" placeholder="标签key" class="input-bar"/>
+        <el-input v-model.trim="queryParam.tagKey" placeholder="标签key" class="input-bar"/>
         <el-button @click="fetchData" class="button">查询</el-button>
         <el-button @click="addItem" class="button">新增</el-button>
       </el-row>

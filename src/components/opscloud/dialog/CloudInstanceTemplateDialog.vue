@@ -6,7 +6,7 @@
       <el-tab-pane label="模版" name="template">
         <el-form :model="templateData">
           <el-form-item label="模版名称" :label-width="formStatus.labelWidth" :required="true">
-            <el-input v-model="templateData.templateName" placeholder="请输入内容"></el-input>
+            <el-input v-model.trim="templateData.templateName" placeholder="请输入内容"></el-input>
           </el-form-item>
           <el-form-item label="模版内容" :label-width="formStatus.labelWidth">
             <editor v-model="templateData.templateYAML" @init="editorInit" lang="yaml" theme="chrome"
@@ -20,15 +20,15 @@
       </el-tab-pane>
       <el-tab-pane label="实例类型" name="instanceType">
         <el-form :model="templateData">
-          <el-select v-model="queryInstanceTypeParam.regionId" clearable placeholder="地区">
+          <el-select v-model.trim="queryInstanceTypeParam.regionId" clearable placeholder="地区">
             <el-option
               v-for="item in regionOptions" :key="item" :label="item" :value="item">
             </el-option>
           </el-select>
-          <el-input v-model="queryInstanceTypeParam.queryName" placeholder="关键字查询"
+          <el-input v-model.trim="queryInstanceTypeParam.queryName" placeholder="关键字查询"
                     v-show="queryInstanceTypeParam.regionId != null && queryInstanceTypeParam.regionId != ''"
                     style="display: inline-block; max-width:200px; margin-left: 5px"/>
-          <el-select v-model="queryInstanceTypeParam.cpuCoreCount" clearable placeholder="cpu规格"
+          <el-select v-model.trim="queryInstanceTypeParam.cpuCoreCount" clearable placeholder="cpu规格"
                      style="margin-left: 5px">
             <el-option v-for="item in cpuOptions" :key="item" :label="item" :value="item">
             </el-option>
@@ -40,7 +40,7 @@
           <el-table :data="instanceTypeTableData" style="width: 100%" v-loading="instanceTypeTableLoading">
             <el-table-column label="实例类型">
               <template scope="scope">
-                <el-radio v-model="typeId" :label="scope.row.instanceTypeId"
+                <el-radio v-model.trim="typeId" :label="scope.row.instanceTypeId"
                           @change.native="getTypeRow(scope.$index,scope.row)"></el-radio>
               </template>
             </el-table-column>

@@ -12,9 +12,9 @@
               <div style="margin-bottom: 5px">
                 <!--            :gutter="24"-->
                 <el-row style="margin-bottom: 5px">
-                  <el-input v-model="queryGroupParam.name" placeholder="名称" :style="searchBarHeadStyle"
+                  <el-input v-model.trim="queryGroupParam.name" placeholder="名称" :style="searchBarHeadStyle"
                             style="display: inline-block; max-width:200px"/>
-                  <el-select v-model="queryGroupParam.grpType" filterable clearable :style="searchBarStyle"
+                  <el-select v-model.trim="queryGroupParam.grpType" filterable clearable :style="searchBarStyle"
                              remote reserve-keyword placeholder="输入关键词搜组类型" :remote-method="getGrpType"
                              :loading="loading">
                     <el-option v-for="item in grpTypeOptions"

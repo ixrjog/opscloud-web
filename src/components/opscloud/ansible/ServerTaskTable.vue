@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-row :gutter="24" style="margin-bottom: 5px; margin-left: 0px">
-      <el-select v-model="queryParam.taskType" clearable placeholder="类型">
+      <el-select v-model.trim="queryParam.taskType" clearable placeholder="类型">
         <el-option
           v-for="item in taskTypeOptions"
           :key="item.value"

@@ -3,12 +3,12 @@
              :visible.sync="formStatus.visible" @before-close="handlerCloseDialog">
     <el-form :model="serverData">
       <el-form-item label="名称" :label-width="formStatus.labelWidth" :required="true">
-        <el-input v-model="serverData.name" placeholder="请输入内容"></el-input>
+        <el-input v-model.trim="serverData.name" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
     <el-form :model="serverData">
       <el-form-item label="服务器组" :label-width="formStatus.labelWidth" :required="true">
-        <el-select v-model="serverData.serverGroupId" filterable clearable
+        <el-select v-model.trim="serverData.serverGroupId" filterable clearable
                    remote reserve-keyword placeholder="输入关键词搜组类型" :remote-method="getServerGroup"
                    :loading="loading">
           <el-option
@@ -34,12 +34,12 @@
     </el-form>
     <el-form :model="serverData">
       <el-form-item label="登录用户" :label-width="formStatus.labelWidth">
-        <el-input v-model="serverData.loginUser" placeholder="请输入内容"></el-input>
+        <el-input v-model.trim="serverData.loginUser" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
     <el-form :model="serverData">
       <el-form-item label="登录类型" :label-width="formStatus.labelWidth">
-        <el-select v-model="serverData.loginType" placeholder="选择类型">
+        <el-select v-model.trim="serverData.loginType" placeholder="选择类型">
           <el-option
             v-for="item in loginTypeOptions"
             :key="item.value"
@@ -51,7 +51,7 @@
     </el-form>
     <el-form :model="serverData">
       <el-form-item label="环境" :label-width="formStatus.labelWidth" :required="true">
-        <el-select v-model="serverData.envType" filterable clearable
+        <el-select v-model.trim="serverData.envType" filterable clearable
                    remote reserve-keyword
                    :loading="loading">
           <el-option
@@ -65,27 +65,27 @@
     </el-form>
     <el-form :model="serverData">
       <el-form-item label="区" :label-width="formStatus.labelWidth">
-        <el-input v-model="serverData.area" placeholder="请输入内容"></el-input>
+        <el-input v-model.trim="serverData.area" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
     <el-form :model="serverData">
       <el-form-item label="公网ip" :label-width="formStatus.labelWidth">
-        <el-input v-model="serverData.publicIp" placeholder="请输入内容"></el-input>
+        <el-input v-model.trim="serverData.publicIp" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
     <el-form :model="serverData">
       <el-form-item label="私网ip" :label-width="formStatus.labelWidth" :required="true">
-        <el-input v-model="serverData.privateIp" placeholder="请输入内容"></el-input>
+        <el-input v-model.trim="serverData.privateIp" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
     <el-form :model="serverData">
       <el-form-item label="序号" :label-width="formStatus.labelWidth" :required="true">
-        <el-input v-model="serverData.serialNumber" placeholder="请输入内容"></el-input>
+        <el-input v-model.number="serverData.serialNumber" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
     <el-form :model="serverData">
       <el-form-item label="描述" :label-width="formStatus.labelWidth">
-        <el-input v-model="serverData.comment" placeholder="请输入内容"></el-input>
+        <el-input v-model.trim="serverData.comment" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">

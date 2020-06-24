@@ -5,8 +5,8 @@
         <h1>{{title}}</h1>
       </div>
       <div style="margin-bottom: 5px">
-            <el-input v-model="queryParam.queryName" placeholder="关键字查询" style="display: inline-block;max-width:200px"/>
-            <el-select v-model="queryParam.cloudDbType" clearable placeholder="云数据库类型" style="margin-left: 5px">
+            <el-input v-model.trim="queryParam.queryName" clearable placeholder="关键字查询" style="display: inline-block;max-width:200px"/>
+            <el-select v-model.trim="queryParam.cloudDbType" clearable placeholder="云数据库类型" style="margin-left: 5px">
               <el-option
                 v-for="item in cloudDbTypeOptions"
                 :key="item.value"
@@ -14,7 +14,7 @@
                 :value="item.value">
               </el-option>
             </el-select>
-            <el-select v-model="queryParam.envType" clearable placeholder="环境" style="margin-left: 5px">
+            <el-select v-model.trim="queryParam.envType" clearable placeholder="环境" style="margin-left: 5px">
               <el-option
                 v-for="item in envTypeOptions"
                 :key="item.id"
@@ -23,7 +23,7 @@
               </el-option>
             </el-select>
             <el-select
-              v-model="queryParam.tagId" filterable clearable remote reserve-keyword
+              v-model.trim="queryParam.tagId" filterable clearable remote reserve-keyword
               placeholder="搜索标签" :remote-method="getTag" :loading="loading" style="margin-left: 5px">
               <el-option
                 v-for="item in tagOptions"

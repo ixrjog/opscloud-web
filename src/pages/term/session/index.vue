@@ -6,7 +6,7 @@
       </div>
       <el-row :gutter="24" style="margin-bottom: 5px">
         <el-input v-model.trim="queryParam.username" placeholder="用户名查询" class="input-bar"/>
-        <el-select v-model="queryParam.isClosed" clearable placeholder="会话" class="select-bar">
+        <el-select v-model.trim="queryParam.isClosed" clearable placeholder="会话" class="select-bar">
           <el-option
             v-for="item in closeOptions"
             :key="item.value"

@@ -4,7 +4,7 @@
              :visible.sync="formStatus.visible">
     <el-tabs v-model="activeName">
       <el-tab-pane label="安全组配置" name="securityGroup">
-        <el-input v-model="querySecurityGroupParam.queryName" placeholder="关键字查询"
+        <el-input v-model.trim="querySecurityGroupParam.queryName" placeholder="关键字查询"
                   style="display: inline-block; max-width:200px"/>
         <el-select v-model="querySecurityGroupParam.isActive" clearable placeholder="有效" style="margin-left: 5px">
           <el-option
@@ -41,7 +41,7 @@
         </el-pagination>
       </el-tab-pane>
       <el-tab-pane label="虚拟交换机配置" name="vswitch">
-        <el-input v-model="queryVswitchParam.queryName" placeholder="关键字查询"
+        <el-input v-model.trim="queryVswitchParam.queryName" placeholder="关键字查询"
                   style="display: inline-block; max-width:200px"/>
         <el-select v-model="queryVswitchParam.isActive" clearable placeholder="有效" style="margin-left: 5px">
           <el-option

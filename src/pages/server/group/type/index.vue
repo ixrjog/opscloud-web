@@ -6,7 +6,7 @@
       </div>
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
-            <el-input v-model="queryParam.name" placeholder="名称" :style="searchBarHeadStyle"/>
+            <el-input v-model.trim="queryParam.name" placeholder="名称" :style="searchBarHeadStyle"/>
             <el-button @click="fetchData" :style="searchBarStyle">查询</el-button>
             <el-button @click="addItem" :style="searchBarStyle">新增</el-button>
         </el-row>

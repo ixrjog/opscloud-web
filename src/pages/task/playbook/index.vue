@@ -9,7 +9,7 @@
           <ServerTree ref="serverTree"></ServerTree>
         </el-col>
         <el-col :span="16">
-          <el-select v-model="playbook" filterable :style="searchBarStyle"
+          <el-select v-model.trim="playbook" filterable :style="searchBarStyle"
                      @change="selectPlaybook" value-key="id" reserve-keyword
                      remote placeholder="搜索playbook" :remote-method="getPlaybook"
                      :loading="playbookSearching">

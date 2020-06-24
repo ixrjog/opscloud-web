@@ -5,8 +5,8 @@
         <h1>{{title}}</h1>
       </div>
       <div style="margin-bottom: 5px">
-        <el-input v-model="queryParam.queryName" placeholder="关键字查询" :style="searchBarHeadStyle"/>
-        <el-select v-model="queryParam.cloudDbType" clearable placeholder="云数据库类型" :style="searchBarStyle">
+        <el-input v-model.trim="queryParam.queryName" clearable placeholder="关键字查询" :style="searchBarHeadStyle"/>
+        <el-select v-model.trim="queryParam.cloudDbType" clearable placeholder="云数据库类型" :style="searchBarStyle">
           <el-option
             v-for="item in cloudDbTypeOptions"
             :key="item.value"

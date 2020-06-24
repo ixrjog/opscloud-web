@@ -6,8 +6,8 @@
       </div>
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
-          <el-input v-model="queryParam.name" placeholder="名称" :style="searchBarHeadStyle"/>
-          <el-select v-model="queryParam.grpType" filterable clearable :style="searchBarStyle"
+          <el-input v-model.trim="queryParam.name" placeholder="名称" :style="searchBarHeadStyle"/>
+          <el-select v-model.trim="queryParam.grpType" filterable clearable :style="searchBarStyle"
                      remote reserve-keyword placeholder="输入关键词搜组类型" :remote-method="getGrpType" :loading="loading">
             <el-option
               v-for="item in grpTypeOptions"

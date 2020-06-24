@@ -11,9 +11,9 @@
             <div style="margin-bottom: 5px">
               <!--            :gutter="24"-->
               <el-row style="margin-bottom: 5px">
-                <el-input v-model="queryAssetParam.queryName" placeholder="名称"
+                <el-input v-model.trim="queryAssetParam.queryName" clearable placeholder="名称"
                           style="display: inline-block; max-width:200px"/>
-                <el-select v-model="queryAssetParam.assetsNodeId" filterable clearable
+                <el-select v-model.trim="queryAssetParam.assetsNodeId" filterable clearable
                            remote reserve-keyword placeholder="搜索资产节点" :remote-method="getAssetsNode">
                   <el-option
                     v-for="item in assetsNodeOptions"
@@ -22,7 +22,7 @@
                     :value="item.id">
                   </el-option>
                 </el-select>
-                <el-select v-model="queryAssetParam.isActive" clearable placeholder="用户是否有效">
+                <el-select v-model.trim="queryAssetParam.isActive" clearable placeholder="用户是否有效">
                   <el-option
                     v-for="item in activeOptions"
                     :key="item.value"

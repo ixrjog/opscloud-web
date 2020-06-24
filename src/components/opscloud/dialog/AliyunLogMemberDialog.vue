@@ -3,7 +3,7 @@
              :visible.sync="formStatus.visible" :before-close="closeDialog">
     <el-form :model="logMemberData">
       <el-form-item label="服务器组" :label-width="labelWidth" :required="true" v-show="formStatus.operationType">
-        <el-select v-model="serverGroup" filterable clearable value-key="name"
+        <el-select v-model.trim="serverGroup" filterable clearable value-key="name"
                    remote reserve-keyword placeholder="输入关键词搜索服务器组" :remote-method="getServerGroup" :loading="loading">
           <el-option
             v-for="item in serverGroupOptions"
@@ -18,17 +18,17 @@
     </el-form>
     <el-form :model="logMemberData">
       <el-form-item label="服务器组" v-show="!formStatus.operationType" :label-width="labelWidth">
-        <el-input v-model="logMemberData.serverGroupName" :disabled="true"></el-input>
+        <el-input v-model.trim="logMemberData.serverGroupName" :disabled="true"></el-input>
       </el-form-item>
     </el-form>
     <el-form :model="logMemberData">
       <el-form-item label="自定义topic" :label-width="labelWidth">
-        <el-input v-model="logMemberData.topic" placeholder="请输入内容"></el-input>
+        <el-input v-model.trim="logMemberData.topic" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
     <el-form :model="logMemberData">
       <el-form-item label="描述" :label-width="labelWidth">
-        <el-input v-model="logMemberData.comment" placeholder="请输入内容"></el-input>
+        <el-input v-model.trim="logMemberData.comment" placeholder="请输入内容"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">

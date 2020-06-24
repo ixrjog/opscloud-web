@@ -52,7 +52,7 @@
       <el-tab-pane label="通用选项" name="options">
         <el-form :model="templateData">
           <el-form-item label="服务器组" :label-width="formStatus.labelWidth" :required="true">
-            <el-select v-model="createInstanceData.serverGroupId" filterable clearable
+            <el-select v-model.trim="createInstanceData.serverGroupId" filterable clearable
                        remote reserve-keyword placeholder="输入关键词搜组类型" :remote-method="getServerGroup">
               <el-option
                 v-for="item in serverGroupOptions"
@@ -64,10 +64,10 @@
           </el-form-item>
           <el-form-item label="服务器名称" :label-width="formStatus.labelWidth">
             <!--            style="display: inline-block; max-width:175px;"-->
-            <el-input v-model="createInstanceData.serverName" placeholder="不填写按服务器组名称生成"></el-input>
+            <el-input v-model.trim="createInstanceData.serverName" placeholder="不填写按服务器组名称生成"></el-input>
           </el-form-item>
           <el-form-item label="登录用户" :label-width="formStatus.labelWidth" :required="true">
-            <el-input v-model="createInstanceData.loginUser" placeholder="请输入内容"></el-input>
+            <el-input v-model.trim="createInstanceData.loginUser" placeholder="请输入内容"></el-input>
           </el-form-item>
           <el-form-item label="登录类型" :label-width="formStatus.labelWidth" :required="true">
             <el-select v-model="createInstanceData.loginType" placeholder="选择类型">
@@ -102,7 +102,7 @@
       <el-tab-pane label="实例选项" name="instance">
         <el-form :model="templateData">
           <el-form-item label="镜像" :label-width="formStatus.labelWidth" :required="true">
-            <el-select v-model="createInstanceData.imageId" filterable clearable
+            <el-select v-model.trim="createInstanceData.imageId" filterable clearable
                        remote reserve-keyword placeholder="输入关键词搜组类型" :remote-method="getImage">
               <el-option
                 v-for="item in imageOptions"

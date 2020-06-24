@@ -10,9 +10,9 @@
             <!--用户搜索-->
             <div style="margin-bottom: 5px">
               <el-row style="margin-bottom: 5px">
-                <el-input v-model="queryUserParam.queryName" placeholder="名称"
+                <el-input v-model.trim="queryUserParam.queryName"  clearable placeholder="名称"
                           style="display: inline-block; max-width:200px"/>
-                <el-select v-model="queryUserParam.isActive" clearable placeholder="用户是否有效">
+                <el-select v-model.trim="queryUserParam.isActive" clearable placeholder="用户是否有效">
                   <el-option
                     v-for="item in activeOptions"
                     :key="item.value"

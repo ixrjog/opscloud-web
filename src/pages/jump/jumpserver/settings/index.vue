@@ -19,7 +19,7 @@
                     <el-tooltip content="推送权限的账户" placement="top-start" effect="light">
                       <el-form-item label="管理账户" :label-width="labelWidth" :required="true">
                         <template>
-                          <el-select v-model="settings.assetsAdminuserId" placeholder="请选择" clearable>
+                          <el-select v-model.trim="settings.assetsAdminuserId" placeholder="请选择" clearable>
                             <el-option
                               v-for="item in settings.assetsAdminusers"
                               :key="item.id"
@@ -33,7 +33,7 @@
                     <el-tooltip content="普通用户登录系统的账户(不支持sudo)" placement="top-start" effect="light">
                       <el-form-item label="低权限系统账户" :label-width="labelWidth" :required="true">
                         <template>
-                          <el-select v-model="settings.assetsSystemuserId" placeholder="请选择" clearable>
+                          <el-select v-model.trim="settings.assetsSystemuserId" placeholder="请选择" clearable>
                             <el-option
                               v-for="item in settings.assetsSystemusers"
                               :key="item.id"
@@ -47,7 +47,7 @@
                     <el-tooltip content="管理员登录系统的账户(支持sudo)" placement="bottom" effect="light">
                       <el-form-item label="高权限系统账户" :label-width="labelWidth" :required="true">
                         <template>
-                          <el-select v-model="settings.assetsAdminSystemuserId" placeholder="请选择" clearable>
+                          <el-select v-model.trim="settings.assetsAdminSystemuserId" placeholder="请选择" clearable>
                             <el-option
                               v-for="item in settings.assetsSystemusers"
                               :key="item.id"

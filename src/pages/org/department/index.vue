@@ -8,7 +8,7 @@
         <el-col :span="8">
           <el-card class="box-card" shadow="never">
             <div slot="header" class="clearfix">
-              <el-select v-model="treeDepartmentId" filterable clearable :style="searchBarStyle"
+              <el-select v-model.trim="treeDepartmentId" filterable clearable :style="searchBarStyle"
                          remote reserve-keyword placeholder="搜索部门" :remote-method="getDepartment"
                          :loading="getDepartmentLoading">
                 <el-option
