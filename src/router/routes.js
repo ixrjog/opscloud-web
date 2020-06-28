@@ -258,6 +258,15 @@ const frameIn = [
         }
       },
       {
+        path: '/kubernetes/cluster',
+        name: 'kubernetes-cluster',
+        component: () => import('@/pages/kubernetes/cluster'),
+        meta: {
+          auth: true,
+          title: 'Kubernetes集群管理'
+        }
+      },
+      {
         path: '/jump/jumpserver/settings',
         name: 'jump-jumpserver-settings',
         component: () => import('@/pages/jump/jumpserver/settings'),

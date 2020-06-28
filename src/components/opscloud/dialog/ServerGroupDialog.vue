@@ -65,7 +65,7 @@
         workorderOptions: workorderOptions
       }
     },
-    name: 'tag-dialog',
+    name: 'ServerDialog',
     props: ['formStatus'],
     mounted () {
       this.getGrpType('')

@@ -4,6 +4,7 @@
       <div>
         <h1>{{title}}</h1>
       </div>
+<<<<<<< HEAD
       <el-row :gutter="24" style="margin-bottom: 5px">
         <el-input v-model.trim="queryParam.queryName" placeholder="输入关键字查询" class="input-bar"/>
         <el-select v-model.trim="queryParam.serverGroupId" filterable clearable class="select-bar"
@@ -52,6 +53,56 @@
         <el-button @click="fetchData" class="buuton">查询</el-button>
         <el-button @click="addItem" class="buuton">新增</el-button>
       </el-row>
+=======
+        <el-row :gutter="24" style="margin-bottom: 5px">
+          <el-input v-model.trim="queryParam.queryName" placeholder="输入关键字查询" class="input-bar"/>
+          <el-select v-model="queryParam.serverGroupId" filterable clearable class="select-bar"
+                     remote reserve-keyword placeholder="搜索服务器组" :remote-method="getServerGroup" :loading="loading">
+            <el-option
+              v-for="item in serverGroupOptions"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+          <el-select v-model="queryParam.envType" clearable placeholder="环境" class="select-bar">
+            <el-option
+              v-for="item in envTypeOptions"
+              :key="item.id"
+              :label="item.envName"
+              :value="item.envType">
+            </el-option>
+          </el-select>
+          <el-select v-model="queryParam.isActive" clearable placeholder="有效" class="select-bar">
+            <el-option
+              v-for="item in activeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <el-select v-model="queryParam.serverStatus" clearable placeholder="状态" class="select-bar">
+            <el-option
+              v-for="item in serverStatusOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <el-select
+            v-model="queryParam.tagId" filterable clearable remote reserve-keyword class="select-bar"
+            placeholder="请输入关键词搜索标签" :remote-method="getTag" :loading="loading">
+            <el-option
+              v-for="item in tagOptions"
+              :key="item.id"
+              :label="item.tagKey"
+              :value="item.id">
+            </el-option>
+          </el-select>
+          <el-button @click="fetchData" class="buuton">查询</el-button>
+          <el-button @click="handlerAdd" class="buuton">新增</el-button>
+        </el-row>
+>>>>>>> develop
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column type="expand">
           <template slot-scope="props">
@@ -126,10 +177,10 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
-            <el-button type="primary" plain size="mini" @click="editTag(scope.row)">标签</el-button>
-            <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
+            <el-button type="primary" plain size="mini" @click="handlerRowTagEdit(scope.row)">标签</el-button>
+            <el-button type="primary" plain size="mini" @click="handlerRowEdit(scope.row)">编辑</el-button>
             <el-button type="primary" plain size="mini" @click="handlerXTerm(scope.row)">登录</el-button>
-            <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
+            <el-button type="danger" plain size="mini" @click="handlerRowDel(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -139,10 +190,10 @@
                      :page-size="pagination.pageSize">
       </el-pagination>
       <!-- server编辑-->
-      <ServerDialog :formStatus="formServerStatus" ref="serverDialog" @closeServerDialog="fetchData"></ServerDialog>
+      <ServerDialog :formStatus="formServerStatus" ref="serverDialog" @closeDialog="fetchData"></ServerDialog>
       <!-- tag编辑-->
-      <TagTransferDialog :formStatus="formTagTransferStatus" :formData="tagTransfer"
-                         @closeTagTransferDialog="fetchData"></TagTransferDialog>
+      <TagTransferDialog :formStatus="formTagTransferStatus" ref="tagTransferDialog"
+                         @closeDialog="fetchData"></TagTransferDialog>
       <XTerm :formStatus="formXtermStatus" ref="xtermDialog"></XTerm>
     </template>
   </d2-container>
@@ -188,7 +239,6 @@
   export default {
     data () {
       return {
-        tagTransfer: {},
         formTagTransferStatus: {
           visible: false,
           title: '编辑服务器标签'
@@ -294,7 +344,7 @@
         this.formXtermStatus.visible = true
         this.$refs.xtermDialog.initData(row)
       },
-      delItem (row) {
+      handlerRowDel (row) {
         this.$confirm('此操作将删除当前配置?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -314,27 +364,28 @@
           })
         })
       },
-      editTag (row) {
+      handlerRowTagEdit (row) {
         this.formTagTransferStatus.visible = true
-        this.tagTransfer = {
+        let tagTransfer = {
           businessId: row.id,
           businessType: this.businessType,
-          serverTag: [],
+          tagIds: [],
           tagOptions: []
         }
         queryTagPage('', 1, 100)
           .then(res => {
-            this.tagTransfer.tagOptions = res.body.data
+            tagTransfer.tagOptions = res.body.data
           })
-        queryBusinessTag(this.businessType, this.tagTransfer.businessId, '')
+        queryBusinessTag(this.businessType, tagTransfer.businessId, '')
           .then(res => {
             for (let index in res.body) {
-              this.tagTransfer.serverTag.push(res.body[index].id)
+              tagTransfer.tagIds.push(res.body[index].id)
             }
           })
         this.formTagTransferStatus.visible = true
+        this.$refs.tagTransferDialog.initData(tagTransfer)
       },
-      editItem (row) {
+      handlerRowEdit (row) {
         // server
         let serverData = Object.assign({}, row)
         let serverGroupOptions = []
@@ -344,7 +395,7 @@
         this.formServerStatus.operationType = false
         this.$refs.serverDialog.initData(serverData, serverGroupOptions)
       },
-      addItem () {
+      handlerAdd () {
         this.formServerStatus.operationType = true
         this.formServerStatus.visible = true
         let serverData = {
