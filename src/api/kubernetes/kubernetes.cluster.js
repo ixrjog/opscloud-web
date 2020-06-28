@@ -30,3 +30,26 @@ export function delKubernetesClusterById (id) {
     method: 'delete'
   })
 }
+
+export function queryKubernetesClusterNamespacePage (data) {
+  return request({
+    url: '/kubernetes/cluster/namespace/page/query',
+    method: 'post',
+    data
+  })
+}
+
+export function delKubernetesClusterNamespaceById (id) {
+  return request({
+    url: '/kubernetes/cluster/namespace/del?id=' + id,
+    method: 'delete'
+  })
+}
+
+export function queryKubernetesExcludeNamespace (data) {
+  return request({
+    url: '/kubernetes/cluster/namespace/exclude/query',
+    method: 'post',
+    data
+  })
+}
