@@ -4,7 +4,6 @@
       <div>
         <h1>{{title}}</h1>
       </div>
-<<<<<<< HEAD
       <el-row :gutter="24" style="margin-bottom: 5px">
         <el-input v-model.trim="queryParam.queryName" placeholder="输入关键字查询" class="input-bar"/>
         <el-select v-model.trim="queryParam.serverGroupId" filterable clearable class="select-bar"
@@ -41,7 +40,7 @@
           </el-option>
         </el-select>
         <el-select
-          v-model.trim="queryParam.tagId" filterable clearable remote reserve-keyword class="select-bar"
+          v-model="queryParam.tagId" filterable clearable remote reserve-keyword class="select-bar"
           placeholder="请输入关键词搜索标签" :remote-method="getTag" :loading="loading">
           <el-option
             v-for="item in tagOptions"
@@ -50,59 +49,9 @@
             :value="item.id">
           </el-option>
         </el-select>
-        <el-button @click="fetchData" class="buuton">查询</el-button>
-        <el-button @click="addItem" class="buuton">新增</el-button>
+        <el-button @click="fetchData" class="button">查询</el-button>
+        <el-button @click="handlerAdd" class="button">新增</el-button>
       </el-row>
-=======
-        <el-row :gutter="24" style="margin-bottom: 5px">
-          <el-input v-model.trim="queryParam.queryName" placeholder="输入关键字查询" class="input-bar"/>
-          <el-select v-model="queryParam.serverGroupId" filterable clearable class="select-bar"
-                     remote reserve-keyword placeholder="搜索服务器组" :remote-method="getServerGroup" :loading="loading">
-            <el-option
-              v-for="item in serverGroupOptions"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id">
-            </el-option>
-          </el-select>
-          <el-select v-model="queryParam.envType" clearable placeholder="环境" class="select-bar">
-            <el-option
-              v-for="item in envTypeOptions"
-              :key="item.id"
-              :label="item.envName"
-              :value="item.envType">
-            </el-option>
-          </el-select>
-          <el-select v-model="queryParam.isActive" clearable placeholder="有效" class="select-bar">
-            <el-option
-              v-for="item in activeOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-          <el-select v-model="queryParam.serverStatus" clearable placeholder="状态" class="select-bar">
-            <el-option
-              v-for="item in serverStatusOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-          <el-select
-            v-model="queryParam.tagId" filterable clearable remote reserve-keyword class="select-bar"
-            placeholder="请输入关键词搜索标签" :remote-method="getTag" :loading="loading">
-            <el-option
-              v-for="item in tagOptions"
-              :key="item.id"
-              :label="item.tagKey"
-              :value="item.id">
-            </el-option>
-          </el-select>
-          <el-button @click="fetchData" class="buuton">查询</el-button>
-          <el-button @click="handlerAdd" class="buuton">新增</el-button>
-        </el-row>
->>>>>>> develop
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column type="expand">
           <template slot-scope="props">
@@ -472,7 +421,7 @@
     margin-left: 5px;
   }
 
-  .buuton {
+  .button {
     margin-left: 5px;
   }
 </style>
