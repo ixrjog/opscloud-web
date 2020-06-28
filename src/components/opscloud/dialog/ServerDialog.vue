@@ -158,7 +158,7 @@
       },
       handlerCloseDialog () {
         this.formStatus.visible = false
-        this.$emit('closeServerDialog')
+        this.$emit('closeDialog')
       },
       getEnvType () {
         queryEnvPage('', '', 1, 20)
@@ -196,7 +196,7 @@
       },
       saveInfo () {
         setTimeout(() => {
-          var requestBody = Object.assign({}, this.serverData)
+          let requestBody = Object.assign({}, this.serverData)
           delete requestBody.serverGroupOptions
           delete requestBody.serverGroup
           delete requestBody.envTypeOptions

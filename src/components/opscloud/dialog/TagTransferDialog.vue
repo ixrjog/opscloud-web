@@ -1,16 +1,16 @@
 <template>
   <el-dialog :title="formStatus.title"
              :visible.sync="formStatus.visible">
-    <el-form :model="formData">
-      <el-transfer v-model="formData.serverTag"
+    <el-form :model="tagTransfer">
+      <el-transfer v-model="tagTransfer.tagIds"
                    :props="{ key: 'id', label: 'tagKey' }"
-                   :data="formData.tagOptions"
+                   :data="tagTransfer.tagOptions"
                    :titles="['所有标签', '服务器标签']">
       </el-transfer>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button size="mini" @click="formStatus.visible = false">关闭</el-button>
-      <el-button type="primary" size="mini" @click="saveInfo">确定</el-button>
+      <el-button type="primary" size="mini" @click="handlerSave">确定</el-button>
     </div>
   </el-dialog>
 </template>
@@ -22,10 +22,11 @@
   export default {
     data () {
       return {
+        tagTransfer: {}
       }
     },
-    name: 'tag-dialog',
-    props: ['formStatus', 'formData'],
+    name: 'TagTransferDialog',
+    props: ['formStatus'],
     mixins: [],
     mounted () {
     },
@@ -33,15 +34,18 @@
       handleClick () {
         this.$emit('input', !this.value)
       },
-      saveInfo () {
+      initData (tagTransfer) {
+        this.tagTransfer = tagTransfer
+      },
+      handlerSave () {
         setTimeout(() => {
           // var requestBody = Object.assign({}, this.formData)
-          var requestBody = {
-            'businessType': this.formData.businessType,
-            'businessId': this.formData.businessId,
-            'tagIds': this.formData.serverTag
-          }
-          updateTagBusiness(requestBody)
+          // var requestBody = {
+          //   'businessType': this.formData.businessType,
+          //   'businessId': this.formData.businessId,
+          //   'tagIds': this.formData.serverTag
+          // }
+          updateTagBusiness(this.tagTransfer)
             .then(res => {
               // 返回数据
               this.$message({
@@ -49,7 +53,7 @@
                 type: 'success'
               })
               this.formStatus.visible = false
-              this.$emit('closeTagTransferDialog')
+              this.$emit('closeDialog')
             })
         }, 600)
       }
