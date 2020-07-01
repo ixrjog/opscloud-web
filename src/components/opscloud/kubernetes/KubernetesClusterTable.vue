@@ -9,6 +9,17 @@
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
       <el-table-column prop="name" label="集群名称"></el-table-column>
       <el-table-column prop="masterUrl" label="管理url"></el-table-column>
+      <el-table-column prop="namespaces" label="命名空间">
+        <template slot-scope="props">
+          <div class="tag-group">
+              <span v-for="item in props.row.namespaces" :key="item.id">
+                <el-tooltip class="item" effect="light" :content="item.comment" placement="top-start">
+                  <el-tag style="margin-left: 5px" :style="{ color: item.color }">{{ item.namespace }}</el-tag>
+                </el-tooltip>
+              </span>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column prop="comment" label="描述"></el-table-column>
       <el-table-column fixed="right" label="操作" width="380">
         <template slot-scope="scope">
@@ -155,32 +166,10 @@
 </script>
 
 <style>
-  .table-expand {
-    font-size: 0;
-  }
-
-  .table-expand label {
-    width: 150px;
-    color: #99a9bf;
-  }
-
-  .table-expand .el-form-item {
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 50%;
-  }
 
   .input {
     display: inline-block;
-    max-width: 200px;
-    margin-right: 5px;
+    max-width: 400px;
   }
 
-  .search {
-    margin-right: 5px;
-  }
-
-  .button {
-    margin-left: 5px;
-  }
 </style>

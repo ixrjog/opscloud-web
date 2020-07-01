@@ -17,7 +17,7 @@
     </el-form>
     <el-form :model="kubernetesClusterNamespace">
       <el-form-item label="命名空间" :label-width="labelWidth" :required="true">
-        <el-select v-model="kubernetesClusterNamespace.namespace" filterable clearable class="select" :disabled="kubernetesClusterNamespace.clusterId === ''"
+        <el-select v-model="kubernetesClusterNamespace.namespace" filterable clearable class="select" :disabled="kubernetesClusterNamespace.clusterId === ''" :loading="namespaceLoading"
                    remote reserve-keyword placeholder="选择命名空间">
           <el-option
             v-for="item in namespaceOptions"
@@ -56,12 +56,13 @@
 <script>
   // API
   import { queryEnvPage } from '@api/env/env.js'
-  import { queryKubernetesClusterPage, queryKubernetesExcludeNamespace } from '@api/kubernetes/kubernetes.cluster.js'
+  import { queryKubernetesClusterPage, queryKubernetesExcludeNamespace, addKubernetesClusterNamespace, updateKubernetesClusterNamespace } from '@api/kubernetes/kubernetes.cluster.js'
 
   export default {
     data () {
       return {
         kubernetesClusterNamespace: {},
+        namespaceLoading: false,
         labelWidth: '100px',
         options: {
           stripe: true
@@ -87,6 +88,7 @@
       },
       handlerSetCluster () {
         this.getNamespace()
+        this.kubernetesClusterNamespace.namespace = ''
       },
       getCluster (queryName) {
         let requestBody = {
@@ -102,12 +104,14 @@
       },
       getNamespace () {
         if (this.kubernetesClusterNamespace.clusterId === '') return
+        this.namespaceLoading = true
         let requestBody = {
           'clusterId': this.kubernetesClusterNamespace.clusterId
         }
         queryKubernetesExcludeNamespace(requestBody)
           .then(res => {
             this.namespaceOptions = res.body
+            this.namespaceLoading = false
           })
       },
       getEnvType () {
@@ -117,6 +121,32 @@
           })
       },
       handlerSave () {
+        setTimeout(() => {
+          let requestBody = Object.assign({}, this.kubernetesClusterNamespace)
+          if (this.formStatus.operationType) {
+            addKubernetesClusterNamespace(requestBody)
+              .then(res => {
+                // 返回数据
+                this.$message({
+                  message: '成功',
+                  type: 'success'
+                })
+                this.formStatus.visible = false
+                this.$emit('closeDialog')
+              })
+          } else {
+            updateKubernetesClusterNamespace(requestBody)
+              .then(res => {
+                // 返回数据
+                this.$message({
+                  message: '成功',
+                  type: 'success'
+                })
+                this.formStatus.visible = false
+                this.$emit('closeDialog')
+              })
+          }
+        }, 600)
       }
     }
   }

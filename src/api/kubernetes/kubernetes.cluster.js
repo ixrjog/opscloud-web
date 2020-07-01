@@ -39,6 +39,22 @@ export function queryKubernetesClusterNamespacePage (data) {
   })
 }
 
+export function addKubernetesClusterNamespace (data) {
+  return request({
+    url: '/kubernetes/cluster/namespace/add',
+    method: 'post',
+    data
+  })
+}
+
+export function updateKubernetesClusterNamespace (data) {
+  return request({
+    url: '/kubernetes/cluster/namespace/update',
+    method: 'put',
+    data
+  })
+}
+
 export function delKubernetesClusterNamespaceById (id) {
   return request({
     url: '/kubernetes/cluster/namespace/del?id=' + id,

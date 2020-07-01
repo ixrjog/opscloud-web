@@ -94,7 +94,7 @@
         <el-table-column prop="serialNumber" label="序号" width="80" sortable></el-table-column>
         <el-table-column prop="publicIp" label="公网ip"></el-table-column>
         <el-table-column prop="privateIp" label="私网ip"></el-table-column>
-        <el-table-column prop="name" label="环境" width="80">
+        <el-table-column prop="env" label="环境" width="80">
           <template slot-scope="scope">
             <el-tag disable-transitions :style="{ color: scope.row.env.color }">{{scope.row.env.envName}}</el-tag>
           </template>

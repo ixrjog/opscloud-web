@@ -267,6 +267,33 @@ const frameIn = [
         }
       },
       {
+        path: '/kubernetes/deployment',
+        name: 'kubernetes-deployment',
+        component: () => import('@/pages/kubernetes/deployment'),
+        meta: {
+          auth: true,
+          title: 'Kubernetes无状态'
+        }
+      },
+      {
+        path: '/kubernetes/service',
+        name: 'kubernetes-service',
+        component: () => import('@/pages/kubernetes/service'),
+        meta: {
+          auth: true,
+          title: 'Kubernetes服务'
+        }
+      },
+      {
+        path: '/kubernetes/template',
+        name: 'kubernetes-template',
+        component: () => import('@/pages/kubernetes/template'),
+        meta: {
+          auth: true,
+          title: 'Kubernetes模版'
+        }
+      },
+      {
         path: '/jump/jumpserver/settings',
         name: 'jump-jumpserver-settings',
         component: () => import('@/pages/jump/jumpserver/settings'),

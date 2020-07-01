@@ -11,7 +11,7 @@
           <!--                  <d2-highlight :code="attributeGroup.attributes"/>-->
           <!--                  width="500" height="100"-->
           <editor v-model="attributeGroup.attributes" @init="editorInit" lang="yaml" theme="chrome"
-                  width="1000"
+                  width="100%"
                   height="200" :options="options"></editor>
           <div style="margin-top: 5px">
             <el-button type="success" plain size="mini" @click="updateServerGroupAttribute(attributeGroup)">预览

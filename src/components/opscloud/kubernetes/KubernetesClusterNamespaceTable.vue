@@ -16,8 +16,17 @@
       <el-button @click="handlerAdd" style="margin-left: 5px">新建</el-button>
     </el-row>
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
-      <el-table-column prop="name" label="集群名称"></el-table-column>
-      <el-table-column prop="masterUrl" label="管理url"></el-table-column>
+      <el-table-column prop="cluster" label="集群">
+        <template slot-scope="scope">
+          <span>{{ scope.row.cluster.name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="namespace" label="命名空间"></el-table-column>
+      <el-table-column prop="env" label="环境" width="80">
+        <template slot-scope="scope">
+          <el-tag disable-transitions :style="{ color: scope.row.env.color }">{{scope.row.env.envName}}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="comment" label="描述"></el-table-column>
       <el-table-column fixed="right" label="操作" width="380">
         <template slot-scope="scope">
@@ -33,7 +42,7 @@
     </el-pagination>
     <!-- namespace编辑对话框 -->
     <KubernetesClusterNamespaceDialog ref="kubernetesClusterNamespaceDialog" :formStatus="formStatus"
-                             @closeDialog="fetchData"></KubernetesClusterNamespaceDialog>
+                                      @closeDialog="fetchData"></KubernetesClusterNamespaceDialog>
   </div>
 </template>
 
@@ -181,34 +190,14 @@
 </script>
 
 <style>
-  .table-expand {
-    font-size: 0;
-  }
-
-  .table-expand label {
-    width: 150px;
-    color: #99a9bf;
-  }
-
-  .table-expand .el-form-item {
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 50%;
-  }
-
   .input {
     display: inline-block;
     max-width: 200px;
-    margin-left: 5px;
     margin-right: 5px;
   }
 
-  .search {
+  .select {
     margin-right: 5px;
-    margin-left: 5px;
   }
 
-  .button {
-    margin-left: 5px;
-  }
 </style>

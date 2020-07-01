@@ -5,49 +5,58 @@
         <h1>{{title}}</h1>
       </div>
       <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
+        <el-select v-model="queryParam.clusterId" filterable clearable class="select"
+                   remote reserve-keyword placeholder="搜索集群" :remote-method="getCluster" @change="handlerSelCluster">
+          <el-option
+            v-for="item in clusterOptions"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+        <el-select v-model="queryParam.namespaceId" filterable clearable class="select"
+                   remote placeholder="选择命名空间" :remote-method="getNamespace" :disabled="queryParam.clusterId === ''">
+          <el-option
+            v-for="item in namespaceOptions"
+            :key="item.id"
+            :label="item.namespace"
+            :value="item.id">
+          </el-option>
+        </el-select>
         <el-input v-model="queryParam.queryName" placeholder="输入关键字模糊查询"
                   class="input"/>
-        <el-select v-model="queryParam.templateType" filterable clearable class="select" placeholder="选择模版类型">
-          <el-option
-            v-for="item in tplTypeOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
-        <el-select v-model="queryParam.envType" clearable placeholder="环境" class="select">
-          <el-option
-            v-for="item in envTypeOptions"
-            :key="item.id"
-            :label="item.envName"
-            :value="item.envType">
-          </el-option>
-        </el-select>
+        <el-input v-model="queryParam.queryPort" placeholder="端口查询"
+                  class="input"/>
         <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
-        <el-button style="margin-left: 5px" @click="handlerYAMLAdd">新增</el-button>
+        <el-button @click="handlerSync" style="margin-left: 5px" :disabled="queryParam.namespaceId === ''">同步
+        </el-button>
       </el-row>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
-        <el-table-column type="expand">
+        <el-table-column prop="namespace" label="集群/命名空间">
           <template slot-scope="props">
-            <el-form label-position="left" inline class="table-expand">
-              <el-form-item label="模版">
-                <editor v-model="props.row.templateYaml" @init="editorInit" lang="yaml" theme="kuroir"
-                        width="1000" height="400" :options="options"></editor>
-              </el-form-item>
-            </el-form>
+            <span>{{props.row.cluster.name}} / {{props.row.namespace}}</span>
           </template>
         </el-table-column>
         <el-table-column prop="name" label="名称"></el-table-column>
-        <el-table-column prop="templateType" label="模版类型"></el-table-column>
-        <el-table-column prop="env" label="环境">
-          <template slot-scope="scope">
-            <el-tag disable-transitions :style="{color: scope.row.env.color}">{{scope.row.env.envName}}</el-tag>
+        <el-table-column prop="clusterIp" label="集群ip"></el-table-column>
+        <el-table-column prop="ports" label="端口" width="400">
+          <template slot-scope="props">
+            <div class="tag-group">
+              <div v-for="item in props.row.ports" :key="item.name">
+                  <el-tag style="margin-left: 5px">{{item.name}}</el-tag>
+                  <el-tooltip class="item" effect="light" content="nodePort" placement="top-start" v-if="item.nodePort != null">
+                    <el-tag style="margin-left: 5px" type="success">{{item.nodePort}}</el-tag>
+                  </el-tooltip>
+                  <el-tooltip class="item" effect="light" content="port" placement="top-start">
+                   <el-tag style="margin-left: 5px" type="warning">{{item.port}}</el-tag>
+                  </el-tooltip>
+              </div>
+            </div>
           </template>
         </el-table-column>
-        <el-table-column prop="comment" label="描述"></el-table-column>
         <el-table-column fixed="right" label="操作" width="180">
           <template slot-scope="scope">
-            <el-button type="primary" plain size="mini" @click="handlerRowYAMLEdit(scope.row)">YAML</el-button>
+            <el-button plain size="mini" @click="handlerRowYAMLEdit(scope.row)">YAML</el-button>
             <el-button type="danger" plain size="mini" @click="handlerRowDel(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -68,27 +77,22 @@
   import KubernetesEditYAMLDialog from '@/components/opscloud/kubernetes/KubernetesEditYAMLDialog'
 
   // API
-  import { queryEnvPage } from '@api/env/env.js'
-  import { queryKubernetesTemplatePage, delKubernetesTemplateById } from '@api/kubernetes/kubernetes.template.js'
+  import {
+    queryKubernetesClusterPage,
+    queryKubernetesClusterNamespacePage
+  } from '@api/kubernetes/kubernetes.cluster.js'
+  import { queryKubernetesServicePage, delKubernetesServiceById } from '@api/kubernetes/kubernetes.service.js'
   import { mapActions, mapState } from 'vuex'
-
-  const tplTypeOptions = [{
-    value: 'DEPLOYMENT',
-    label: '无状态模版'
-  }, {
-    value: 'SERVICE',
-    label: '服务模版'
-  }]
 
   export default {
     data () {
       return {
-        title: 'Kubernetes模版管理',
+        title: 'Kubernetes服务管理',
         formStatus: {
           visible: false,
           operationType: true,
-          addTitle: '新增YAML模版',
-          updateTitle: '更新YAML模版'
+          addTitle: '新增集群配置',
+          updateTitle: '更新集群配置'
         },
         tableData: [],
         options: {
@@ -102,11 +106,12 @@
         },
         queryParam: {
           queryName: '',
-          envType: '',
-          templateType: ''
+          queryPort:'',
+          namespaceId: '',
+          clusterId: ''
         },
-        tplTypeOptions: tplTypeOptions,
-        envTypeOptions: []
+        clusterOptions: [],
+        namespaceOptions: []
       }
     },
     computed: {
@@ -116,12 +121,11 @@
     },
     mounted () {
       this.initPageSize()
-      this.getEnvType()
+      this.getCluster('')
       this.fetchData()
     },
     components: {
-      KubernetesEditYAMLDialog,
-      editor: require('vue2-ace-editor')
+      KubernetesEditYAMLDialog
     },
     methods: {
       ...mapActions({
@@ -138,38 +142,20 @@
           this.pagination.pageSize = this.info.pageSize
         }
       },
-      editorInit: function (ed) {
-        // language extension prerequsite...
-        require('brace/ext/language_tools')
-        // language
-        require('brace/mode/yaml')
-        require('brace/theme/chrome')
-        require('brace/theme/kuroir')
-        // snippet
-        require('brace/snippets/yaml')
-        ed.setReadOnly(true)
-      },
-      getEnvType () {
-        queryEnvPage('', '', 1, 20)
+      getCluster (queryName) {
+        let requestBody = {
+          'queryName': queryName,
+          'extend': 0,
+          'page': 1,
+          'length': 10
+        }
+        queryKubernetesClusterPage(requestBody)
           .then(res => {
-            this.envTypeOptions = res.body.data
+            this.clusterOptions = res.body.data
           })
       },
-      handlerYAMLAdd (row) {
-        let template = {
-          id: '',
-          name: '',
-          templateType: '',
-          templateYaml: '',
-          envType: 0,
-          comment: ''
-        }
-        this.$refs.kubernetesEditYAMLDialog.initData(template, tplTypeOptions, this.envTypeOptions)
-        this.formStatus.visible = true
-        this.formStatus.operationType = true
-      },
       handlerRowYAMLEdit (row) {
-        this.$refs.kubernetesEditYAMLDialog.initData(row, tplTypeOptions, this.envTypeOptions)
+        this.$refs.kubernetesEditYAMLDialog.initData(row.deploymentYAML)
         this.formStatus.visible = true
         this.formStatus.operationType = false
       },
@@ -177,13 +163,29 @@
         this.queryParam.namespaceId = ''
         this.getNamespace()
       },
+      getNamespace () {
+        let requestBody = {
+          'queryName': '',
+          'clusterId': this.queryParam.clusterId,
+          'extend': 0,
+          'page': 1,
+          'length': 10
+        }
+        queryKubernetesClusterNamespacePage(requestBody)
+          .then(res => {
+            this.namespaceOptions = res.body.data
+          })
+      },
+      handlerSync () {
+
+      },
       handlerRowDel (row) {
         this.$confirm('此操作将删除当前配置?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          delKubernetesTemplateById(row.id).then(res => {
+          delKubernetesServiceById(row.id).then(res => {
             this.fetchData()
             this.$message({
               type: 'success',
@@ -203,10 +205,15 @@
       },
       fetchData () {
         this.loading = true
-        let requestBody = Object.assign({}, this.queryParam)
-        requestBody.page = this.pagination.currentPage
-        requestBody.length = this.pagination.pageSize
-        queryKubernetesTemplatePage(requestBody)
+        let requestBody = {
+          'queryName': this.queryParam.queryName,
+          'queryPort': this.queryParam.queryPort,
+          'namespaceId': this.queryParam.namespaceId,
+          'extend': 1,
+          'page': this.pagination.currentPage,
+          'length': this.pagination.pageSize
+        }
+        queryKubernetesServicePage(requestBody)
           .then(res => {
             this.tableData = res.body.data
             this.pagination.total = res.body.totalNum
