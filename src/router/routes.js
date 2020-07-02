@@ -258,6 +258,24 @@ const frameIn = [
         }
       },
       {
+        path: '/kubernetes/application',
+        name: 'kubernetes-application',
+        component: () => import('@/pages/kubernetes/application'),
+        meta: {
+          auth: true,
+          title: 'Kubernetes应用管理'
+        }
+      },
+      {
+        path: '/kubernetes/application/instance',
+        name: 'kubernetes-application-instance',
+        component: () => import('@/pages/kubernetes/application/instance'),
+        meta: {
+          auth: true,
+          title: 'Kubernetes应用实例管理'
+        }
+      },
+      {
         path: '/kubernetes/cluster',
         name: 'kubernetes-cluster',
         component: () => import('@/pages/kubernetes/cluster'),

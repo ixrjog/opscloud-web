@@ -106,7 +106,7 @@
         },
         queryParam: {
           queryName: '',
-          queryPort:'',
+          queryPort: '',
           namespaceId: '',
           clusterId: ''
         },

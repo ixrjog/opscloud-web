@@ -1,8 +1,8 @@
 import request from '@/plugin/axios'
 
-const baseUrl = '/kubernetes/template'
+const baseUrl = '/kubernetes/application'
 
-export function queryKubernetesTemplatePage (data) {
+export function queryKubernetesApplicationPage (data) {
   return request({
     url: baseUrl + '/page/query',
     method: 'post',
@@ -10,7 +10,7 @@ export function queryKubernetesTemplatePage (data) {
   })
 }
 
-export function addKubernetesTemplate (data) {
+export function addKubernetesApplication (data) {
   return request({
     url: baseUrl + '/add',
     method: 'post',
@@ -18,7 +18,7 @@ export function addKubernetesTemplate (data) {
   })
 }
 
-export function updateKubernetesTemplate (data) {
+export function updateKubernetesApplication (data) {
   return request({
     url: baseUrl + '/update',
     method: 'put',
@@ -26,7 +26,7 @@ export function updateKubernetesTemplate (data) {
   })
 }
 
-export function delKubernetesTemplateById (id) {
+export function delKubernetesApplicationById (id) {
   return request({
     url: baseUrl + '/del?id=' + id,
     method: 'delete'

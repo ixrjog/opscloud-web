@@ -75,7 +75,11 @@
     queryKubernetesClusterPage,
     queryKubernetesClusterNamespacePage
   } from '@api/kubernetes/kubernetes.cluster.js'
-  import { queryKubernetesDeploymentPage, delKubernetesDeploymentById } from '@api/kubernetes/kubernetes.deployment.js'
+  import {
+    queryKubernetesDeploymentPage,
+    delKubernetesDeploymentById,
+    syncKubernetesDeployment
+  } from '@api/kubernetes/kubernetes.deployment.js'
   import { mapActions, mapState } from 'vuex'
 
   export default {
@@ -170,7 +174,13 @@
           })
       },
       handlerSync () {
-
+        syncKubernetesDeployment(this.queryParam.namespaceId)
+          .then(res => {
+            this.$message({
+              type: 'success',
+              message: '后台同步中!'
+            })
+          })
       },
       handlerRowDel (row) {
         this.$confirm('此操作将删除当前配置?', '提示', {

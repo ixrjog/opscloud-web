@@ -1,8 +1,10 @@
 import request from '@/plugin/axios'
 
+const baseUrl = '/kubernetes/service'
+
 export function queryKubernetesServicePage (data) {
   return request({
-    url: '/kubernetes/service/page/query',
+    url: baseUrl + '/page/query',
     method: 'post',
     data
   })
@@ -10,7 +12,7 @@ export function queryKubernetesServicePage (data) {
 
 export function delKubernetesServiceById (id) {
   return request({
-    url: '/kubernetes/service/del?id=' + id,
+    url: baseUrl + '/del?id=' + id,
     method: 'delete'
   })
 }

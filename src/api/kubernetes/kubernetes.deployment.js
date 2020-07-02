@@ -1,8 +1,10 @@
 import request from '@/plugin/axios'
 
+const baseUrl = '/kubernetes/deployment'
+
 export function queryKubernetesDeploymentPage (data) {
   return request({
-    url: '/kubernetes/deployment/page/query',
+    url: baseUrl + '/page/query',
     method: 'post',
     data
   })
@@ -10,7 +12,14 @@ export function queryKubernetesDeploymentPage (data) {
 
 export function delKubernetesDeploymentById (id) {
   return request({
-    url: '/kubernetes/deployment/del?id=' + id,
+    url: baseUrl + '/del?id=' + id,
     method: 'delete'
+  })
+}
+
+export function syncKubernetesDeployment (namespaceId) {
+  return request({
+    url: baseUrl + '/sync?namespaceId=' + namespaceId,
+    method: 'put'
   })
 }

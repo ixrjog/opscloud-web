@@ -1,8 +1,10 @@
 import request from '@/plugin/axios'
 
+const baseUrl = '/kubernetes/cluster'
+
 export function queryKubernetesClusterPage (data) {
   return request({
-    url: '/kubernetes/cluster/page/query',
+    url: baseUrl + '/page/query',
     method: 'post',
     data
   })
@@ -10,7 +12,7 @@ export function queryKubernetesClusterPage (data) {
 
 export function addKubernetesCluster (data) {
   return request({
-    url: '/kubernetes/cluster/add',
+    url: baseUrl + '/add',
     method: 'post',
     data
   })
@@ -18,7 +20,7 @@ export function addKubernetesCluster (data) {
 
 export function updateKubernetesCluster (data) {
   return request({
-    url: '/kubernetes/cluster/update',
+    url: baseUrl + '/update',
     method: 'put',
     data
   })
@@ -26,14 +28,14 @@ export function updateKubernetesCluster (data) {
 
 export function delKubernetesClusterById (id) {
   return request({
-    url: '/kubernetes/cluster/del?id=' + id,
+    url: baseUrl + '/del?id=' + id,
     method: 'delete'
   })
 }
 
 export function queryKubernetesClusterNamespacePage (data) {
   return request({
-    url: '/kubernetes/cluster/namespace/page/query',
+    url: baseUrl + '/namespace/page/query',
     method: 'post',
     data
   })
@@ -41,7 +43,7 @@ export function queryKubernetesClusterNamespacePage (data) {
 
 export function addKubernetesClusterNamespace (data) {
   return request({
-    url: '/kubernetes/cluster/namespace/add',
+    url: baseUrl + '/namespace/add',
     method: 'post',
     data
   })
@@ -49,7 +51,7 @@ export function addKubernetesClusterNamespace (data) {
 
 export function updateKubernetesClusterNamespace (data) {
   return request({
-    url: '/kubernetes/cluster/namespace/update',
+    url: baseUrl + '/namespace/update',
     method: 'put',
     data
   })
@@ -57,14 +59,14 @@ export function updateKubernetesClusterNamespace (data) {
 
 export function delKubernetesClusterNamespaceById (id) {
   return request({
-    url: '/kubernetes/cluster/namespace/del?id=' + id,
+    url: baseUrl + '/namespace/del?id=' + id,
     method: 'delete'
   })
 }
 
 export function queryKubernetesExcludeNamespace (data) {
   return request({
-    url: '/kubernetes/cluster/namespace/exclude/query',
+    url: baseUrl + '/namespace/exclude/query',
     method: 'post',
     data
   })
