@@ -39,3 +39,11 @@ export function queryKubernetesApplicationInstanceLable (envType) {
     method: 'get'
   })
 }
+
+export function queryKubernetesApplicationInstanceTemplatePage (data) {
+  return request({
+    url: baseUrl + '/template/page/query',
+    method: 'post',
+    data
+  })
+}

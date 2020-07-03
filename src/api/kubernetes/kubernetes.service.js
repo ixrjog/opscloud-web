@@ -16,3 +16,10 @@ export function delKubernetesServiceById (id) {
     method: 'delete'
   })
 }
+
+export function syncKubernetesService (namespaceId) {
+  return request({
+    url: baseUrl + '/sync?namespaceId=' + namespaceId,
+    method: 'put'
+  })
+}

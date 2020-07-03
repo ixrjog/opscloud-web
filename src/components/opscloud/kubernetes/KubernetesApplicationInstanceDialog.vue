@@ -1,37 +1,88 @@
 <template>
   <el-dialog :title="formStatus.operationType ? formStatus.addTitle : formStatus.updateTitle"
              :visible.sync="formStatus.visible">
-    <el-form :model="kubernetesApplicationInstance">
-      <el-form-item label="应用名称" :label-width="labelWidth" :required="true">
-        <el-input v-model="kubernetesApplication.name" placeholder="请输入内容" readonly></el-input>
-      </el-form-item>
-      <el-form-item label="环境" :label-width="labelWidth" :required="true">
-        <el-select v-model="kubernetesApplicationInstance.envType" clearable placeholder="环境"
-                   @change="handlerSelEnvType">
-          <el-option
-            v-for="item in envTypeOptions"
-            :key="item.id"
-            :label="item.envName"
-            :value="item.envType">
-          </el-option>
-        </el-select>
-      </el-form-item>
-
-      <el-form-item label="环境标签" :label-width="labelWidth" :required="true">
-        <el-select v-model="kubernetesApplicationInstance.envLabel" clearable placeholder="环境标签"
-                   :disabled="kubernetesApplicationInstance.envType == ''">
-          <el-option
-            v-for="item in envLabelOptions"
-            :key="item"
-            :label="item"
-            :value="item">
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="描述" :label-width="labelWidth">
-        <el-input v-model="kubernetesApplicationInstance.comment" placeholder="请输入内容"></el-input>
-      </el-form-item>
-    </el-form>
+    <el-tabs v-model="activeName">
+      <el-tab-pane label="实例配置" name="instance">
+        <el-form :model="kubernetesApplicationInstance">
+          <el-form-item label="应用名称" :label-width="labelWidth" :required="true">
+            <el-input v-model="kubernetesApplication.name" placeholder="请输入内容" readonly></el-input>
+          </el-form-item>
+          <el-form-item label="环境" :label-width="labelWidth" :required="true">
+            <el-select v-model="kubernetesApplicationInstance.envType" clearable placeholder="环境"
+                       @change="handlerSelEnvType">
+              <el-option
+                v-for="item in envTypeOptions"
+                :key="item.id"
+                :label="item.envName"
+                :value="item.envType">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="环境标签" :label-width="labelWidth" :required="true">
+            <el-select v-model="kubernetesApplicationInstance.envLabel" clearable placeholder="环境标签"
+                       :disabled="kubernetesApplicationInstance.envType == ''">
+              <el-option
+                v-for="item in envLabelOptions"
+                :key="item"
+                :label="item"
+                :value="item">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="描述" :label-width="labelWidth">
+            <el-input v-model="kubernetesApplicationInstance.comment" placeholder="请输入内容"></el-input>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+      <el-tab-pane label="变量配置" name="variable">
+        <el-form :model="kubernetesApplicationInstance">
+          <el-form-item label="variable" :label-width="labelWidth">
+            <editor v-model="kubernetesApplicationInstance.templateVariable" @init="editorInit" lang="yaml"
+                    theme="chrome"
+                    width="100%" height="300"></editor>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+      <el-tab-pane label="Deployment配置" name="deployment">
+        <el-form :model="kubernetesApplicationInstance">
+          <el-form-item label="模版" :label-width="labelWidth" :required="true">
+            <el-select v-model="deploymentTemplate" filterable clearable value-key="id"
+                       remote reserve-keyword placeholder="输入关键词搜组类型" :remote-method="getDeploymentTemplate">
+              <el-option
+                v-for="item in deploymentTemplateOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="无状态模版" :label-width="labelWidth">
+            <editor v-model="deploymentTemplate.templateYaml" @init="editorTplInit" lang="yaml" theme="kuroir" width="100%"
+                    readonly
+                    height="400"></editor>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+      <el-tab-pane label="Service配置" name="service">
+        <el-form :model="kubernetesApplicationInstance">
+          <el-form-item label="模版" :label-width="labelWidth" :required="true">
+            <el-select v-model="serviceTemplate" filterable clearable value-key="id"
+                       remote reserve-keyword placeholder="输入关键词搜组类型" :remote-method="getServiceTemplate">
+              <el-option
+                v-for="item in serviceTemplateOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="服务模版" :label-width="labelWidth">
+            <editor v-model="serviceTemplate.templateYaml" @init="editorTplInit" lang="yaml" theme="kuroir" width="100%"
+                    height="400"></editor>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+    </el-tabs>
     <div slot="footer" class="dialog-footer">
       <el-button size="mini" @click="formStatus.visible = false">取消</el-button>
       <el-button size="mini" type="primary" @click="handlerSave">确定</el-button>
@@ -43,12 +94,16 @@
   // API
   import { queryEnvPage } from '@api/env/env.js'
   import {
-    addKubernetesApplicationInstance, updateKubernetesApplicationInstance, queryKubernetesApplicationInstanceLable
+    addKubernetesApplicationInstance,
+    updateKubernetesApplicationInstance,
+    queryKubernetesApplicationInstanceLable,
+    queryKubernetesApplicationInstanceTemplatePage
   } from '@api/kubernetes/kubernetes.application.instance.js'
 
   export default {
     data () {
       return {
+        activeName: 'instance',
         kubernetesApplication: {},
         kubernetesApplicationInstance: {},
         labelWidth: '100px',
@@ -56,16 +111,72 @@
           stripe: true
         },
         envTypeOptions: [],
-        envLabelOptions: []
+        envLabelOptions: [],
+        deploymentTemplateOptions: [],
+        serviceTemplateOptions: [],
+        deploymentTemplate: {},
+        serviceTemplate: {}
       }
     },
     name: 'KubernetesApplicationInstanceDialog',
     props: ['formStatus'],
-    components: {},
+    components: {
+      editor: require('vue2-ace-editor')
+    },
     mounted () {
       this.getEnvType()
     },
     methods: {
+      editorInit () {
+        // language extension prerequsite...
+        require('brace/ext/language_tools')
+        // language
+        require('brace/mode/yaml')
+        require('brace/theme/chrome')
+        // snippet
+        require('brace/snippets/yaml')
+      },
+      editorTplInit: function (ed) {
+        // language extension prerequsite...
+        require('brace/ext/language_tools')
+        // language
+        require('brace/mode/yaml')
+        require('brace/theme/chrome')
+        require('brace/theme/kuroir')
+        // snippet
+        require('brace/snippets/yaml')
+        ed.setReadOnly(true)
+      },
+      getDeploymentTemplate (queryName) {
+        this.getTemplate(queryName, 'DEPLOYMENT')
+      },
+      getServiceTemplate (queryName) {
+        this.getTemplate(queryName, 'SERVICE')
+      },
+      getTemplate (queryName, templateType) {
+        let requestBody = {
+          queryName: queryName,
+          envType: this.kubernetesApplicationInstance.envType,
+          templateType: templateType,
+          instanceId: this.kubernetesApplicationInstance.id,
+          page: 1,
+          length: 10
+        }
+        queryKubernetesApplicationInstanceTemplatePage(requestBody)
+          .then(res => {
+            if (templateType === 'DEPLOYMENT') {
+              this.deploymentTemplateOptions = res.body.data
+              if (this.deploymentTemplateOptions.length === 1) {
+                this.deploymentTemplate = this.deploymentTemplateOptions[0]
+              }
+            } else {
+              this.serviceTemplateOptions = res.body.data
+              if (this.serviceTemplateOptions.length === 1) {
+                this.serviceTemplate = this.serviceTemplateOptions[0]
+              }
+            }
+          })
+      },
       getEnvType () {
         queryEnvPage('', '', 1, 20)
           .then(res => {
@@ -89,8 +200,14 @@
         this.$emit('closeDialog')
       },
       initData (kubernetesApplication, kubernetesApplicationInstance) {
+        this.deploymentTemplateOptions = []
+        this.serviceTemplateOptions = []
+        this.deploymentTemplate = {}
+        this.serviceTemplate = {}
         this.kubernetesApplication = kubernetesApplication
         this.kubernetesApplicationInstance = kubernetesApplicationInstance
+        this.getDeploymentTemplate('')
+        this.getServiceTemplate('')
       },
       handlerSave () {
         setTimeout(() => {

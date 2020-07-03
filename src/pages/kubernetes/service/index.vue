@@ -39,17 +39,28 @@
         </el-table-column>
         <el-table-column prop="name" label="名称"></el-table-column>
         <el-table-column prop="clusterIp" label="集群ip"></el-table-column>
+        <el-table-column prop="application" label="应用">
+          <template slot-scope="props">
+            <span v-if="props.row.application != null">{{props.row.application.name}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="instance" label="实例">
+          <template slot-scope="props">
+            <span v-if="props.row.instance != null">{{props.row.instance.instanceName}}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="ports" label="端口" width="400">
           <template slot-scope="props">
             <div class="tag-group">
               <div v-for="item in props.row.ports" :key="item.name">
-                  <el-tag style="margin-left: 5px">{{item.name}}</el-tag>
-                  <el-tooltip class="item" effect="light" content="nodePort" placement="top-start" v-if="item.nodePort != null">
-                    <el-tag style="margin-left: 5px" type="success">{{item.nodePort}}</el-tag>
-                  </el-tooltip>
-                  <el-tooltip class="item" effect="light" content="port" placement="top-start">
-                   <el-tag style="margin-left: 5px" type="warning">{{item.port}}</el-tag>
-                  </el-tooltip>
+                <el-tag style="margin-left: 5px">{{item.name}}</el-tag>
+                <el-tooltip class="item" effect="light" content="nodePort" placement="top-start"
+                            v-if="item.nodePort != null">
+                  <el-tag style="margin-left: 5px" type="success">{{item.nodePort}}</el-tag>
+                </el-tooltip>
+                <el-tooltip class="item" effect="light" content="port" placement="top-start">
+                  <el-tag style="margin-left: 5px" type="warning">{{item.port}}</el-tag>
+                </el-tooltip>
               </div>
             </div>
           </template>
@@ -81,7 +92,11 @@
     queryKubernetesClusterPage,
     queryKubernetesClusterNamespacePage
   } from '@api/kubernetes/kubernetes.cluster.js'
-  import { queryKubernetesServicePage, delKubernetesServiceById } from '@api/kubernetes/kubernetes.service.js'
+  import {
+    queryKubernetesServicePage,
+    delKubernetesServiceById,
+    syncKubernetesService
+  } from '@api/kubernetes/kubernetes.service.js'
   import { mapActions, mapState } from 'vuex'
 
   export default {
@@ -154,6 +169,15 @@
             this.clusterOptions = res.body.data
           })
       },
+      handlerSync () {
+        syncKubernetesService(this.queryParam.namespaceId)
+          .then(res => {
+            this.$message({
+              type: 'success',
+              message: '后台同步中!'
+            })
+          })
+      },
       handlerRowYAMLEdit (row) {
         this.$refs.kubernetesEditYAMLDialog.initData(row.deploymentYAML)
         this.formStatus.visible = true
@@ -175,9 +199,6 @@
           .then(res => {
             this.namespaceOptions = res.body.data
           })
-      },
-      handlerSync () {
-
       },
       handlerRowDel (row) {
         this.$confirm('此操作将删除当前配置?', '提示', {

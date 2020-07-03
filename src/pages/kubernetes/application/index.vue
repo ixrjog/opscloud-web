@@ -12,14 +12,22 @@
       </el-row>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column prop="name" label="应用名称"></el-table-column>
-        <el-table-column prop="instances" label="应用实例" width="300">
+        <el-table-column prop="serverGroupId" label="服务器组">
+          <template slot-scope="props">
+            <span v-if="props.row.serverGroup !== null">{{ props.row.serverGroup.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="instances" label="应用实例" width="700">
           <template slot-scope="props">
             <div v-for="item in props.row.instances" :key="item.id">
-              <el-tag :style="{ color: item.env.color }">{{ item.instanceName }}
-                <el-button type="text" style="margin-left: 10px; padding: 3px 0" @click="handlerRowInstanceEdit(props.row, item)">编辑
+              <el-tag type="primary" :style="{ color: item.env.color }">{{ item.instanceName }}
+                <el-button type="text" style="margin-left: 10px; padding: 3px 0"
+                           @click="handlerRowInstanceEdit(props.row, item)">编辑
                 </el-button>
                 <el-button type="text" style="padding: 3px 0" @click="handlerRowInstanceDel(item)">删除</el-button>
               </el-tag>
+              <el-tag type="success" effect="dark" style="margin-left: 5px" v-if="item.deployment !== null">{{ item.deployment.name}}</el-tag>
+              <el-tag type="warning" effect="dark" style="margin-left: 5px" v-if="item.service !== null">{{ item.service.name}}</el-tag>
             </div>
           </template>
         </el-table-column>

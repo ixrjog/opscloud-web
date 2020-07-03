@@ -17,7 +17,6 @@
           </el-option>
         </el-select>
       </el-form-item>
-
       <el-form-item label="描述" :label-width="labelWidth">
         <el-input v-model="kubernetesApplication.comment" placeholder="请输入内容"></el-input>
       </el-form-item>
@@ -37,6 +36,7 @@
   export default {
     data () {
       return {
+        activeName: 'application',
         kubernetesApplication: {},
         labelWidth: '100px',
         options: {

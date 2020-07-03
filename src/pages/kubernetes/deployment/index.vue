@@ -37,6 +37,16 @@
         </el-table-column>
         <el-table-column prop="name" label="名称"></el-table-column>
         <el-table-column prop="labelApp" label="标签"></el-table-column>
+        <el-table-column prop="application" label="应用">
+          <template slot-scope="props">
+            <span v-if="props.row.application != null">{{props.row.application.name}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="instance" label="实例">
+          <template slot-scope="props">
+            <span v-if="props.row.instance != null">{{props.row.instance.instanceName}}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="deployment" label="镜像" width="700">
           <template slot-scope="props">
             <div class="tag-group">
