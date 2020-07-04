@@ -4,7 +4,9 @@
       <template>
         <el-col :span="24">
           <el-alert title="查看Docker日志" type="success" show-icon style="margin-bottom: 5px">
-            <div>sudo docker logs -f --tail 100 {{container.id}}</div>
+            <el-button type="text" style="margin-left: 10px; padding: 3px 0" @click="handlerSendCmd">sudo docker logs -f
+              --tail 100 {{container.id}}
+            </el-button>
           </el-alert>
           <el-card shadow="hover" body-style="padding: 2px" style="margin-right: 10px;margin-bottom: 10px">
             <div slot="header" class="clearfix" style="height: 15px">
@@ -177,12 +179,12 @@
         _this.addonMap[id].fit()
         term.focus()
         term.onData(function (cmd) {
-          let commond = {
+          let command = {
             data: cmd,
             status: 'COMMAND',
             instanceId: id
           }
-          _this.socketOnSend(JSON.stringify(commond))
+          _this.socketOnSend(JSON.stringify(command))
         })
         this.xtermMap[id] = term
       },
@@ -319,6 +321,16 @@
           messageJson.map(function (n) {
             _this.xtermMap[n.instanceId].write(n.output)
           })
+        }
+      },
+      handlerSendCmd () {
+        for (let id in this.xtermMap) {
+          let command = {
+            data: 'sudo docker logs -f --tail 100 ' + this.container.id,
+            status: 'COMMAND',
+            instanceId: id
+          }
+          this.socketOnSend(JSON.stringify(command))
         }
       }
     }
