@@ -39,12 +39,6 @@
       },
       handlerSave () {
         setTimeout(() => {
-          // var requestBody = Object.assign({}, this.formData)
-          // var requestBody = {
-          //   'businessType': this.formData.businessType,
-          //   'businessId': this.formData.businessId,
-          //   'tagIds': this.formData.serverTag
-          // }
           updateTagBusiness(this.tagTransfer)
             .then(res => {
               // 返回数据

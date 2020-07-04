@@ -10,6 +10,14 @@ export function queryKubernetesApplicationPage (data) {
   })
 }
 
+export function queryMyKubernetesApplicationPage (data) {
+  return request({
+    url: baseUrl + '/my/page/query',
+    method: 'post',
+    data
+  })
+}
+
 export function addKubernetesApplication (data) {
   return request({
     url: baseUrl + '/add',

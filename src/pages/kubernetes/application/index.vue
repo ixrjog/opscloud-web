@@ -26,8 +26,12 @@
                 </el-button>
                 <el-button type="text" style="padding: 3px 0" @click="handlerRowInstanceDel(item)">删除</el-button>
               </el-tag>
-              <el-tag type="success" effect="dark" style="margin-left: 5px" v-if="item.deployment !== null">{{ item.deployment.name}}</el-tag>
-              <el-tag type="warning" effect="dark" style="margin-left: 5px" v-if="item.service !== null">{{ item.service.name}}</el-tag>
+              <el-tag type="success" effect="dark" style="margin-left: 5px" v-if="item.deployment !== null">{{
+                item.deployment.name}}
+              </el-tag>
+              <el-tag type="warning" effect="dark" style="margin-left: 5px" v-if="item.service !== null">{{
+                item.service.name}}
+              </el-tag>
             </div>
           </template>
         </el-table-column>
@@ -136,7 +140,8 @@
         this.formApplicationStatus.operationType = true
       },
       handlerRowEdit (row) {
-        this.$refs.kubernetesApplicationDialog.initData(row)
+        let application = Object.assign({}, row)
+        this.$refs.kubernetesApplicationDialog.initData(application)
         this.formApplicationStatus.visible = true
         this.formApplicationStatus.operationType = false
       },
@@ -181,7 +186,9 @@
         })
       },
       handlerRowInstanceEdit (application, applicationInstance) {
-        this.$refs.kubernetesApplicationInstanceDialog.initData(application, applicationInstance)
+        let _application = Object.assign({}, application)
+        let _applicationInstance = Object.assign({}, applicationInstance)
+        this.$refs.kubernetesApplicationInstanceDialog.initData(_application, _applicationInstance)
         this.formInstanceStatus.visible = true
         this.formInstanceStatus.operationType = false
       },

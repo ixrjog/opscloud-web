@@ -3,7 +3,7 @@
              :visible.sync="formStatus.visible">
     <el-form :model="kubernetesApplication">
       <el-form-item label="应用名称" :label-width="labelWidth" :required="true">
-        <el-input v-model="kubernetesApplication.name" placeholder="请输入内容"></el-input>
+        <el-input v-model="kubernetesApplication.name" placeholder="请输入内容"  :disabled="!formStatus.operationType"></el-input>
       </el-form-item>
 
       <el-form-item label="服务器组" :label-width="labelWidth" :required="true">
