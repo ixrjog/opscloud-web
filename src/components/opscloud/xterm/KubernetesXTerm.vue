@@ -7,8 +7,9 @@
             <el-button type="text" style="margin-left: 10px; padding: 3px 0" @click="handlerSendCmd(0)">[点击查看日志] sudo
               docker logs -f --tail 100 {{container.id}}
             </el-button>
+            <br/>
             <el-button type="text" style="margin-left: 10px; padding: 3px 0" @click="handlerSendCmd(1)">[点击进入容器] sudo
-              docker exec {{container.id}} ash
+              docker exec -it {{container.id}} ash
             </el-button>
           </el-alert>
           <el-card shadow="hover" body-style="padding: 2px" style="margin-right: 10px;margin-bottom: 10px">
@@ -329,7 +330,7 @@
       handlerSendCmd (cmdType) {
         for (let id in this.xtermMap) {
           // sudo docker exec {{container.id}} ash
-          let cmd = cmdType === 0 ? 'logs -f --tail 100 ' + this.container.id : 'exec ' + this.container.id + ' ash'
+          let cmd = cmdType === 0 ? 'logs -f --tail 100 ' + this.container.id : 'exec -it ' + this.container.id + ' ash'
           let command = {
             data: 'sudo docker ' + cmd + '\n',
             status: 'COMMAND',
