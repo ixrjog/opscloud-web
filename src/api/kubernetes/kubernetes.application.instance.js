@@ -47,3 +47,33 @@ export function queryKubernetesApplicationInstanceTemplatePage (data) {
     data
   })
 }
+
+export function createKubernetesDeployment (data) {
+  return request({
+    url: baseUrl + '/deployment/create',
+    method: 'post',
+    data
+  })
+}
+
+export function delKubernetesDeploymentById (id) {
+  return request({
+    url: baseUrl + '/deployment/del?id=' + id,
+    method: 'delete'
+  })
+}
+
+export function createKubernetesService (data) {
+  return request({
+    url: baseUrl + '/service/create',
+    method: 'post',
+    data
+  })
+}
+
+export function delKubernetesServiceById (id) {
+  return request({
+    url: baseUrl + '/service/del?id=' + id,
+    method: 'delete'
+  })
+}

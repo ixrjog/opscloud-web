@@ -85,6 +85,9 @@
                     height="400"></editor>
           </el-form-item>
         </el-form>
+        <div style="width:100%;text-align:center">
+          <el-button align="center" type="success" size="mini" @click="handlerCreateService">创建</el-button>
+        </div>
       </el-tab-pane>
     </el-tabs>
     <div slot="footer" class="dialog-footer">
@@ -101,7 +104,9 @@
     addKubernetesApplicationInstance,
     updateKubernetesApplicationInstance,
     queryKubernetesApplicationInstanceLable,
-    queryKubernetesApplicationInstanceTemplatePage
+    queryKubernetesApplicationInstanceTemplatePage,
+    createKubernetesDeployment,
+    createKubernetesService
   } from '@api/kubernetes/kubernetes.application.instance.js'
 
   export default {
@@ -218,8 +223,41 @@
         this.getDeploymentTemplate('')
         this.getServiceTemplate('')
       },
-      handlerCreateDeployment(){
-
+      handlerCreateDeployment () {
+        if (this.deploymentTemplate === null || this.deploymentTemplate.id === '') return
+        let requestBody = {
+          instanceId: this.kubernetesApplicationInstance.id,
+          templateId: this.deploymentTemplate.id
+        }
+        createKubernetesDeployment(requestBody)
+          .then(res => {
+            if (res.success) {
+              this.$message({
+                message: '成功',
+                type: 'success'
+              })
+            } else {
+              this.$message.error(res.msg)
+            }
+          })
+      },
+      handlerCreateService () {
+        if (this.serviceTemplate === null || this.serviceTemplate.id === '') return
+        let requestBody = {
+          instanceId: this.kubernetesApplicationInstance.id,
+          templateId: this.serviceTemplate.id
+        }
+        createKubernetesService(requestBody)
+          .then(res => {
+            if (res.success) {
+              this.$message({
+                message: '成功',
+                type: 'success'
+              })
+            } else {
+              this.$message.error(res.msg)
+            }
+          })
       },
       handlerSave () {
         setTimeout(() => {

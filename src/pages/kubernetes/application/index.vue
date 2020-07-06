@@ -33,9 +33,13 @@
               </el-tag>
               <el-tag type="success" effect="dark" style="margin-left: 5px" v-if="item.deployment !== null">{{
                 item.deployment.name}}
+                <el-button type="text" style="padding: 3px 0" @click="handlerDeploymentDel(item.deployment.id)">删除
+                </el-button>
               </el-tag>
               <el-tag type="warning" effect="dark" style="margin-left: 5px" v-if="item.service !== null">{{
                 item.service.name}}
+                <el-button type="text" style="padding: 3px 0" @click="handlerServiceDel(item.service.id)">删除
+                </el-button>
               </el-tag>
             </div>
           </template>
@@ -66,7 +70,11 @@
   import KubernetesApplicationDialog from '@/components/opscloud/kubernetes/KubernetesApplicationDialog'
 
   // API
-  import { delKubernetesApplicationInstanceById } from '@api/kubernetes/kubernetes.application.instance.js'
+  import {
+    delKubernetesApplicationInstanceById,
+    delKubernetesDeploymentById,
+    delKubernetesServiceById
+  } from '@api/kubernetes/kubernetes.application.instance.js'
   import {
     queryKubernetesApplicationPage,
     delKubernetesApplicationById
@@ -207,6 +215,46 @@
         this.$refs.kubernetesApplicationInstanceDialog.initData(row, applicationInstance)
         this.formInstanceStatus.visible = true
         this.formInstanceStatus.operationType = true
+      },
+      handlerDeploymentDel (id) {
+        this.$confirm('此操作将删除当前配置?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          delKubernetesDeploymentById(id).then(res => {
+            this.fetchData()
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+      },
+      handlerServiceDel (id) {
+        this.$confirm('此操作将删除当前配置?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          delKubernetesServiceById(id).then(res => {
+            this.fetchData()
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
       },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage

@@ -3,10 +3,15 @@
     <h1>{{title}}</h1>
     <el-row :gutter="40">
       <el-col :span="12">
-        <MyKubernetesApplicationTable ref="myKubernetesApplicationTable" @handlerSelInstance="handlerSelInstance"></MyKubernetesApplicationTable>
+        <el-card shadow="never">
+          <MyKubernetesApplicationTable ref="myKubernetesApplicationTable"
+                                        @handlerSelInstance="handlerSelInstance"></MyKubernetesApplicationTable>
+        </el-card>
       </el-col>
       <el-col :span="10">
-        <MyKubernetesPodTable ref="myKubernetesPodTable"></MyKubernetesPodTable>
+        <el-card shadow="never">
+          <MyKubernetesPodTable ref="myKubernetesPodTable"></MyKubernetesPodTable>
+        </el-card>
       </el-col>
     </el-row>
   </d2-container>
