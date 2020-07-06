@@ -11,7 +11,12 @@
         <el-button style="margin-left: 5px" @click="handlerAdd">新增</el-button>
       </el-row>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
-        <el-table-column prop="name" label="应用名称"></el-table-column>
+        <el-table-column prop="name" label="应用名称">
+          <template slot-scope="props">
+            <div>{{ props.row.name }}</div>
+            <div>{{ props.row.comment }}</div>
+          </template>
+        </el-table-column>
         <el-table-column prop="serverGroupId" label="服务器组">
           <template slot-scope="props">
             <span v-if="props.row.serverGroup !== null">{{ props.row.serverGroup.name }}</span>
@@ -35,7 +40,6 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="comment" label="描述"></el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
             <el-button type="primary" plain size="mini" @click="handlerRowInstanceAdd(scope.row)">新建</el-button>

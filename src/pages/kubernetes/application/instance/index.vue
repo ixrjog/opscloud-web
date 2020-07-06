@@ -11,13 +11,34 @@
         <el-button style="margin-left: 5px" @click="handlerAdd">新增</el-button>
       </el-row>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
-        <el-table-column prop="name" label="应用名称"></el-table-column>
-        <el-table-column prop="serverGroup" label="服务器组" width="700">
+        <el-table-column prop="application" label="应用名称">
           <template slot-scope="props">
-            <span>{{props.row.serverGroup.name}}</span>
+            <span>{{props.row.application.name}}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="comment" label="描述"></el-table-column>
+        <el-table-column prop="instanceName" label="实例名称"></el-table-column>
+        <el-table-column prop="env" label="环境" width="80">
+          <template slot-scope="props">
+            <el-tag disable-transitions :style="{ color: props.row.env.color }">{{props.row.env.envName}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="deployment" label="无状态">
+          <template slot-scope="props">
+            <div v-if="props.row.deployment !== null">
+              <el-tag type="success" effect="dark" style="margin-left: 5px">{{props.row.deployment.name}}</el-tag>
+              <el-tooltip class="item" effect="dark" content="容器组数量" placement="top-start">
+                <el-tag type="primary" style="margin-left: 5px">{{props.row.deployment.availableReplicas}}/{{props.row.deployment.replicas}}</el-tag>
+              </el-tooltip>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="service" label="服务">
+          <template slot-scope="props">
+            <div v-if="props.row.service !== null">
+              <el-tag type="warning" effect="dark" style="margin-left: 5px">{{props.row.service.name}}</el-tag>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column fixed="right" label="操作" width="180">
           <template slot-scope="scope">
             <el-button type="primary" plain size="mini" @click="handlerRowEdit(scope.row)">编辑</el-button>
@@ -41,7 +62,10 @@
   import KubernetesApplicationDialog from '@/components/opscloud/kubernetes/KubernetesApplicationDialog'
 
   // API
-  import { queryKubernetesApplicationInstancePage, delKubernetesApplicationInstanceById } from '@api/kubernetes/kubernetes.application.instance.js'
+  import {
+    queryKubernetesApplicationInstancePage,
+    delKubernetesApplicationInstanceById
+  } from '@api/kubernetes/kubernetes.application.instance.js'
   import { mapActions, mapState } from 'vuex'
 
   export default {

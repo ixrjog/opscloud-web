@@ -53,13 +53,8 @@
           <template slot-scope="props">
             <div class="tag-group">
               <div v-for="item in props.row.ports" :key="item.name">
-                <el-tag style="margin-left: 5px">{{item.name}}</el-tag>
-                <el-tooltip class="item" effect="light" content="nodePort" placement="top-start"
-                            v-if="item.nodePort != null">
-                  <el-tag style="margin-left: 5px" type="success">{{item.nodePort}}</el-tag>
-                </el-tooltip>
-                <el-tooltip class="item" effect="light" content="port" placement="top-start">
-                  <el-tag style="margin-left: 5px" type="warning">{{item.port}}</el-tag>
+                <el-tooltip class="item" effect="light" content="名称: nodePort/port" placement="top-start">
+                  <el-tag style="margin-left: 5px" type="success" effect="dark">{{item.name}}: <span v-show="item.nodePort !== null">{{item.nodePort}}/</span>{{item.port}}</el-tag>
                 </el-tooltip>
               </div>
             </div>
