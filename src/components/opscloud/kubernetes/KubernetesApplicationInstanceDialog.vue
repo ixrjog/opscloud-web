@@ -34,7 +34,7 @@
           </el-form-item>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane label="变量配置" name="variable">
+      <el-tab-pane label="变量配置" name="variable" :disabled="kubernetesApplicationInstance.id === ''">
         <el-form :model="kubernetesApplicationInstance">
           <el-form-item label="variable" :label-width="labelWidth">
             <editor v-model="kubernetesApplicationInstance.templateVariable" @init="editorInit" lang="yaml"
@@ -43,7 +43,7 @@
           </el-form-item>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane label="Deployment配置" name="deployment">
+      <el-tab-pane label="Deployment配置" name="deployment" :disabled="kubernetesApplicationInstance.id === ''">
         <el-form :model="kubernetesApplicationInstance">
           <el-form-item label="模版" :label-width="labelWidth" :required="true">
             <el-select v-model="deploymentTemplate" filterable clearable value-key="id"
@@ -57,13 +57,17 @@
             </el-select>
           </el-form-item>
           <el-form-item label="无状态模版" :label-width="labelWidth">
-            <editor v-model="deploymentTemplate.templateYaml" @init="editorTplInit" lang="yaml" theme="kuroir" width="100%"
+            <editor v-model="deploymentTemplate.templateYaml" @init="editorTplInit" lang="yaml" theme="kuroir"
+                    width="100%"
                     readonly
                     height="400"></editor>
           </el-form-item>
         </el-form>
+        <div style="width:100%;text-align:center">
+          <el-button align="center" type="success" size="mini" @click="handlerCreateDeployment">创建</el-button>
+        </div>
       </el-tab-pane>
-      <el-tab-pane label="Service配置" name="service">
+      <el-tab-pane label="Service配置" name="service" :disabled="kubernetesApplicationInstance.id === ''">
         <el-form :model="kubernetesApplicationInstance">
           <el-form-item label="模版" :label-width="labelWidth" :required="true">
             <el-select v-model="serviceTemplate" filterable clearable value-key="id"
@@ -154,6 +158,11 @@
         this.getTemplate(queryName, 'SERVICE')
       },
       getTemplate (queryName, templateType) {
+        if (this.kubernetesApplicationInstance.id === '') {
+          this.deploymentTemplate = ''
+          this.serviceTemplate = ''
+          return
+        }
         let requestBody = {
           queryName: queryName,
           envType: this.kubernetesApplicationInstance.envType,
@@ -208,6 +217,9 @@
         this.kubernetesApplicationInstance = kubernetesApplicationInstance
         this.getDeploymentTemplate('')
         this.getServiceTemplate('')
+      },
+      handlerCreateDeployment(){
+
       },
       handlerSave () {
         setTimeout(() => {
