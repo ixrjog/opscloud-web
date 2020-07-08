@@ -152,10 +152,10 @@
         this.formApplicationStatus.operationType = true
       },
       handlerRowEdit (row) {
-        let application = Object.assign({}, row)
-        this.$refs.kubernetesApplicationDialog.initData(application)
         this.formApplicationStatus.visible = true
         this.formApplicationStatus.operationType = false
+        let application = Object.assign({}, row)
+        this.$refs.kubernetesApplicationDialog.initData(application)
       },
       handlerRowDel (row) {
         this.$confirm('此操作将删除当前配置?', '提示', {

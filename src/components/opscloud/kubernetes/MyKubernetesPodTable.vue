@@ -22,7 +22,7 @@
           <div v-for="item in props.row.containers" :key="item.name" style="float: right; margin-right:10px">
             <el-tag :type="item.started ? 'success':'warning'" effect="dark">{{ item.name }}
               <span v-show="item.id !== ''">[id:{{ item.id }}]</span>
-              <el-button type="text" style="margin-left: 10px; padding: 3px 0" @click="handlerXTerm(props.row, item)">打开终端</el-button>
+              <el-button type="text" style="margin-left: 10px; padding: 3px 0" @click="handlerXTerm(props.row, item)"><span style="color: #535353">打开终端</span></el-button>
             </el-tag>
           </div>
         </template>

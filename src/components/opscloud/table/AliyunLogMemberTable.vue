@@ -18,8 +18,8 @@
       <el-table-column prop="ago" label="推送时间" width="100"></el-table-column>
       <el-table-column fixed="right" label="操作" width="240">
         <template slot-scope="scope">
-          <el-button @click="handlerRowPush(scope.row)" style="margin-left: 5px">推送</el-button>
-          <el-button @click="handlerRowEdit(scope.row)" style="margin-left: 5px">编辑</el-button>
+          <el-button @click="handlerRowPush(scope.row)" type="primary" plain size="mini" style="margin-left: 5px">推送</el-button>
+          <el-button @click="handlerRowEdit(scope.row)" type="primary" plain size="mini" style="margin-left: 5px">编辑</el-button>
           <el-button type="danger" plain size="mini" @click="handlerRowDel(scope.row)">删除</el-button>
         </template>
       </el-table-column>

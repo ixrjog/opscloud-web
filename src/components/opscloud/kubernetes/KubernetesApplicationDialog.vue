@@ -1,13 +1,13 @@
 <template>
   <el-dialog :title="formStatus.operationType ? formStatus.addTitle : formStatus.updateTitle"
-             :visible.sync="formStatus.visible">
+             :visible.sync="formStatus.visible" @before-close="handlerCloseDialog">
     <el-form :model="kubernetesApplication">
       <el-form-item label="应用名称" :label-width="labelWidth" :required="true">
-        <el-input v-model="kubernetesApplication.name" placeholder="请输入内容"  :disabled="!formStatus.operationType"></el-input>
+        <el-input v-model.trim="kubernetesApplication.name" placeholder="请输入内容"
+                  :disabled="!formStatus.operationType"></el-input>
       </el-form-item>
-
       <el-form-item label="服务器组" :label-width="labelWidth" :required="true">
-        <el-select v-model.trim="kubernetesApplication.serverGroupId" filterable clearable
+        <el-select v-model="kubernetesApplication.serverGroupId" filterable clearable
                    remote reserve-keyword placeholder="输入关键词搜组类型" :remote-method="getServerGroup">
           <el-option
             v-for="item in serverGroupOptions"
@@ -53,6 +53,8 @@
     methods: {
       handlerCloseDialog () {
         this.formStatus.visible = false
+        this.kubernetesApplication = {}
+        this.serverGroupOptions = []
         this.$emit('closeDialog')
       },
       getServerGroup (queryName) {
@@ -62,13 +64,13 @@
           })
       },
       initData (kubernetesApplication) {
-        this.kubernetesApplication = kubernetesApplication
         if (this.formStatus.operationType) {
           this.getServerGroup('')
         } else {
           this.serverGroupOptions = []
           this.serverGroupOptions.push(kubernetesApplication.serverGroup)
         }
+        this.kubernetesApplication = kubernetesApplication
       },
       handlerSave () {
         setTimeout(() => {

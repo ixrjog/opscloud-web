@@ -5,10 +5,14 @@
       <el-tab-pane label=配置 name="options">
         <el-row :gutter="20">
           <el-col :span="10">
-            <AliyunLogTable ref="aliyunLogTable" @handlerSelLog="handlerSelLog"></AliyunLogTable>
+            <el-card shadow="never">
+              <AliyunLogTable ref="aliyunLogTable" @handlerSelLog="handlerSelLog"></AliyunLogTable>
+            </el-card>
           </el-col>
           <el-col :span="14">
-            <AliyunLogMemberTable ref="aliyunLogMemberTable"></AliyunLogMemberTable>
+            <el-card shadow="never">
+              <AliyunLogMemberTable ref="aliyunLogMemberTable"></AliyunLogMemberTable>
+            </el-card>
           </el-col>
         </el-row>
       </el-tab-pane>

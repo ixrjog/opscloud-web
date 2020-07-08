@@ -214,6 +214,7 @@
         this.$emit('closeDialog')
       },
       initData (kubernetesApplication, kubernetesApplicationInstance) {
+        this.activeName = 'instance'
         this.deploymentTemplateOptions = []
         this.serviceTemplateOptions = []
         this.deploymentTemplate = {}
