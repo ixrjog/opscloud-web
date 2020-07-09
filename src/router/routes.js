@@ -385,12 +385,22 @@ const frameIn = [
       },
       // task
       {
-        path: '/task/ansible-mgmt',
+        path: '/task/ansible/mgmt',
         name: 'task-ansible-mgmt',
         component: () => import('@/pages/task/ansible-mgmt'),
         meta: {
           auth: true,
-          title: '脚本管理'
+          title: '配置管理'
+        }
+      },
+      // profile-subscription
+      {
+        path: '/task/profile/subscription',
+        name: 'task-profile-subscription',
+        component: () => import('@/pages/task/profile-subscription'),
+        meta: {
+          auth: true,
+          title: '配置订阅'
         }
       },
       {
