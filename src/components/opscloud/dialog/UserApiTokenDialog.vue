@@ -47,7 +47,7 @@
         apiToken: '',
         pickerOptions: {
           disabledDate (time) {
-            return false
+            return time.getTime() > new Date('2030-12-12 00:00:00')
           },
           shortcuts: [{
             text: '30天',

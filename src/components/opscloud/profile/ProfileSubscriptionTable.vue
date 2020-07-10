@@ -7,20 +7,25 @@
       <el-button @click="handlerAdd" style="margin-left: 5px">新建</el-button>
     </el-row>
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
-      <el-table-column prop="name" label="集群名称"></el-table-column>
-      <el-table-column prop="masterUrl" label="管理url"></el-table-column>
-      <el-table-column prop="namespaces" label="命名空间">
+      <el-table-column prop="name" label="任务名称"></el-table-column>
+      <el-table-column prop="subscriptionType" label="订阅类型"></el-table-column>
+      <el-table-column prop="hostPattern" label="主机模式">
         <template slot-scope="props">
+          <span>{{ props.row.hostPattern }}</span>
           <div class="tag-group">
-              <span v-for="item in props.row.namespaces" :key="item.id">
-                <el-tooltip class="item" effect="light" :content="item.comment" placement="top-start">
-                  <el-tag style="margin-left: 5px" :style="{ color: item.color }">{{ item.namespace }}</el-tag>
-                </el-tooltip>
-              </span>
+            <el-tag style="margin-right: 5px" v-for="item in props.row.servers" :key="item.id">
+             {{ item.name}}-{{item.serialNumber}} {{ item.privateIp }}
+            </el-tag>
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="comment" label="描述"></el-table-column>
+      <el-table-column prop="vars" label="vars">
+        <template slot-scope="props">
+          <editor v-model="props.row.vars" @init="editorInit" :lang="props.row.scriptLang" theme="kuroir"
+                  width="500" height="60" :options="options"></editor>
+        </template>
+      </el-table-column>
+      <el-table-column prop="executionTime" label="执行时间"></el-table-column>
       <el-table-column fixed="right" label="操作" width="380">
         <template slot-scope="scope">
           <el-button type="primary" plain size="mini" @click="handlerRowEdit(scope.row)">编辑</el-button>
@@ -83,6 +88,7 @@
       this.fetchData()
     },
     components: {
+      editor: require('vue2-ace-editor'),
       KubernetesClusterDialog
     },
     methods: {
@@ -99,6 +105,18 @@
         if (typeof (this.info.pageSize) !== 'undefined') {
           this.pagination.pageSize = this.info.pageSize
         }
+      },
+      editorInit: function (ed) {
+        // language extension prerequsite...
+        require('brace/ext/language_tools')
+        // language
+        require('brace/mode/yaml')
+        require('brace/mode/sh')
+        require('brace/theme/chrome')
+        require('brace/theme/kuroir')
+        // snippet
+        require('brace/snippets/yaml')
+        ed.setReadOnly(true)
       },
       handlerRowEdit (row) {
         // user
@@ -168,7 +186,7 @@
 
   .input {
     display: inline-block;
-    max-width: 400px;
+    max-width: 200px;
   }
 
 </style>
