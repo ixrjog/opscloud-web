@@ -14,7 +14,7 @@
           <span>{{ props.row.hostPattern }}</span>
           <div class="tag-group">
             <el-tag style="margin-right: 5px" v-for="item in props.row.servers" :key="item.id">
-             {{ item.name}}-{{item.serialNumber}} {{ item.privateIp }}
+              {{ item.name}}-{{item.serialNumber}} {{ item.privateIp }}
             </el-tag>
           </div>
         </template>
@@ -39,8 +39,8 @@
                    :page-size="pagination.pageSize">
     </el-pagination>
     <!-- cluster编辑对话框 -->
-    <KubernetesClusterDialog ref="kubernetesClusterDialog" :formStatus="formStatus"
-                             @closeDialog="fetchData"></KubernetesClusterDialog>
+    <ProfileSubscriptionDialog ref="profileSubscriptionDialog" :formStatus="formStatus"
+                               @closeDialog="fetchData"></ProfileSubscriptionDialog>
   </div>
 </template>
 
@@ -48,7 +48,7 @@
   import { mapState, mapActions } from 'vuex'
 
   // Component
-  import KubernetesClusterDialog from '@/components/opscloud/kubernetes/KubernetesClusterDialog'
+  import ProfileSubscriptionDialog from '@/components/opscloud/dialog/ProfileSubscriptionDialog'
   // API
   import { queryProfileSubscriptionPage, delProfileSubscriptionById } from '@api/profile/profile.subscription.js'
 
@@ -89,7 +89,7 @@
     },
     components: {
       editor: require('vue2-ace-editor'),
-      KubernetesClusterDialog
+      ProfileSubscriptionDialog
     },
     methods: {
       ...mapActions({
@@ -120,10 +120,10 @@
       },
       handlerRowEdit (row) {
         // user
-        let cluster = Object.assign({}, row)
-        this.$refs.kubernetesClusterDialog.initData(cluster)
+        let profileSubscription = Object.assign({}, row)
         this.formStatus.visible = true
         this.formStatus.operationType = false
+        this.$refs.profileSubscriptionDialog.initData(profileSubscription)
       },
       handlerRowDel (row) {
         this.$confirm('此操作将删除当前配置?', '提示', {
@@ -146,16 +146,17 @@
         })
       },
       handlerAdd () {
-        let cluster = {
+        let profileSubscription = {
           id: '',
           name: '',
-          masterUrl: '',
-          kubeconfig: '',
+          subscriptionType: '',
+          hostPattern: '',
           serverGroupId: 0,
-          serverGroupName: '',
+          serverTaskId: 0,
+          vars: '',
           comment: ''
         }
-        this.$refs.kubernetesClusterDialog.initData(cluster)
+        this.$refs.profileSubscriptionDialog.initData(profileSubscription)
         // form
         this.formStatus.visible = true
         this.formStatus.operationType = true
@@ -182,7 +183,7 @@
   }
 </script>
 
-<style>
+<style scoped>
 
   .input {
     display: inline-block;

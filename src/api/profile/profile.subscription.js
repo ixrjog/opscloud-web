@@ -16,3 +16,19 @@ export function delProfileSubscriptionById (id) {
     method: 'delete'
   })
 }
+
+export function addProfileSubscription (data) {
+  return request({
+    url: baseUrl + '/add',
+    method: 'post',
+    data
+  })
+}
+
+export function updateProfileSubscription (data) {
+  return request({
+    url: baseUrl + '/update',
+    method: 'put',
+    data
+  })
+}
