@@ -32,3 +32,10 @@ export function updateProfileSubscription (data) {
     data
   })
 }
+
+export function publishProfileSubscriptionById (id) {
+  return request({
+    url: baseUrl + '/publish?id=' + id,
+    method: 'get'
+  })
+}

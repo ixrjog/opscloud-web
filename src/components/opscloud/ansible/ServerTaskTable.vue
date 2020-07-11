@@ -13,8 +13,8 @@
     </el-row>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="user" label="用户">
-        <template slot-scope="scope">
-          {{scope.row.user.displayName}}
+        <template slot-scope="props">
+          <span v-if="props.row.user !== null && props.row.user.displayName !== null">{{ props.row.user.displayName }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="taskType" label="类型">

@@ -33,6 +33,7 @@
       <el-table-column prop="executionTime" label="执行时间"></el-table-column>
       <el-table-column fixed="right" label="操作" width="280">
         <template slot-scope="scope">
+          <el-button type="primary" plain size="mini" @click="handlerRowPublish(scope.row)">发布</el-button>
           <el-button type="primary" plain size="mini" @click="handlerRowEdit(scope.row)">编辑</el-button>
           <el-button type="danger" plain size="mini" @click="handlerRowDel(scope.row)">删除</el-button>
         </template>
@@ -55,7 +56,11 @@
   // Component
   import ProfileSubscriptionDialog from '@/components/opscloud/dialog/ProfileSubscriptionDialog'
   // API
-  import { queryProfileSubscriptionPage, delProfileSubscriptionById } from '@api/profile/profile.subscription.js'
+  import {
+    queryProfileSubscriptionPage,
+    delProfileSubscriptionById,
+    publishProfileSubscriptionById
+  } from '@api/profile/profile.subscription.js'
 
   export default {
     name: 'ProfileSubscriptionTable',
@@ -164,6 +169,20 @@
         // form
         this.formStatus.visible = true
         this.formStatus.operationType = true
+      },
+      // publishProfileSubscriptionById
+      handlerRowPublish (row) {
+        publishProfileSubscriptionById(row.id)
+          .then(res => {
+            if (res.success) {
+              this.$message({
+                type: 'info',
+                message: '任务运行中'
+              })
+            } else {
+              this.$message.error(res.msg)
+            }
+          })
       },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage
