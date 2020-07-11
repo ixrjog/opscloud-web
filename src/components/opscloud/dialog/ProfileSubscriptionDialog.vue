@@ -19,7 +19,7 @@
         <el-select v-model="profileSubscriptionData.scriptId" filterable value-key="id" reserve-keyword
                    remote placeholder="搜索playbook" :remote-method="getPlaybook"
                    :loading="playbookSearching">
-          <el-option v-for="item in playbookOptions" :key="item.id" :label="item.name" :value="item">
+          <el-option v-for="item in playbookOptions" :key="item.id" :label="item.name" :value="item.id">
           </el-option>
         </el-select>
       </el-form-item>
@@ -83,7 +83,6 @@
       editor: require('vue2-ace-editor')
     },
     mounted () {
-      this.getServerGroup('')
     },
     methods: {
       editorInit: function () {
@@ -122,9 +121,12 @@
         this.profileSubscriptionData = profileSubscriptionData
         if (this.formStatus.operationType) {
           this.getServerGroup('')
+          this.getPlaybook('')
         } else {
           this.serverGroupOptions = []
           this.serverGroupOptions.push(profileSubscriptionData.serverGroup)
+          this.playbookOptions = []
+          this.playbookOptions.push(profileSubscriptionData.ansiblePlaybook)
         }
       },
       handleClick () {

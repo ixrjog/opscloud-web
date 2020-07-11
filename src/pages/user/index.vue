@@ -31,19 +31,18 @@
               </el-form-item>
               <el-form-item label="用户组">
                 <div class="tag-group">
-                  <el-tag style="margin-left: 5px"
-                          v-for="item in props.row.userGroups"
-                          :key="item.id">{{ item.name }}
+                  <el-tag style="margin-left: 5px" v-for="item in props.row.userGroups" :key="item.id">{{ item.name }}
                   </el-tag>
                 </div>
               </el-form-item>
               <el-form-item label="服务器组">
-                <div class="tag-group">
-                  <el-tag style="margin-left: 5px"
-                          v-for="item in props.row.serverGroups"
-                          :key="item.id">{{ item.name }}
-                  </el-tag>
-                </div>
+                  <div class="tag-group">
+                       <span v-for="item in props.row.serverGroups" :key="item.id">
+                          <el-tooltip class="item" effect="light" :content="item.comment || '没有填写'" placement="bottom">
+                           <el-tag style="margin-left: 5px"
+                                   :type=" item.isAdmin ? 'danger': '' ">{{ item.name }}</el-tag>
+                          </el-tooltip></span>
+                  </div>
               </el-form-item>
             </el-form>
           </template>
@@ -260,7 +259,7 @@
   }
 </script>
 
-<style>
+<style scoped>
   .table-expand {
     font-size: 0;
   }

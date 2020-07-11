@@ -165,7 +165,7 @@
   }
 </script>
 
-<style>
+<style scoped>
 
   .input {
     display: inline-block;

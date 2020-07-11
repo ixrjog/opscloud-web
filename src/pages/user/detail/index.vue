@@ -16,33 +16,21 @@
                 <el-form-item label="用户名" :label-width="labelWidth">
                   <el-input v-model="formUserDetail.username" readonly></el-input>
                 </el-form-item>
-              </el-form>
-              <el-form :model="formUserDetail">
                 <el-form-item label="显示名" :label-width="labelWidth">
                   <el-input v-model="formUserDetail.displayName" readonly></el-input>
                 </el-form-item>
-              </el-form>
-              <el-form :model="formUserDetail">
                 <el-form-item label="姓名" :label-width="labelWidth">
                   <el-input v-model="formUserDetail.name" readonly></el-input>
                 </el-form-item>
-              </el-form>
-              <el-form :model="formUserDetail">
                 <el-form-item label="电话" :label-width="labelWidth">
                   <el-input v-model="formUserDetail.phone" readonly></el-input>
                 </el-form-item>
-              </el-form>
-              <el-form :model="formUserDetail">
                 <el-form-item label="邮箱" :label-width="labelWidth">
                   <el-input v-model="formUserDetail.email" readonly></el-input>
                 </el-form-item>
-              </el-form>
-              <el-form :model="formUserDetail">
                 <el-form-item label="微信" :label-width="labelWidth">
                   <el-input v-model="formUserDetail.wechat" readonly></el-input>
                 </el-form-item>
-              </el-form>
-              <el-form :model="formUserDetail">
                 <el-form-item label="留言" :label-width="labelWidth">
                   <el-input v-model="formUserDetail.comment" readonly></el-input>
                 </el-form-item>
@@ -68,15 +56,15 @@
                   </div>
                 </el-collapse-item>
                 <el-collapse-item title="服务器组（红色标签拥有管理员权限）">
-                  <div class="tag-group">
-                  <span v-for="item in formUserDetail.serverGroups" :key="item.id">
                     <template>
-                      <el-tooltip class="item" effect="light" :content="item.comment || '没有填写'" placement="bottom">
-                        <el-tag style="margin-left: 5px" :type=" item.isAdmin ? 'danger': '' ">{{ item.name }}</el-tag>
-                      </el-tooltip>
+                      <div class="tag-group">
+                       <span v-for="item in formUserDetail.serverGroups" :key="item.id">
+                          <el-tooltip class="item" effect="light" :content="item.comment || '没有填写'" placement="bottom">
+                           <el-tag style="margin-left: 5px"
+                                   :type=" item.isAdmin ? 'danger': '' ">{{ item.name }}</el-tag>
+                          </el-tooltip></span>
+                      </div>
                     </template>
-                  </span>
-                  </div>
                 </el-collapse-item>
                 <el-collapse-item title="阿里云RAM账户授权策略">
                   <el-table :data="formUserDetail.ramUsers" style="width: 100%">
@@ -293,7 +281,7 @@
   }
 </script>
 
-<style>
+<style scoped>
   .table-expand {
     font-size: 0;
   }

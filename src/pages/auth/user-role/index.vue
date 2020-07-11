@@ -166,7 +166,7 @@
   }
 </script>
 
-<style>
+<style scoped>
   .input-search-bar {
     display: inline-block;
     max-width: 200px;

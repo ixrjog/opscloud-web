@@ -343,7 +343,7 @@
   }
 </script>
 
-<style>
+<style scoped>
   .el-card__header {
     padding: 10px 10px;
     border-bottom: 1px solid #EBEEF5;

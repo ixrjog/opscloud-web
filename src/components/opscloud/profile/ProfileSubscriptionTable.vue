@@ -8,7 +8,12 @@
     </el-row>
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
       <el-table-column prop="name" label="任务名称"></el-table-column>
-      <el-table-column prop="subscriptionType" label="订阅类型"></el-table-column>
+      <el-table-column prop="subscriptionType" label="订阅类型" width="120px"></el-table-column>
+      <el-table-column prop="ansiblePlaybook" label="脚本名称" width="120px">
+        <template slot-scope="props">
+          <span>{{ props.row.ansiblePlaybook.name }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="hostPattern" label="主机模式">
         <template slot-scope="props">
           <span>{{ props.row.hostPattern }}</span>
@@ -26,7 +31,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="executionTime" label="执行时间"></el-table-column>
-      <el-table-column fixed="right" label="操作" width="380">
+      <el-table-column fixed="right" label="操作" width="280">
         <template slot-scope="scope">
           <el-button type="primary" plain size="mini" @click="handlerRowEdit(scope.row)">编辑</el-button>
           <el-button type="danger" plain size="mini" @click="handlerRowDel(scope.row)">删除</el-button>
@@ -59,8 +64,8 @@
         formStatus: {
           visible: false,
           operationType: true,
-          addTitle: '新增集群配置',
-          updateTitle: '更新集群配置'
+          addTitle: '新增订阅配置',
+          updateTitle: '更新订阅配置'
         },
         tableData: [],
         options: {
@@ -74,8 +79,7 @@
         },
         queryParam: {
           queryName: ''
-        },
-        title: 'Kubernetes集群管理'
+        }
       }
     },
     computed: {

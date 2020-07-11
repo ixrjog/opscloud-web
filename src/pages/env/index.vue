@@ -160,7 +160,7 @@
   }
 </script>
 
-<style>
+<style scoped>
   .input-bar {
     display: inline-block;
     max-width: 200px;

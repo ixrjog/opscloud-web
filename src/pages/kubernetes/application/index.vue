@@ -276,7 +276,7 @@
   }
 </script>
 
-<style>
+<style scoped>
   .input {
     display: inline-block;
     max-width: 200px;

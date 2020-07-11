@@ -87,9 +87,8 @@
       },
       fetchData () {
         this.searching = true
-        this.treeData = []
         this.uuid = ''
-        var requestBody = {
+        let requestBody = {
           queryName: this.queryParam.name,
           grpType: this.queryParam.grpType
         }
