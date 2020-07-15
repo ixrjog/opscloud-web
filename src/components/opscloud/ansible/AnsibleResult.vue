@@ -5,11 +5,13 @@
         <span slot="label"><i class="el-icon-loading"></i> 执行中</span>
         <el-card shadow="never" v-for="member in serverTask.memberMap.EXECUTE_QUEUE" :key="member.id"
                  style="margin-top: 5px">
-          <el-tag disable-transitions>{{member.hostPattern}} - {{member.manageIp}}</el-tag>
-          <el-tag disable-transitions :style="{ color: member.env.color , marginLeft: '5px' }">
-            {{member.env.envName}}
-          </el-tag>
-          <el-button style="float: right" @click="abortServerTaskMember(member.id)">停止</el-button>
+          <el-row>
+            <el-tag disable-transitions>{{member.hostPattern}} - {{member.manageIp}}</el-tag>
+            <el-tag disable-transitions :style="{ color: member.env.color , marginLeft: '5px' }">
+              {{member.env.envName}}
+            </el-tag>
+            <el-button type="text" style="float: right" @click="abortServerTaskMember(member.id)">停止</el-button>
+          </el-row>
           <d2-highlight v-if="member.outputMsgLog != null" :code="member.outputMsgLog" style="margin-top: 5px"/>
         </el-card>
       </el-tab-pane>

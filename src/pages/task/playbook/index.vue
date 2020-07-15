@@ -26,7 +26,7 @@
             <el-form-item label="并发线程数" :label-width="labelWidth" :required="true"
                           style="max-width: 400px;margin-top: 5px">
               <el-slider v-model="executorPlaybookParam.concurrent"
-                         :min="2" :max="10" :step="2" show-stops>
+                         :min="2" :max="40" :step="2" show-stops>
               </el-slider>
             </el-form-item>
             <el-form-item label="tags" :label-width="labelWidth" style="max-width: 800px;margin-top: 5px"
@@ -90,7 +90,7 @@
           playbookId: '',
           vars: '',
           tags: [],
-          concurrent: 4,
+          concurrent: 10,
           becomeUser: '',
           hostPatterns: [],
           uuid: '',
@@ -154,7 +154,7 @@
         require('brace/snippets/yaml')
       },
       executorPlaybook () {
-        var requestBody = Object.assign({}, this.executorPlaybookParam)
+        let requestBody = Object.assign({}, this.executorPlaybookParam)
         try {
           requestBody.hostPatterns = this.$refs.serverTree.getCheckedKeys(true)
           requestBody.uuid = this.$refs.serverTree.getUuid()

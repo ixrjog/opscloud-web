@@ -7,9 +7,19 @@
       <el-button @click="handlerAdd" style="margin-left: 5px">新建</el-button>
     </el-row>
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-form label-position="left" inline class="table-expand">
+            <el-form-item label="vars">
+              <editor v-model="props.row.vars" @init="editorInit" :lang="props.row.scriptLang" theme="kuroir"
+                      width="500" height="80" :options="options"></editor>
+            </el-form-item>
+          </el-form>
+        </template>
+      </el-table-column>
       <el-table-column prop="name" label="任务名称"></el-table-column>
-      <el-table-column prop="subscriptionType" label="订阅类型" width="120px"></el-table-column>
-      <el-table-column prop="ansiblePlaybook" label="脚本名称" width="120px">
+      <el-table-column prop="subscriptionType" label="订阅类型"></el-table-column>
+      <el-table-column prop="ansiblePlaybook" label="脚本名称">
         <template slot-scope="props">
           <span>{{ props.row.ansiblePlaybook.name }}</span>
         </template>
@@ -22,12 +32,6 @@
               {{ item.name}}-{{item.serialNumber}} {{ item.privateIp }}
             </el-tag>
           </div>
-        </template>
-      </el-table-column>
-      <el-table-column prop="vars" label="vars">
-        <template slot-scope="props">
-          <editor v-model="props.row.vars" @init="editorInit" :lang="props.row.scriptLang" theme="kuroir"
-                  width="500" height="60" :options="options"></editor>
         </template>
       </el-table-column>
       <el-table-column prop="executionTime" label="执行时间"></el-table-column>
@@ -206,7 +210,21 @@
   }
 </script>
 
-<style scoped>
+<style>
+  .table-expand {
+    font-size: 0;
+  }
+
+  .table-expand label {
+    width: 150px;
+    color: #99a9bf;
+  }
+
+  .table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+  }
 
   .input {
     display: inline-block;

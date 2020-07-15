@@ -2,210 +2,222 @@
   <el-dialog :title="formStatus.title"
              :before-close="closeDialog"
              :visible.sync="formStatus.visible">
-    <el-tabs v-model="activeName">
-      <el-tab-pane label="模版" name="template">
-        <el-form :model="templateData">
-          <el-table :data="tableData" style="width: 100%">
-            <el-table-column type="expand">
-              <template slot-scope="props">
-                <el-form label-position="left" inline class="table-expand">
-                  <el-form-item label="镜像id" v-show="props.row.imageId != null && props.row.imageId != ''">
-                    <span>{{ props.row.imageId }}</span>
-                  </el-form-item>
-                  <el-form-item label="专有网络id" v-show="props.row.vpcId != null && props.row.vpcId != ''">
-                    <span>{{ props.row.vpcId }}</span>
-                  </el-form-item>
-                  <el-form-item label="专有网络名称" v-show="props.row.vpcName != null && props.row.vpcName != ''">
-                    <span>{{ props.row.vpcName }}</span>
-                  </el-form-item>
-                  <el-form-item label="安全组id"
-                                v-show="props.row.securityGroupId != null && props.row.securityGroupId != ''">
-                    <span>{{ props.row.securityGroupId }}</span>
-                  </el-form-item>
-                  <el-form-item label="安全组名称"
-                                v-show="props.row.securityGroupName != null && props.row.securityGroupName != ''">
-                    <span>{{ props.row.securityGroupName }}</span>
-                  </el-form-item>
-                  <el-form-item label="创建时间">
-                    <span>{{ props.row.createTime }}</span>
-                  </el-form-item>
-                </el-form>
-              </template>
-            </el-table-column>
-            <el-table-column prop="templateName" label="模版名称"></el-table-column>
-            <el-table-column prop="regionId" label="地区id"></el-table-column>
-            <el-table-column label="有效可用区">
-              <template slot-scope="props">
-                <div class="tag-group" v-if="props.row.instanceZones != null">
-                  <el-tag style="margin-left: 5px" :type="item.active ? 'success': 'info'"
-                          v-for="item in props.row.instanceZones" :key="item.zoneId">{{ item.zoneId }}
-                  </el-tag>
-                </div>
-              </template>
-            </el-table-column>
-            <el-table-column prop="instanceTemplate.instance.typeId" label="实例类型"></el-table-column>
-            <el-table-column prop="instanceTemplate.instance.cpuCoreCount" label="cpu"></el-table-column>
-            <el-table-column prop="instanceTemplate.instance.memorySize" label="内存"></el-table-column>
-          </el-table>
-        </el-form>
-      </el-tab-pane>
-      <el-tab-pane label="通用选项" name="options">
-        <el-form :model="templateData">
-          <el-form-item label="服务器组" :label-width="formStatus.labelWidth" :required="true">
-            <el-select v-model.trim="createInstanceData.serverGroupId" filterable clearable
-                       remote reserve-keyword placeholder="输入关键词搜组类型" :remote-method="getServerGroup">
-              <el-option
-                v-for="item in serverGroupOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="服务器名称" :label-width="formStatus.labelWidth">
-            <!--            style="display: inline-block; max-width:175px;"-->
-            <el-input v-model.trim="createInstanceData.serverName" placeholder="不填写按服务器组名称生成"></el-input>
-          </el-form-item>
-          <el-form-item label="登录用户" :label-width="formStatus.labelWidth" :required="true">
-            <el-input v-model.trim="createInstanceData.loginUser" placeholder="请输入内容"></el-input>
-          </el-form-item>
-          <el-form-item label="登录类型" :label-width="formStatus.labelWidth" :required="true">
-            <el-select v-model="createInstanceData.loginType" placeholder="选择类型">
-              <el-option
-                v-for="item in loginTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="环境" :label-width="formStatus.labelWidth" :required="true">
-            <el-select v-model="createInstanceData.envType" filterable clearable
-                       remote reserve-keyword>
-              <el-option
-                v-for="item in envTypeOptions"
-                :key="item.envType"
-                :label="item.envName"
-                :value="item.envType">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="公网" :label-width="formStatus.labelWidth">
-            <el-checkbox v-model="createInstanceData.allocatePublicIpAddress">分配公网ip地址</el-checkbox>
-          </el-form-item>
-          <el-form-item label="创建实例数量" :label-width="formStatus.labelWidth">
-            <el-slider v-model="createInstanceData.createSize" :min="1" :max="40" show-input
-                       input-size="mini"></el-slider>
-          </el-form-item>
-        </el-form>
-      </el-tab-pane>
-      <el-tab-pane label="实例选项" name="instance">
-        <el-form :model="templateData">
-          <el-form-item label="镜像" :label-width="formStatus.labelWidth" :required="true">
-            <el-select v-model.trim="createInstanceData.imageId" filterable clearable
-                       remote reserve-keyword placeholder="输入关键词搜组类型" :remote-method="getImage">
-              <el-option
-                v-for="item in imageOptions"
-                :key="item.imageId"
-                :label="item.imageName"
-                :value="item.imageId">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="安全组" :label-width="formStatus.labelWidth" :required="true">
-            <el-select v-model="createInstanceData.securityGroupId" filterable clearable
-                       remote reserve-keyword placeholder="输入关键词搜组类型" :remote-method="getSecurityGroup">
-              <el-option
-                v-for="item in securityGroupOptions"
-                :key="item.securityGroupId"
-                :label="item.securityGroupName"
-                :value="item.securityGroupId">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="可用区" :label-width="formStatus.labelWidth">
-            <el-tooltip content="在有效可用区内平均创建实例" placement="bottom" effect="light">
-              <el-radio v-model="createInstanceData.zonePattern" label="auto">自动</el-radio>
-            </el-tooltip>
-            <el-tooltip content="仅在选择的可用区内创建实例(必须在可用区内创建虚拟交换机)" placement="bottom" effect="light">
-              <el-radio v-model="createInstanceData.zonePattern" label="single">手动</el-radio>
-            </el-tooltip>
-            <el-select v-model="createInstanceData.zoneId" placeholder="请选择" @change="handlerSelZone"
-                       :disabled="createInstanceData.zonePattern === 'auto'">
-              <el-option
-                v-for="item in templateData.instanceZones"
-                :key="item.zoneId"
-                :label="item.zoneId"
-                :value="item.zoneId"
-                :disabled="!item.active">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="虚拟交换机" :label-width="formStatus.labelWidth" :required="true"
-                        v-show="vswitchTree.length > 0 && createInstanceData.zonePattern === 'single'">
-            <el-tree :data="vswitchTree" show-checkbox ref="vswitchTree" node-key="vswitchId"></el-tree>
-          </el-form-item>
-          <el-form-item label="付费选项" :label-width="formStatus.labelWidth">
-            <el-tooltip content="默认付费方式为:按量付费" placement="bottom" effect="light">
-              <el-checkbox v-model="createInstanceData.charge.chargeType">包月</el-checkbox>
-            </el-tooltip>
-            <el-select v-model="createInstanceData.charge.period" placeholder="请选择包月时长"
-                       v-show="createInstanceData.charge.chargeType">
-              <el-option v-for="item in chargePeriodOptions"
-                         :key="item.value" :label="item.label" :value="item.value"></el-option>
-            </el-select>
-            <el-checkbox style="margin-left: 30px" v-model="createInstanceData.charge.autoRenew"
-                         v-show="createInstanceData.charge.chargeType">自动续费
-            </el-checkbox>
-          </el-form-item>
-        </el-form>
-      </el-tab-pane>
-      <el-tab-pane label="磁盘" name="disk">
-        <el-form :model="templateData">
-          <el-form-item label="系统盘类型" :label-width="formStatus.labelWidth" :required="true">
-            <el-select v-model="disk.sysDisk.category" placeholder="选择类型">
-              <el-option
-                v-for="item in aliyunDiskOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="系统盘容量GiB" :label-width="formStatus.labelWidth" :required="true">
-            <el-input v-model="disk.sysDisk.size" placeholder="请输入内容"
-                      style="display: inline-block; max-width:175px;"></el-input>
-          </el-form-item>
-          <el-form-item label="数据盘类型" :label-width="formStatus.labelWidth" :required="true">
-            <el-select v-model="disk.dataDisk.category" placeholder="选择类型">
-              <el-option
-                v-for="item in aliyunDiskOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="数据盘容量GiB" :label-width="formStatus.labelWidth" :required="true">
-            <el-input v-model="disk.dataDisk.size" placeholder="请输入内容"
-                      style="display: inline-block; max-width:175px;"></el-input>
-          </el-form-item>
-        </el-form>
-      </el-tab-pane>
-      <el-tab-pane label="任务详情" name="task">
-        <el-form>
-          <el-form-item label="任务进度" :label-width="formStatus.labelWidth">
-            <el-progress :text-inside="true" :stroke-width="24" :percentage="completedPercentage" status="success"
-                         style="max-width:200px"></el-progress>
-          </el-form-item>
-        </el-form>
-        <div id="taskChart" style="width: 900px; height: 500px;"></div>
-      </el-tab-pane>
-    </el-tabs>
+    <el-steps :active="step.active" finish-status="success">
+      <el-step title="模版详情"></el-step>
+      <el-step title="通用选项"></el-step>
+      <el-step title="实例选项"></el-step>
+      <el-step title="磁盘选项"></el-step>
+      <el-step title="任务详情"></el-step>
+    </el-steps>
+    <!--    模版-->
+    <el-card class="box-card" shadow="never" v-show="step.active === 1">
+      <el-form :model="templateData">
+        <el-table :data="tableData" style="width: 100%">
+          <el-table-column type="expand">
+            <template slot-scope="props">
+              <el-form label-position="left" inline class="table-expand">
+                <el-form-item label="镜像id" v-show="props.row.imageId != null && props.row.imageId != ''">
+                  <span>{{ props.row.imageId }}</span>
+                </el-form-item>
+                <el-form-item label="专有网络id" v-show="props.row.vpcId != null && props.row.vpcId != ''">
+                  <span>{{ props.row.vpcId }}</span>
+                </el-form-item>
+                <el-form-item label="专有网络名称" v-show="props.row.vpcName != null && props.row.vpcName != ''">
+                  <span>{{ props.row.vpcName }}</span>
+                </el-form-item>
+                <el-form-item label="安全组id"
+                              v-show="props.row.securityGroupId != null && props.row.securityGroupId != ''">
+                  <span>{{ props.row.securityGroupId }}</span>
+                </el-form-item>
+                <el-form-item label="安全组名称"
+                              v-show="props.row.securityGroupName != null && props.row.securityGroupName != ''">
+                  <span>{{ props.row.securityGroupName }}</span>
+                </el-form-item>
+                <el-form-item label="创建时间">
+                  <span>{{ props.row.createTime }}</span>
+                </el-form-item>
+              </el-form>
+            </template>
+          </el-table-column>
+          <el-table-column prop="templateName" label="模版名称"></el-table-column>
+          <el-table-column prop="regionId" label="地区id"></el-table-column>
+          <el-table-column label="有效可用区">
+            <template slot-scope="props">
+              <div class="tag-group" v-if="props.row.instanceZones != null">
+                <el-tag style="margin-left: 5px" :type="item.active ? 'success': 'info'"
+                        v-for="item in props.row.instanceZones" :key="item.zoneId">{{ item.zoneId }}
+                </el-tag>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="instanceTemplate.instance.typeId" label="实例类型"></el-table-column>
+          <el-table-column prop="instanceTemplate.instance.cpuCoreCount" label="cpu"></el-table-column>
+          <el-table-column prop="instanceTemplate.instance.memorySize" label="内存"></el-table-column>
+        </el-table>
+      </el-form>
+    </el-card>
+    <!--    通用选项-->
+    <el-card class="box-card" shadow="never" v-show="step.active === 2">
+      <el-form :model="templateData">
+        <el-form-item label="服务器组" :label-width="formStatus.labelWidth" :required="true">
+          <el-select v-model.trim="createInstanceData.serverGroupId" filterable clearable
+                     remote reserve-keyword placeholder="输入关键词搜组类型" :remote-method="getServerGroup">
+            <el-option
+              v-for="item in serverGroupOptions"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="服务器名称" :label-width="formStatus.labelWidth">
+          <!--            style="display: inline-block; max-width:175px;"-->
+          <el-input v-model.trim="createInstanceData.serverName" placeholder="不填写按服务器组名称生成"></el-input>
+        </el-form-item>
+        <el-form-item label="登录用户" :label-width="formStatus.labelWidth" :required="true">
+          <el-input v-model.trim="createInstanceData.loginUser" placeholder="请输入内容"></el-input>
+        </el-form-item>
+        <el-form-item label="登录类型" :label-width="formStatus.labelWidth" :required="true">
+          <el-select v-model="createInstanceData.loginType" placeholder="选择类型">
+            <el-option
+              v-for="item in loginTypeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="环境" :label-width="formStatus.labelWidth" :required="true">
+          <el-select v-model="createInstanceData.envType" filterable clearable
+                     remote reserve-keyword>
+            <el-option
+              v-for="item in envTypeOptions"
+              :key="item.envType"
+              :label="item.envName"
+              :value="item.envType">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="公网" :label-width="formStatus.labelWidth">
+          <el-checkbox v-model="createInstanceData.allocatePublicIpAddress">分配公网ip地址</el-checkbox>
+        </el-form-item>
+        <el-form-item label="创建实例数量" :label-width="formStatus.labelWidth">
+          <el-slider v-model="createInstanceData.createSize" :min="1" :max="40" show-input
+                     input-size="mini"></el-slider>
+        </el-form-item>
+      </el-form>
+    </el-card>
+    <!--    实例选项-->
+    <el-card class="box-card" shadow="never" v-show="step.active === 3">
+      <el-form :model="templateData">
+        <el-form-item label="镜像" :label-width="formStatus.labelWidth" :required="true">
+          <el-select v-model.trim="createInstanceData.imageId" filterable clearable
+                     remote reserve-keyword placeholder="输入关键词搜组类型" :remote-method="getImage">
+            <el-option
+              v-for="item in imageOptions"
+              :key="item.imageId"
+              :label="item.imageName"
+              :value="item.imageId">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="安全组" :label-width="formStatus.labelWidth" :required="true">
+          <el-select v-model="createInstanceData.securityGroupId" filterable clearable
+                     remote reserve-keyword placeholder="输入关键词搜组类型" :remote-method="getSecurityGroup">
+            <el-option
+              v-for="item in securityGroupOptions"
+              :key="item.securityGroupId"
+              :label="item.securityGroupName"
+              :value="item.securityGroupId">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="可用区" :label-width="formStatus.labelWidth">
+          <el-tooltip content="在有效可用区内平均创建实例" placement="bottom" effect="light">
+            <el-radio v-model="createInstanceData.zonePattern" label="auto">自动</el-radio>
+          </el-tooltip>
+          <el-tooltip content="仅在选择的可用区内创建实例(必须在可用区内创建虚拟交换机)" placement="bottom" effect="light">
+            <el-radio v-model="createInstanceData.zonePattern" label="single">手动</el-radio>
+          </el-tooltip>
+          <el-select v-model="createInstanceData.zoneId" placeholder="请选择" @change="handlerSelZone"
+                     :disabled="createInstanceData.zonePattern === 'auto'">
+            <el-option
+              v-for="item in templateData.instanceZones"
+              :key="item.zoneId"
+              :label="item.zoneId"
+              :value="item.zoneId"
+              :disabled="!item.active">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="虚拟交换机" :label-width="formStatus.labelWidth" :required="true"
+                      v-show="vswitchTree.length > 0 && createInstanceData.zonePattern === 'single'">
+          <el-tree :data="vswitchTree" show-checkbox ref="vswitchTree" node-key="vswitchId"></el-tree>
+        </el-form-item>
+        <el-form-item label="付费选项" :label-width="formStatus.labelWidth">
+          <el-tooltip content="默认付费方式为:按量付费" placement="bottom" effect="light">
+            <el-checkbox v-model="createInstanceData.charge.chargeType">包月</el-checkbox>
+          </el-tooltip>
+          <el-select v-model="createInstanceData.charge.period" placeholder="请选择包月时长"
+                     v-show="createInstanceData.charge.chargeType">
+            <el-option v-for="item in chargePeriodOptions"
+                       :key="item.value" :label="item.label" :value="item.value"></el-option>
+          </el-select>
+          <el-checkbox style="margin-left: 30px" v-model="createInstanceData.charge.autoRenew"
+                       v-show="createInstanceData.charge.chargeType">自动续费
+          </el-checkbox>
+        </el-form-item>
+      </el-form>
+    </el-card>
+    <!--    磁盘-->
+    <el-card class="box-card" shadow="never" v-show="step.active === 4">
+      <el-form :model="templateData">
+        <el-form-item label="系统盘类型" :label-width="formStatus.labelWidth" :required="true">
+          <el-select v-model="disk.sysDisk.category" placeholder="选择类型">
+            <el-option
+              v-for="item in aliyunDiskOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="系统盘容量GiB" :label-width="formStatus.labelWidth" :required="true">
+          <el-input v-model="disk.sysDisk.size" placeholder="请输入内容"
+                    style="display: inline-block; max-width:175px;"></el-input>
+        </el-form-item>
+        <el-form-item label="数据盘类型" :label-width="formStatus.labelWidth" :required="true">
+          <el-select v-model="disk.dataDisk.category" placeholder="选择类型">
+            <el-option
+              v-for="item in aliyunDiskOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="数据盘容量GiB" :label-width="formStatus.labelWidth" :required="true">
+          <el-input v-model="disk.dataDisk.size" placeholder="请输入内容"
+                    style="display: inline-block; max-width:175px;"></el-input>
+        </el-form-item>
+      </el-form>
+    </el-card>
+    <!--    任务详情-->
+    <el-card class="box-card" shadow="never" v-show="step.active === 5">
+      <el-form>
+        <el-form-item label="任务进度" :label-width="formStatus.labelWidth">
+          <el-progress :text-inside="true" :stroke-width="24" :percentage="completedPercentage" status="success"
+                       style="max-width:200px"></el-progress>
+        </el-form-item>
+      </el-form>
+      <div id="taskChart" style="width: 900px; height: 500px;"></div>
+    </el-card>
+
     <div slot="footer" class="dialog-footer">
       <el-button size="mini" @click="closeDialog">关闭</el-button>
-      <el-button type="primary" size="mini" v-if="activeStep !== 'disk'" @click="handlerNext">下一步</el-button>
-      <el-button type="primary" size="mini" v-if="activeStep === 'disk'" :loading="creating" @click="handlerCreate">创建
+      <el-button type="primary" size="mini" v-if="step.active !== 1 && step.active !== step.lastStep" @click="handlerBack">上一步</el-button>
+      <el-button type="primary" size="mini" v-if="step.active < step.lastStep - 1" @click="handlerNext">下一步</el-button>
+      <el-button type="primary" size="mini" v-if="step.active === step.lastStep - 1" :loading="creating" @click="handlerCreate">创建
       </el-button>
     </div>
   </el-dialog>
@@ -322,8 +334,6 @@
       return {
         timer: null,
         tableData: [],
-        activeStep: '',
-        activeName: 'template',
         templateData: {},
         createInstanceData: {
           loginUser: '',
@@ -346,7 +356,8 @@
         vswitchData: [],
         vswitchTree: [],
         completedPercentage: 0,
-        creating: false
+        creating: false,
+        step: {}
       }
     },
     props: ['formStatus'],
@@ -464,7 +475,6 @@
           return []
         }
         let childrens = []
-
         memberList.forEach(member => {
           let name = member.hostname
           if (member.privateIp !== null && member.privateIp !== '') {
@@ -545,34 +555,38 @@
           this.getTemplateVSwitch(this.createInstanceData.zoneId)
         }
       },
+      handlerBack () {
+        if (this.step.active > 1) {
+          this.step.active--
+        }
+      },
       handlerNext () {
         // let actives = ['template', 'options', 'instance', 'disk', 'task']
-        switch (this.activeStep) {
-          case 'template':
-            this.activeStep = 'options'
-            this.activeName = 'options'
+        switch (this.step.active) {
+          case 1:
+            this.step.active++
             break
-          case 'options':
+          case 2:
             if (this.createInstanceData.serverGroupId === '') {
               this.$message.error('请选择服务器组!')
               return
             }
-            this.activeStep = 'instance'
-            this.activeName = 'instance'
+            this.step.active++
             break
-          case 'instance':
-            this.activeStep = 'disk'
-            this.activeName = 'disk'
+          case 3:
+            this.step.active++
             break
-          case 'disk':
-            this.activeStep = 'task'
-            this.activeName = 'task'
+          case 4:
+            this.step.active++
             break
         }
       },
       initData (cloudType, templateData) {
-        this.activeStep = 'template'
-        this.activeName = 'template'
+        this.step = {
+          active: 1,
+          lastStep: 5
+        }
+        this.creating = false
         this.cloudType = cloudType
         this.templateData = templateData
         // 设置模版详情
@@ -644,7 +658,7 @@
                 message: '任务执行中！',
                 type: 'success'
               })
-              this.activeName = 'task'
+              this.step.active = this.step.lastStep
               this.setTimer()
             }
           })
@@ -677,6 +691,19 @@
   }
 </script>
 
-<style scoped>
+<style>
+  .table-expand {
+    font-size: 0;
+  }
 
+  .table-expand label {
+    width: 150px;
+    color: #99a9bf;
+  }
+
+  .table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+  }
 </style>
