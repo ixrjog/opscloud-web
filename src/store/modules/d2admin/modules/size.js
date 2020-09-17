@@ -5,7 +5,7 @@ export default {
   namespaced: true,
   state: {
     // 尺寸
-    value: '' // medium small mini
+    value: 'mini' // medium small mini
   },
   actions: {
     /**
@@ -66,7 +66,7 @@ export default {
         state.value = await dispatch('d2admin/db/get', {
           dbName: 'sys',
           path: 'size.value',
-          defaultValue: 'default',
+          defaultValue: 'mini',
           user: true
         }, { root: true })
         // 应用
