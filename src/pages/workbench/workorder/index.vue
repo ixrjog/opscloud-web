@@ -43,7 +43,7 @@
           </el-row>
         </el-tab-pane>
         <el-tab-pane label="工单管理" name="workorderMgmt">
-          <TicketMgmtTable ref="ticketTable"></TicketMgmtTable>
+          <TicketMgmtTable ref="ticketMgmtTable"></TicketMgmtTable>
         </el-tab-pane>
       </el-tabs>
       <DocDialog ref="docDialog" :formStatus="formDocStatus"></DocDialog>

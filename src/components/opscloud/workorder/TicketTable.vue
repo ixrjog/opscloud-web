@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-table :data="tableData" style="width: 100%" :v-loading="loading">
+    <el-table :data="tableData" style="width: 100%" v-loading="loading">
       <el-table-column prop="workorder.name" label="工单"></el-table-column>
       <el-table-column prop="user.displayName" label="申请人"></el-table-column>
       <el-table-column prop="serverStatus" label="当前步骤">
