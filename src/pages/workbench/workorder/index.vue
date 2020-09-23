@@ -32,20 +32,29 @@
             </el-col>
             <el-col :span="16">
               <el-card shadow="never">
+                <div slot="header" class="clearfix">
+                  <span>待处理工单</span>
+                  <el-button style="float: right; padding: 3px 0" type="text" @click="handlerQueryTicket">手动刷新
+                  </el-button>
+                </div>
                 <TicketTable ref="ticketTable"></TicketTable>
               </el-card>
             </el-col>
           </el-row>
         </el-tab-pane>
         <el-tab-pane label="工单管理" name="workorderMgmt">
-            <TicketMgmtTable ref="ticketTable"></TicketMgmtTable>
+          <TicketMgmtTable ref="ticketTable"></TicketMgmtTable>
         </el-tab-pane>
       </el-tabs>
       <DocDialog ref="docDialog" :formStatus="formDocStatus"></DocDialog>
-      <TicketServerGroupDialog ref="ticketServerGroupDialog" :formStatus="formServerGroupStatus" @closeDialog="fetchData"></TicketServerGroupDialog>
-      <TicketUserGroupDialog ref="ticketUserGroupDialog" :formStatus="formUserGroupStatus" @closeDialog="fetchData"></TicketUserGroupDialog>
-      <TicketAuthRoleDialog ref="ticketAuthRoleDialog" :formStatus="formAuthRoleStatus" @closeDialog="fetchData"></TicketAuthRoleDialog>
-      <TicketRAMPolicyDialog ref="ticketRAMPolicyDialog" :formStatus="formRAMPolicyStatus" @closeDialog="fetchData"></TicketRAMPolicyDialog>
+      <TicketServerGroupDialog ref="ticketServerGroupDialog" :formStatus="formServerGroupStatus"
+                               @closeDialog="fetchData"></TicketServerGroupDialog>
+      <TicketUserGroupDialog ref="ticketUserGroupDialog" :formStatus="formUserGroupStatus"
+                             @closeDialog="fetchData"></TicketUserGroupDialog>
+      <TicketAuthRoleDialog ref="ticketAuthRoleDialog" :formStatus="formAuthRoleStatus"
+                            @closeDialog="fetchData"></TicketAuthRoleDialog>
+      <TicketRAMPolicyDialog ref="ticketRAMPolicyDialog" :formStatus="formRAMPolicyStatus"
+                             @closeDialog="fetchData"></TicketRAMPolicyDialog>
     </template>
   </d2-container>
 </template>
@@ -127,6 +136,9 @@
           .then(res => {
             this.workorderGroups = res.body
           })
+      },
+      handlerQueryTicket () {
+        this.$refs.ticketTable.fetchData()
       },
       handlerPreviewDoc (workorder) {
         queryDocById(workorder.readmeId)

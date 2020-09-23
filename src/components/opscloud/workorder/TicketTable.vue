@@ -1,6 +1,5 @@
 <template>
   <div>
-    <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="workorder.name" label="工单"></el-table-column>
       <el-table-column prop="user.displayName" label="申请人"></el-table-column>
@@ -174,7 +173,7 @@
       },
       fetchData () {
         this.loading = true
-        var requestBody = {
+        let requestBody = {
           userId: 0,
           page: this.pagination.currentPage,
           length: this.pagination.pageSize
