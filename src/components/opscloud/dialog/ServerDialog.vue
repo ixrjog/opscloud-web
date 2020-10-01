@@ -170,7 +170,6 @@
         this.serverData = serverData
         this.serverGroupOptions = serverGroupOptions
         this.getEnvType()
-        this.getEnvType()
         if (this.serverData.loginUser === '') {
           this.setAccountSetting()
         }
