@@ -29,6 +29,14 @@
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column prop="workflow" label="工单申请" width="80">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.inWorkorder === 0 ? 'danger' : 'success'" disable-transitions>
+              {{scope.row.inWorkorder ===
+              0 ? '禁止' : '允许'}}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="comment" label="描述"></el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
