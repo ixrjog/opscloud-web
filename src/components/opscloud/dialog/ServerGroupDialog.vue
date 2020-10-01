@@ -68,7 +68,6 @@
     name: 'ServerDialog',
     props: ['formStatus'],
     mounted () {
-      this.getGrpType('')
     },
     methods: {
       getGrpType (name) {
@@ -80,13 +79,14 @@
       initData (serverGroup, grpTypeOptions) {
         this.serverGroupData = serverGroup
         this.grpTypeOptions = grpTypeOptions
+        if (serverGroup.id === '') this.getGrpType('')
       },
       handleClick () {
         this.$emit('input', !this.value)
       },
       saveInfo () {
         setTimeout(() => {
-          var requestBody = Object.assign({}, this.serverGroupData)
+          let requestBody = Object.assign({}, this.serverGroupData)
           if (this.formStatus.operationType) {
             addServerGroup(requestBody)
               .then(res => {
