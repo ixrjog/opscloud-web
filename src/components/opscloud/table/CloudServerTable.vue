@@ -203,7 +203,7 @@
           name: (row.serverName != null ? row.serverName : row.instanceName),
           serverGroupId: '',
           loginType: 0,
-          loginUser: 'root',
+          loginUser: '',
           envType: 4,
           publicIp: row.publicIp,
           privateIp: row.privateIp,
