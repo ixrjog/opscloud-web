@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :title="formStatus.title"
+  <el-dialog :title="formStatus.title" width="80%"
              :before-close="closeDialog"
              :visible.sync="formStatus.visible">
     <el-steps :active="step.active" finish-status="success">
