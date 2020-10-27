@@ -366,6 +366,15 @@ const frameIn = [
         }
       },
       {
+        path: '/workbench/tcp-mapping',
+        name: 'workbench-tcp-mapping',
+        component: () => import('@/pages/workbench/tcp-mapping'),
+        meta: {
+          auth: true,
+          title: '工作台-服务映射'
+        }
+      },
+      {
         path: '/workbench/xterm',
         name: 'workbench-xterm',
         component: () => import('@/pages/workbench/xterm'),
