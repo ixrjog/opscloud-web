@@ -71,6 +71,10 @@
         this.btnRefreshDevLoding = true
         refreshDubboMappingByEnv('dev')
           .then(res => {
+            this.$message({
+              message: '后台任务之中！',
+              type: 'success'
+            })
             this.btnRefreshDevLoding = false
           })
       },
@@ -78,6 +82,10 @@
         this.btnRefreshDailyLoding = true
         refreshDubboMappingByEnv('daily')
           .then(res => {
+            this.$message({
+              message: '后台任务之中！',
+              type: 'success'
+            })
             this.btnRefreshDailyLoding = false
           })
       }
