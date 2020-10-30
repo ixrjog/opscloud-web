@@ -9,64 +9,69 @@
           <ServerTree ref="serverTree"></ServerTree>
         </el-col>
         <el-col :span="xtermSpan">
-          <el-row style="margin-bottom: 5px;margin-left: 2px">
-            <el-select v-model="layoutMode" filterable reserve-keyword @change="handlerChangeLayout">
-              <el-option
-                v-for="item in layoutModeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-            <el-select v-model="loginUserType" filterable reserve-keyword style="margin-left: 5px">
-              <el-option
-                v-for="item in loginUserTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-            <el-tooltip class="item" effect="light" content="任意窗口输入指令同步到所有终端" placement="bottom">
-              <el-button @click="handlerBatchCmd" v-if="pageStatus === 1" :type="handlerBatchType"
-                         plain>命令同步
-              </el-button>
-            </el-tooltip>
-            <el-tooltip class="item" effect="light" content="您的个人文档，用于记录常用指令" placement="bottom">
-              <el-button @click="handlerPreviewUserDoc">用户文档</el-button>
-            </el-tooltip>
-            <el-button @click="handlerSetting" v-if="pageStatus === 0">终端设置</el-button>
-            <el-tooltip class="item" effect="light" content="修复终端字符错位" placement="bottom">
-              <el-button @click="handlerResize" v-if="pageStatus === 1">调整大小</el-button>
-            </el-tooltip>
-            <el-button @click="handlerLogin" v-if="pageStatus === 0">批量登录</el-button>
-            <el-button @click="handlerClose" v-if="pageStatus === 1">全部关闭</el-button>
-          </el-row>
-          <el-row>
-            <div v-for="xterm in xterms" :key="xterm">
-              <template>
-                <el-col :span="layoutSpan">
-                  <el-card shadow="hover" body-style="padding: 2px" style="margin-right: 10px;margin-bottom: 10px">
-                    <div slot="header" class="clearfix" style="height: 15px">
-                      <span><el-tag>{{ xterm }}</el-tag></span>
-                      <el-tooltip class="item" effect="light" content="退出" placement="top-start">
-                        <el-button style="float: right; padding: 3px 0" type="text" @click="handlerLogout(xterm)">
-                          Logout
-                        </el-button>
-                      </el-tooltip>
-                      <el-tooltip class="item" effect="light" content="复制会话" placement="top-start">
-                        <el-button style="float: right; padding: 3px 0;margin-right: 20px" type="text"
-                                   @click="handlerDuplicateSession(xterm)">Duplicate
-                        </el-button>
-                      </el-tooltip>
-                    </div>
-                    <!--                    style="border-right:2px solid #e0e0e0; border-left:2px solid #e0e0e0; border-bottom:2px solid #e0e0e0; border-top:1px solid #e0e0e0;margin-top:10px;margin-left: 10px"-->
-                    <div :id="xterm" class="xterm" width="100%">
-                    </div>
-                  </el-card>
-                </el-col>
-              </template>
+          <el-card class="box-card" shadow="never">
+            <div slot="header" class="clearfix">
+              <el-row style="margin-bottom: 5px;margin-left: 2px">
+                <el-select v-model="layoutMode" filterable reserve-keyword @change="handlerChangeLayout">
+                  <el-option
+                    v-for="item in layoutModeOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+                <el-select v-model="loginUserType" filterable reserve-keyword style="margin-left: 5px">
+                  <el-option
+                    v-for="item in loginUserTypeOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+                <el-tooltip class="item" effect="light" content="任意窗口输入指令同步到所有终端" placement="bottom">
+                  <el-button @click="handlerBatchCmd" v-if="pageStatus === 1" :type="handlerBatchType"
+                             plain>命令同步
+                  </el-button>
+                </el-tooltip>
+                <el-tooltip class="item" effect="light" content="您的个人文档，用于记录常用指令" placement="bottom">
+                  <el-button @click="handlerPreviewUserDoc">用户文档</el-button>
+                </el-tooltip>
+                <el-button @click="handlerSetting" v-if="pageStatus === 0">终端设置</el-button>
+                <el-tooltip class="item" effect="light" content="修复终端字符错位" placement="bottom">
+                  <el-button @click="handlerResize" v-if="pageStatus === 1">调整大小</el-button>
+                </el-tooltip>
+                <el-button style="float: right" type="primary" @click="handlerLogin" v-if="pageStatus === 0">批量登录</el-button>
+                <el-button style="float: right" type="danger" @click="handlerClose" v-if="pageStatus === 1">全部关闭</el-button>
+<!--                <el-button @click="handlerLogin" v-if="pageStatus === 0">批量登录</el-button>-->
+              </el-row>
             </div>
-          </el-row>
+            <el-row>
+              <div v-for="xterm in xterms" :key="xterm">
+                <template>
+                  <el-col :span="layoutSpan">
+                    <el-card shadow="hover" body-style="padding: 2px" style="margin-right: 10px;margin-bottom: 10px">
+                      <div slot="header" class="clearfix" style="height: 15px">
+                        <span><el-tag>{{ xterm }}</el-tag></span>
+                        <el-tooltip class="item" effect="light" content="退出" placement="top-start">
+                          <el-button style="float: right; padding: 3px 0" type="text" @click="handlerLogout(xterm)">
+                            Logout
+                          </el-button>
+                        </el-tooltip>
+                        <el-tooltip class="item" effect="light" content="复制会话" placement="top-start">
+                          <el-button style="float: right; padding: 3px 0;margin-right: 20px" type="text"
+                                     @click="handlerDuplicateSession(xterm)">Duplicate
+                          </el-button>
+                        </el-tooltip>
+                      </div>
+                      <!--                    style="border-right:2px solid #e0e0e0; border-left:2px solid #e0e0e0; border-bottom:2px solid #e0e0e0; border-top:1px solid #e0e0e0;margin-top:10px;margin-left: 10px"-->
+                      <div :id="xterm" class="xterm" width="100%">
+                      </div>
+                    </el-card>
+                  </el-col>
+                </template>
+              </div>
+            </el-row>
+          </el-card>
         </el-col>
       </el-row>
       <DocDialog ref="docDialog" :formStatus="formDocStatus"></DocDialog>
