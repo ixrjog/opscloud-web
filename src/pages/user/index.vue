@@ -208,7 +208,8 @@
           wechat: '',
           email: '',
           phone: '',
-          comment: ''
+          comment: '',
+          isRD: false
         }
         this.$refs.userDialog.initData(user)
         // form
