@@ -28,7 +28,6 @@
       AuthResourceTable,
       AuthGroupTable
     },
-    methods: {
-    }
+    methods: {}
   }
 </script>
