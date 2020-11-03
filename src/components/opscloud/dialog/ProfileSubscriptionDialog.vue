@@ -60,12 +60,16 @@
   import { queryPlaybookPage } from '@api/server/server.task.js'
 
   const subscriptionTypeOptions = [{
-    value: 'ANSIBLE_HOSTS',
-    label: 'ANSIBLE_HOSTS'
-  },
+      value: 'ANSIBLE_HOSTS',
+      label: 'ANSIBLE_HOSTS'
+    },
     {
       value: 'DUBBO_TCP_MAPPING',
       label: 'DUBBO_TCP_MAPPING'
+    },
+    {
+      value: 'JUMPSERVER',
+      label: 'JUMPSERVER'
     }
   ]
 
