@@ -21,3 +21,19 @@ export function deleteCloudServerById (id) {
     method: 'delete'
   })
 }
+
+export function cloudServerPowerOn (data) {
+  return request({
+    url: '/cloud/server/power/on',
+    method: 'post',
+    data
+  })
+}
+
+export function cloudServerPowerStatus (data) {
+  return request({
+    url: '/cloud/server/power/status',
+    method: 'post',
+    data
+  })
+}
