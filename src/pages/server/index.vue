@@ -2,7 +2,7 @@
   <d2-container>
     <template>
       <div>
-        <h1>{{title}}</h1>
+        <h1>{{ title }}</h1>
       </div>
       <el-row :gutter="24" style="margin-bottom: 5px">
         <el-input v-model.trim="queryParam.queryName" placeholder="输入关键字查询" class="input-bar"/>
@@ -57,7 +57,7 @@
           <template slot-scope="props">
             <el-form label-position="left" inline class="table-expand">
               <el-form-item label="服务器类型">
-                <span>{{props.row.serverType | getServerTypeText}}</span>
+                <span>{{ props.row.serverType | getServerTypeText }}</span>
               </el-form-item>
               <el-form-item label="服务器描述">
                 <span>{{ props.row.comment }}</span>
@@ -70,11 +70,11 @@
               </el-form-item>
               <el-form-item label="服务器组类型">
                 <el-tag disable-transitions :style="{ color: props.row.serverGroup.serverGroupType.color }">
-                  {{props.row.serverGroup.serverGroupType.name}}
+                  {{ props.row.serverGroup.serverGroupType.name }}
                 </el-tag>
               </el-form-item>
               <el-form-item label="登录类型">
-                <span>{{props.row.loginType | getLoginTypeText}}</span>
+                <span>{{ props.row.loginType | getLoginTypeText }}</span>
               </el-form-item>
               <el-form-item label="登录用户">
                 <span>{{ props.row.loginUser }}</span>
@@ -84,7 +84,8 @@
               </el-form-item>
               <el-form-item label="监控状态">
                 <el-tag disable-transitions :type="props.row.monitorStatus | getMonitorStatusType ">{{
-                  props.row.monitorStatus | getMonitorStatusText}}
+                    props.row.monitorStatus | getMonitorStatusText
+                  }}
                 </el-tag>
               </el-form-item>
             </el-form>
@@ -96,20 +97,23 @@
         <el-table-column prop="privateIp" label="私网ip"></el-table-column>
         <el-table-column prop="env" label="环境" width="80">
           <template slot-scope="scope">
-            <el-tag disable-transitions :style="{ color: scope.row.env.color }">{{scope.row.env.envName}}</el-tag>
+            <el-tag disable-transitions :style="{ color: scope.row.env.color }">{{ scope.row.env.envName }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="isActive" label="有效" width="80">
           <template slot-scope="scope">
-            <el-tag disable-transitions :type="scope.row.isActive ? 'success' : 'info'">{{scope.row.isActive ?
-              '有效':'无效'}}
+            <el-tag disable-transitions :type="scope.row.isActive ? 'success' : 'info'">{{
+                scope.row.isActive ?
+                  '有效' : '无效'
+              }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="serverStatus" label="状态" width="80">
           <template slot-scope="scope">
             <el-tag disable-transitions :type="scope.row.serverStatus | getServerStatusType ">{{
-              scope.row.serverStatus | getServerStatusText}}
+                scope.row.serverStatus | getServerStatusText
+              }}
             </el-tag>
           </template>
         </el-table-column>
@@ -126,10 +130,34 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
-            <el-button type="primary" plain size="mini" @click="handlerRowTagEdit(scope.row)">标签</el-button>
-            <el-button type="primary" plain size="mini" @click="handlerRowEdit(scope.row)">编辑</el-button>
-            <el-button type="primary" plain size="mini" @click="handlerXTerm(scope.row)">登录</el-button>
-            <el-button type="danger" plain size="mini" @click="handlerRowDel(scope.row)">删除</el-button>
+            <el-button-group v-if="scope.row.cloudServer != null && scope.row.cloudServer.powerMgmt">
+              <el-button type="primary" size="mini" icon="el-icon-search"
+                         @click="handlerRowPowerStatus(scope.row)"></el-button>
+              <el-button type="primary" size="mini" icon="el-icon-switch-button"
+                         @click="handlerRowPowerOn(scope.row)"></el-button>
+            </el-button-group>
+
+            <span v-if="scope.row.cloudServer != null && scope.row.cloudServer.powerMgmt" style="margin-left: 10px"></span>
+
+            <el-dropdown split-button type="primary" size="mini" @click="handlerRowEdit(scope.row)">
+              编辑
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item icon="el-icon-price-tag">
+                  <el-button type="text" @click="handlerRowTagEdit(scope.row)" style="margin-left: 5px">标签</el-button>
+                </el-dropdown-item>
+                <el-dropdown-item icon="el-icon-set-up">
+                  <el-button type="text" @click="handlerXTerm(scope.row)" style="margin-left: 5px">登录</el-button>
+                </el-dropdown-item>
+                <el-dropdown-item icon="el-icon-delete">
+                  <el-button type="text" @click="handlerRowDel(scope.row)" style="margin-left: 5px;color: #F56C6C">删除
+                  </el-button>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <!--            <el-button type="primary" plain size="mini" @click="handlerRowTagEdit(scope.row)">标签</el-button>-->
+            <!--            <el-button type="primary" plain size="mini" @click="handlerRowEdit(scope.row)">编辑</el-button>-->
+            <!--            <el-button type="primary" plain size="mini" @click="handlerXTerm(scope.row)">登录</el-button>-->
+            <!--            <el-button type="danger" plain size="mini" @click="handlerRowDel(scope.row)">删除</el-button>-->
           </template>
         </el-table-column>
       </el-table>
@@ -149,279 +177,339 @@
 </template>
 
 <script>
-  import { mapState, mapActions } from 'vuex'
-  // Component
-  import ServerDialog from '@/components/opscloud/dialog/ServerDialog'
-  import TagTransferDialog from '@/components/opscloud/dialog/TagTransferDialog'
-  // XTerm
-  import XTerm from '@/components/opscloud/xterm/XTerm'
-  // Filters
-  import {
-    getLoginTypeText, getMonitorStatusText, getMonitorStatusType, getServerTypeText, getServerStatusType,
+import { mapState, mapActions } from 'vuex'
+// Component
+import ServerDialog from '@/components/opscloud/dialog/ServerDialog'
+import TagTransferDialog from '@/components/opscloud/dialog/TagTransferDialog'
+// XTerm
+import XTerm from '@/components/opscloud/xterm/XTerm'
+// Filters
+import {
+  getLoginTypeText, getMonitorStatusText, getMonitorStatusType, getServerTypeText, getServerStatusType,
+  getServerStatusText
+} from '@/filters/server.js'
+// API
+import { queryEnvPage } from '@api/env/env.js'
+import { queryBusinessTag, queryTagPage } from '@api/tag/tag.js'
+import { queryServerGroupPage } from '@api/server/server.group.js'
+import { fuzzyQueryServerPage, deleteServerById } from '@api/server/server.js'
+import { cloudServerPowerOn, cloudServerPowerStatus } from '@api/cloud/cloud.server.js'
+
+const activeOptions = [{
+  value: true,
+  label: '有效'
+}, {
+  value: false,
+  label: '无效'
+}]
+
+const serverStatusOptions = [{
+  value: 0,
+  label: '离线'
+}, {
+  value: 1,
+  label: '在线'
+}, {
+  value: -1,
+  label: '未知'
+}]
+
+export default {
+  data () {
+    return {
+      formTagTransferStatus: {
+        visible: false,
+        title: '编辑服务器标签'
+      },
+      formServerStatus: {
+        visible: false,
+        labelWidth: '150px',
+        operationType: true,
+        addTitle: '新增服务器配置',
+        updateTitle: '更新服务器配置'
+      },
+      formXtermStatus: {
+        visible: false
+      },
+      tableData: [],
+      options: {
+        stripe: true
+      },
+      loading: false,
+      pagination: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
+      },
+      queryParam: {
+        queryName: '',
+        serverGroupId: '',
+        envType: '',
+        tagId: '',
+        isActive: '',
+        serverStatus: ''
+      },
+      title: '服务器信息',
+      tagOptions: [],
+      envTypeOptions: [],
+      serverGroupOptions: [],
+      businessType: 1,
+      activeOptions: activeOptions,
+      serverStatusOptions: serverStatusOptions
+    }
+  },
+  mounted () {
+    this.initPageSize()
+    this.fetchData()
+    this.getEnvType()
+    this.getTag('')
+  },
+  computed: {
+    ...mapState('d2admin/user', [
+      'info'
+    ])
+  },
+  components: {
+    ServerDialog,
+    TagTransferDialog,
+    XTerm
+  },
+  filters: {
+    getLoginTypeText,
+    getMonitorStatusText,
+    getMonitorStatusType,
+    getServerTypeText,
+    getServerStatusType,
     getServerStatusText
-  } from '@/filters/server.js'
-  // API
-  import { queryEnvPage } from '@api/env/env.js'
-  import { queryBusinessTag, queryTagPage } from '@api/tag/tag.js'
-  import { queryServerGroupPage } from '@api/server/server.group.js'
-  import { fuzzyQueryServerPage, deleteServerById } from '@api/server/server.js'
-
-  const activeOptions = [{
-    value: true,
-    label: '有效'
-  }, {
-    value: false,
-    label: '无效'
-  }]
-
-  const serverStatusOptions = [{
-    value: 0,
-    label: '离线'
-  }, {
-    value: 1,
-    label: '在线'
-  }, {
-    value: -1,
-    label: '未知'
-  }]
-
-  export default {
-    data () {
-      return {
-        formTagTransferStatus: {
-          visible: false,
-          title: '编辑服务器标签'
-        },
-        formServerStatus: {
-          visible: false,
-          labelWidth: '150px',
-          operationType: true,
-          addTitle: '新增服务器配置',
-          updateTitle: '更新服务器配置'
-        },
-        formXtermStatus: {
-          visible: false
-        },
-        tableData: [],
-        options: {
-          stripe: true
-        },
-        loading: false,
-        pagination: {
-          currentPage: 1,
-          pageSize: 10,
-          total: 0
-        },
-        queryParam: {
-          queryName: '',
-          serverGroupId: '',
-          envType: '',
-          tagId: '',
-          isActive: '',
-          serverStatus: ''
-        },
-        title: '服务器信息',
-        tagOptions: [],
-        envTypeOptions: [],
-        serverGroupOptions: [],
-        businessType: 1,
-        activeOptions: activeOptions,
-        serverStatusOptions: serverStatusOptions
-      }
-    },
-    mounted () {
-      this.initPageSize()
+  },
+  methods: {
+    ...mapActions({
+      setPageSize: 'd2admin/user/set'
+    }),
+    handleSizeChange (size) {
+      this.pagination.pageSize = size
+      this.info.pageSize = size
+      this.setPageSize(this.info)
       this.fetchData()
-      this.getEnvType()
-      this.getTag('')
     },
-    computed: {
-      ...mapState('d2admin/user', [
-        'info'
-      ])
-    },
-    components: {
-      ServerDialog,
-      TagTransferDialog,
-      XTerm
-    },
-    filters: {
-      getLoginTypeText,
-      getMonitorStatusText,
-      getMonitorStatusType,
-      getServerTypeText,
-      getServerStatusType,
-      getServerStatusText
-    },
-    methods: {
-      ...mapActions({
-        setPageSize: 'd2admin/user/set'
-      }),
-      handleSizeChange (size) {
-        this.pagination.pageSize = size
-        this.info.pageSize = size
-        this.setPageSize(this.info)
-        this.fetchData()
-      },
-      initPageSize () {
-        if (typeof (this.info.pageSize) !== 'undefined') {
-          this.pagination.pageSize = this.info.pageSize
-        }
-      },
-      getTag (tagKey) {
-        queryTagPage(tagKey, 1, 100)
-          .then(res => {
-            this.tagOptions = res.body.data
-          })
-      },
-      getEnvType () {
-        queryEnvPage('', '', 1, 20)
-          .then(res => {
-            this.envTypeOptions = res.body.data
-          })
-      },
-      getServerGroup (queryName) {
-        queryServerGroupPage(queryName, '', 1, 20)
-          .then(res => {
-            this.serverGroupOptions = res.body.data
-          })
-      },
-      handleClick () {
-        this.$emit('input', !this.value)
-      },
-      handlerXTerm (row) {
-        this.formXtermStatus.visible = true
-        this.$refs.xtermDialog.initData(row)
-      },
-      handlerRowDel (row) {
-        this.$confirm('此操作将删除当前配置?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          deleteServerById(row.id).then(res => {
-            this.fetchData()
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          })
-        })
-      },
-      handlerRowTagEdit (row) {
-        this.formTagTransferStatus.visible = true
-        let tagTransfer = {
-          businessId: row.id,
-          businessType: this.businessType,
-          tagIds: [],
-          tagOptions: []
-        }
-        queryTagPage('', 1, 100)
-          .then(res => {
-            tagTransfer.tagOptions = res.body.data
-          })
-        queryBusinessTag(this.businessType, tagTransfer.businessId, '')
-          .then(res => {
-            for (let index in res.body) {
-              tagTransfer.tagIds.push(res.body[index].id)
-            }
-          })
-        this.formTagTransferStatus.visible = true
-        this.$refs.tagTransferDialog.initData(tagTransfer)
-      },
-      handlerRowEdit (row) {
-        // server
-        let serverData = Object.assign({}, row)
-        let serverGroupOptions = []
-        serverGroupOptions.push(serverData.serverGroup)
-        // form
-        this.formServerStatus.visible = true
-        this.formServerStatus.operationType = false
-        this.$refs.serverDialog.initData(serverData, serverGroupOptions)
-      },
-      handlerAdd () {
-        this.formServerStatus.operationType = true
-        this.formServerStatus.visible = true
-        let serverData = {
-          serverGroup: '',
-          id: '',
-          name: '',
-          serverGroupId: '',
-          loginType: 0,
-          loginUser: '',
-          envType: 4,
-          publicIp: '',
-          privateIp: '',
-          serverType: 0,
-          area: '',
-          serialNumber: 0,
-          monitorStatus: -1,
-          comment: '',
-          // options
-          serverGroupOptions: []
-        }
-        this.$refs.serverDialog.initData(serverData)
-      },
-      handleDialogCancel (done) {
-        this.$message({
-          message: '取消保存',
-          type: 'warning'
-        })
-        done()
-      },
-      paginationCurrentChange (currentPage) {
-        this.pagination.currentPage = currentPage
-        this.fetchData()
-      },
-      fetchData () {
-        this.loading = true
-        let requestBody = Object.assign({}, this.queryParam)
-        requestBody.extend = 1
-        requestBody.page = this.pagination.currentPage
-        requestBody.length = this.pagination.pageSize
-        fuzzyQueryServerPage(requestBody)
-          .then(res => {
-            this.tableData = res.body.data
-            this.pagination.total = res.body.totalNum
-            this.loading = false
-          })
+    initPageSize () {
+      if (typeof (this.info.pageSize) !== 'undefined') {
+        this.pagination.pageSize = this.info.pageSize
       }
+    },
+    getTag (tagKey) {
+      queryTagPage(tagKey, 1, 100)
+        .then(res => {
+          this.tagOptions = res.body.data
+        })
+    },
+    getEnvType () {
+      queryEnvPage('', '', 1, 20)
+        .then(res => {
+          this.envTypeOptions = res.body.data
+        })
+    },
+    getServerGroup (queryName) {
+      queryServerGroupPage(queryName, '', 1, 20)
+        .then(res => {
+          this.serverGroupOptions = res.body.data
+        })
+    },
+    getPowerStatus (value) {
+      switch (value) {
+        case 0:
+          return 'STOPPED'
+        case 1:
+          return 'RUNNING'
+        case 2:
+          return 'STARTING'
+        case 3:
+          return 'STOPPING'
+        case 4:
+          return 'PENDING'
+        case -1:
+          return 'UNKNOWN'
+        default:
+          return 'UNKNOWN'
+      }
+    },
+    handleClick () {
+      this.$emit('input', !this.value)
+    },
+    handlerXTerm (row) {
+      this.formXtermStatus.visible = true
+      this.$refs.xtermDialog.initData(row)
+    },
+    handlerRowPowerStatus (row) {
+      let data = {
+        instanceId: row.cloudServer.instanceId
+      }
+      if (row.cloudServer.cloudServerType === 2) {
+        data.key = 'AliyunECSCloudServer'
+      } else {
+        this.$message({
+          type: 'error',
+          message: '该云实例类型不支持此操作!'
+        })
+        return
+      }
+      cloudServerPowerStatus(data).then(res => {
+        let message = '该云实例电源状态为：' + this.getPowerStatus(res.body)
+        this.$message({
+          type: 'info',
+          message: message
+        })
+      })
+    },
+    handlerRowPowerOn (row) {
+      let data = {
+        instanceId: row.cloudServer.instanceId
+      }
+      if (row.cloudServer.cloudServerType === 2) {
+        data.key = 'AliyunECSCloudServer'
+      } else {
+        this.$message({
+          type: 'error',
+          message: '该云实例类型不支持此操作!'
+        })
+        return
+      }
+      cloudServerPowerOn(data).then(res => {
+        this.$message({
+          type: 'success',
+          message: '开机成功!'
+        })
+      })
+    },
+    handlerRowDel (row) {
+      this.$confirm('此操作将删除当前配置?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteServerById(row.id).then(res => {
+          this.fetchData()
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    handlerRowTagEdit (row) {
+      this.formTagTransferStatus.visible = true
+      let tagTransfer = {
+        businessId: row.id,
+        businessType: this.businessType,
+        tagIds: [],
+        tagOptions: []
+      }
+      queryTagPage('', 1, 100)
+        .then(res => {
+          tagTransfer.tagOptions = res.body.data
+        })
+      queryBusinessTag(this.businessType, tagTransfer.businessId, '')
+        .then(res => {
+          for (let index in res.body) {
+            tagTransfer.tagIds.push(res.body[index].id)
+          }
+        })
+      this.formTagTransferStatus.visible = true
+      this.$refs.tagTransferDialog.initData(tagTransfer)
+    },
+    handlerRowEdit (row) {
+      // server
+      let serverData = Object.assign({}, row)
+      let serverGroupOptions = []
+      serverGroupOptions.push(serverData.serverGroup)
+      // form
+      this.formServerStatus.visible = true
+      this.formServerStatus.operationType = false
+      this.$refs.serverDialog.initData(serverData, serverGroupOptions)
+    },
+    handlerAdd () {
+      this.formServerStatus.operationType = true
+      this.formServerStatus.visible = true
+      let serverData = {
+        serverGroup: '',
+        id: '',
+        name: '',
+        serverGroupId: '',
+        loginType: 0,
+        loginUser: '',
+        envType: 4,
+        publicIp: '',
+        privateIp: '',
+        serverType: 0,
+        area: '',
+        serialNumber: 0,
+        monitorStatus: -1,
+        comment: '',
+        // options
+        serverGroupOptions: []
+      }
+      this.$refs.serverDialog.initData(serverData)
+    },
+    handleDialogCancel (done) {
+      this.$message({
+        message: '取消保存',
+        type: 'warning'
+      })
+      done()
+    },
+    paginationCurrentChange (currentPage) {
+      this.pagination.currentPage = currentPage
+      this.fetchData()
+    },
+    fetchData () {
+      this.loading = true
+      let requestBody = Object.assign({}, this.queryParam)
+      requestBody.extend = 1
+      requestBody.page = this.pagination.currentPage
+      requestBody.length = this.pagination.pageSize
+      fuzzyQueryServerPage(requestBody)
+        .then(res => {
+          this.tableData = res.body.data
+          this.pagination.total = res.body.totalNum
+          this.loading = false
+        })
     }
   }
+}
 </script>
 
 <style scoped>
-  .table-expand {
-    font-size: 0;
-  }
+.table-expand {
+  font-size: 0;
+}
 
-  .table-expand label {
-    width: 150px;
-    color: #99a9bf;
-  }
+.table-expand label {
+  width: 150px;
+  color: #99a9bf;
+}
 
-  .table-expand .el-form-item {
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 50%;
-  }
+.table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
+}
 
-  .input-bar {
-    display: inline-block;
-    max-width: 200px;
-    margin-left: 10px;
-  }
+.input-bar {
+  display: inline-block;
+  max-width: 200px;
+  margin-left: 10px;
+}
 
-  .select-bar {
-    margin-left: 5px;
-  }
+.select-bar {
+  margin-left: 5px;
+}
 
-  .button {
-    margin-left: 5px;
-  }
+.button {
+  margin-left: 5px;
+}
 </style>
