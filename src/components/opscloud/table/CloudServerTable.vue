@@ -67,8 +67,21 @@
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="280">
         <template slot-scope="scope">
+          <el-button-group v-if="scope.row.powerMgmt">
+            <el-tooltip class="item" effect="dark" content="查询实例电源状态" placement="top-start">
+              <el-button type="primary" size="mini" icon="el-icon-search" plain
+                         @click="handlerRowPowerStatus(scope.row)"></el-button>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="实例开机" placement="top-start">
+              <el-button type="primary" size="mini" icon="el-icon-switch-button" plain
+                         @click="handlerRowPowerOn(scope.row)"></el-button>
+            </el-tooltip>
+          </el-button-group>
+
+          <span v-if="scope.row.powerMgmt" style="margin-left: 10px"></span>
+
           <el-button type="primary" plain size="mini" @click="handlerRowAdd(scope.row)"
-                     v-show="scope.row.serverStatus == 0">导入
+                     v-if="scope.row.serverStatus == 0">导入
           </el-button>
           <el-button type="danger" plain size="mini" @click="handlerRowDel(scope.row)">删除</el-button>
         </template>
@@ -90,7 +103,9 @@ import ServerDialog from '@/components/opscloud/dialog/ServerDialog'
 // Filters
 import { getStatusTagType, getStatusTagText, getMemoryText } from '@/filters/server.js'
 // API
-import { queryCloudServerPage, syncCloudServerByKey, deleteCloudServerById } from '@api/cloud/cloud.server.js'
+import {
+  queryCloudServerPage, syncCloudServerByKey, deleteCloudServerById, cloudServerPowerStatus, cloudServerPowerOn
+} from '@api/cloud/cloud.server.js'
 import { mapActions, mapState } from 'vuex'
 
 const statusOptions = [{
@@ -187,6 +202,49 @@ export default {
         this.$message({
           type: 'info',
           message: '已取消删除'
+        })
+      })
+    },
+    getPowerStatus (value) {
+      switch (value) {
+        case 0:
+          return 'STOPPED'
+        case 1:
+          return 'RUNNING'
+        case 2:
+          return 'STARTING'
+        case 3:
+          return 'STOPPING'
+        case 4:
+          return 'PENDING'
+        case -1:
+          return 'UNKNOWN'
+        default:
+          return 'UNKNOWN'
+      }
+    },
+    handlerRowPowerStatus (row) {
+      let data = {
+        instanceId: row.instanceId,
+        key: this.formStatus.cloudServerKey
+      }
+      cloudServerPowerStatus(data).then(res => {
+        let message = '该云实例电源状态为：' + this.getPowerStatus(res.body)
+        this.$message({
+          type: 'info',
+          message: message
+        })
+      })
+    },
+    handlerRowPowerOn (row) {
+      let data = {
+        instanceId: row.instanceId,
+        key: this.formStatus.cloudServerKey
+      }
+      cloudServerPowerOn(data).then(res => {
+        this.$message({
+          type: 'success',
+          message: '开机成功!'
         })
       })
     },

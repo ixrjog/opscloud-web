@@ -130,15 +130,6 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
-            <el-button-group v-if="scope.row.cloudServer != null && scope.row.cloudServer.powerMgmt">
-              <el-button type="primary" size="mini" icon="el-icon-search"
-                         @click="handlerRowPowerStatus(scope.row)"></el-button>
-              <el-button type="primary" size="mini" icon="el-icon-switch-button"
-                         @click="handlerRowPowerOn(scope.row)"></el-button>
-            </el-button-group>
-
-            <span v-if="scope.row.cloudServer != null && scope.row.cloudServer.powerMgmt" style="margin-left: 10px"></span>
-
             <el-dropdown split-button type="primary" size="mini" @click="handlerRowEdit(scope.row)">
               编辑
               <el-dropdown-menu slot="dropdown">
@@ -154,10 +145,6 @@
                 </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-            <!--            <el-button type="primary" plain size="mini" @click="handlerRowTagEdit(scope.row)">标签</el-button>-->
-            <!--            <el-button type="primary" plain size="mini" @click="handlerRowEdit(scope.row)">编辑</el-button>-->
-            <!--            <el-button type="primary" plain size="mini" @click="handlerXTerm(scope.row)">登录</el-button>-->
-            <!--            <el-button type="danger" plain size="mini" @click="handlerRowDel(scope.row)">删除</el-button>-->
           </template>
         </el-table-column>
       </el-table>
@@ -193,7 +180,6 @@ import { queryEnvPage } from '@api/env/env.js'
 import { queryBusinessTag, queryTagPage } from '@api/tag/tag.js'
 import { queryServerGroupPage } from '@api/server/server.group.js'
 import { fuzzyQueryServerPage, deleteServerById } from '@api/server/server.js'
-import { cloudServerPowerOn, cloudServerPowerStatus } from '@api/cloud/cloud.server.js'
 
 const activeOptions = [{
   value: true,
@@ -315,71 +301,12 @@ export default {
           this.serverGroupOptions = res.body.data
         })
     },
-    getPowerStatus (value) {
-      switch (value) {
-        case 0:
-          return 'STOPPED'
-        case 1:
-          return 'RUNNING'
-        case 2:
-          return 'STARTING'
-        case 3:
-          return 'STOPPING'
-        case 4:
-          return 'PENDING'
-        case -1:
-          return 'UNKNOWN'
-        default:
-          return 'UNKNOWN'
-      }
-    },
     handleClick () {
       this.$emit('input', !this.value)
     },
     handlerXTerm (row) {
       this.formXtermStatus.visible = true
       this.$refs.xtermDialog.initData(row)
-    },
-    handlerRowPowerStatus (row) {
-      let data = {
-        instanceId: row.cloudServer.instanceId
-      }
-      if (row.cloudServer.cloudServerType === 2) {
-        data.key = 'AliyunECSCloudServer'
-      } else {
-        this.$message({
-          type: 'error',
-          message: '该云实例类型不支持此操作!'
-        })
-        return
-      }
-      cloudServerPowerStatus(data).then(res => {
-        let message = '该云实例电源状态为：' + this.getPowerStatus(res.body)
-        this.$message({
-          type: 'info',
-          message: message
-        })
-      })
-    },
-    handlerRowPowerOn (row) {
-      let data = {
-        instanceId: row.cloudServer.instanceId
-      }
-      if (row.cloudServer.cloudServerType === 2) {
-        data.key = 'AliyunECSCloudServer'
-      } else {
-        this.$message({
-          type: 'error',
-          message: '该云实例类型不支持此操作!'
-        })
-        return
-      }
-      cloudServerPowerOn(data).then(res => {
-        this.$message({
-          type: 'success',
-          message: '开机成功!'
-        })
-      })
     },
     handlerRowDel (row) {
       this.$confirm('此操作将删除当前配置?', '提示', {
