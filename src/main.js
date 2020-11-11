@@ -20,6 +20,7 @@ import menuHeader from '@/menu/header'
 import { frameInRoutes } from '@/router/routes'
 // 菜单工具类
 import util from '@/libs/util.js'
+import VueClipboard from 'vue-clipboard2'
 
 // 核心插件
 Vue.use(d2Admin)
@@ -27,6 +28,7 @@ Vue.use(d2Admin)
 // 可选插件组件
 Vue.use(ElementUI)
 Vue.use(D2Crud)
+Vue.use(VueClipboard)
 
 new Vue({
   router,

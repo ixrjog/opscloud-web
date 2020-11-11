@@ -19,7 +19,8 @@
     </el-form>
     <el-form :model="logData">
       <el-form-item label="日志库" :label-width="labelWidth" :required="true">
-        <el-select v-model.trim="logData.logstore" placeholder="选择logstore" @change="handlerSelLogstore" :disabled="logData.project === ''">
+        <el-select v-model.trim="logData.logstore" placeholder="选择logstore" @change="handlerSelLogstore"
+                   :disabled="logData.project === ''">
           <el-option
             v-for="item in logstoreOptions"
             :key="item"
@@ -55,97 +56,97 @@
 
 <script>
 
-  // API
-  import { addAliyunLog, updateAliyunLog, queryProject, queryLogstore, queryConfig } from '@api/cloud/aliyun.log.js'
+// API
+import { addAliyunLog, updateAliyunLog, queryProject, queryLogstore, queryConfig } from '@api/cloud/aliyun.log.js'
 
-  export default {
-    data () {
-      return {
-        labelWidth: '150px',
-        logData: {},
-        projectOptions: [],
-        logstoreOptions: [],
-        configOptions: [],
-        loading: false
-      }
+export default {
+  data () {
+    return {
+      labelWidth: '150px',
+      logData: {},
+      projectOptions: [],
+      logstoreOptions: [],
+      configOptions: [],
+      loading: false
+    }
+  },
+  name: 'AliyunLogDialog',
+  props: ['formStatus'],
+  mounted () {
+    this.getProject('')
+  },
+  methods: {
+    initData (aliyunLog) {
+      this.logData = aliyunLog
     },
-    name: 'AliyunLogDialog',
-    props: ['formStatus'],
-    mounted () {
-      this.getProject('')
-    },
-    methods: {
-      initData (aliyunLog) {
-        this.logData = aliyunLog
-      },
-      getProject (param) {
-        let requestBody = {
-          queryName: param
-        }
-        queryProject(requestBody)
-          .then(res => {
-            this.projectOptions = res.body
-          })
-      },
-      getLogStore () {
-        let requestBody = {
-          projectName: this.logData.project
-        }
-        queryLogstore(requestBody)
-          .then(res => {
-            this.logstoreOptions = res.body
-          })
-      },
-      getConfig () {
-        let requestBody = {
-          projectName: this.logData.project,
-          logstoreName: this.logData.logstore
-        }
-        queryConfig(requestBody)
-          .then(res => {
-            this.configOptions = res.body
-          })
-      },
-      handlerSelProject () {
-        this.logstoreOptions = []
-        this.logData.logstore = ''
-        this.configOptions = []
-        this.logData.config = ''
-        this.getLogStore()
-      },
-      handlerSelLogstore () {
-        this.configOptions = []
-        this.logData.config = ''
-        this.getConfig()
-      },
-      saveInfo () {
-        setTimeout(() => {
-          let requestBody = Object.assign({}, this.logData)
-          if (this.formStatus.operationType) {
-            addAliyunLog(requestBody)
-              .then(res => {
-                // 返回数据
-                this.$message({
-                  message: '成功',
-                  type: 'success'
-                })
-                this.formStatus.visible = false
-                this.$emit('closeDialog')
-              })
-          } else {
-            updateAliyunLog(requestBody)
-              .then(res => {
-                // 返回数据
-                this.$message({
-                  message: '成功',
-                  type: 'success'
-                })
-                this.formStatus.visible = false
-                this.$emit('closeDialog')
-              })
-          }
-        }, 600)
+    getProject (param) {
+      let requestBody = {
+        queryName: param
       }
+      queryProject(requestBody)
+        .then(res => {
+          this.projectOptions = res.body
+        })
+    },
+    getLogStore () {
+      let requestBody = {
+        projectName: this.logData.project
+      }
+      queryLogstore(requestBody)
+        .then(res => {
+          this.logstoreOptions = res.body
+        })
+    },
+    getConfig () {
+      let requestBody = {
+        projectName: this.logData.project,
+        logstoreName: this.logData.logstore
+      }
+      queryConfig(requestBody)
+        .then(res => {
+          this.configOptions = res.body
+        })
+    },
+    handlerSelProject () {
+      this.logstoreOptions = []
+      this.logData.logstore = ''
+      this.configOptions = []
+      this.logData.config = ''
+      this.getLogStore()
+    },
+    handlerSelLogstore () {
+      this.configOptions = []
+      this.logData.config = ''
+      this.getConfig()
+    },
+    saveInfo () {
+      setTimeout(() => {
+        let requestBody = Object.assign({}, this.logData)
+        if (this.formStatus.operationType) {
+          addAliyunLog(requestBody)
+            .then(res => {
+              // 返回数据
+              this.$message({
+                message: '成功',
+                type: 'success'
+              })
+              this.formStatus.visible = false
+              this.$emit('closeDialog')
+            })
+        } else {
+          updateAliyunLog(requestBody)
+            .then(res => {
+              // 返回数据
+              this.$message({
+                message: '成功',
+                type: 'success'
+              })
+              this.formStatus.visible = false
+              this.$emit('closeDialog')
+            })
+        }
+      }, 600)
     }
   }
+}
 </script>

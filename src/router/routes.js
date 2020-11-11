@@ -258,6 +258,15 @@ const frameIn = [
         }
       },
       {
+        path: '/cloud/aliyun/ons',
+        name: 'cloud-aliyun-ons',
+        component: () => import('@/pages/cloud/aliyun/ons'),
+        meta: {
+          auth: true,
+          title: '消息队列'
+        }
+      },
+      {
         path: '/kubernetes/application',
         name: 'kubernetes-application',
         component: () => import('@/pages/kubernetes/application'),
