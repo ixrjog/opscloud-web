@@ -12,7 +12,7 @@
           <span style="float: right; color: #8492a6; font-size: 10px;margin-left: 20px">{{ item.remark }}</span>
         </el-option>
       </el-select>
-      <el-input v-model="queryParam.topic" placeholder="输入关键字查询GroupId" class="input"/>
+      <el-input v-model="queryParam.groupId" placeholder="输入关键字查询GroupId" class="input"/>
       <el-select v-model="queryParam.groupType" placeholder="消息类型" class="select" clearable disabled>
         <el-option
           v-for="item in groupTypeOptions"
