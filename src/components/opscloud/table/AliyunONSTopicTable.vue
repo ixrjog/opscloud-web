@@ -12,7 +12,7 @@
           <span style="float: right; color: #8492a6; font-size: 10px;margin-left: 20px">{{ item.remark }}</span>
         </el-option>
       </el-select>
-      <el-input v-model="queryParam.topic" placeholder="输入关键字查询Topic" class="input"/>
+      <el-input v-model.trim="queryParam.topic" placeholder="输入关键字查询Topic" class="input"/>
       <el-select v-model="queryParam.messageType" placeholder="消息类型" class="select" clearable>
         <el-option
           v-for="item in messageTypeOptions"
