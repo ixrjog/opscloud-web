@@ -23,7 +23,8 @@
           <span class="span-font-label">是否在线</span>
         </el-col>
         <el-col :span="12">
-          <el-tag :type="groupSubDetail.online? 'success':'danger'">{{ groupSubDetail.online | onlineFilters }}</el-tag>
+          <el-tag v-text="groupSubDetail.online?'是':'否'"
+                  :type="groupSubDetail.online?'success':'danger'"></el-tag>
         </el-col>
       </el-row>
       <el-row style="margin-bottom: 5px">
@@ -43,8 +44,8 @@
     </el-table>
   </el-drawer>
 </template>
-<script>
 
+<script>
 export default {
   data () {
     return {
@@ -64,12 +65,6 @@ export default {
         return '广播订阅'
       }
       return ''
-    },
-    onlineFilters (online) {
-      if (online) {
-        return '是'
-      }
-      return '否'
     }
   },
   methods: {

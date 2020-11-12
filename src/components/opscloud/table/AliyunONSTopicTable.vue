@@ -27,7 +27,7 @@
       <el-button @click="handlerAdd" style="margin-left: 5px">创建Topic</el-button>
     </el-row>
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
-      <el-table-column prop="topic" label="topic"></el-table-column>
+      <el-table-column prop="topic" label="Topic"></el-table-column>
       <el-table-column prop="messageType" label="消息类型">
         <template slot-scope="props">
           <el-tag>{{ props.row.messageType | messageTypeFilters }}</el-tag>
@@ -38,7 +38,10 @@
       <el-table-column prop="remark" label="备注"></el-table-column>
       <el-table-column fixed="right" label="操作" width="180">
         <template slot-scope="scope">
-          <el-button type="primary" plain size="mini" @click="getTopicSubDetail(scope.row)">订阅关系</el-button>
+          <el-tooltip class="item" effect="dark" content="订阅关系" placement="left">
+            <el-button type="primary" plain size="mini" @click="getTopicSubDetail(scope.row)"
+                       icon="el-icon-share"></el-button>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
@@ -182,6 +185,8 @@ export default {
         .then(res => {
           this.topicSubDetail = res.body
           this.topicSubDetail.topic = row.topic
+          this.topicSubDetail.instanceId = row.instanceId
+          this.topicSubDetail.regionId = this.regionId
           this.$refs.aliyunONSTopicSubDrawer.initData(this.topicSubDetail)
         })
     },

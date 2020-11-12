@@ -41,3 +41,11 @@ export function onsGroupCheck (data) {
     data
   })
 }
+
+export function onsGroupStatus (data) {
+  return request({
+    url: baseUrl + '/status',
+    method: 'post',
+    data
+  })
+}

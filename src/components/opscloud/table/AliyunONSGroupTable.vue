@@ -28,7 +28,7 @@
     </el-row>
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
       <el-table-column prop="groupId" label="GroupId"></el-table-column>
-      <el-table-column label="协议类型">
+      <el-table-column label="协议类型" width="180">
         <template slot-scope="scope">
           <el-tag>{{ scope.row.groupType }}</el-tag>
         </template>
@@ -37,7 +37,16 @@
       <el-table-column prop="remark" label="备注"></el-table-column>
       <el-table-column fixed="right" label="操作" width="180">
         <template slot-scope="scope">
-          <el-button type="primary" plain size="mini" @click="getGroupSubDetail(scope.row)">订阅关系</el-button>
+          <el-button-group>
+            <el-tooltip class="item" effect="dark" content="订阅关系" placement="left">
+              <el-button type="primary" plain size="mini" @click="getGroupSubDetail(scope.row)"
+                         icon="el-icon-share"></el-button>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="消费状态" placement="top">
+              <el-button type="primary" plain size="mini" @click="getGroupStatus(scope.row)"
+                         icon="el-icon-shopping-cart-full"></el-button>
+            </el-tooltip>
+          </el-button-group>
         </template>
       </el-table-column>
     </el-table>
@@ -50,16 +59,19 @@
                              :formStatus="aliyunONSGroupSubDrawerStatus"></aliyunONSGroupSubDrawer>
     <aliyunONSGroupDialog ref="aliyunONSGroupDialog"
                           :formStatus="aliyunONSGroupDialogStatus"></aliyunONSGroupDialog>
+    <aliyunONSGroupStatusDialog ref="aliyunONSGroupStatusDialog"
+                                :formStatus="aliyunONSGroupDialogStatusStatus"></aliyunONSGroupStatusDialog>
   </div>
 </template>
 
 <script>
 import AliyunONSGroupSubDrawer from '@/components/opscloud/drawer/AliyunONSGroupSubDrawer'
 import AliyunONSGroupDialog from '@/components/opscloud/dialog/AliyunONSGroupDialog'
+import AliyunONSGroupStatusDialog from '@/components/opscloud/dialog/AliyunONSGroupStatusDialog'
 
 // API
 import { queryONSInstanceAll } from '@api/cloud/aliyun.ons.instance.js'
-import { syncONSGroup, queryOnsGroupSubDetail, queryONSGroupPage } from '@api/cloud/aliyun.ons.group.js'
+import { syncONSGroup, queryOnsGroupSubDetail, queryONSGroupPage, onsGroupStatus } from '@api/cloud/aliyun.ons.group.js'
 import { mapActions, mapState } from 'vuex'
 
 export default {
@@ -70,6 +82,9 @@ export default {
         visible: false
       },
       aliyunONSGroupDialogStatus: {
+        visible: false
+      },
+      aliyunONSGroupDialogStatusStatus: {
         visible: false
       },
       tableData: [],
@@ -97,7 +112,8 @@ export default {
         value: 'http',
         label: 'http'
       }],
-      groupSubDetail: {}
+      groupSubDetail: {},
+      groupStatus: {}
     }
   },
   computed: {
@@ -111,7 +127,8 @@ export default {
   },
   components: {
     AliyunONSGroupSubDrawer,
-    AliyunONSGroupDialog
+    AliyunONSGroupDialog,
+    AliyunONSGroupStatusDialog
   },
   filters: {
     instanceFilters (instance) {
@@ -155,6 +172,21 @@ export default {
           this.groupSubDetail = res.body
           this.groupSubDetail.groupId = row.groupId
           this.$refs.aliyunONSGroupSubDrawer.initData(this.groupSubDetail)
+        })
+    },
+    getGroupStatus (row) {
+      this.aliyunONSGroupDialogStatusStatus.visible = true
+      this.groupStatus = {}
+      let requestBody = {
+        'regionId': this.regionId,
+        'instanceId': row.instanceId,
+        'groupId': row.groupId
+      }
+      onsGroupStatus(requestBody)
+        .then(res => {
+          this.groupStatus = res.body
+          this.groupStatus.groupId = row.groupId
+          this.$refs.aliyunONSGroupStatusDialog.initData(this.groupStatus)
         })
     },
     handlerAdd () {
