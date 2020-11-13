@@ -3,7 +3,7 @@
     <el-card shadow="hover">
       <el-row>
         <el-col :span="4">
-          <img :src="groupDetail.online?onlineImageUrl:offlineImageUrl" style="height: 25%;width: 25%">
+          <img :src="groupDetail.online?onlineImageUrl:offlineImageUrl" style="width: 38px">
           <span v-text="groupDetail.online?'在线':'离线'" style="margin-left: 10px"></span>
         </el-col>
         <el-col :span="4">

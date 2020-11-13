@@ -25,7 +25,7 @@
         </div>
         <span class="span-font">
           <p>1. “CID”和“GID”是Group ID的保留字段，Topic命名不能以“CID”和“GID”开头</p>
-          <p>2. Topic只能包含英文、数字和下划线（_）</p>
+          <p>2. Topic只能以 “TOPIC_”开头，包含英文、数字和下划线（_）</p>
           <p>3. 长度限制在3~64个字符之间</p>
         </span>
       </el-form-item>

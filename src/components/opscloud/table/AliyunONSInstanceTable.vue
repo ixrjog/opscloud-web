@@ -42,7 +42,7 @@
       </el-row>
       <el-divider><i class="el-icon-monitor"></i></el-divider>
       <el-row :gutter="30">
-        <el-col :span="8" v-for="item in internetInstanceList" :key="item.id">
+        <el-col :span="12" v-for="item in internetInstanceList" :key="item.id">
           <el-card shadow="hover" style="margin-bottom: 30px">
             <div slot="header">
               <el-row>
@@ -58,7 +58,7 @@
                 </el-col>
               </el-row>
             </div>
-            <el-form label-position="left" label-width="80px">
+            <el-form label-position="left" label-width="130px">
               <el-row>
                 <el-form-item label="实例ID">
                   <span>{{ item.instanceId }}</span>
@@ -71,12 +71,13 @@
               <el-row>
                 <el-col :span="12">
                   <el-form-item label="实例状态">
-                    <el-tag>{{ item.instanceStatus |statusFilters }}</el-tag>
+                    <img :src="getImgUrl(item)" style="width: 12px">
+                    <span style="margin-left: 5px">{{ item.instanceStatus |statusFilters }}</span>
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
                   <el-form-item label="命名空间">
-                    <el-tag type="success">{{ item.independentNaming |namingFilters }}</el-tag>
+                    <el-tag>{{ item.independentNaming |namingFilters }}</el-tag>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -92,38 +93,43 @@
                   </el-form-item>
                 </el-col>
               </el-row>
-            </el-form>
-            <el-collapse>
-              <el-collapse-item title="TCP 协议客户端接入点">
-                <div v-if="item.tcpEndpoint !== null">{{ 'TCP接入点：' + item.tcpEndpoint }}
+              <el-row v-if="item.tcpEndpoint !== ''">
+                <el-form-item label="TCP接入点">
+                  <span>{{ item.tcpEndpoint }}</span>
                   <span v-clipboard:copy="item.tcpEndpoint" v-clipboard:success="onCopy"
                         v-clipboard:error="onError" style="float: right">
                     <i class="el-icon-copy-document"></i>
                   </span>
-                </div>
-              </el-collapse-item>
-              <el-collapse-item title="HTTP 协议客户端接入点">
-                <div v-if="item.httpInternetEndpoint !== ''">{{ 'HTTP 公网接入点：' + item.httpInternetEndpoint }}
+                </el-form-item>
+              </el-row>
+              <el-row v-if="item.httpInternetEndpoint !== ''">
+                <el-form-item label="HTTP公网接入点">
+                  <span>{{ item.httpInternetEndpoint }}</span>
                   <span v-clipboard:copy="item.httpInternetEndpoint" v-clipboard:success="onCopy"
                         v-clipboard:error="onError" style="float: right">
                     <i class="el-icon-copy-document"></i>
                   </span>
-                </div>
-                <div v-if="item.httpInternalEndpoint !== ''">{{ 'HTTP 内网接入点：' + item.httpInternalEndpoint }}
-                  <span v-clipboard:copy="item.httpInternalEndpoint" v-clipboard:success="onCopy"
-                        v-clipboard:error="onError" style="float: right">
-                    <i class="el-icon-copy-document"></i>
-                  </span></div>
-                <div v-if="item.httpInternetSecureEndpoint !== ''">{{
-                    'HTTPS 公网接入点：' + item.httpInternetSecureEndpoint
-                  }}
+                </el-form-item>
+              </el-row>
+              <el-row v-if="item.httpInternetSecureEndpoint !== ''">
+                <el-form-item label="HTTPS公网接入点">
+                  <span>{{ item.httpInternetSecureEndpoint }}</span>
                   <span v-clipboard:copy="item.httpInternetSecureEndpoint" v-clipboard:success="onCopy"
                         v-clipboard:error="onError" style="float: right">
                     <i class="el-icon-copy-document"></i>
                   </span>
-                </div>
-              </el-collapse-item>
-            </el-collapse>
+                </el-form-item>
+              </el-row>
+              <el-row v-if="item.httpInternalEndpoint !== ''">
+                <el-form-item label="HTTP内网接入点">
+                  <span>{{ item.httpInternalEndpoint }}</span>
+                  <span v-clipboard:copy="item.httpInternalEndpoint" v-clipboard:success="onCopy"
+                        v-clipboard:error="onError" style="float: right">
+                    <i class="el-icon-copy-document"></i>
+                  </span>
+                </el-form-item>
+              </el-row>
+            </el-form>
           </el-card>
         </el-col>
       </el-row>
@@ -138,7 +144,7 @@
       </el-row>
       <el-divider><i class="el-icon-monitor"></i></el-divider>
       <el-row :gutter="30">
-        <el-col :span="8" v-for="item in hangzhouInstanceList" :key="item.id">
+        <el-col :span="12" v-for="item in hangzhouInstanceList" :key="item.id">
           <el-card shadow="hover" style="margin-bottom: 30px">
             <div slot="header">
               <el-row>
@@ -154,7 +160,7 @@
                 </el-col>
               </el-row>
             </div>
-            <el-form label-position="left" label-width="80px">
+            <el-form label-position="left" label-width="130px">
               <el-row>
                 <el-form-item label="实例ID">
                   <span>{{ item.instanceId }}</span>
@@ -167,7 +173,8 @@
               <el-row>
                 <el-col :span="12">
                   <el-form-item label="实例状态">
-                    <el-tag>{{ item.instanceStatus |statusFilters }}</el-tag>
+                    <img :src="getImgUrl(item)" style="width: 12px">
+                    <span style="margin-left: 5px">{{ item.instanceStatus |statusFilters }}</span>
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
@@ -188,38 +195,43 @@
                   </el-form-item>
                 </el-col>
               </el-row>
-            </el-form>
-            <el-collapse>
-              <el-collapse-item title="TCP 协议客户端接入点">
-                <div v-if="item.tcpEndpoint !== null">{{ 'TCP接入点：' + item.tcpEndpoint }}
+              <el-row v-if="item.tcpEndpoint !== ''">
+                <el-form-item label="TCP接入点">
+                  <span>{{ item.tcpEndpoint }}</span>
                   <span v-clipboard:copy="item.tcpEndpoint" v-clipboard:success="onCopy"
                         v-clipboard:error="onError" style="float: right">
                     <i class="el-icon-copy-document"></i>
                   </span>
-                </div>
-              </el-collapse-item>
-              <el-collapse-item title="HTTP 协议客户端接入点">
-                <div v-if="item.httpInternetEndpoint !== ''">{{ 'HTTP 公网接入点：' + item.httpInternetEndpoint }}
+                </el-form-item>
+              </el-row>
+              <el-row v-if="item.httpInternetEndpoint !== ''">
+                <el-form-item label="HTTP公网接入点">
+                  <span>{{ item.httpInternetEndpoint }}</span>
                   <span v-clipboard:copy="item.httpInternetEndpoint" v-clipboard:success="onCopy"
                         v-clipboard:error="onError" style="float: right">
                     <i class="el-icon-copy-document"></i>
                   </span>
-                </div>
-                <div v-if="item.httpInternalEndpoint !== ''">{{ 'HTTP 内网接入点：' + item.httpInternalEndpoint }}
-                  <span v-clipboard:copy="item.httpInternalEndpoint" v-clipboard:success="onCopy"
-                        v-clipboard:error="onError" style="float: right">
-                    <i class="el-icon-copy-document"></i>
-                  </span></div>
-                <div v-if="item.httpInternetSecureEndpoint !== ''">{{
-                    'HTTPS 公网接入点：' + item.httpInternetSecureEndpoint
-                  }}
+                </el-form-item>
+              </el-row>
+              <el-row v-if="item.httpInternetSecureEndpoint !== ''">
+                <el-form-item label="HTTPS公网接入点">
+                  <span>{{ item.httpInternetSecureEndpoint }}</span>
                   <span v-clipboard:copy="item.httpInternetSecureEndpoint" v-clipboard:success="onCopy"
                         v-clipboard:error="onError" style="float: right">
                     <i class="el-icon-copy-document"></i>
                   </span>
-                </div>
-              </el-collapse-item>
-            </el-collapse>
+                </el-form-item>
+              </el-row>
+              <el-row v-if="item.httpInternalEndpoint !== ''">
+                <el-form-item label="HTTP内网接入点">
+                  <span>{{ item.httpInternalEndpoint }}</span>
+                  <span v-clipboard:copy="item.httpInternalEndpoint" v-clipboard:success="onCopy"
+                        v-clipboard:error="onError" style="float: right">
+                    <i class="el-icon-copy-document"></i>
+                  </span>
+                </el-form-item>
+              </el-row>
+            </el-form>
           </el-card>
         </el-col>
       </el-row>
@@ -247,7 +259,10 @@ export default {
         instanceTotal: '',
         topicTotal: '',
         groupTotal: ''
-      }
+      },
+      successImageUrl: require('@/static/icons/success.svg'),
+      warningImageUrl: require('@/static/icons/warning.svg'),
+      dangerImageUrl: require('@/static/icons/danger.svg')
     }
   },
   components: {},
@@ -281,6 +296,15 @@ export default {
     }
   },
   methods: {
+    getImgUrl (item) {
+      if (item.instanceStatus === 5) {
+        return this.successImageUrl
+      }
+      if (item.instanceStatus === 2) {
+        return this.dangerImageUrl
+      }
+      return this.warningImageUrl
+    },
     getStatistics () {
       onsInstanceStatistics()
         .then(res => {
