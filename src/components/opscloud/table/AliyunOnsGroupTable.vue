@@ -35,6 +35,11 @@
       </el-table-column>
       <el-table-column prop="createTime" label="创建时间"></el-table-column>
       <el-table-column prop="remark" label="备注"></el-table-column>
+      <el-table-column prop="alarmUserList" label="告警接收人" show-overflow-tooltip>
+        <template slot-scope="scope">
+          <span v-for="item in scope.row.alarmUserList" :key="item.id" style="margin-right: 5px">{{ item | userFilters }}</span>
+        </template>
+      </el-table-column>
       <el-table-column fixed="right" label="操作" width="180">
         <template slot-scope="scope">
           <el-button-group>
@@ -65,7 +70,7 @@
                              :formStatus="aliyunONSGroupDialogStatus"></aliyun-ons-group-dialog>
     <aliyun-ons-group-status-dialog ref="aliyunONSGroupStatusDialog"
                                     :formStatus="aliyunONSGroupDialogStatusStatus"></aliyun-ons-group-status-dialog>
-    <aliyun-ons-group-alarm-dialog ref="aliyunOnsGroupAlarmDialog"
+    <aliyun-ons-group-alarm-dialog ref="aliyunOnsGroupAlarmDialog" @closeDialog="fetchData"
                                    :formStatus="aliyunOnsGroupAlarmDialogStatus"></aliyun-ons-group-alarm-dialog>
   </div>
 </template>
@@ -150,6 +155,9 @@ export default {
   filters: {
     instanceFilters (instance) {
       return instance.instanceName + '<' + instance.envName + '>'
+    },
+    userFilters (user) {
+      return user.username + '<' + user.displayName + '>'
     }
   },
   methods: {

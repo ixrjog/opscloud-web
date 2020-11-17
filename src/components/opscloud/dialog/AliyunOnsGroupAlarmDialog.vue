@@ -147,6 +147,7 @@ export default {
           this.saving = false
           this.$message.success('保存成功')
           this.formStatus.visible = false
+          this.$emit('closeDialog')
         })
     }
   }
