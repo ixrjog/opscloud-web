@@ -363,18 +363,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.el-card__header {
-  padding: 10px 10px;
-  border-bottom: 1px solid #EBEEF5;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-.font-class {
-  font-size: 30px;
-  font-weight: bold;
-  color: #4074bc;
-}
-</style>

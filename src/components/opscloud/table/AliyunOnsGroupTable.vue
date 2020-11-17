@@ -21,7 +21,7 @@
           :value="item.value">
         </el-option>
       </el-select>
-      <el-button @click="fetchData" style="margin-left: 5px" :disabled="regionId === ''">查询</el-button>
+      <el-button @click="fetchData" :disabled="regionId === ''">查询</el-button>
       <el-button @click="handlerSync" style="margin-left: 5px" :disabled="regionId === ''" :loading="syncLoading">同步
       </el-button>
       <el-button @click="handlerAdd" style="margin-left: 5px">创建GroupId</el-button>
@@ -46,6 +46,10 @@
               <el-button type="primary" plain size="mini" @click="getGroupStatus(scope.row)"
                          icon="el-icon-shopping-cart-full"></el-button>
             </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="监控配置" placement="top">
+              <el-button type="primary" plain size="mini" @click="getGroupAlarm(scope.row)"
+                         icon="el-icon-bell"></el-button>
+            </el-tooltip>
           </el-button-group>
         </template>
       </el-table-column>
@@ -55,23 +59,32 @@
                    layout="sizes, prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                    :page-size="pagination.pageSize">
     </el-pagination>
-    <aliyunONSGroupSubDrawer ref="aliyunONSGroupSubDrawer"
-                             :formStatus="aliyunONSGroupSubDrawerStatus"></aliyunONSGroupSubDrawer>
-    <aliyunONSGroupDialog ref="aliyunONSGroupDialog"
-                          :formStatus="aliyunONSGroupDialogStatus"></aliyunONSGroupDialog>
-    <aliyunONSGroupStatusDialog ref="aliyunONSGroupStatusDialog"
-                                :formStatus="aliyunONSGroupDialogStatusStatus"></aliyunONSGroupStatusDialog>
+    <aliyun-ons-group-sub-drawer ref="aliyunONSGroupSubDrawer"
+                                 :formStatus="aliyunONSGroupSubDrawerStatus"></aliyun-ons-group-sub-drawer>
+    <aliyun-ons-group-dialog ref="aliyunONSGroupDialog"
+                             :formStatus="aliyunONSGroupDialogStatus"></aliyun-ons-group-dialog>
+    <aliyun-ons-group-status-dialog ref="aliyunONSGroupStatusDialog"
+                                    :formStatus="aliyunONSGroupDialogStatusStatus"></aliyun-ons-group-status-dialog>
+    <aliyun-ons-group-alarm-dialog ref="aliyunOnsGroupAlarmDialog"
+                                   :formStatus="aliyunOnsGroupAlarmDialogStatus"></aliyun-ons-group-alarm-dialog>
   </div>
 </template>
 
 <script>
-import AliyunONSGroupSubDrawer from '@/components/opscloud/drawer/AliyunONSGroupSubDrawer'
-import AliyunONSGroupDialog from '@/components/opscloud/dialog/AliyunONSGroupDialog'
-import AliyunONSGroupStatusDialog from '@/components/opscloud/dialog/AliyunONSGroupStatusDialog'
+import AliyunOnsGroupSubDrawer from '@/components/opscloud/drawer/AliyunOnsGroupSubDrawer'
+import AliyunOnsGroupDialog from '@/components/opscloud/dialog/AliyunOnsGroupDialog'
+import AliyunOnsGroupStatusDialog from '@/components/opscloud/dialog/AliyunOnsGroupStatusDialog'
+import AliyunOnsGroupAlarmDialog from '@/components/opscloud/dialog/AliyunOnsGroupAlarmDialog'
 
 // API
 import { queryONSInstanceAll } from '@api/cloud/aliyun.ons.instance.js'
-import { syncONSGroup, queryOnsGroupSubDetail, queryONSGroupPage, onsGroupStatus } from '@api/cloud/aliyun.ons.group.js'
+import {
+  syncONSGroup,
+  queryOnsGroupSubDetail,
+  queryONSGroupPage,
+  onsGroupStatus,
+  queryONSGroupAlarm
+} from '@api/cloud/aliyun.ons.group.js'
 import { mapActions, mapState } from 'vuex'
 
 export default {
@@ -85,6 +98,9 @@ export default {
         visible: false
       },
       aliyunONSGroupDialogStatusStatus: {
+        visible: false
+      },
+      aliyunOnsGroupAlarmDialogStatus: {
         visible: false
       },
       tableData: [],
@@ -126,9 +142,10 @@ export default {
     this.getInstance()
   },
   components: {
-    AliyunONSGroupSubDrawer,
-    AliyunONSGroupDialog,
-    AliyunONSGroupStatusDialog
+    AliyunOnsGroupSubDrawer,
+    AliyunOnsGroupDialog,
+    AliyunOnsGroupStatusDialog,
+    AliyunOnsGroupAlarmDialog
   },
   filters: {
     instanceFilters (instance) {
@@ -187,6 +204,13 @@ export default {
           this.groupStatus = res.body
           this.groupStatus.groupId = row.groupId
           this.$refs.aliyunONSGroupStatusDialog.initData(this.groupStatus)
+        })
+    },
+    getGroupAlarm (row) {
+      this.aliyunOnsGroupAlarmDialogStatus.visible = true
+      queryONSGroupAlarm(row.id)
+        .then(res => {
+          this.$refs.aliyunOnsGroupAlarmDialog.initData(res.body, this.regionId, row.id)
         })
     },
     handlerAdd () {

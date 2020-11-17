@@ -46,7 +46,7 @@
         <el-col :span="6">
           <span style="color: #99a9bf">GroupID</span>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="18">
           <span>{{ groupDetail.groupId }}</span>
         </el-col>
       </el-row>

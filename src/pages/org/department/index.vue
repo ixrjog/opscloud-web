@@ -188,7 +188,7 @@
       },
       getUser (queryName) {
         this.getUserLoading = true
-        var requestBody = {
+        let requestBody = {
           'queryName': queryName,
           'extend': 0,
           'page': 1,

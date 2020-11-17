@@ -3,13 +3,13 @@
     <h1>{{ title }}</h1>
     <el-tabs v-model="activeName">
       <el-tab-pane label="实例管理" name="onsInstance">
-        <AliyunONSInstanceTable ref="aliyunONSInstanceTable"></AliyunONSInstanceTable>
+        <aliyun-ons-instance-table ref="aliyunONSInstanceTable"></aliyun-ons-instance-table>
       </el-tab-pane>
       <el-tab-pane label="Topic管理" name="onsTopic">
-        <AliyunONSTopicTable ref="aliyunONSTopicTable"></AliyunONSTopicTable>
+        <aliyun-ons-topic-table ref="aliyunONSTopicTable"></aliyun-ons-topic-table>
       </el-tab-pane>
       <el-tab-pane label="Group管理" name="onsGroupId">
-        <AliyunONSGroupTable ref="aliyunONSGroupTable"></AliyunONSGroupTable>
+        <AliyunOnsGroupTable ref="aliyunONSGroupTable"></AliyunOnsGroupTable>
       </el-tab-pane>
     </el-tabs>
   </d2-container>
@@ -17,9 +17,9 @@
 
 <script>
 
-import AliyunONSInstanceTable from '@/components/opscloud/table/AliyunONSInstanceTable.vue'
-import AliyunONSTopicTable from '@/components/opscloud/table/AliyunONSTopicTable.vue'
-import AliyunONSGroupTable from '@/components/opscloud/table/AliyunONSGroupTable.vue'
+import AliyunOnsInstanceTable from '@/components/opscloud/table/AliyunOnsInstanceTable.vue'
+import AliyunOnsTopicTable from '@/components/opscloud/table/AliyunOnsTopicTable.vue'
+import AliyunOnsGroupTable from '@/components/opscloud/table/AliyunOnsGroupTable.vue'
 
 export default {
   data () {
@@ -29,9 +29,9 @@ export default {
     }
   },
   components: {
-    AliyunONSInstanceTable,
-    AliyunONSTopicTable,
-    AliyunONSGroupTable
+    AliyunOnsInstanceTable,
+    AliyunOnsTopicTable,
+    AliyunOnsGroupTable
   },
   mounted () {
   },

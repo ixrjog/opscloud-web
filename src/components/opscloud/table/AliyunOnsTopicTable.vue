@@ -21,7 +21,7 @@
           :value="item.value">
         </el-option>
       </el-select>
-      <el-button @click="fetchData" style="margin-left: 5px" :disabled="regionId === ''">查询</el-button>
+      <el-button @click="fetchData" :disabled="regionId === ''">查询</el-button>
       <el-button @click="handlerSync" style="margin-left: 5px" :disabled="regionId === ''" :loading="syncLoading">同步
       </el-button>
       <el-button @click="handlerAdd" style="margin-left: 5px">创建Topic</el-button>
@@ -50,16 +50,16 @@
                    layout="sizes, prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                    :page-size="pagination.pageSize">
     </el-pagination>
-    <aliyunONSTopicSubDrawer ref="aliyunONSTopicSubDrawer"
-                             :formStatus="aliyunONSTopicSubDrawerStatus"></aliyunONSTopicSubDrawer>
-    <aliyunONSTopicDialog ref="aliyunONSTopicDialog"
-                          :formStatus="aliyunONSTopicDialogStatus"></aliyunONSTopicDialog>
+    <aliyun-ons-topic-sub-drawer ref="aliyunONSTopicSubDrawer"
+                             :formStatus="aliyunONSTopicSubDrawerStatus"></aliyun-ons-topic-sub-drawer>
+    <aliyun-ons-topic-dialog ref="aliyunONSTopicDialog"
+                          :formStatus="aliyunONSTopicDialogStatus"></aliyun-ons-topic-dialog>
   </div>
 </template>
 
 <script>
-import AliyunONSTopicSubDrawer from '@/components/opscloud/drawer/AliyunONSTopicSubDrawer'
-import AliyunONSTopicDialog from '@/components/opscloud/dialog/AliyunONSTopicDialog'
+import AliyunOnsTopicSubDrawer from '@/components/opscloud/drawer/AliyunOnsTopicSubDrawer'
+import AliyunOnsTopicDialog from '@/components/opscloud/dialog/AliyunOnsTopicDialog'
 
 // API
 import { queryONSInstanceAll } from '@api/cloud/aliyun.ons.instance.js'
@@ -123,8 +123,8 @@ export default {
     this.getInstance()
   },
   components: {
-    AliyunONSTopicSubDrawer,
-    AliyunONSTopicDialog
+    AliyunOnsTopicSubDrawer,
+    AliyunOnsTopicDialog
   },
   filters: {
     instanceFilters (instance) {

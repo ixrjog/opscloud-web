@@ -64,13 +64,13 @@
         </el-table-column>
       </el-table>
     </el-drawer>
-    <aliyunONSGroupStatusDialog ref="aliyunONSGroupStatusDialog"
-                                :formStatus="aliyunONSGroupDialogStatusStatus"></aliyunONSGroupStatusDialog>
+    <aliyun-ons-group-status-dialog ref="aliyunONSGroupStatusDialog"
+                                :formStatus="aliyunONSGroupDialogStatusStatus"></aliyun-ons-group-status-dialog>
   </div>
 </template>
 
 <script>
-import AliyunONSGroupStatusDialog from '@/components/opscloud/dialog/AliyunONSGroupStatusDialog'
+import AliyunOnsGroupStatusDialog from '@/components/opscloud/dialog/AliyunOnsGroupStatusDialog'
 
 import { onsGroupStatus } from '@api/cloud/aliyun.ons.group.js'
 
@@ -87,7 +87,7 @@ export default {
   name: 'AliyunONSTopicSubDrawer',
   props: ['formStatus'],
   components: {
-    AliyunONSGroupStatusDialog
+    AliyunOnsGroupStatusDialog
   },
   mounted () {
   },

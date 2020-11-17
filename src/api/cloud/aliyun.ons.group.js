@@ -49,3 +49,18 @@ export function onsGroupStatus (data) {
     data
   })
 }
+
+export function saveONSGroupAlarm (data) {
+  return request({
+    url: baseUrl + '/alarm/save',
+    method: 'post',
+    data
+  })
+}
+
+export function queryONSGroupAlarm (onsGroupId) {
+  return request({
+    url: baseUrl + '/alarm/query?onsGroupId=' + onsGroupId,
+    method: 'get'
+  })
+}
