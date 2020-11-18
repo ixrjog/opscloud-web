@@ -42,6 +42,12 @@
             </el-input>
           </div>
         </el-form-item>
+        <el-form-item label="告警沉默时间(分钟)" prop="alarmSilentTime">
+          <div class="input">
+            <el-slider :min="1" :max="60" v-model="groupAlarmData.alarmSilentTime" show-input input-size="mini">
+            </el-slider>
+          </div>
+        </el-form-item>
         <el-form-item label="告警接收人" prop="alarmUserList" :rules="selectRules">
           <el-select v-model="groupAlarmData.alarmUserList" filterable clearable multiple
                      remote reserve-keyword placeholder="搜索用户" :remote-method="getUser" class="select" value-key="id">
@@ -70,6 +76,7 @@ const groupAlarmData = {
   rebalanceOk: true,
   totalDiff: 0,
   delayTime: 0,
+  alarmSilentTime: 30,
   alarmUserList: []
 }
 
@@ -105,10 +112,6 @@ export default {
       } else {
         this.groupAlarmData = Object.assign({}, data)
         this.userOptions = data.alarmUserList
-        // this.groupAlarmData.alarmUserList = []
-        // this.userOptions.map((item) => {
-        //   this.groupAlarmData.alarmUserList.push(item.id)
-        // })
       }
     },
     getRegionId (item) {
@@ -140,8 +143,9 @@ export default {
         'rebalanceOk': this.groupAlarmData.rebalanceOk,
         'totalDiff': this.groupAlarmData.totalDiff,
         'delayTime': this.groupAlarmData.delayTime,
-        'alarmUserList': this.groupAlarmData.alarmUserList
-    }
+        'alarmUserList': this.groupAlarmData.alarmUserList,
+        'alarmSilentTime': this.groupAlarmData.alarmSilentTime
+      }
       saveONSGroupAlarm(requestBody)
         .then(res => {
           this.saving = false
