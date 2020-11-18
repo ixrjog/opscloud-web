@@ -8,55 +8,53 @@
       active-text="启用告警"
       inactive-text="停用告警">
     </el-switch>
-    <div style="margin-bottom: 30px"></div>
-    <el-card shadow="never">
-      <el-form :model="groupAlarmData" ref="groupAlarmDataForm" label-width="160px" class="demo-ruleForm"
-               label-position="left" v-loading="saving" element-loading-text="GroupId告警保存中"
-               element-loading-spinner="el-icon-loading" :disabled="!isActive">
-        <el-form-item label="是否在线" prop="online">
-          <el-switch v-model="groupAlarmData.online"></el-switch>
-          <el-tooltip class="item" effect="dark" :content="onlineComment" placement="right">
-            <i class="el-icon-info" style="margin-left: 10px"></i>
-          </el-tooltip>
-        </el-form-item>
-        <el-form-item label="订阅关系是否一致" prop="subscriptionSame">
-          <el-switch v-model="groupAlarmData.subscriptionSame"></el-switch>
-          <el-tooltip class="item" effect="dark" :content="subscriptionComment" placement="right">
-            <i class="el-icon-info" style="margin-left: 10px"></i>
-          </el-tooltip>
-        </el-form-item>
-        <el-form-item label="rebalance是否正常" prop="rebalanceOk">
-          <el-switch v-model="groupAlarmData.rebalanceOk"></el-switch>
-          <el-tooltip class="item" effect="dark" :content="rebalanceComment" placement="right">
-            <i class="el-icon-info" style="margin-left: 10px"></i>
-          </el-tooltip>
-        </el-form-item>
-        <el-form-item label="总消费堆积" prop="totalDiff" :rules="rules">
-          <el-input type="totalDiff" v-model.number="groupAlarmData.totalDiff" autocomplete="off"
-                    class="input"></el-input>
-        </el-form-item>
-        <el-form-item label="延迟时间" prop="delayTime" :rules="rules">
-          <div class="input">
-            <el-input v-model.number="groupAlarmData.delayTime">
-              <template slot="append">(秒)</template>
-            </el-input>
-          </div>
-        </el-form-item>
-        <el-form-item label="告警沉默时间(分钟)" prop="alarmSilentTime">
-          <div class="input">
-            <el-slider :min="1" :max="60" v-model="groupAlarmData.alarmSilentTime" show-input input-size="mini">
-            </el-slider>
-          </div>
-        </el-form-item>
-        <el-form-item label="告警接收人" prop="alarmUserList" :rules="selectRules">
-          <el-select v-model="groupAlarmData.alarmUserList" filterable clearable multiple
-                     remote reserve-keyword placeholder="搜索用户" :remote-method="getUser" class="select" value-key="id">
-            <el-option v-for="item in userOptions" :key="item.id" :label="item.displayName" :value="item">
-            </el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
-    </el-card>
+    <el-divider></el-divider>
+    <el-form :model="groupAlarmData" ref="groupAlarmDataForm" label-width="160px" class="demo-ruleForm"
+             label-position="left" v-loading="saving" element-loading-text="GroupId告警保存中"
+             element-loading-spinner="el-icon-loading" :disabled="!isActive">
+      <el-form-item label="是否在线" prop="online">
+        <el-switch v-model="groupAlarmData.online"></el-switch>
+        <el-tooltip class="item" effect="dark" :content="onlineComment" placement="right">
+          <i class="el-icon-info" style="margin-left: 10px"></i>
+        </el-tooltip>
+      </el-form-item>
+      <el-form-item label="订阅关系是否一致" prop="subscriptionSame">
+        <el-switch v-model="groupAlarmData.subscriptionSame"></el-switch>
+        <el-tooltip class="item" effect="dark" :content="subscriptionComment" placement="right">
+          <i class="el-icon-info" style="margin-left: 10px"></i>
+        </el-tooltip>
+      </el-form-item>
+      <el-form-item label="rebalance是否正常" prop="rebalanceOk">
+        <el-switch v-model="groupAlarmData.rebalanceOk"></el-switch>
+        <el-tooltip class="item" effect="dark" :content="rebalanceComment" placement="right">
+          <i class="el-icon-info" style="margin-left: 10px"></i>
+        </el-tooltip>
+      </el-form-item>
+      <el-form-item label="总消费堆积" prop="totalDiff" :rules="rules">
+        <el-input type="totalDiff" v-model.number="groupAlarmData.totalDiff" autocomplete="off"
+                  class="input"></el-input>
+      </el-form-item>
+      <el-form-item label="延迟时间" prop="delayTime" :rules="rules">
+        <div class="input">
+          <el-input v-model.number="groupAlarmData.delayTime">
+            <template slot="append">(秒)</template>
+          </el-input>
+        </div>
+      </el-form-item>
+      <el-form-item label="告警沉默时间(分钟)" prop="alarmSilentTime">
+        <div class="input">
+          <el-slider :min="1" :max="60" v-model="groupAlarmData.alarmSilentTime" show-input input-size="mini">
+          </el-slider>
+        </div>
+      </el-form-item>
+      <el-form-item label="告警接收人" prop="userIdList" :rules="selectRules">
+        <el-select v-model="groupAlarmData.userIdList" filterable clearable multiple
+                   remote reserve-keyword placeholder="搜索用户" :remote-method="getUser" class="select">
+          <el-option v-for="item in userOptions" :key="item.id" :label="item.displayName" :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+    </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="formStatus.visible = false">取消</el-button>
       <el-button type="primary" @click="groupAlarmSave" :disabled="saving">保存</el-button>
@@ -77,7 +75,7 @@ const groupAlarmData = {
   totalDiff: 0,
   delayTime: 0,
   alarmSilentTime: 30,
-  alarmUserList: []
+  userIdList: []
 }
 
 export default {
@@ -143,7 +141,7 @@ export default {
         'rebalanceOk': this.groupAlarmData.rebalanceOk,
         'totalDiff': this.groupAlarmData.totalDiff,
         'delayTime': this.groupAlarmData.delayTime,
-        'alarmUserList': this.groupAlarmData.alarmUserList,
+        'userIdList': this.groupAlarmData.userIdList,
         'alarmSilentTime': this.groupAlarmData.alarmSilentTime
       }
       saveONSGroupAlarm(requestBody)

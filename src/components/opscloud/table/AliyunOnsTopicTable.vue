@@ -27,7 +27,15 @@
       <el-button @click="handlerAdd" style="margin-left: 5px">创建Topic</el-button>
     </el-row>
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
-      <el-table-column prop="topic" label="Topic"></el-table-column>
+      <el-table-column prop="topic" label="Topic">
+        <template slot-scope="scope">
+          <span>{{ scope.row.topic }}</span>
+          <span v-clipboard:copy="scope.row.topic" v-clipboard:success="onCopy"
+                v-clipboard:error="onError" style="float: right">
+                    <i class="el-icon-copy-document"></i>
+                  </span>
+        </template>
+      </el-table-column>
       <el-table-column prop="messageType" label="消息类型">
         <template slot-scope="props">
           <el-tag>{{ props.row.messageType | messageTypeFilters }}</el-tag>
@@ -246,6 +254,13 @@ export default {
           this.pagination.total = res.body.totalNum
           this.loading = false
         })
+    },
+    onCopy (e) {
+      // this.queryParam.queryName = e.text
+      this.$message.success('内容已复制到剪切板！')
+    },
+    onError (e) {
+      this.$message.error('抱歉，复制失败！')
     }
   }
 }

@@ -11,7 +11,7 @@
       <el-tab-pane label="Group管理" name="onsGroupId">
         <AliyunOnsGroupTable ref="aliyunONSGroupTable"></AliyunOnsGroupTable>
       </el-tab-pane>
-      <el-tab-pane label="使用说明">
+      <el-tab-pane label="使用说明" name="help">
         <d2-markdown :source="doc.previewDoc" v-if="success"/>
       </el-tab-pane>
     </el-tabs>
@@ -29,7 +29,7 @@ import { queryDocByKey } from '@api/doc/doc.js'
 export default {
   data () {
     return {
-      activeName: 'onsInstance',
+      activeName: 'help',
       title: '消息队列',
       docKey: 'ALIYUN_ONS_README',
       doc: {},
