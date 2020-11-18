@@ -33,11 +33,11 @@
       }
     },
     mounted () {
-      this.handlerFeatchDoc()
+      this.handlerFetchDoc()
     },
     filters: {},
     methods: {
-      handlerFeatchDoc () {
+      handlerFetchDoc () {
         queryDocByKey(this.docKey)
           .then(res => {
             this.doc = res.body

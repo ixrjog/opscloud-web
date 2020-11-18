@@ -11,6 +11,9 @@
       <el-tab-pane label="Group管理" name="onsGroupId">
         <AliyunOnsGroupTable ref="aliyunONSGroupTable"></AliyunOnsGroupTable>
       </el-tab-pane>
+      <el-tab-pane label="使用说明">
+        <d2-markdown :source="doc.previewDoc" v-if="success"/>
+      </el-tab-pane>
     </el-tabs>
   </d2-container>
 </template>
@@ -21,11 +24,16 @@ import AliyunOnsInstanceTable from '@/components/opscloud/table/AliyunOnsInstanc
 import AliyunOnsTopicTable from '@/components/opscloud/table/AliyunOnsTopicTable.vue'
 import AliyunOnsGroupTable from '@/components/opscloud/table/AliyunOnsGroupTable.vue'
 
+import { queryDocByKey } from '@api/doc/doc.js'
+
 export default {
   data () {
     return {
       activeName: 'onsInstance',
-      title: '消息队列'
+      title: '消息队列',
+      docKey: 'ALIYUN_ONS_README',
+      doc: {},
+      success: false
     }
   },
   components: {
@@ -34,8 +42,17 @@ export default {
     AliyunOnsGroupTable
   },
   mounted () {
+    this.handlerFetchDoc()
   },
-  methods: {}
+  methods: {
+    handlerFetchDoc () {
+      queryDocByKey(this.docKey)
+        .then(res => {
+          this.doc = res.body
+          this.success = true
+        })
+    }
+  }
 }
 </script>
 
