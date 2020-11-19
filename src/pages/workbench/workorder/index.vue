@@ -19,11 +19,12 @@
                           <template slot-scope="scope">
                             <el-button type="success" plain size="mini" @click="handlerPreviewDoc(scope.row)">帮助
                             </el-button>
-                            <el-button type="primary" plain size="mini" @click="createTicket(scope.row)" v-if="scope.row.workorderStatus === 0"
+                            <el-button type="primary" plain size="mini" @click="createTicket(scope.row)"
+                                       v-if="scope.row.workorderStatus === 0"
                                        :loading="ticketCreateing">新建
                             </el-button>
                             <el-button type="warning" plain size="mini" v-if="scope.row.workorderStatus === 1"
-                                       :loading="ticketCreateing">开发中
+                                       :loading="ticketCreateing">开发
                             </el-button>
                           </template>
                         </el-table-column>
@@ -73,14 +74,14 @@
   // doc
   import DocDialog from '@/components/opscloud/doc/DocDialog.vue'
 
-  import {queryWorkbenchWorkorderGroup} from '@api/workorder/workorder.group.js'
-  import {createWorkorderTicket} from '@api/workorder/workorder.ticket.js'
-  import {checkUserInTheDepartment} from '@api/org/org.js'
+  import { queryWorkbenchWorkorderGroup } from '@api/workorder/workorder.group.js'
+  import { createWorkorderTicket } from '@api/workorder/workorder.ticket.js'
+  import { checkUserInTheDepartment } from '@api/org/org.js'
 
-  import {queryDocById} from '@api/doc/doc.js'
+  import { queryDocById } from '@api/doc/doc.js'
 
   export default {
-    data() {
+    data () {
       return {
         userDeptWarning: false,
         formDocStatus: {
@@ -121,12 +122,12 @@
       TicketAuthRoleDialog,
       TicketRamPolicyDialog
     },
-    mounted() {
+    mounted () {
       this.getWorkbenchWorkorderGroup()
       this.setUserInTheDepartment()
     },
     methods: {
-      setUserInTheDepartment() {
+      setUserInTheDepartment () {
         checkUserInTheDepartment()
           .then(res => {
             if (!res.success) {
@@ -134,16 +135,16 @@
             }
           })
       },
-      getWorkbenchWorkorderGroup() {
+      getWorkbenchWorkorderGroup () {
         queryWorkbenchWorkorderGroup()
           .then(res => {
             this.workorderGroups = res.body
           })
       },
-      handlerQueryTicket() {
+      handlerQueryTicket () {
         this.$refs.ticketTable.fetchData()
       },
-      handlerPreviewDoc(workorder) {
+      handlerPreviewDoc (workorder) {
         queryDocById(workorder.readmeId)
           .then(res => {
             // 返回数据
@@ -158,7 +159,7 @@
        * 创建工单票据
        * @param workorder
        */
-      createTicket(workorder) {
+      createTicket (workorder) {
         this.ticketCreateing = true
         let requestParam = {
           workorderKey: workorder.workorderKey
@@ -194,7 +195,7 @@
             this.ticketCreateing = false
           })
       },
-      fetchData() {
+      fetchData () {
         console.log('// TODO')
         this.$refs.ticketTable.fetchData()
       }
