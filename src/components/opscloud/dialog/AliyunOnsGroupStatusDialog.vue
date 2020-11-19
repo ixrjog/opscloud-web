@@ -72,6 +72,7 @@
     <el-table :data="groupDetail.connectionSet" style="width: 100%">
       <el-table-column type="index" label="No"></el-table-column>
       <el-table-column prop="clientAddr" label="客户端IP"></el-table-column>
+      <el-table-column prop="hostName" label="客户端名称"></el-table-column>
       <el-table-column prop="language" label="语言"></el-table-column>
       <el-table-column prop="version" label="版本号"></el-table-column>
     </el-table>
