@@ -36,16 +36,24 @@
                   </span>
         </template>
       </el-table-column>
-      <el-table-column label="协议类型" width="180">
+      <el-table-column label="协议类型" width="100">
         <template slot-scope="scope">
           <el-tag>{{ scope.row.groupType }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" label="创建时间"></el-table-column>
+      <el-table-column prop="createTime" label="创建时间" width="200"></el-table-column>
       <el-table-column prop="remark" label="备注"></el-table-column>
+      <el-table-column label="告警状态" width="100">
+        <template slot-scope="scope">
+          <el-tag :type="getAlarmStatusAColor(scope.row.alarmStatus)">
+            {{ scope.row.alarmStatus |alarmStatusFilters }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="alarmUserList" label="告警接收人" show-overflow-tooltip>
         <template slot-scope="scope">
-          <span v-for="item in scope.row.alarmUserList" :key="item.id" style="margin-right: 5px">{{ item | userFilters }}</span>
+          <span v-for="item in scope.row.alarmUserList" :key="item.id" style="margin-right: 5px">
+            {{ item | userFilters }}</span>
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="180">
@@ -166,6 +174,18 @@ export default {
     },
     userFilters (user) {
       return user.username + '<' + user.displayName + '>'
+    },
+    alarmStatusFilters (alarmStatus) {
+      if (alarmStatus === 0) {
+        return '停用'
+      }
+      if (alarmStatus === 1) {
+        return '启用'
+      }
+      if (alarmStatus === -1) {
+        return '异常'
+      }
+      return '暂未配置'
     }
   },
   methods: {
@@ -182,6 +202,18 @@ export default {
       if (typeof (this.info.pageSize) !== 'undefined') {
         this.pagination.pageSize = this.info.pageSize
       }
+    },
+    getAlarmStatusAColor (alarmStatus) {
+      if (alarmStatus === 0) {
+        return 'warning'
+      }
+      if (alarmStatus === 1) {
+        return 'success'
+      }
+      if (alarmStatus === -1) {
+        return 'danger'
+      }
+      return 'info'
     },
     getInstance () {
       queryONSInstanceAll()
