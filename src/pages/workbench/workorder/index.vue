@@ -19,8 +19,11 @@
                           <template slot-scope="scope">
                             <el-button type="success" plain size="mini" @click="handlerPreviewDoc(scope.row)">帮助
                             </el-button>
-                            <el-button type="primary" plain size="mini" @click="createTicket(scope.row)"
+                            <el-button type="primary" plain size="mini" @click="createTicket(scope.row)" v-if="scope.row.workorderStatus === 0"
                                        :loading="ticketCreateing">新建
+                            </el-button>
+                            <el-button type="warning" plain size="mini" v-if="scope.row.workorderStatus === 1"
+                                       :loading="ticketCreateing">开发中
                             </el-button>
                           </template>
                         </el-table-column>
@@ -47,14 +50,14 @@
         </el-tab-pane>
       </el-tabs>
       <DocDialog ref="docDialog" :formStatus="formDocStatus"></DocDialog>
-      <TicketServerGroupDialog ref="ticketServerGroupDialog" :formStatus="formServerGroupStatus"
-                               @closeDialog="fetchData"></TicketServerGroupDialog>
-      <TicketUserGroupDialog ref="ticketUserGroupDialog" :formStatus="formUserGroupStatus"
-                             @closeDialog="fetchData"></TicketUserGroupDialog>
-      <TicketAuthRoleDialog ref="ticketAuthRoleDialog" :formStatus="formAuthRoleStatus"
-                            @closeDialog="fetchData"></TicketAuthRoleDialog>
-      <TicketRAMPolicyDialog ref="ticketRAMPolicyDialog" :formStatus="formRAMPolicyStatus"
-                             @closeDialog="fetchData"></TicketRAMPolicyDialog>
+      <ticket-server-group-dialog ref="ticketServerGroupDialog" :formStatus="formServerGroupStatus"
+                                  @closeDialog="fetchData"></ticket-server-group-dialog>
+      <ticket-user-group-dialog ref="ticketUserGroupDialog" :formStatus="formUserGroupStatus"
+                                @closeDialog="fetchData"></ticket-user-group-dialog>
+      <ticket-auth-role-dialog ref="ticketAuthRoleDialog" :formStatus="formAuthRoleStatus"
+                               @closeDialog="fetchData"></ticket-auth-role-dialog>
+      <ticket-ram-policy-dialog ref="ticketRAMPolicyDialog" :formStatus="formRAMPolicyStatus"
+                                @closeDialog="fetchData"></ticket-ram-policy-dialog>
     </template>
   </d2-container>
 </template>
@@ -66,18 +69,18 @@
   import TicketServerGroupDialog from '@/components/opscloud/workorder/TicketServerGroupDialog'
   import TicketUserGroupDialog from '@/components/opscloud/workorder/TicketUserGroupDialog'
   import TicketAuthRoleDialog from '@/components/opscloud/workorder/TicketAuthRoleDialog'
-  import TicketRAMPolicyDialog from '@/components/opscloud/workorder/TicketRAMPolicyDialog'
+  import TicketRamPolicyDialog from '@/components/opscloud/workorder/TicketRAMPolicyDialog'
   // doc
   import DocDialog from '@/components/opscloud/doc/DocDialog.vue'
 
-  import { queryWorkbenchWorkorderGroup } from '@api/workorder/workorder.group.js'
-  import { createWorkorderTicket } from '@api/workorder/workorder.ticket.js'
-  import { checkUserInTheDepartment } from '@api/org/org.js'
+  import {queryWorkbenchWorkorderGroup} from '@api/workorder/workorder.group.js'
+  import {createWorkorderTicket} from '@api/workorder/workorder.ticket.js'
+  import {checkUserInTheDepartment} from '@api/org/org.js'
 
-  import { queryDocById } from '@api/doc/doc.js'
+  import {queryDocById} from '@api/doc/doc.js'
 
   export default {
-    data () {
+    data() {
       return {
         userDeptWarning: false,
         formDocStatus: {
@@ -116,14 +119,14 @@
       TicketServerGroupDialog,
       TicketUserGroupDialog,
       TicketAuthRoleDialog,
-      TicketRAMPolicyDialog
+      TicketRamPolicyDialog
     },
-    mounted () {
+    mounted() {
       this.getWorkbenchWorkorderGroup()
       this.setUserInTheDepartment()
     },
     methods: {
-      setUserInTheDepartment () {
+      setUserInTheDepartment() {
         checkUserInTheDepartment()
           .then(res => {
             if (!res.success) {
@@ -131,16 +134,16 @@
             }
           })
       },
-      getWorkbenchWorkorderGroup () {
+      getWorkbenchWorkorderGroup() {
         queryWorkbenchWorkorderGroup()
           .then(res => {
             this.workorderGroups = res.body
           })
       },
-      handlerQueryTicket () {
+      handlerQueryTicket() {
         this.$refs.ticketTable.fetchData()
       },
-      handlerPreviewDoc (workorder) {
+      handlerPreviewDoc(workorder) {
         queryDocById(workorder.readmeId)
           .then(res => {
             // 返回数据
@@ -155,7 +158,7 @@
        * 创建工单票据
        * @param workorder
        */
-      createTicket (workorder) {
+      createTicket(workorder) {
         this.ticketCreateing = true
         let requestParam = {
           workorderKey: workorder.workorderKey
@@ -191,7 +194,7 @@
             this.ticketCreateing = false
           })
       },
-      fetchData () {
+      fetchData() {
         console.log('// TODO')
         this.$refs.ticketTable.fetchData()
       }
