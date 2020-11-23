@@ -1,0 +1,69 @@
+<template>
+  <el-dialog :title="title" :visible.sync="formStatus.visible" width="35%">
+    <el-form :model="assetReturnData" label-width="120px" class="demo-ruleForm"
+             label-position="left" v-loading="saving" element-loading-text="资产归还中"
+             element-loading-spinner="el-icon-loading">
+      <el-form-item label="资产编码" prop="assetCode" required>
+        <el-input v-model.trim="assetReturnData.assetCode" readonly class="input"></el-input>
+      </el-form-item>
+      <el-form-item label="归还日期" prop="returnTime" required>
+        <el-date-picker v-model="assetReturnData.returnTime" type="date" placeholder="选择日期" value-format="timestamp">
+        </el-date-picker>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="formStatus.visible = false">取消</el-button>
+      <el-button type="primary" @click="assetReturnAdd" :disabled="saving">创建</el-button>
+    </div>
+  </el-dialog>
+</template>
+
+<script>
+
+// API
+import { returnAsset } from '@api/it/it.asset'
+
+export default {
+  data () {
+    return {
+      title: '资产归还',
+      assetReturnData: {
+        assetId: '',
+        assetCode: '',
+        returnTime: Date.now().valueOf()
+      },
+      saving: false
+    }
+  },
+  name: 'ItAssetApplyDialog',
+  props: ['formStatus'],
+  mounted () {
+  },
+  components: {},
+  filters: {},
+  methods: {
+    initData (data) {
+      this.assetReturnData.assetId = data.id
+      this.assetReturnData.assetCode = data.assetCode
+    },
+    assetReturnAdd () {
+      this.saving = true
+      returnAsset(this.assetReturnData)
+        .then(res => {
+          this.adding = false
+          this.$message.success('保存成功')
+          this.formStatus.visible = false
+          this.$emit('closeDialog')
+        })
+    }
+  }
+}
+</script>
+
+<style scoped>
+.input {
+  display: inline-block;
+  max-width: 500px;
+  width: 500px;
+}
+</style>
