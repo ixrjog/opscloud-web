@@ -511,6 +511,33 @@ const frameIn = [
           auth: true,
           title: '个人详情'
         }
+      },
+      {
+        path: '/it/dashboard',
+        name: 'it-dashboard',
+        component: () => import('@/pages/it/dashboard'),
+        meta: {
+          auth: true,
+          title: '资产大盘'
+        }
+      },
+      {
+        path: '/it/asset',
+        name: 'it-asset',
+        component: () => import('@/pages/it/asset'),
+        meta: {
+          auth: true,
+          title: '资产列表'
+        }
+      },
+      {
+        path: '/it/asset/apply',
+        name: 'it-asset-apply',
+        component: () => import('@/pages/it/asset/apply'),
+        meta: {
+          auth: true,
+          title: '使用盘点'
+        }
       }
     ]
   }

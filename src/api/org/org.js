@@ -108,3 +108,11 @@ export function checkUserInTheDepartment () {
     method: 'get'
   })
 }
+
+export function queryFirstLevelDepartmentPage (data) {
+  return request({
+    url: '/org/department/fl/page/query',
+    method: 'post',
+    data
+  })
+}
