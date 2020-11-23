@@ -45,6 +45,15 @@ const frameIn = [
         hidden: true,
         component: _import('system/function/redirect')
       },
+      {
+        path: '/dashboard/helpdesk',
+        name: 'dashboard-helpdesk',
+        component: () => import('@/pages/dashboard/helpdesk'),
+        meta: {
+          auth: true,
+          title: 'HelpDesk报表'
+        }
+      },
       // env
       {
         path: '/env',
