@@ -5,30 +5,26 @@
              label-position="left" v-loading="adding" element-loading-text="资产保存中"
              element-loading-spinner="el-icon-loading">
       <el-form-item label="资产编码" prop="assetCode" required>
-        <div class="input">
-          <el-input v-model.trim="assetData.assetCode" :readonly="codeChecked">
-            <el-button slot="append" :icon="codeChecked?'el-icon-success':'el-icon-warning'"
-                       @click="handlerCheck(assetData.assetCode)" :disabled="codeChecked"></el-button>
-          </el-input>
-        </div>
+        <el-input v-model.trim="assetData.assetCode" :readonly="codeChecked">
+          <el-button slot="append" :icon="codeChecked?'el-icon-success':'el-icon-warning'"
+                     @click="handlerCheck(assetData.assetCode)" :disabled="codeChecked"></el-button>
+        </el-input>
         <span class="span-font">
           <p>1. 资产编码只能包含字母、数字和中划线（-）</p>
           <p>2. 资产编码一旦创建，则无法修改</p>
         </span>
       </el-form-item>
-      <el-row>
-        <el-form-item label="资产名称" prop="assetNameIds" required>
-          <el-cascader v-model="assetData.assetNameIds" :options="assetTypeOptions" class="cascader"
-                       expandTrigger="hover" @change="handleChange"></el-cascader>
-          <el-button-group style="margin-left:5px">
-            <el-button type="primary" icon="el-icon-circle-plus-outline" @click="assetNameAdd" size="mini"
-                       plain></el-button>
-            <el-button type="primary" icon="el-icon-refresh" @click="assetTypeTreeRefresh" size="mini" plain></el-button>
-          </el-button-group>
-        </el-form-item>
-      </el-row>
+      <el-form-item label="资产名称" prop="assetNameIds" required>
+        <el-cascader v-model="assetData.assetNameIds" :options="assetTypeOptions"
+                     expandTrigger="hover" @change="handleChange"></el-cascader>
+        <el-button-group style="margin-left:5px">
+          <el-button type="primary" icon="el-icon-circle-plus-outline" @click="assetNameAdd" size="mini"
+                     plain></el-button>
+          <el-button type="primary" icon="el-icon-refresh" @click="assetTypeTreeRefresh" size="mini" plain></el-button>
+        </el-button-group>
+      </el-form-item>
       <el-form-item label="资产状态" prop="assetStatus" required>
-        <el-select v-model="assetData.assetStatus" placeholder="选择状态" class="select" disabled>
+        <el-select v-model="assetData.assetStatus" placeholder="选择状态" disabled>
           <el-option
             v-for="item in assetStatusOptions"
             :key="item.value"
@@ -38,7 +34,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="所属/承租公司" prop="assetCompany" required>
-        <el-select v-model="assetData.assetCompany" placeholder="选择公司" class="select">
+        <el-select v-model="assetData.assetCompany" placeholder="选择公司">
           <el-option
             v-for="item in companyOptions"
             :key="item.id"
@@ -52,7 +48,7 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item label="备注" prop="remark">
-        <el-input v-model="assetData.remark" class="input"></el-input>
+        <el-input v-model="assetData.remark"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -128,8 +124,7 @@ export default {
   components: {
     ItAssetNameDialog
   },
-  filters: {
-  },
+  filters: {},
   methods: {
     initData (data) {
       this.adding = false
@@ -212,27 +207,8 @@ export default {
 </script>
 
 <style scoped>
-.select {
-  display: inline-block;
-  max-width: 500px;
-  width: 500px;
-}
-
-.input {
-  display: inline-block;
-  max-width: 500px;
-  width: 500px;
-}
-
 .span-font {
   font-size: 6px;
   color: #99a9bf;
 }
-
-.cascader {
-  display: inline-block;
-  max-width: 407px;
-  width: 407px;
-}
-
 </style>

@@ -4,7 +4,7 @@
              label-position="left" v-loading="creating" element-loading-text="GroupId创建中"
              element-loading-spinner="el-icon-loading">
       <el-form-item label="MQ实例" prop="instance" required>
-        <el-select v-model="groupData.instance" placeholder="请选择实例" class="select" @change="getRegionId"
+        <el-select v-model="groupData.instance" placeholder="请选择实例" @change="getRegionId"
                    value-key="instanceId">
           <el-option
             v-for="item in instanceOptions"
@@ -17,12 +17,10 @@
         </el-select>
       </el-form-item>
       <el-form-item label="GroupId" prop="groupId" required>
-        <div class="input">
-          <el-input v-model.trim="groupData.groupId" :readonly="groupChecked">
-            <el-button slot="append" :icon="groupChecked?'el-icon-success':'el-icon-warning'"
-                       @click="handlerCheck(groupData.groupId)" :disabled="groupChecked"></el-button>
-          </el-input>
-        </div>
+        <el-input v-model.trim="groupData.groupId" :readonly="groupChecked">
+          <el-button slot="append" :icon="groupChecked?'el-icon-success':'el-icon-warning'"
+                     @click="handlerCheck(groupData.groupId)" :disabled="groupChecked"></el-button>
+        </el-input>
         <span class="span-font">
           <p>1. 以 “GID_”开头，只能包含字母、数字和下划线（_）</p>
           <p>2. 长度限制在 7~64 字符之间</p>
@@ -30,7 +28,7 @@
         </span>
       </el-form-item>
       <el-form-item label="协议类型" prop="groupType" required>
-        <el-select v-model="groupData.groupType" placeholder="消息类型" class="select" clearable disabled>
+        <el-select v-model="groupData.groupType" placeholder="消息类型" clearable disabled>
           <el-option
             v-for="item in groupTypeOptions"
             :key="item.value"
@@ -40,7 +38,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="备注" prop="remark">
-        <el-input v-model="groupData.remark" class="input"></el-input>
+        <el-input v-model="groupData.remark"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -158,18 +156,6 @@ export default {
 </script>
 
 <style scoped>
-.select {
-  display: inline-block;
-  max-width: 440px;
-  width: 440px;
-}
-
-.input {
-  display: inline-block;
-  max-width: 440px;
-  width: 440px;
-}
-
 .span-font {
   font-size: 6px;
   color: #99a9bf;
