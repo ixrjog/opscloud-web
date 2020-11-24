@@ -4,7 +4,7 @@
              label-position="left" v-loading="saving" element-loading-text="资产归还中"
              element-loading-spinner="el-icon-loading">
       <el-form-item label="资产编码" prop="assetCode" required>
-        <el-input v-model.trim="assetReturnData.assetCode" readonly class="input"></el-input>
+        <el-input v-model.trim="assetReturnData.assetCode" readonly></el-input>
       </el-form-item>
       <el-form-item label="归还日期" prop="returnTime" required>
         <el-date-picker v-model="assetReturnData.returnTime" type="date" placeholder="选择日期" value-format="timestamp">
@@ -46,6 +46,7 @@ export default {
       this.saving = false
       if (this.formStatus.isUpdate) {
         this.assetReturnData = Object.assign({}, data)
+        this.assetReturnData.returnTime = new Date(data.returnTime)
       } else {
         this.assetReturnData.assetId = data.assetId
         this.assetReturnData.assetCode = data.assetCode
@@ -75,9 +76,4 @@ export default {
 </script>
 
 <style scoped>
-.input {
-  display: inline-block;
-  max-width: 500px;
-  width: 500px;
-}
 </style>

@@ -4,10 +4,10 @@
              label-position="left" v-loading="saving" element-loading-text="资产申请中"
              element-loading-spinner="el-icon-loading">
       <el-form-item label="资产编码" prop="assetCode" required>
-        <el-input v-model.trim="assetApplyData.assetCode" readonly class="input"></el-input>
+        <el-input v-model.trim="assetApplyData.assetCode" readonly></el-input>
       </el-form-item>
       <el-form-item label="申领方式" prop="applyType" required>
-        <el-select v-model="assetApplyData.applyType" placeholder="选择申领方式" class="select">
+        <el-select v-model="assetApplyData.applyType" placeholder="选择申领方式">
           <el-option
             v-for="item in applyTypeOptions"
             :key="item.value"
@@ -18,7 +18,7 @@
       </el-form-item>
       <el-form-item label="领用人" prop="userId" required>
         <el-select v-model="assetApplyData.userId" filterable remote reserve-keyword placeholder="搜索用户"
-                   :remote-method="getUser" class="select">
+                   :remote-method="getUser">
           <el-option
             v-for="item in userOptions"
             :key="item.id"
@@ -29,7 +29,7 @@
       </el-form-item>
       <el-form-item label="使用部门" prop="userOrgDeptId" required>
         <el-select v-model="assetApplyData.userOrgDeptId" filterable remote reserve-keyword placeholder="搜索部门"
-                   :remote-method="getOrgDept" class="select">
+                   :remote-method="getOrgDept">
           <el-option
             v-for="item in orgDeptOptions"
             :key="item.id"
@@ -106,26 +106,28 @@ export default {
   methods: {
     initData (data) {
       this.saving = false
-      this.assetApplyData = Object.assign({}, assetApplyData)
-      this.assetApplyData.assetId = data.id
-      this.assetApplyData.assetCode = data.assetCode
       if (this.formStatus.isUpdate) {
-        this.assetApplyData.assetId = data.assetId
-        this.assetApplyData.id = data.id
+        this.assetApplyData = Object.assign({}, data)
+        this.assetApplyData.applyTime = new Date(data.applyTime)
+        if (data.expectReturnTime !== null) {
+          this.assetApplyData.expectReturnTime = new Date(data.expectReturnTime)
+        }
         let user = {
           id: data.userId,
           displayName: data.displayName
         }
-        this.assetApplyData.userId = data.userId
         this.userOptions = []
         this.userOptions.push(user)
         let orgDept = {
           id: data.userOrgDeptId,
           name: data.userOrgDeptName
         }
-        this.assetApplyData.userOrgDeptId = data.userOrgDeptId
         this.orgDeptOptions = []
         this.orgDeptOptions.push(orgDept)
+      } else {
+        this.assetApplyData = Object.assign({}, assetApplyData)
+        this.assetApplyData.assetId = data.id
+        this.assetApplyData.assetCode = data.assetCode
       }
     },
     getUser (queryName) {
@@ -179,15 +181,4 @@ export default {
 </script>
 
 <style scoped>
-.select {
-  display: inline-block;
-  max-width: 500px;
-  width: 500px;
-}
-
-.input {
-  display: inline-block;
-  max-width: 500px;
-  width: 500px;
-}
 </style>

@@ -31,7 +31,7 @@
             :value="item.value">
           </el-option>
         </el-select>
-        <el-select v-model="queryParam.isReturn" placeholder="是否归还" class="select" clearable>
+        <el-select v-model="queryParam.isReturn" placeholder="使用情况" class="select" clearable>
           <el-option
             v-for="item in isReturnOptions"
             :key="item.value"
@@ -42,13 +42,21 @@
         <el-button @click="fetchData">查询</el-button>
       </el-row>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
-        <el-table-column prop="assetCode" label="资产编码"></el-table-column>
+        <el-table-column prop="assetCode" label="资产编码">
+          <template slot-scope="scope">
+            <span>{{ scope.row.assetCode }}</span>
+            <span v-clipboard:copy="scope.row.assetCode" v-clipboard:success="onCopy" v-clipboard:error="onError"
+                  style="float: right">
+              <i class="el-icon-copy-document"></i>
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="userOrgDeptName" label="所在部门"></el-table-column>
         <el-table-column label="申领用户" width="220">
           <template slot-scope="props">
             <span>{{ props.row | userFilters }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="userOrgDeptName" label="所在部门"></el-table-column>
         <el-table-column label="申领方式">
           <template slot-scope="props">
             <el-tag :type="props.row.applyType === 1?'success':'primary'">
@@ -59,9 +67,9 @@
         <el-table-column prop="applyTime" label="领用/借用日期"></el-table-column>
         <el-table-column prop="expectReturnTime" label="预计归还时间"></el-table-column>
         <el-table-column prop="returnTime" label="归还时间"></el-table-column>
-        <el-table-column label="是否归还">
+        <el-table-column label="使用情况">
           <template slot-scope="props">
-            <span v-text="props.row.isReturn?'是':'否'"></span>
+            <span v-text="props.row.isReturn?'已归还':'使用中'"></span>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
@@ -132,10 +140,10 @@ export default {
       }],
       isReturnOptions: [{
         value: 1,
-        label: '是'
+        label: '已归还'
       }, {
         value: 0,
-        label: '否'
+        label: '使用中'
       }]
     }
   },
@@ -214,7 +222,8 @@ export default {
     handleReturnEdit (row) {
       let data = {
         id: row.id,
-        assetCode: row.assetCode
+        assetCode: row.assetCode,
+        returnTime: row.returnTime
       }
       this.itAssetReturnDialogStatus.isUpdate = true
       this.itAssetReturnDialogStatus.visible = true
@@ -245,6 +254,13 @@ export default {
           this.pagination.total = res.body.totalNum
           this.loading = false
         })
+    },
+    onCopy (e) {
+      // this.queryParam.queryName = e.text
+      this.$message.success('内容已复制到剪切板！')
+    },
+    onError (e) {
+      this.$message.error('抱歉，复制失败！')
     }
   }
 }

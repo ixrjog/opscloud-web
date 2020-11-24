@@ -5,7 +5,7 @@
              label-position="left" v-loading="adding" element-loading-text="资产名称添加中"
              element-loading-spinner="el-icon-loading">
       <el-form-item label="资产类型" prop="assetType" required>
-        <el-select v-model.trim="assetNameData.assetType" placeholder="选择类型" class="select" allow-create filterable
+        <el-select v-model.trim="assetNameData.assetType" placeholder="选择类型" allow-create filterable
                    ref="assetTypeSelect">
           <el-option
             v-for="item in assetTypeOptions"
@@ -16,10 +16,10 @@
         </el-select>
       </el-form-item>
       <el-form-item label="资产名称" prop="assetName">
-        <el-input v-model.trim="assetNameData.assetName" class="input" ref="assetNameInput"></el-input>
+        <el-input v-model.trim="assetNameData.assetName" ref="assetNameInput"></el-input>
       </el-form-item>
       <el-form-item label="备注" prop="remark">
-        <el-input v-model="assetNameData.remark" class="input"></el-input>
+        <el-input v-model="assetNameData.remark"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -83,15 +83,4 @@ export default {
 </script>
 
 <style scoped>
-.select {
-  display: inline-block;
-  max-width: 440px;
-  width: 440px;
-}
-
-.input {
-  display: inline-block;
-  max-width: 440px;
-  width: 440px;
-}
 </style>

@@ -4,7 +4,7 @@
              label-position="left" v-loading="creating" element-loading-text="Topic创建中"
              element-loading-spinner="el-icon-loading">
       <el-form-item label="MQ实例" prop="instance" required>
-        <el-select v-model="topicData.instance" placeholder="请选择实例" class="select" @change="getRegionId"
+        <el-select v-model="topicData.instance" placeholder="请选择实例" @change="getRegionId"
                    value-key="instanceId">
           <el-option
             v-for="item in instanceOptions"
@@ -17,12 +17,10 @@
         </el-select>
       </el-form-item>
       <el-form-item label="Topic" prop="topic" required>
-        <div class="input">
-          <el-input v-model.trim="topicData.topic" :readonly="topicChecked">
-            <el-button slot="append" :icon="topicChecked?'el-icon-success':'el-icon-warning'"
-                       @click="handlerCheck(topicData.topic)" :disabled="topicChecked"></el-button>
-          </el-input>
-        </div>
+        <el-input v-model.trim="topicData.topic" :readonly="topicChecked">
+          <el-button slot="append" :icon="topicChecked?'el-icon-success':'el-icon-warning'"
+                     @click="handlerCheck(topicData.topic)" :disabled="topicChecked"></el-button>
+        </el-input>
         <span class="span-font">
           <p>1. “CID”和“GID”是Group ID的保留字段，Topic命名不能以“CID”和“GID”开头</p>
           <p>2. Topic只能以 “TOPIC_”开头，包含英文、数字和下划线（_）</p>
@@ -30,7 +28,7 @@
         </span>
       </el-form-item>
       <el-form-item label="消息类型" prop="messageType" required>
-        <el-select v-model="topicData.messageType" placeholder="消息类型" class="select" clearable>
+        <el-select v-model="topicData.messageType" placeholder="消息类型" clearable>
           <el-option
             v-for="item in messageTypeOptions"
             :key="item.value"
@@ -40,7 +38,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="备注" prop="remark">
-        <el-input v-model="topicData.remark" class="input"></el-input>
+        <el-input v-model="topicData.remark"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -167,18 +165,6 @@ export default {
 </script>
 
 <style scoped>
-.select {
-  display: inline-block;
-  max-width: 440px;
-  width: 440px;
-}
-
-.input {
-  display: inline-block;
-  max-width: 440px;
-  width: 440px;
-}
-
 .span-font {
   font-size: 6px;
   color: #99a9bf;

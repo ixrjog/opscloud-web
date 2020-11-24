@@ -31,25 +31,20 @@
         </el-tooltip>
       </el-form-item>
       <el-form-item label="总消费堆积" prop="totalDiff" :rules="rules">
-        <el-input type="totalDiff" v-model.number="groupAlarmData.totalDiff" autocomplete="off"
-                  class="input"></el-input>
+        <el-input type="totalDiff" v-model.number="groupAlarmData.totalDiff" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="延迟时间" prop="delayTime" :rules="rules">
-        <div class="input">
-          <el-input v-model.number="groupAlarmData.delayTime">
-            <template slot="append">(秒)</template>
-          </el-input>
-        </div>
+        <el-input v-model.number="groupAlarmData.delayTime">
+          <template slot="append">(秒)</template>
+        </el-input>
       </el-form-item>
       <el-form-item label="告警沉默时间(分钟)" prop="alarmSilentTime">
-        <div class="input">
-          <el-slider :min="1" :max="60" v-model="groupAlarmData.alarmSilentTime" show-input input-size="mini">
-          </el-slider>
-        </div>
+        <el-slider :min="1" :max="60" v-model="groupAlarmData.alarmSilentTime" show-input input-size="mini">
+        </el-slider>
       </el-form-item>
       <el-form-item label="告警接收人" prop="userIdList" :rules="selectRules">
         <el-select v-model="groupAlarmData.userIdList" filterable clearable multiple
-                   remote reserve-keyword placeholder="搜索用户" :remote-method="getUser" class="select">
+                   remote reserve-keyword placeholder="搜索用户" :remote-method="getUser">
           <el-option v-for="item in userOptions" :key="item.id" :label="item.displayName" :value="item.id">
           </el-option>
         </el-select>
@@ -157,15 +152,4 @@ export default {
 </script>
 
 <style scoped>
-.select {
-  display: inline-block;
-  max-width: 320px;
-  width: 320px;
-}
-
-.input {
-  display: inline-block;
-  max-width: 320px;
-  width: 320px;
-}
 </style>
