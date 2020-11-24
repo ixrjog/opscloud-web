@@ -547,6 +547,15 @@ const frameIn = [
           auth: true,
           title: '使用盘点'
         }
+      },
+      {
+        path: '/setting/opscloud/instance',
+        name: 'setting-opscloud-instance',
+        component: () => import('@/pages/setting/opscloud/instance'),
+        meta: {
+          auth: true,
+          title: '实例管理'
+        }
       }
     ]
   }
