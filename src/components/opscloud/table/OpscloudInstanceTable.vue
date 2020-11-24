@@ -5,7 +5,7 @@
     </el-row>
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
       <el-table-column prop="name" label="实例名称"></el-table-column>
-      <el-table-column prop="hostName" label="主机名"></el-table-column>
+      <el-table-column prop="hostname" label="主机名"></el-table-column>
       <el-table-column prop="hostIp" label="注册ip"></el-table-column>
       <el-table-column prop="isActive" label="有效">
         <template slot-scope="props">
