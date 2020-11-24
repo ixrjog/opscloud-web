@@ -79,7 +79,7 @@ import {
 const assetData = {
   id: '',
   assetCompany: '',
-  assetCode: 'XC-',
+  assetCode: '',
   assetNameId: '',
   assetNameIds: [],
   assetStatus: 1,
