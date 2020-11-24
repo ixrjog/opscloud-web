@@ -83,3 +83,11 @@ export function assetCodeCheck (assetCode) {
     method: 'get'
   })
 }
+
+export function updateReturnAsset (data) {
+  return request({
+    url: baseUrl + '/return/update',
+    method: 'put',
+    data
+  })
+}

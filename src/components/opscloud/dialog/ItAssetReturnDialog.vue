@@ -21,7 +21,7 @@
 <script>
 
 // API
-import { returnAsset } from '@api/it/it.asset'
+import { returnAsset, updateReturnAsset } from '@api/it/it.asset'
 
 export default {
   data () {
@@ -43,18 +43,32 @@ export default {
   filters: {},
   methods: {
     initData (data) {
-      this.assetReturnData.assetId = data.id
-      this.assetReturnData.assetCode = data.assetCode
+      this.saving = false
+      if (this.formStatus.isUpdate) {
+        this.assetReturnData = Object.assign({}, data)
+      } else {
+        this.assetReturnData.assetId = data.assetId
+        this.assetReturnData.assetCode = data.assetCode
+      }
     },
     assetReturnAdd () {
-      this.saving = true
-      returnAsset(this.assetReturnData)
-        .then(res => {
-          this.adding = false
-          this.$message.success('保存成功')
-          this.formStatus.visible = false
-          this.$emit('closeDialog')
-        })
+      if (this.formStatus.isUpdate) {
+        updateReturnAsset(this.assetReturnData)
+          .then(res => {
+            this.$message.success('保存成功')
+            this.formStatus.visible = false
+            this.$emit('closeDialog')
+          })
+      } else {
+        this.saving = true
+        returnAsset(this.assetReturnData)
+          .then(res => {
+            this.adding = false
+            this.$message.success('保存成功')
+            this.formStatus.visible = false
+            this.$emit('closeDialog')
+          })
+      }
     }
   }
 }

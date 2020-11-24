@@ -61,6 +61,7 @@
 import { applyAsset } from '@api/it/it.asset'
 import { fuzzyQueryUserPage } from '@api/user/user'
 import { queryFirstLevelDepartmentPage } from '@api/org/org'
+import { updateAssetApply } from '@api/it/it.asset.apply'
 
 const assetApplyData = {
   userId: '',
@@ -104,9 +105,28 @@ export default {
   filters: {},
   methods: {
     initData (data) {
+      this.saving = false
       this.assetApplyData = Object.assign({}, assetApplyData)
       this.assetApplyData.assetId = data.id
       this.assetApplyData.assetCode = data.assetCode
+      if (this.formStatus.isUpdate) {
+        this.assetApplyData.assetId = data.assetId
+        this.assetApplyData.id = data.id
+        let user = {
+          id: data.userId,
+          displayName: data.displayName
+        }
+        this.assetApplyData.userId = data.userId
+        this.userOptions = []
+        this.userOptions.push(user)
+        let orgDept = {
+          id: data.userOrgDeptId,
+          name: data.userOrgDeptName
+        }
+        this.assetApplyData.userOrgDeptId = data.userOrgDeptId
+        this.orgDeptOptions = []
+        this.orgDeptOptions.push(orgDept)
+      }
     },
     getUser (queryName) {
       let requestBody = {
@@ -134,20 +154,23 @@ export default {
     assetApplyAdd () {
       this.$refs.assetApplyDataForm.validate((valid) => {
         if (valid) {
-          if (this.assetApplyData.applyType === 2) {
-            if (this.assetApplyData.expectReturnTime === '') {
-              this.$message.error('请填写预计归还日期')
-              return
-            }
+          if (!this.formStatus.isUpdate) {
+            this.saving = true
+            applyAsset(this.assetApplyData)
+              .then(res => {
+                this.adding = false
+                this.$message.success('保存成功')
+                this.formStatus.visible = false
+                this.$emit('closeDialog')
+              })
+          } else {
+            updateAssetApply(this.assetApplyData)
+              .then(res => {
+                this.$message.success('保存成功')
+                this.formStatus.visible = false
+                this.$emit('closeDialog')
+              })
           }
-          this.saving = true
-          applyAsset(this.assetApplyData)
-            .then(res => {
-              this.adding = false
-              this.$message.success('保存成功')
-              this.formStatus.visible = false
-              this.$emit('closeDialog')
-            })
         }
       })
     }

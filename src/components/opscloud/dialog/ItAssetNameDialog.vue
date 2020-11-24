@@ -70,7 +70,6 @@ export default {
     },
     assetNameAdd () {
       this.adding = true
-      debugger
       addAssetName(this.assetNameData)
         .then(res => {
           this.adding = false

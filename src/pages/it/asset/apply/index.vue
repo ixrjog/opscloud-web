@@ -43,7 +43,7 @@
       </el-row>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column prop="assetCode" label="资产编码"></el-table-column>
-        <el-table-column label="申领用户" width="280">
+        <el-table-column label="申领用户" width="220">
           <template slot-scope="props">
             <span>{{ props.row | userFilters }}</span>
           </template>
@@ -66,8 +66,10 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
-            <el-button type="primary" @click="handlerRowEdit(scope.row)" plain>编辑</el-button>
+            <el-button v-if="!scope.row.isReturn" type="primary" @click="handlerRowEdit(scope.row)" plain>编辑</el-button>
             <el-button v-if="!scope.row.isReturn" type="primary" @click="handleReturn(scope.row)" plain>归还</el-button>
+            <el-button v-if="scope.row.isReturn" type="primary" @click="handleReturnEdit(scope.row)" plain>修改归还日期
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -76,7 +78,8 @@
                      layout="sizes, prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                      :page-size="pagination.pageSize">
       </el-pagination>
-      <!-- namespace编辑对话框 -->
+      <it-asset-apply-dialog ref="itAssetApplyDialog" :formStatus="itAssetApplyDialogStatus"
+                             @closeDialog="fetchData"></it-asset-apply-dialog>
       <it-asset-return-dialog ref="itAssetReturnDialog" :formStatus="itAssetReturnDialogStatus"
                               @closeDialog="fetchData"></it-asset-return-dialog>
     </template>
@@ -85,6 +88,7 @@
 
 <script>
 import ItAssetReturnDialog from '@/components/opscloud/dialog/ItAssetReturnDialog'
+import ItAssetApplyDialog from '@/components/opscloud/dialog/ItAssetApplyDialog'
 
 // API
 import { queryOcItAssetApplyPage } from '@api/it/it.asset.apply'
@@ -97,6 +101,11 @@ export default {
     return {
       title: '资产使用盘点',
       itAssetReturnDialogStatus: {
+        isUpdate: false,
+        visible: false
+      },
+      itAssetApplyDialogStatus: {
+        isUpdate: true,
         visible: false
       },
       tableData: [],
@@ -139,7 +148,8 @@ export default {
     this.fetchData()
   },
   components: {
-    ItAssetReturnDialog
+    ItAssetReturnDialog,
+    ItAssetApplyDialog
   },
   filters: {
     userFilters (user) {
@@ -198,14 +208,24 @@ export default {
       this.fetchData()
     },
     handlerRowEdit (row) {
-      this.itAssetDialogStatus.operationType = false
-      this.$refs.itAssetDialog.initData(row)
+      this.itAssetApplyDialogStatus.visible = true
+      this.$refs.itAssetApplyDialog.initData(row)
+    },
+    handleReturnEdit (row) {
+      let data = {
+        id: row.id,
+        assetCode: row.assetCode
+      }
+      this.itAssetReturnDialogStatus.isUpdate = true
+      this.itAssetReturnDialogStatus.visible = true
+      this.$refs.itAssetReturnDialog.initData(data)
     },
     handleReturn (row) {
       let data = {
-        id: row.assetId,
+        assetId: row.assetId,
         assetCode: row.assetCode
       }
+      this.itAssetReturnDialogStatus.isUpdate = false
       this.itAssetReturnDialogStatus.visible = true
       this.$refs.itAssetReturnDialog.initData(data)
     },

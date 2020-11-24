@@ -39,6 +39,11 @@
         <el-table-column prop="assetType" label="资产分类"></el-table-column>
         <el-table-column prop="useTime" label="领用/借用日期"></el-table-column>
         <el-table-column prop="assetAddTime" label="购置/起租日期"></el-table-column>
+        <el-table-column label="申领用户" width="220">
+          <template slot-scope="props">
+            <span>{{ props.row.user | userFilters }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="remark" label="备注"></el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
@@ -106,9 +111,11 @@ export default {
         updateTitle: '更新入库'
       },
       itAssetApplyDialogStatus: {
+        operationType: true,
         visible: false
       },
       itAssetReturnDialogStatus: {
+        isUpdate: false,
         visible: false
       },
       tableData: [],
@@ -171,6 +178,12 @@ export default {
         return '报废'
       }
       return '暂未配置'
+    },
+    userFilters (user) {
+      if (user === null) {
+        return ''
+      }
+      return user.username + '<' + user.displayName + '>'
     }
   },
   methods: {
@@ -237,8 +250,12 @@ export default {
       this.$refs.itAssetApplyDialog.initData(row)
     },
     handleReturn (row) {
+      let data = {
+        assetId: row.id,
+        assetCode: row.assetCode
+      }
       this.itAssetReturnDialogStatus.visible = true
-      this.$refs.itAssetReturnDialog.initData(row)
+      this.$refs.itAssetReturnDialog.initData(data)
     },
     handlerDisable (row) {
       disableAsset(row.id)
