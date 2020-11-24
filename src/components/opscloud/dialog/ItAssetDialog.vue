@@ -1,6 +1,6 @@
 <template>
   <el-dialog :title="formStatus.operationType ? formStatus.addTitle : formStatus.updateTitle"
-             :visible.sync="formStatus.visible" width="35%">
+             :visible.sync="formStatus.visible" width="35%" v-loading="loading">
     <el-form :model="assetData" ref="assetDataForm" :rules="rules" label-width="120px" class="demo-ruleForm"
              label-position="left" v-loading="adding" element-loading-text="资产保存中"
              element-loading-spinner="el-icon-loading">
@@ -23,7 +23,7 @@
           <el-button-group style="margin-left:5px">
             <el-button type="primary" icon="el-icon-circle-plus-outline" @click="assetNameAdd" size="mini"
                        plain></el-button>
-            <el-button type="primary" icon="el-icon-refresh" @click="getAssetTypeTree" size="mini" plain></el-button>
+            <el-button type="primary" icon="el-icon-refresh" @click="assetTypeTreeRefresh" size="mini" plain></el-button>
           </el-button-group>
         </el-form-item>
       </el-row>
@@ -68,7 +68,13 @@
 import ItAssetNameDialog from '@/components/opscloud/dialog/ItAssetNameDialog'
 
 // API
-import { assetCodeCheck, queryAssetTypeTree, queryOcItAssetCompanyAll, saveAsset } from '@api/it/it.asset'
+import {
+  assetCodeCheck,
+  queryAssetTypeTree,
+  queryOcItAssetCompanyAll,
+  refreshAssetTypeTree,
+  saveAsset
+} from '@api/it/it.asset'
 
 const assetData = {
   id: '',
@@ -109,7 +115,8 @@ export default {
         assetCompany: [
           { required: true, message: '请选择所属/承租公司', trigger: 'change' }
         ]
-      }
+      },
+      loading: false
     }
   },
   name: 'ItAssetDialog',
@@ -125,6 +132,8 @@ export default {
   },
   methods: {
     initData (data) {
+      this.adding = false
+      this.loading = false
       if (data.id === 0) {
         this.assetData = Object.assign({}, assetData)
       } else {
@@ -146,6 +155,16 @@ export default {
       queryAssetTypeTree()
         .then(res => {
           this.assetTypeOptions = res.body
+        })
+    },
+    assetTypeTreeRefresh () {
+      this.$message.info('数据刷新中')
+      this.loading = true
+      refreshAssetTypeTree()
+        .then(res => {
+          this.assetTypeOptions = res.body
+          this.$message.success('数据刷新完成')
+          this.loading = false
         })
     },
     handlerCheck (assetCode) {

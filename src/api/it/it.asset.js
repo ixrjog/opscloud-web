@@ -17,6 +17,13 @@ export function queryAssetTypeTree () {
   })
 }
 
+export function refreshAssetTypeTree () {
+  return request({
+    url: baseUrl + '/type/tree/refresh',
+    method: 'get'
+  })
+}
+
 export function queryOcItAssetTypeList () {
   return request({
     url: baseUrl + '/type/query',

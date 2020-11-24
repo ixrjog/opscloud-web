@@ -2,7 +2,7 @@
   <d2-container>
     <template>
       <div>
-        <h1>{{title}}</h1>
+        <h1>{{ title }}</h1>
       </div>
       <el-row :gutter="24">
         <el-col :span="8">
@@ -18,26 +18,26 @@
 
 <script>
 
-  // Component
-  import helpDeskReport from '@/components/opscloud/dashboard/HelpDeskReport'
-  import helpDeskTypeReport from '@/components/opscloud/dashboard/HelpDeskTypeReport'
+// Component
+import helpDeskReport from '@/components/opscloud/dashboard/HelpDeskReport'
+import helpDeskTypeReport from '@/components/opscloud/dashboard/HelpDeskTypeReport'
 
-  export default {
-    name: 'HelpDeskReport',
-    data() {
-      return {
-        title: 'HelpDesk表报'
-      }
-    },
-    computed: {},
-    mounted() {
-    },
-    components: {
-      helpDeskReport,
-      helpDeskTypeReport
-    },
-    methods: {}
-  }
+export default {
+  name: 'HelpDeskReport',
+  data () {
+    return {
+      title: 'HelpDesk表报'
+    }
+  },
+  computed: {},
+  mounted () {
+  },
+  components: {
+    helpDeskReport,
+    helpDeskTypeReport
+  },
+  methods: {}
+}
 </script>
 
 <style>
