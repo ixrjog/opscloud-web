@@ -84,6 +84,13 @@ export function queryOcItAssetCompanyAll () {
   })
 }
 
+export function queryOcItAssetNameAll () {
+  return request({
+    url: baseUrl + '/name/all/query',
+    method: 'get'
+  })
+}
+
 export function assetCodeCheck (assetCode) {
   return request({
     url: baseUrl + '/code/check?assetCode=' + assetCode,
