@@ -87,7 +87,7 @@
           <template slot-scope="props">
             <div class="tag-group">
               <span v-for="item in props.row.templates" :key="item.name">
-                  <el-tag style="margin-left: 5px" :type="item.isActive ? 'success': 'info'">{{ item.name }}</el-tag>
+                <el-tag  effect="dark" style="margin-left: 5px" :type="item.isActive ? 'success': 'info'"><b>{{ item.name }}</b></el-tag>
               </span>
             </div>
           </template>
