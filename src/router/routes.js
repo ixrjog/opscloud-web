@@ -46,6 +46,15 @@ const frameIn = [
         component: _import('system/function/redirect')
       },
       {
+        path: '/monitor/host',
+        name: 'monitor-host',
+        component: () => import('@/pages/monitor/host'),
+        meta: {
+          auth: true,
+          title: '主机监控'
+        }
+      },
+      {
         path: '/dashboard/helpdesk',
         name: 'dashboard-helpdesk',
         component: () => import('@/pages/dashboard/helpdesk'),
