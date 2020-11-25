@@ -57,7 +57,9 @@
           </el-option>
         </el-select>
         <el-button @click="fetchData" class="button">查询</el-button>
-        <el-button @click="handlerSyncHostMonitorStatus" class="button" :disabled="monitorStatusSynchronizing" :loading="monitorStatusSynchronizing">同步监控状态</el-button>
+        <el-button @click="handlerSyncHostMonitorStatus" class="button" :disabled="monitorStatusSynchronizing"
+                   :loading="monitorStatusSynchronizing">同步监控状态
+        </el-button>
       </el-row>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column type="expand">
@@ -87,7 +89,7 @@
           <template slot-scope="props">
             <div class="tag-group">
               <span v-for="item in props.row.templates" :key="item.name">
-                <el-tag  effect="dark" style="margin-left: 5px" :type="item.isActive ? 'success': 'info'"><b>{{ item.name }}</b></el-tag>
+                <el-tag effect="dark" style="margin-left: 5px" :type="item.isActive ? 'success': 'info'"><b>{{ item.name }}</b></el-tag>
               </span>
             </div>
           </template>
@@ -109,7 +111,7 @@
             <div class="tag-group">
               <span v-for="item in props.row.tags" :key="item.id">
                 <el-tooltip class="item" effect="light" :content="item.comment" placement="top-start">
-                  <el-tag  :style="{ color: item.color, marginLeft: '5px' }">{{ item.tagKey }}</el-tag>
+                  <el-tag :style="{ color: item.color, marginLeft: '5px' }">{{ item.tagKey }}</el-tag>
                 </el-tooltip>
               </span>
             </div>
@@ -117,16 +119,12 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="180">
           <template slot-scope="scope">
-            <el-dropdown split-button type="primary" size="mini" @click="handlerRowEdit(scope.row)">编辑
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item icon="el-icon-price-tag">
-                  <el-button type="text" @click="handlerRowTagEdit(scope.row)" style="margin-left: 5px">标签</el-button>
-                </el-dropdown-item>
-                <el-dropdown-item icon="el-icon-set-up">
-                  <el-button type="text" @click="handlerXTerm(scope.row)" style="margin-left: 5px">登录</el-button>
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+            <el-button type="success" plain size="mini" @click="handlerCreateMonitorHost(scope.row)"
+                       style="margin-left: 5px" :loading="scope.row.isCreating"
+                       v-if="scope.row.monitorStatus === -1">创建
+            </el-button>
+            <el-button type="primary" plain size="mini"  style="margin-left: 5px; float: right"  @click="handlerXTerm(scope.row)">登录
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -157,9 +155,9 @@
   import { getAvailableTagType } from '@/filters/monitor.js'
   // API
   import { queryEnvPage } from '@api/env/env.js'
-  import { queryBusinessTag, queryTagPage } from '@api/tag/tag.js'
+  import { queryTagPage } from '@api/tag/tag.js'
   import { queryServerGroupPage } from '@api/server/server.group.js'
-  import { queryMonitorHostPage, syncMonitorHostStatus } from '@api/monitor/monitor.js'
+  import { queryMonitorHostPage, syncMonitorHostStatus, createMonitorHost } from '@api/monitor/monitor.js'
 
   const monitorStatusOptions = [{
     value: 0,
@@ -297,59 +295,28 @@
         this.formXtermStatus.visible = true
         this.$refs.xtermDialog.initData(row)
       },
-      handlerRowTagEdit (row) {
-        this.formTagTransferStatus.visible = true
-        let tagTransfer = {
-          businessId: row.id,
-          businessType: this.businessType,
-          tagIds: [],
-          tagOptions: []
-        }
-        queryTagPage('', 1, 100)
+      handlerSyncHostMonitorStatus () {
+        this.monitorStatusSynchronizing = true
+        syncMonitorHostStatus()
           .then(res => {
-            tagTransfer.tagOptions = res.body.data
+            this.$message.success('后台同步数据中')
           })
-        queryBusinessTag(this.businessType, tagTransfer.businessId, '')
+      },
+      handlerCreateMonitorHost (row) {
+        row.isCreating = true
+        let requestBody = {
+          serverId: row.id
+        }
+        createMonitorHost(requestBody)
           .then(res => {
-            for (let index in res.body) {
-              tagTransfer.tagIds.push(res.body[index].id)
+            row.isCreating = false
+            if (res.success) {
+              this.$message.success('添加监控主机成功')
+              this.fetchData()
+            } else {
+              this.$message.error(res.msg)
             }
           })
-        this.formTagTransferStatus.visible = true
-        this.$refs.tagTransferDialog.initData(tagTransfer)
-      },
-      handlerRowEdit (row) {
-        // server
-        let serverData = Object.assign({}, row)
-        let serverGroupOptions = []
-        serverGroupOptions.push(serverData.serverGroup)
-        // form
-        this.formServerStatus.visible = true
-        this.formServerStatus.operationType = false
-        this.$refs.serverDialog.initData(serverData, serverGroupOptions)
-      },
-      handlerAdd () {
-        this.formServerStatus.operationType = true
-        this.formServerStatus.visible = true
-        let serverData = {
-          serverGroup: '',
-          id: '',
-          name: '',
-          serverGroupId: '',
-          loginType: 0,
-          loginUser: '',
-          envType: 4,
-          publicIp: '',
-          privateIp: '',
-          serverType: 0,
-          area: '',
-          serialNumber: 0,
-          monitorStatus: -1,
-          comment: '',
-          // options
-          serverGroupOptions: []
-        }
-        this.$refs.serverDialog.initData(serverData)
       },
       handleDialogCancel (done) {
         this.$message({
@@ -361,17 +328,6 @@
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage
         this.fetchData()
-      },
-      // syncMonitorHostStatus
-      handlerSyncHostMonitorStatus () {
-        this.monitorStatusSynchronizing = true
-        syncMonitorHostStatus()
-          .then(res => {
-            this.$message({
-              message: '后台同步数据中',
-              type: 'success'
-            })
-          })
       },
       fetchData () {
         this.loading = true
