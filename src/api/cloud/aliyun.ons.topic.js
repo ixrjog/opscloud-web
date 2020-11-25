@@ -41,3 +41,27 @@ export function onsTopicCheck (data) {
     data
   })
 }
+
+export function onsMessagePageQuery (data) {
+  return request({
+    url: baseUrl + '/msg/page/query',
+    method: 'post',
+    data
+  })
+}
+
+export function queryOnsMessage (data) {
+  return request({
+    url: baseUrl + '/msg/query',
+    method: 'post',
+    data
+  })
+}
+
+export function queryOnsTrace (data) {
+  return request({
+    url: baseUrl + '/msg/trace/query',
+    method: 'post',
+    data
+  })
+}

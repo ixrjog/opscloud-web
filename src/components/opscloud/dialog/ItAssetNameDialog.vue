@@ -1,6 +1,5 @@
 <template>
-  <el-dialog :title="title" :visible.sync="formStatus.visible" width="30%"
-             append-to-body>
+  <el-dialog :title="title" :visible.sync="formStatus.visible" width="30%" append-to-body>
     <el-form :model="assetNameData" label-width="80px"
              label-position="left" v-loading="adding" element-loading-text="资产名称添加中"
              element-loading-spinner="el-icon-loading">
