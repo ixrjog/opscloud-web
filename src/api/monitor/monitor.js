@@ -16,3 +16,11 @@ export function syncMonitorHostStatus () {
     method: 'get'
   })
 }
+
+export function createMonitorHost (data) {
+  return request({
+    url: baseUrl + '/host/create',
+    method: 'post',
+    data
+  })
+}
