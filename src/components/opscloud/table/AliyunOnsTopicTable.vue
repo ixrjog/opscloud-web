@@ -46,10 +46,16 @@
       <el-table-column prop="remark" label="备注"></el-table-column>
       <el-table-column fixed="right" label="操作" width="180">
         <template slot-scope="scope">
-          <el-tooltip class="item" effect="dark" content="订阅关系" placement="left">
-            <el-button type="primary" plain size="mini" @click="getTopicSubDetail(scope.row)"
-                       icon="el-icon-share"></el-button>
-          </el-tooltip>
+          <el-button-group>
+            <el-tooltip class="item" effect="dark" content="订阅关系" placement="left">
+              <el-button type="primary" plain size="mini" @click="getTopicSubDetail(scope.row)"
+                         icon="el-icon-share"></el-button>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="消息查询" placement="right">
+              <el-button type="primary" plain size="mini" @click="getTopicMsg(scope.row)"
+                         icon="el-icon-message"></el-button>
+            </el-tooltip>
+          </el-button-group>
         </template>
       </el-table-column>
     </el-table>
@@ -59,20 +65,31 @@
                    :page-size="pagination.pageSize">
     </el-pagination>
     <aliyun-ons-topic-sub-drawer ref="aliyunONSTopicSubDrawer"
-                             :formStatus="aliyunONSTopicSubDrawerStatus"></aliyun-ons-topic-sub-drawer>
+                                 :formStatus="aliyunONSTopicSubDrawerStatus"></aliyun-ons-topic-sub-drawer>
     <aliyun-ons-topic-dialog ref="aliyunONSTopicDialog"
-                          :formStatus="aliyunONSTopicDialogStatus"></aliyun-ons-topic-dialog>
+                             :formStatus="aliyunONSTopicDialogStatus"></aliyun-ons-topic-dialog>
+    <aliyun-ons-topic-msg-dialog ref="aliyunOnsTopicMsgDialog"
+                                 :formStatus="aliyunOnsTopicMsgDialogStatus"></aliyun-ons-topic-msg-dialog>
   </div>
 </template>
 
 <script>
 import AliyunOnsTopicSubDrawer from '@/components/opscloud/drawer/AliyunOnsTopicSubDrawer'
 import AliyunOnsTopicDialog from '@/components/opscloud/dialog/AliyunOnsTopicDialog'
+import AliyunOnsTopicMsgDialog from '@/components/opscloud/dialog/AliyunOnsTopicMsgDialog'
 
 // API
 import { queryONSInstanceAll } from '@api/cloud/aliyun.ons.instance.js'
 import { syncONSTopic, queryOnsTopicSubDetail, queryONSTopicPage } from '@api/cloud/aliyun.ons.topic.js'
 import { mapActions, mapState } from 'vuex'
+import { onsMessagePageQuery } from '@api/cloud/aliyun.ons.topic'
+
+const topicMsgData = {
+  msgList: '',
+  regionId: '',
+  instanceId: '',
+  topic: ''
+}
 
 export default {
   data () {
@@ -82,6 +99,9 @@ export default {
         visible: false
       },
       aliyunONSTopicDialogStatus: {
+        visible: false
+      },
+      aliyunOnsTopicMsgDialogStatus: {
         visible: false
       },
       tableData: [],
@@ -118,7 +138,8 @@ export default {
         value: 5,
         label: '定时/延时消息'
       }],
-      topicSubDetail: {}
+      topicSubDetail: {},
+      topicMsgData: topicMsgData
     }
   },
   computed: {
@@ -132,7 +153,8 @@ export default {
   },
   components: {
     AliyunOnsTopicSubDrawer,
-    AliyunOnsTopicDialog
+    AliyunOnsTopicDialog,
+    AliyunOnsTopicMsgDialog
   },
   filters: {
     instanceFilters (instance) {
@@ -180,6 +202,25 @@ export default {
     },
     getRegionId (item) {
       this.regionId = item.regionId
+    },
+    getTopicMsg (row) {
+      this.topicMsgData = Object.assign({}, topicMsgData)
+      let requestBody = {
+        'regionId': this.regionId,
+        'instanceId': row.instanceId,
+        'topic': row.topic
+      }
+      onsMessagePageQuery(requestBody)
+        .then(res => {
+          this.topicMsgData = {
+            'msgList': res.body,
+            'regionId': this.regionId,
+            'instanceId': row.instanceId,
+            'topic': row.topic
+          }
+          this.$refs.aliyunOnsTopicMsgDialog.initData(this.topicMsgData)
+          this.aliyunOnsTopicMsgDialogStatus.visible = true
+        })
     },
     getTopicSubDetail (row) {
       this.aliyunONSTopicSubDrawerStatus.visible = true
