@@ -2,10 +2,10 @@
   <el-dialog :title="title" :visible.sync="formStatus.visible" width="70%" v-model="topicMsgTraceData" append-to-body>
     <h3>基础信息</h3>
     <el-row>
-      <el-col :span="4">
+      <el-col :span="4" :offset="1">
         <span class="span-font-label">Topic</span>
       </el-col>
-      <el-col :span="8">
+      <el-col :span="7">
         <span class="span-font">{{ topicMsgTraceData.topic }}</span>
       </el-col>
       <el-col :span="4">
@@ -15,11 +15,11 @@
         <span class="span-font">{{ topicMsgTraceData.tag }}</span>
       </el-col>
     </el-row>
-    <el-row>
-      <el-col :span="4">
+    <el-row style="margin-top: 10px">
+      <el-col :span="4" :offset="1">
         <span class="span-font-label">Message ID</span>
       </el-col>
-      <el-col :span="8">
+      <el-col :span="7">
         <span class="span-font">{{ topicMsgTraceData.msgId }}</span>
       </el-col>
       <el-col :span="4">
@@ -29,12 +29,13 @@
         <span class="span-font">{{ topicMsgTraceData.msgKey }}</span>
       </el-col>
     </el-row>
+    <el-divider></el-divider>
     <h3>生产者</h3>
     <el-row>
-      <el-col :span="4">
+      <el-col :span="4" :offset="1">
         <span class="span-font-label">生产者</span>
       </el-col>
-      <el-col :span="8">
+      <el-col :span="7">
         <span class="span-font">{{ topicMsgTraceData | bornFilters }}</span>
       </el-col>
       <el-col :span="4">
@@ -44,11 +45,11 @@
         <span class="span-font">{{ topicMsgTraceData.pubTime }}</span>
       </el-col>
     </el-row>
-    <el-row>
-      <el-col :span="4">
+    <el-row style="margin-top: 10px">
+      <el-col :span="4" :offset="1">
         <span class="span-font-label">发送耗时</span>
       </el-col>
-      <el-col :span="8">
+      <el-col :span="7">
         <span class="span-font">{{ topicMsgTraceData.costTime }} 毫秒</span>
       </el-col>
       <el-col :span="4">
@@ -58,6 +59,7 @@
         <el-tag :type="getStatusColor(topicMsgTraceData.status)">{{ topicMsgTraceData.status | statusFilters }}</el-tag>
       </el-col>
     </el-row>
+    <el-divider></el-divider>
     <h3>消费者</h3>
     <el-table :data="topicMsgTraceData.subList" stripe style="width: 100%">
       <el-table-column type="expand">
@@ -65,9 +67,8 @@
           <el-table :data="props.row.clientList" style="width: 100%" v-if="props.row.clientList !== null">
             <el-table-column prop="date" label="状态">
               <template slot-scope="scope">
-                <el-tag :type="getConsumeStatusColor(scope.row.status)">{{
-                    scope.row.status |consumeStatusFilters
-                  }}
+                <el-tag :type="getConsumeStatusColor(scope.row.status)">
+                  {{ scope.row.status |consumeStatusFilters }}
                 </el-tag>
               </template>
             </el-table-column>
@@ -84,8 +85,17 @@
       </el-table-column>
       <el-table-column type="index" label="No"></el-table-column>
       <el-table-column prop="subGroupName" label="Group ID"></el-table-column>
-      <el-table-column prop="successCount" label="成功"></el-table-column>
-      <el-table-column prop="failCount" label="失败"></el-table-column>
+      <el-table-column label="成功">
+        <template slot-scope="scope">
+          <span style="color: #67C23A;font-weight: bolder">{{ scope.row.successCount }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="失败">
+        <template slot-scope="scope">
+          <span v-if="scope.row.failCount === 0" style="font-weight: bolder">{{ scope.row.failCount }}</span>
+          <span style="color: #F56C6C;font-weight: bolder" v-else>{{ scope.row.failCount }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="count" label="共投递次数"></el-table-column>
     </el-table>
   </el-dialog>
