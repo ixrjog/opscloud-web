@@ -12,7 +12,7 @@
       <el-table :data="tableData" style="width: 100%">
         <el-table-column prop="tagKey" label="名称">
           <template slot-scope="scope">
-            <el-tag disable-transitions :style="{ color: scope.row.color }">{{scope.row.tagKey}}</el-tag>
+            <el-tag disable-transitions :style="{ color: scope.row.color }">{{ scope.row.tagKey }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="comment" label="描述"></el-table-column>
@@ -34,125 +34,125 @@
 
 <script>
 
-  import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
-  import TagDialog from '@/components/opscloud/dialog/TagDialog'
-  // API
-  import { queryTagPage, deleteTagById } from '@api/tag/tag.js'
+import TagDialog from '@/components/opscloud/dialog/TagDialog'
+// API
+import { queryTagPage, deleteTagById } from '@api/tag/tag.js'
 
-  export default {
-    data () {
-      return {
-        tag: {},
-        formTagStatus: {
-          visible: false,
-          labelWidth: '100px',
-          addTitle: '新增标签配置',
-          updateTitle: '更新标签配置',
-          operationType: true
-        },
-        tableData: [],
-        options: {
-          stripe: true
-        },
-        loading: false,
-        pagination: {
-          currentPage: 1,
-          pageSize: 10,
-          total: 0
-        },
-        queryParam: {
-          tagKey: ''
-        }
-      }
-    },
-    mounted () {
-      this.initPageSize()
-      this.fetchData()
-    },
-    computed: {
-      ...mapState('d2admin/user', [
-        'info'
-      ])
-    },
-    components: {
-      TagDialog
-    },
-    methods: {
-      ...mapActions({
-        setPageSize: 'd2admin/user/set'
-      }),
-      handleSizeChange (size) {
-        this.pagination.pageSize = size
-        this.info.pageSize = size
-        this.setPageSize(this.info)
-        this.fetchData()
+export default {
+  data () {
+    return {
+      tag: {},
+      formTagStatus: {
+        visible: false,
+        labelWidth: '100px',
+        addTitle: '新增标签配置',
+        updateTitle: '更新标签配置',
+        operationType: true
       },
-      initPageSize () {
-        if (typeof (this.info.pageSize) !== 'undefined') {
-          this.pagination.pageSize = this.info.pageSize
-        }
+      tableData: [],
+      options: {
+        stripe: true
       },
-      delItem (row) {
-        this.$confirm('此操作将删除当前配置?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          deleteTagById(row.id).then(res => {
-            this.fetchData()
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          })
-        })
+      loading: false,
+      pagination: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
       },
-      addItem () {
-        this.formTagStatus.operationType = true
-        this.formTagStatus.visible = true
-        this.tag = {
-          id: '',
-          tagKey: '',
-          color: '',
-          comment: ''
-        }
-      },
-      updateItem (row) {
-        this.tag = Object.assign({}, row)
-        this.formTagStatus.operationType = false
-        this.formTagStatus.visible = true
-      },
-      paginationCurrentChange (currentPage) {
-        this.pagination.currentPage = currentPage
-        this.fetchData()
-      },
-      fetchData () {
-        this.loading = true
-        queryTagPage(this.queryParam.tagKey, this.pagination.currentPage, this.pagination.pageSize)
-          .then(res => {
-            this.tableData = res.body.data
-            this.pagination.total = res.body.totalNum
-            this.loading = false
-          })
+      queryParam: {
+        tagKey: ''
       }
     }
+  },
+  mounted () {
+    this.initPageSize()
+    this.fetchData()
+  },
+  computed: {
+    ...mapState('d2admin/user', [
+      'info'
+    ])
+  },
+  components: {
+    TagDialog
+  },
+  methods: {
+    ...mapActions({
+      setPageSize: 'd2admin/user/set'
+    }),
+    handleSizeChange (size) {
+      this.pagination.pageSize = size
+      this.info.pageSize = size
+      this.setPageSize(this.info)
+      this.fetchData()
+    },
+    initPageSize () {
+      if (typeof (this.info.pageSize) !== 'undefined') {
+        this.pagination.pageSize = this.info.pageSize
+      }
+    },
+    delItem (row) {
+      this.$confirm('此操作将删除当前配置?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteTagById(row.id).then(res => {
+          this.fetchData()
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    addItem () {
+      this.formTagStatus.operationType = true
+      this.formTagStatus.visible = true
+      this.tag = {
+        id: '',
+        tagKey: '',
+        color: '',
+        comment: ''
+      }
+    },
+    updateItem (row) {
+      this.tag = Object.assign({}, row)
+      this.formTagStatus.operationType = false
+      this.formTagStatus.visible = true
+    },
+    paginationCurrentChange (currentPage) {
+      this.pagination.currentPage = currentPage
+      this.fetchData()
+    },
+    fetchData () {
+      this.loading = true
+      queryTagPage(this.queryParam.tagKey, this.pagination.currentPage, this.pagination.pageSize)
+        .then(res => {
+          this.tableData = res.body.data
+          this.pagination.total = res.body.totalNum
+          this.loading = false
+        })
+    }
   }
+}
 </script>
 
 <style scoped>
-  .input-bar {
-    display: inline-block;
-    max-width: 200px;
-    margin-left: 10px;
-  }
+.input-bar {
+  display: inline-block;
+  max-width: 200px;
+  margin-left: 10px;
+}
 
-  .button {
-    margin-left: 5px;
-  }
+.button {
+  margin-left: 5px;
+}
 </style>

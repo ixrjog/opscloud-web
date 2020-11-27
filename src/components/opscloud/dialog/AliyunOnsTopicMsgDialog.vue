@@ -24,8 +24,8 @@
             <span>{{ scope.row.msgId }}</span>
             <span v-clipboard:copy="scope.row.msgId" v-clipboard:success="onCopy"
                   v-clipboard:error="onError" style="float: right">
-                    <i class="el-icon-copy-document"></i>
-                  </span>
+              <i class="el-icon-copy-document"></i>
+            </span>
           </el-row>
           <el-row>
             <span>{{ scope.row.bornHost }}</span>

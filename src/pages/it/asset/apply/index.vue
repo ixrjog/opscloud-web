@@ -83,8 +83,8 @@
       </el-table>
       <el-pagination background @current-change="paginationCurrentChange"
                      :page-sizes="[10, 15, 20, 25, 30]" @size-change="handleSizeChange"
-                     layout="sizes, prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
-                     :page-size="pagination.pageSize">
+                     layout="total, sizes, prev, pager, next, jumper" :total="pagination.total"
+                     :current-page="pagination.currentPage" :page-size="pagination.pageSize">
       </el-pagination>
       <it-asset-apply-dialog ref="itAssetApplyDialog" :formStatus="itAssetApplyDialogStatus"
                              @closeDialog="fetchData"></it-asset-apply-dialog>
