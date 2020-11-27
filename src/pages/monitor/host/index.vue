@@ -89,7 +89,16 @@
           <template slot-scope="props">
             <div class="tag-group">
               <span v-for="item in props.row.templates" :key="item.name">
-                <el-tag effect="dark" style="margin-left: 5px" :type="item.isActive ? 'success': 'info'"><b>{{ item.name }}</b></el-tag>
+                <el-tag effect="dark" style="margin-left: 5px" :type="item.isActive ? 'success': 'info'">{{ item.name }}</el-tag>
+              </span>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="宏" width="200">
+          <template slot-scope="props">
+            <div class="tag-group">
+              <span v-for="item in props.row.macros" :key="item.macro">
+                <el-tag effect="dark" style="margin-left: 5px" :type="item.isActive ? 'success': 'info'">{{ item.macro }}&#160;:&#160;{{ item.value }}</el-tag>
               </span>
             </div>
           </template>
@@ -122,6 +131,10 @@
             <el-button type="success" plain size="mini" @click="handlerCreateMonitorHost(scope.row)"
                        style="margin-left: 5px" :loading="scope.row.isCreating"
                        v-if="scope.row.monitorStatus === -1">创建
+            </el-button>
+            <el-button type="primary" plain size="mini" @click="handlerPushMonitorHost(scope.row)"
+                       style="margin-left: 5px" :loading="scope.row.isPushing"
+                       v-if="scope.row.monitorStatus !== -1">推送
             </el-button>
             <el-button type="primary" plain size="mini"  style="margin-left: 5px; float: right"  @click="handlerXTerm(scope.row)">登录
             </el-button>
@@ -157,7 +170,7 @@
   import { queryEnvPage } from '@api/env/env.js'
   import { queryTagPage } from '@api/tag/tag.js'
   import { queryServerGroupPage } from '@api/server/server.group.js'
-  import { queryMonitorHostPage, syncMonitorHostStatus, createMonitorHost } from '@api/monitor/monitor.js'
+  import { queryMonitorHostPage, syncMonitorHostStatus, createMonitorHost, pushMonitorHost } from '@api/monitor/monitor.js'
 
   const monitorStatusOptions = [{
     value: 0,
@@ -312,6 +325,22 @@
             row.isCreating = false
             if (res.success) {
               this.$message.success('添加监控主机成功')
+              this.fetchData()
+            } else {
+              this.$message.error(res.msg)
+            }
+          })
+      },
+      handlerPushMonitorHost (row) {
+        row.isPushing = true
+        let requestBody = {
+          serverId: row.id
+        }
+        pushMonitorHost(requestBody)
+          .then(res => {
+            row.isPushing = false
+            if (res.success) {
+              this.$message.success('推送配置到监控主机成功')
               this.fetchData()
             } else {
               this.$message.error(res.msg)

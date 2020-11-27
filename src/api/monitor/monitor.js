@@ -24,3 +24,11 @@ export function createMonitorHost (data) {
     data
   })
 }
+
+export function pushMonitorHost (data) {
+  return request({
+    url: baseUrl + '/host/push',
+    method: 'put',
+    data
+  })
+}
