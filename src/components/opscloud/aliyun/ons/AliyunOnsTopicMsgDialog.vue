@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import AliyunOnsTopicMsgTraceDialog from '@/components/opscloud/dialog/AliyunOnsTopicMsgTraceDialog'
+import AliyunOnsTopicMsgTraceDialog from '@/components/opscloud/aliyun/ons/AliyunOnsTopicMsgTraceDialog'
 // API
 import { queryOnsMessage, queryOnsTrace } from '@api/cloud/aliyun.ons.topic'
 

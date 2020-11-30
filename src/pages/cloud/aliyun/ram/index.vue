@@ -14,8 +14,8 @@
 
 <script>
 
-import AliyunRAMUserTable from '@/components/opscloud/table/AliyunRAMUserTable.vue'
-import AliyunRAMPolicyTable from '@/components/opscloud/table/AliyunRAMPolicyTable.vue'
+import AliyunRAMUserTable from '@/components/opscloud/aliyun/ram/AliyunRAMUserTable.vue'
+import AliyunRAMPolicyTable from '@/components/opscloud/aliyun/ram/AliyunRAMPolicyTable.vue'
 
 export default {
   data () {

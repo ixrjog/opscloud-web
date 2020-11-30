@@ -22,8 +22,8 @@
 
 <script>
 
-import AliyunLogTable from '@/components/opscloud/table/AliyunLogTable.vue'
-import AliyunLogMemberTable from '@/components/opscloud/table/AliyunLogMemberTable.vue'
+import AliyunLogTable from '@/components/opscloud/aliyun/log/AliyunLogTable.vue'
+import AliyunLogMemberTable from '@/components/opscloud/aliyun/log/AliyunLogMemberTable.vue'
 
 export default {
   data () {

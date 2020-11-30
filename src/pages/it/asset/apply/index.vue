@@ -95,8 +95,8 @@
 </template>
 
 <script>
-import ItAssetReturnDialog from '@/components/opscloud/dialog/ItAssetReturnDialog'
-import ItAssetApplyDialog from '@/components/opscloud/dialog/ItAssetApplyDialog'
+import ItAssetReturnDialog from '@/components/opscloud/it/ItAssetReturnDialog'
+import ItAssetApplyDialog from '@/components/opscloud/it/ItAssetApplyDialog'
 
 // API
 import { queryOcItAssetApplyPage } from '@api/it/it.asset.apply'
