@@ -8,6 +8,14 @@ export function queryCloudServerPage (cloudServerType, serverName, queryIp, serv
   })
 }
 
+export function queryCloudServerChargePage (data) {
+  return request({
+    url: '/cloud/server/charge/page/query',
+    method: 'post',
+    data
+  })
+}
+
 export function syncCloudServerByKey (cloudServerKey) {
   return request({
     url: '/cloud/server/sync?key=' + cloudServerKey,

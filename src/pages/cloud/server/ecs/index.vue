@@ -2,17 +2,21 @@
   <d2-container>
     <h1>{{title}}</h1>
     <el-tabs v-model="activeName">
-      <el-tab-pane label="实例" name="server">
-        <CloudServerTable :formStatus="formCloudServerStatus" ref="cloudServerTable"></CloudServerTable>
+      <el-tab-pane label="实例管理" name="server">
+        <cloud-server-table :formStatus="formCloudServerStatus" ref="cloudServerTable"></cloud-server-table>
       </el-tab-pane>
-      <el-tab-pane label="镜像" name="image">
-        <CloudImageTable :formStatus="formCloudImageStatus" ref="cloudImageTable"></CloudImageTable>
+      <el-tab-pane label="付费管理" name="serverCharge">
+        <cloud-server-charge-table :formStatus="formCloudServerChargeStatus" ref="cloudServerChargeTable"></cloud-server-charge-table>
       </el-tab-pane>
-      <el-tab-pane label="VPC" name="vpc">
-        <CloudVPCTable :formStatus="formCloudVPCStatus" ref="cloudVPCTable"></CloudVPCTable>
+      <el-tab-pane label="镜像管理" name="image">
+        <cloud-image-table :formStatus="formCloudImageStatus" ref="cloudImageTable"></cloud-image-table>
+      </el-tab-pane>
+      <el-tab-pane label="VPC管理" name="vpc">
+        <cloud-vpc-table :formStatus="formCloudVPCStatus" ref="cloudVPCTable"></cloud-vpc-table>
       </el-tab-pane>
       <el-tab-pane label="实例模版" name="instanceTemplate">
-        <CloudInstanceTemplateTable :formStatus="formCloudInstanceTemplateStatus" ref="cloudInstanceTemplateTable"></CloudInstanceTemplateTable>
+        <cloud-instance-template-table :formStatus="formCloudInstanceTemplateStatus"
+                                       ref="cloudInstanceTemplateTable"></cloud-instance-template-table>
       </el-tab-pane>
     </el-tabs>
   </d2-container>
@@ -20,10 +24,11 @@
 
 <script>
 
-  import CloudServerTable from '@/components/opscloud/table/CloudServerTable.vue'
-  import CloudImageTable from '@/components/opscloud/table/CloudImageTable.vue'
-  import CloudVPCTable from '@/components/opscloud/table/CloudVPCTable.vue'
-  import CloudInstanceTemplateTable from '@/components/opscloud/table/CloudInstanceTemplateTable.vue'
+  import CloudServerTable from '@/components/opscloud/cloud/server/CloudServerTable.vue'
+  import CloudImageTable from '@/components/opscloud/cloud/server/CloudImageTable.vue'
+  import CloudVpcTable from '@/components/opscloud/cloud/server/CloudVPCTable.vue'
+  import CloudInstanceTemplateTable from '@/components/opscloud/cloud/server/CloudInstanceTemplateTable.vue'
+  import CloudServerChargeTable from '@/components/opscloud/cloud/server/CloudServerChargeTable.vue'
 
   export default {
     data () {
@@ -34,6 +39,10 @@
           serverType: 2,
           showCpuColumn: true,
           showMemoryColumn: true
+        },
+        formCloudServerChargeStatus: {
+          cloudServerKey: 'AliyunECSCloudServer',
+          serverType: 2
         },
         formCloudImageStatus: {
           cloudImageKey: 'AliyunCloudImage',
@@ -52,12 +61,12 @@
     },
     components: {
       CloudServerTable,
+      CloudServerChargeTable,
       CloudImageTable,
-      CloudVPCTable,
+      CloudVpcTable,
       CloudInstanceTemplateTable
     },
     mounted () {
-      //   this.$refs.cloudServerTable.fetchData()
     },
     methods: {}
   }

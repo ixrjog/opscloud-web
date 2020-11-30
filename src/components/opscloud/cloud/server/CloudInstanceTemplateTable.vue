@@ -69,8 +69,8 @@
 <script>
   import { mapState, mapActions } from 'vuex'
   // Component
-  import CloudInstanceTemplateDialog from '../dialog/CloudInstanceTemplateDialog'
-  import CreateCloudInstanceDialog from '../dialog/CreateCloudInstanceDialog'
+  import CloudInstanceTemplateDialog from '@/components/opscloud/cloud/server/CloudInstanceTemplateDialog'
+  import CreateCloudInstanceDialog from '@/components/opscloud/cloud/server/CreateCloudInstanceDialog'
 
   // Filters
   import { getActiveType, getActiveText } from '@/filters/public.js'
