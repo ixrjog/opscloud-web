@@ -37,3 +37,17 @@ export function refreshONSInstanceDetail (data) {
     data
   })
 }
+
+export function queryOnsInstanceByTopic (topic) {
+  return request({
+    url: baseUrl + '/topic/query?topic=' + topic,
+    method: 'get'
+  })
+}
+
+export function queryOcInstanceByGroupId (groupId) {
+  return request({
+    url: baseUrl + '/group/query?groupId=' + groupId,
+    method: 'get'
+  })
+}

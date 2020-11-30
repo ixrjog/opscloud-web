@@ -76,7 +76,7 @@
           <template slot-scope="scope">
             <el-button v-if="!scope.row.isReturn" type="primary" @click="handlerRowEdit(scope.row)" plain>编辑</el-button>
             <el-button v-if="!scope.row.isReturn" type="primary" @click="handleReturn(scope.row)" plain>归还</el-button>
-            <el-button v-if="scope.row.isReturn" type="primary" @click="handleReturnEdit(scope.row)" plain>修改归还日期
+            <el-button v-if="scope.row.isReturn" type="primary" @click="handleReturnEdit(scope.row)" plain>编辑
             </el-button>
           </template>
         </el-table-column>
@@ -107,7 +107,7 @@ import { queryFirstLevelDepartmentPage } from '@api/org/org'
 export default {
   data () {
     return {
-      title: '资产使用盘点',
+      title: '资产分配记录',
       itAssetReturnDialogStatus: {
         isUpdate: false,
         visible: false

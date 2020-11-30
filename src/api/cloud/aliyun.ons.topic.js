@@ -42,6 +42,13 @@ export function onsTopicCheck (data) {
   })
 }
 
+export function onsTopicCheckV2 (topic) {
+  return request({
+    url: baseUrl + '/checkV2?topic=' + topic,
+    method: 'get'
+  })
+}
+
 export function onsMessagePageQuery (data) {
   return request({
     url: baseUrl + '/msg/page/query',
