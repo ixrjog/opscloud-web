@@ -16,19 +16,19 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="GroupId" prop="groupId" required>
+      <el-form-item label="Group ID" prop="groupId" required>
         <el-input v-model.trim="groupData.groupId" :readonly="groupChecked">
           <el-button slot="append" :icon="groupChecked?'el-icon-success':'el-icon-warning'"
                      @click="handlerCheck(groupData.groupId)" :disabled="groupChecked"></el-button>
         </el-input>
         <span class="span-font">
-          <p>1. 以 “GID_”开头，只能包含字母、数字和下划线（_）</p>
+          <p>1. 以 “GID_”开头，只能包含大写字母、数字和下划线（_）</p>
           <p>2. 长度限制在 7~64 字符之间</p>
           <p>3. Group ID 一旦创建，则无法修改</p>
         </span>
       </el-form-item>
       <el-form-item label="协议类型" prop="groupType" required>
-        <el-select v-model="groupData.groupType" placeholder="消息类型" clearable disabled>
+        <el-select v-model="groupData.groupType" placeholder="消息类型" disabled>
           <el-option
             v-for="item in groupTypeOptions"
             :key="item.value"

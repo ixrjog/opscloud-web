@@ -68,166 +68,166 @@
 
 <script>
 
-  import {
-    queryUserTicketServerGroupPage,
-    addWorkorderTicketEntry,
-    updateWorkorderTicketEntry,
-    delWorkorderTicketEntryById,
-    queryWorkorderTicket,
-    submitWorkorderTicket,
-    agreeWorkorderTicket,
-    disagreeWorkorderTicket
-  } from '@api/workorder/workorder.ticket.js'
+import {
+  queryUserTicketServerGroupPage,
+  addWorkorderTicketEntry,
+  updateWorkorderTicketEntry,
+  delWorkorderTicketEntryById,
+  queryWorkorderTicket,
+  submitWorkorderTicket,
+  agreeWorkorderTicket,
+  disagreeWorkorderTicket
+} from '@api/workorder/workorder.ticket.js'
 
-  export default {
-    data () {
-      return {
-        title: '',
-        ticket: '',
-        labelWidth: '100px',
-        ticketEntryOptions: [],
-        searchTicketEntryLoading: false,
-        ticketEntry: '',
-        loading: false,
-        ticketEntries: []
-      }
+export default {
+  data () {
+    return {
+      title: '',
+      ticket: '',
+      labelWidth: '100px',
+      ticketEntryOptions: [],
+      searchTicketEntryLoading: false,
+      ticketEntry: '',
+      loading: false,
+      ticketEntries: []
+    }
+  },
+  components: {},
+  name: 'TicketServerGroupDialog',
+  props: ['formStatus'],
+  methods: {
+    closeDialog () {
+      this.formStatus.visible = false
+      this.$emit('closeDialog')
     },
-    components: {},
-    name: 'TicketServerGroupDialog',
-    props: ['formStatus'],
-    methods: {
-      closeDialog () {
-        this.formStatus.visible = false
-        this.$emit('closeDialog')
-      },
-      initData (ticket) {
-        this.ticket = ticket
-        if (ticket.workorder != null) {
-          this.title = ticket.workorder.name
-        }
-        if (ticket.ticketEntries != null) {
-          this.ticketEntries = ticket.ticketEntries
-        } else {
-          this.ticketEntries = []
-        }
-        this.queryPreTicketEntry('')
-      },
-      submitTicket () {
-        submitWorkorderTicket(this.ticket)
-          .then(res => {
-            // 返回数据
-            if (res.success) {
-              this.$message({
-                message: '提交成功',
-                type: 'success'
-              })
-              this.closeDialog()
-            } else {
-              this.$message.error(res.msg)
-            }
-          })
-      },
-      agreeTicket () {
-        agreeWorkorderTicket(this.ticket.id)
-          .then(res => {
-            // 返回数据
-            if (res.success) {
-              this.$message({
-                message: '审批同意已提交',
-                type: 'success'
-              })
-              this.closeDialog()
-            } else {
-              this.$message.error(res.msg)
-            }
-          })
-      },
-      disagreeTicket () {
-        disagreeWorkorderTicket(this.ticket.id)
-          .then(res => {
-            // 返回数据
-            if (res.success) {
-              this.$message({
-                message: '审批拒绝已提交',
-                type: 'success'
-              })
-              this.closeDialog()
-            } else {
-              this.$message.error(res.msg)
-            }
-          })
-      },
-      addTicketEntry () {
-        addWorkorderTicketEntry(this.ticketEntry)
-          .then(res => {
-            // 返回数据
-            if (res.success) {
-              this.$message({
-                message: '添加成功',
-                type: 'success'
-              })
-              this.ticketEntry = ''
-            } else {
-              this.$message.error(res.msg)
-            }
-            this.fetchData()
-          })
-      },
-      removeTicketEntry (ticketEntry) {
-        delWorkorderTicketEntryById(ticketEntry.id)
-          .then(res => {
-            // 返回数据
-            if (res.success) {
-              this.$message({
-                message: '移除成功',
-                type: 'success'
-              })
-              this.fetchData()
-            } else {
-              this.$message.error(res.msg)
-            }
-          })
-      },
-      updateTicketEntry (ticketEntry) {
-        updateWorkorderTicketEntry(ticketEntry)
-          .then(res => {
-            // 返回数据
-            if (res.success) {
-              this.$message({
-                message: '更新成功',
-                type: 'success'
-              })
-            } else {
-              this.$message.error(res.msg)
-            }
-            this.fetchData()
-          })
-      },
-      queryPreTicketEntry (queryName) {
-        this.searchTicketEntryLoading = true
-        let requestBody = {
-          'queryName': queryName,
-          'workorderTicketId': this.ticket.id,
-          'userId': 0,
-          'page': 1,
-          'length': 20
-        }
-        queryUserTicketServerGroupPage(requestBody)
-          .then(res => {
-            this.ticketEntryOptions = res.body
-            this.searchTicketEntryLoading = false
-          })
-      },
-      fetchData () {
-        this.loading = true
-        queryWorkorderTicket(this.ticket.id)
-          .then(res => {
-            this.initData(res.body)
-            this.loading = false
-          })
+    initData (ticket) {
+      this.ticket = ticket
+      if (ticket.workorder != null) {
+        this.title = ticket.workorder.name
       }
+      if (ticket.ticketEntries != null) {
+        this.ticketEntries = ticket.ticketEntries
+      } else {
+        this.ticketEntries = []
+      }
+      this.queryPreTicketEntry('')
+    },
+    submitTicket () {
+      submitWorkorderTicket(this.ticket)
+        .then(res => {
+          // 返回数据
+          if (res.success) {
+            this.$message({
+              message: '提交成功',
+              type: 'success'
+            })
+            this.closeDialog()
+          } else {
+            this.$message.error(res.msg)
+          }
+        })
+    },
+    agreeTicket () {
+      agreeWorkorderTicket(this.ticket.id)
+        .then(res => {
+          // 返回数据
+          if (res.success) {
+            this.$message({
+              message: '审批同意已提交',
+              type: 'success'
+            })
+            this.closeDialog()
+          } else {
+            this.$message.error(res.msg)
+          }
+        })
+    },
+    disagreeTicket () {
+      disagreeWorkorderTicket(this.ticket.id)
+        .then(res => {
+          // 返回数据
+          if (res.success) {
+            this.$message({
+              message: '审批拒绝已提交',
+              type: 'success'
+            })
+            this.closeDialog()
+          } else {
+            this.$message.error(res.msg)
+          }
+        })
+    },
+    addTicketEntry () {
+      addWorkorderTicketEntry(this.ticketEntry)
+        .then(res => {
+          // 返回数据
+          if (res.success) {
+            this.$message({
+              message: '添加成功',
+              type: 'success'
+            })
+            this.ticketEntry = ''
+          } else {
+            this.$message.error(res.msg)
+          }
+          this.fetchData()
+        })
+    },
+    removeTicketEntry (ticketEntry) {
+      delWorkorderTicketEntryById(ticketEntry.id)
+        .then(res => {
+          // 返回数据
+          if (res.success) {
+            this.$message({
+              message: '移除成功',
+              type: 'success'
+            })
+            this.fetchData()
+          } else {
+            this.$message.error(res.msg)
+          }
+        })
+    },
+    updateTicketEntry (ticketEntry) {
+      updateWorkorderTicketEntry(ticketEntry)
+        .then(res => {
+          // 返回数据
+          if (res.success) {
+            this.$message({
+              message: '更新成功',
+              type: 'success'
+            })
+          } else {
+            this.$message.error(res.msg)
+          }
+          this.fetchData()
+        })
+    },
+    queryPreTicketEntry (queryName) {
+      this.searchTicketEntryLoading = true
+      let requestBody = {
+        'queryName': queryName,
+        'workorderTicketId': this.ticket.id,
+        'userId': 0,
+        'page': 1,
+        'length': 20
+      }
+      queryUserTicketServerGroupPage(requestBody)
+        .then(res => {
+          this.ticketEntryOptions = res.body
+          this.searchTicketEntryLoading = false
+        })
+    },
+    fetchData () {
+      this.loading = true
+      queryWorkorderTicket(this.ticket.id)
+        .then(res => {
+          this.initData(res.body)
+          this.loading = false
+        })
     }
   }
+}
 </script>
 
 <style scoped>

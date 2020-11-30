@@ -42,6 +42,13 @@ export function onsGroupCheck (data) {
   })
 }
 
+export function onsGroupCheckV2 (groupID) {
+  return request({
+    url: baseUrl + '/checkV2?groupId=' + groupID,
+    method: 'get'
+  })
+}
+
 export function onsGroupStatus (data) {
   return request({
     url: baseUrl + '/status',

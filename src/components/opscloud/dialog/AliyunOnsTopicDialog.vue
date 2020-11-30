@@ -22,13 +22,13 @@
                      @click="handlerCheck(topicData.topic)" :disabled="topicChecked"></el-button>
         </el-input>
         <span class="span-font">
-          <p>1. “CID”和“GID”是Group ID的保留字段，Topic命名不能以“CID”和“GID”开头</p>
-          <p>2. Topic只能以 “TOPIC_”开头，包含英文、数字和下划线（_）</p>
-          <p>3. 长度限制在3~64个字符之间</p>
+          <p>1. Topic只能以 “TOPIC_”开头，包含大写英文、数字和下划线（_）</p>
+          <p>2. 长度限制在3~64个字符之间</p>
+          <p>3. Topic一旦创建，则无法修改</p>
         </span>
       </el-form-item>
-      <el-form-item label="消息类型" prop="messageType" required>
-        <el-select v-model="topicData.messageType" placeholder="消息类型" clearable>
+      <el-form-item label="消息类型" prop="messageType">
+        <el-select v-model="topicData.messageType" placeholder="消息类型">
           <el-option
             v-for="item in messageTypeOptions"
             :key="item.value"
@@ -56,7 +56,7 @@ const topicData = {
   regionId: '',
   instance: {},
   messageType: 0,
-  topic: '',
+  topic: 'TOPIC_',
   remark: ''
 }
 

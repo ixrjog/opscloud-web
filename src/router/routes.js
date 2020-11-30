@@ -554,7 +554,7 @@ const frameIn = [
         component: () => import('@/pages/it/asset/apply'),
         meta: {
           auth: true,
-          title: '使用盘点'
+          title: '分配记录'
         }
       },
       {
