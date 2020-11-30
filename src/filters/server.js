@@ -126,3 +126,52 @@ export function getServerStatusText (value) {
       return '未定义'
   }
 }
+
+// 付费类型
+export function getChargeTypeText (value) {
+  switch (value) {
+    case 'PrePaid':
+      return '包年包月'
+    case 'PostPaid':
+      return '按量付费'
+    default:
+      return '未定义'
+  }
+}
+
+export function getChargeType (value) {
+  switch (value) {
+    case 'PrePaid':
+      return 'success'
+    case 'PostPaid':
+      return 'warning'
+    default:
+      return 'info'
+  }
+}
+
+export function getRenewalStatus (value) {
+  switch (value) {
+    case 'AutoRenewal':
+      return 'success'
+    case 'Normal':
+      return 'warning'
+    case 'NotRenewal':
+      return 'danger'
+    default:
+      return 'info'
+  }
+}
+
+export function getRenewalStatusText (value) {
+  switch (value) {
+    case 'AutoRenewal':
+      return '自动续费'
+    case 'Normal':
+      return '手动续费'
+    case 'NotRenewal':
+      return '不再续费'
+    default:
+      return '未定义'
+  }
+}

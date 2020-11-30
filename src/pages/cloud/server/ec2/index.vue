@@ -7,7 +7,7 @@
 
 <script>
 
-  import CloudServerTable from '@/components/opscloud/table/CloudServerTable.vue'
+  import CloudServerTable from '@/components/opscloud/cloud/server/CloudServerTable.vue'
 
   export default {
     data () {
