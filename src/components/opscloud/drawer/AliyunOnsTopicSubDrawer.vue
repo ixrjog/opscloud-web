@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import AliyunOnsGroupStatusDialog from '@/components/opscloud/dialog/AliyunOnsGroupStatusDialog'
+import AliyunOnsGroupStatusDialog from '@/components/opscloud/aliyun/ons/AliyunOnsGroupStatusDialog'
 
 import { onsGroupStatus } from '@api/cloud/aliyun.ons.group.js'
 

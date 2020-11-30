@@ -49,6 +49,9 @@
             <el-tag :type="getAssetStatusColor(props.row.assetStatus)">
               {{ props.row.assetStatus | assetStatusFilters }}
             </el-tag>
+            <el-tag v-if="props.row.assetStatus===4" style="margin-left: 5px">
+              {{ props.row.disposeType | disposeTypeFilters }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="assetType" label="资产分类"></el-table-column>
@@ -61,7 +64,12 @@
             <span>{{ props.row.user | userFilters }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="remark" label="备注"></el-table-column>
+        <el-table-column label="备注">
+          <template slot-scope="props">
+            <span v-if="props.row.assetStatus===4">{{ props.row.disposeRemark }}</span>
+            <span v-else>{{ props.row.remark }}</span>
+          </template>
+        </el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
             <el-dropdown split-button type="primary" size="mini" @click="handlerRowEdit(scope.row)">
@@ -75,9 +83,9 @@
                   <el-button type="text" @click="handleReturn(scope.row)" style="margin-left: 5px">归还资产</el-button>
                 </el-dropdown-item>
                 <el-dropdown-item icon="el-icon-circle-plus" v-if="scope.row.assetStatus === 1">
-                  <el-popconfirm @onConfirm="handlerDisable(scope.row)" title="确定要报废此资产吗">
-                    <el-button slot="reference" type="text" style="margin-left: 5px;color: #F56C6C">报废资产</el-button>
-                  </el-popconfirm>
+                  <el-button type="text" style="margin-left: 5px;color: #F56C6C"
+                             @click="handlerDisPose(scope.row)">处置资产
+                  </el-button>
                 </el-dropdown-item>
                 <el-dropdown-item icon="el-icon-circle-plus" v-if="scope.row.assetStatus === 4">
                   <el-popconfirm @onConfirm="handlerAble(scope.row)" title="确定要还原此资产吗">
@@ -100,20 +108,22 @@
                              @closeDialog="fetchData"></it-asset-apply-dialog>
       <it-asset-return-dialog ref="itAssetReturnDialog" :formStatus="itAssetReturnDialogStatus"
                               @closeDialog="fetchData"></it-asset-return-dialog>
+      <it-asset-dispose-dialog ref="itAssetDisposeDialog" :formStatus="itAssetDisposeDialogStatus"
+                               @closeDialog="fetchData"></it-asset-dispose-dialog>
     </template>
   </d2-container>
 </template>
 
 <script>
-import ItAssetDialog from '@/components/opscloud/dialog/ItAssetDialog'
-import ItAssetApplyDialog from '@/components/opscloud/dialog/ItAssetApplyDialog'
-import ItAssetReturnDialog from '@/components/opscloud/dialog/ItAssetReturnDialog'
+import ItAssetDialog from '@/components/opscloud/it/ItAssetDialog'
+import ItAssetApplyDialog from '@/components/opscloud/it/ItAssetApplyDialog'
+import ItAssetReturnDialog from '@/components/opscloud/it/ItAssetReturnDialog'
+import ItAssetDisposeDialog from '@/components/opscloud/it/ItAssetDisposeDialog'
 
 // API
 import {
   queryOcItAssetCompanyAll,
   queryOcItAssetPage,
-  disableAsset,
   ableAsset,
   queryOcItAssetNameAll
 } from '@api/it/it.asset'
@@ -135,6 +145,9 @@ export default {
       },
       itAssetReturnDialogStatus: {
         isUpdate: false,
+        visible: false
+      },
+      itAssetDisposeDialogStatus: {
         visible: false
       },
       tableData: [],
@@ -162,7 +175,7 @@ export default {
         label: '借用'
       }, {
         value: 4,
-        label: '报废'
+        label: '处置'
       }],
       assetNameOptions: []
     }
@@ -180,7 +193,8 @@ export default {
   components: {
     ItAssetDialog,
     ItAssetApplyDialog,
-    ItAssetReturnDialog
+    ItAssetReturnDialog,
+    ItAssetDisposeDialog
   },
   filters: {
     assetStatusFilters (assetStatus) {
@@ -194,7 +208,22 @@ export default {
         return '借用'
       }
       if (assetStatus === 4) {
-        return '报废'
+        return '处置'
+      }
+      return '暂未配置'
+    },
+    disposeTypeFilters (disposeType) {
+      if (disposeType === 1) {
+        return '退租处理'
+      }
+      if (disposeType === 2) {
+        return '报废清理'
+      }
+      if (disposeType === 3) {
+        return '盘亏处理'
+      }
+      if (disposeType === 4) {
+        return '转让出售'
       }
       return '暂未配置'
     },
@@ -276,12 +305,13 @@ export default {
       this.itAssetReturnDialogStatus.visible = true
       this.$refs.itAssetReturnDialog.initData(data)
     },
-    handlerDisable (row) {
-      disableAsset(row.id)
-        .then(res => {
-          this.fetchData()
-          this.$message.success('资产报废成功')
-        })
+    handlerDisPose (row) {
+      let data = {
+        assetId: row.id,
+        assetCode: row.assetCode
+      }
+      this.itAssetDisposeDialogStatus.visible = true
+      this.$refs.itAssetDisposeDialog.initData(data)
     },
     handlerAble (row) {
       ableAsset(row.id)

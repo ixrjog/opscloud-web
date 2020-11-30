@@ -1,29 +1,24 @@
 <template>
-  <div>
+  <div v-show="queryParam.logId !== ''">
     <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
       <el-input v-model="queryParam.queryName" placeholder="关键字查询" class="input"/>
       <el-button @click="fetchData" class="button">查询</el-button>
-      <el-button @click="handlerRowAdd" style="margin-left: 5px">新增</el-button>
+      <el-button @click="handlerAdd" style="margin-left: 5px">新增</el-button>
+      <el-button @click="handlerPush(scope.row)" style="margin-left: 5px">推送</el-button>
     </el-row>
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
-      <el-table-column prop="accountUid" label="主账户uid" v-if="false"></el-table-column>
-      <el-table-column prop="project" label="日志服务配置">
-        <template slot-scope="scope">
-          <div>日志项目: {{ scope.row.project}}</div>
-          <div>日志库: {{ scope.row.logstore}}</div>
-          <div>logtail配置: {{ scope.row.config}}</div>
-        </template>
-      </el-table-column>
-      <el-table-column prop="logstore" label="日志库" v-if="false"></el-table-column>
-      <el-table-column prop="config" label="logtail配置" v-if="false"></el-table-column>
-      <el-table-column prop="memberSize" label="成员" width="80">
+      <el-table-column prop="serverGroupName" label="服务器组名称"></el-table-column>
+      <el-table-column prop="topic" label="自定义topic">
         <template slot-scope="props">
-          <el-tag style="margin-left: 5px">{{ props.row.memberSize }}</el-tag>
+          <el-tag style="margin-left: 5px" v-show="props.row.topic != null && props.row.topic != ''">{{ props.row.topic
+            }}
+          </el-tag>
         </template>
       </el-table-column>
+      <el-table-column prop="ago" label="推送时间" width="100"></el-table-column>
       <el-table-column fixed="right" label="操作" width="240">
         <template slot-scope="scope">
-          <el-button @click="handlerRowMember(scope.row)" type="primary" plain size="mini" style="margin-left: 5px">成员</el-button>
+          <el-button @click="handlerRowPush(scope.row)" type="primary" plain size="mini" style="margin-left: 5px">推送</el-button>
           <el-button @click="handlerRowEdit(scope.row)" type="primary" plain size="mini" style="margin-left: 5px">编辑</el-button>
           <el-button type="danger" plain size="mini" @click="handlerRowDel(scope.row)">删除</el-button>
         </template>
@@ -34,16 +29,17 @@
                    layout="sizes, prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                    :page-size="pagination.pageSize">
     </el-pagination>
-    <AliyunLogDialog ref="aliyunLogDialog" :formStatus="formStatus" @closeDialog="fetchData"></AliyunLogDialog>
+    <AliyunLogMemberDialog ref="aliyunLogMemberDialog" :formStatus="formStatus"
+                           @closeDialog="fetchData"></AliyunLogMemberDialog>
   </div>
 </template>
 
 <script>
   import { mapActions, mapState } from 'vuex'
   // API
-  import { queryAliyunLogPage } from '@api/cloud/aliyun.log.js'
-
-  import AliyunLogDialog from '@/components/opscloud/dialog/AliyunLogDialog'
+  import { queryAliyunLogMemberPage, removeAliyunLogMemberById, pushAliyunLogMemberById } from '@api/cloud/aliyun.log.member.js'
+  import { pushAliyunLogById } from '@api/cloud/aliyun.log.js'
+  import AliyunLogMemberDialog from '@/components/opscloud/aliyun/log/AliyunLogMemberDialog'
 
   export default {
     data () {
@@ -52,8 +48,8 @@
         loading: false,
         formStatus: {
           visible: false,
-          addTitle: '新增日志服务配置',
-          updateTitle: '更新日志服务配置',
+          addTitle: '新增日志服务配置成员',
+          updateTitle: '更新日志服务配置成员',
           operationType: true
         },
         pagination: {
@@ -62,14 +58,14 @@
           total: 0
         },
         queryParam: {
+          logId: '',
           queryName: ''
         }
       }
     },
-    name: 'AliyunLogTable',
+    name: 'AliyunLogMemberTable',
     mounted () {
       this.initPageSize()
-      this.fetchData()
     },
     computed: {
       ...mapState('d2admin/user', [
@@ -77,7 +73,7 @@
       ])
     },
     components: {
-      AliyunLogDialog
+      AliyunLogMemberDialog
     },
     methods: {
       ...mapActions({
@@ -94,28 +90,67 @@
           this.pagination.pageSize = this.info.pageSize
         }
       },
-      handlerRowAdd () {
-        let aliyunLog = {
+      initData (logId) {
+        this.queryParam.logId = logId
+        this.fetchData()
+      },
+      handlerAdd () {
+        let aliyunLogMember = {
           id: 0,
-          account_uid: '',
-          project: '',
-          logstore: '',
-          config: '',
+          logId: this.queryParam.logId,
+          serverGroupId: '',
+          serverGroupName: '',
+          topic: '',
           comment: ''
         }
         this.formStatus.operationType = true
         this.formStatus.visible = true
-        this.$refs.aliyunLogDialog.initData(aliyunLog)
+        this.$refs.aliyunLogMemberDialog.initData(aliyunLogMember)
       },
-      handlerRowMember (row) {
-        this.$emit('handlerSelLog', row.id)
+      handlerPush () {
+        pushAliyunLogById(this.queryParam.logId)
+          .then(res => {
+            // 返回数据
+            if (res.success) {
+              this.$message({
+                message: '推送成功',
+                type: 'success'
+              })
+            } else {
+              this.$message.error(res.msg)
+            }
+          })
+      },
+      handlerRowPush (row) {
+        pushAliyunLogMemberById(row.id)
+          .then(res => {
+            // 返回数据
+            if (res.success) {
+              this.$message({
+                message: '推送成功',
+                type: 'success'
+              })
+              this.fetchData()
+            } else {
+              this.$message.error(res.msg)
+            }
+          })
       },
       handlerRowEdit (row) {
         this.formStatus.operationType = false
         this.formStatus.visible = true
-        this.$refs.aliyunLogDialog.initData(row)
+        this.$refs.aliyunLogMemberDialog.initData(row)
       },
       handlerRowDel (row) {
+        removeAliyunLogMemberById(row.id)
+          .then(res => {
+            // 返回数据
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            this.fetchData()
+          })
       },
       paginationCurrentChange (currentPage) {
         this.pagination.currentPage = currentPage
@@ -126,7 +161,7 @@
         let requestBody = Object.assign({}, this.queryParam)
         requestBody.page = this.pagination.currentPage
         requestBody.length = this.pagination.pageSize
-        queryAliyunLogPage(requestBody)
+        queryAliyunLogMemberPage(requestBody)
           .then(res => {
             this.tableData = res.body.data
             this.pagination.total = res.body.totalNum

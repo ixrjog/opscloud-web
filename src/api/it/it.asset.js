@@ -63,10 +63,11 @@ export function returnAsset (data) {
   })
 }
 
-export function disableAsset (id) {
+export function disposeAsset (data) {
   return request({
-    url: baseUrl + '/disable?id=' + id,
-    method: 'get'
+    url: baseUrl + '/dispose',
+    method: 'post',
+    data
   })
 }
 

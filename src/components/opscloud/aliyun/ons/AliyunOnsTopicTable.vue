@@ -12,10 +12,10 @@
           <span style="float: right; color: #8492a6; font-size: 10px;margin-left: 20px">{{ item.remark }}</span>
         </el-option>
       </el-select>
-      <el-input v-model.trim="queryParam.groupId" placeholder="输入关键字查询GroupId" class="input"/>
-      <el-select v-model="queryParam.groupType" placeholder="消息类型" class="select" clearable disabled>
+      <el-input v-model.trim="queryParam.topic" placeholder="输入关键字查询Topic" class="input"/>
+      <el-select v-model="queryParam.messageType" placeholder="消息类型" class="select" clearable>
         <el-option
-          v-for="item in groupTypeOptions"
+          v-for="item in messageTypeOptions"
           :key="item.value"
           :label="item.label"
           :value="item.value">
@@ -24,52 +24,36 @@
       <el-button @click="fetchData" :disabled="regionId === ''">查询</el-button>
       <el-button @click="handlerSync" style="margin-left: 5px" :disabled="regionId === ''" :loading="syncLoading">同步
       </el-button>
-      <el-button @click="handlerAdd" style="margin-left: 5px">创建GroupId</el-button>
+      <el-button @click="handlerAdd" style="margin-left: 5px">创建Topic</el-button>
     </el-row>
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
-      <el-table-column prop="groupId" label="GroupId">
+      <el-table-column prop="topic" label="Topic">
         <template slot-scope="scope">
-          <span>{{ scope.row.groupId }}</span>
-          <span v-clipboard:copy="scope.row.groupId" v-clipboard:success="onCopy"
+          <span>{{ scope.row.topic }}</span>
+          <span v-clipboard:copy="scope.row.topic" v-clipboard:success="onCopy"
                 v-clipboard:error="onError" style="float: right">
                     <i class="el-icon-copy-document"></i>
                   </span>
         </template>
       </el-table-column>
-      <el-table-column label="协议类型" width="100">
-        <template slot-scope="scope">
-          <el-tag>{{ scope.row.groupType }}</el-tag>
+      <el-table-column prop="messageType" label="消息类型">
+        <template slot-scope="props">
+          <el-tag>{{ props.row.messageType | messageTypeFilters }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" label="创建时间" width="200"></el-table-column>
+      <el-table-column prop="relationName" label="所有关系"></el-table-column>
+      <el-table-column prop="createTime" label="创建时间"></el-table-column>
       <el-table-column prop="remark" label="备注"></el-table-column>
-      <el-table-column label="告警状态" width="100">
-        <template slot-scope="scope">
-          <el-tag :type="getAlarmStatusAColor(scope.row.alarmStatus)">
-            {{ scope.row.alarmStatus |alarmStatusFilters }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="alarmUserList" label="告警接收人" show-overflow-tooltip>
-        <template slot-scope="scope">
-          <span v-for="item in scope.row.alarmUserList" :key="item.id" style="margin-right: 5px">
-            {{ item | userFilters }}</span>
-        </template>
-      </el-table-column>
       <el-table-column fixed="right" label="操作" width="180">
         <template slot-scope="scope">
           <el-button-group>
             <el-tooltip class="item" effect="dark" content="订阅关系" placement="left">
-              <el-button type="primary" plain size="mini" @click="getGroupSubDetail(scope.row)"
+              <el-button type="primary" plain size="mini" @click="getTopicSubDetail(scope.row)"
                          icon="el-icon-share"></el-button>
             </el-tooltip>
-            <el-tooltip class="item" effect="dark" content="消费状态" placement="top">
-              <el-button type="primary" plain size="mini" @click="getGroupStatus(scope.row)"
-                         icon="el-icon-shopping-cart-full"></el-button>
-            </el-tooltip>
-            <el-tooltip class="item" effect="dark" content="监控配置" placement="top">
-              <el-button type="primary" plain size="mini" @click="getGroupAlarm(scope.row)"
-                         icon="el-icon-bell"></el-button>
+            <el-tooltip class="item" effect="dark" content="消息查询" placement="right">
+              <el-button type="primary" plain size="mini" @click="getTopicMsg(scope.row)"
+                         icon="el-icon-message"></el-button>
             </el-tooltip>
           </el-button-group>
         </template>
@@ -80,48 +64,44 @@
                    layout="sizes, prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                    :page-size="pagination.pageSize">
     </el-pagination>
-    <aliyun-ons-group-sub-drawer ref="aliyunONSGroupSubDrawer"
-                                 :formStatus="aliyunONSGroupSubDrawerStatus"></aliyun-ons-group-sub-drawer>
-    <aliyun-ons-group-dialog ref="aliyunONSGroupDialog"
-                             :formStatus="aliyunONSGroupDialogStatus"></aliyun-ons-group-dialog>
-    <aliyun-ons-group-status-dialog ref="aliyunONSGroupStatusDialog"
-                                    :formStatus="aliyunONSGroupDialogStatusStatus"></aliyun-ons-group-status-dialog>
-    <aliyun-ons-group-alarm-dialog ref="aliyunOnsGroupAlarmDialog" @closeDialog="fetchData"
-                                   :formStatus="aliyunOnsGroupAlarmDialogStatus"></aliyun-ons-group-alarm-dialog>
+    <aliyun-ons-topic-sub-drawer ref="aliyunONSTopicSubDrawer"
+                                 :formStatus="aliyunONSTopicSubDrawerStatus"></aliyun-ons-topic-sub-drawer>
+    <aliyun-ons-topic-dialog ref="aliyunONSTopicDialog"
+                             :formStatus="aliyunONSTopicDialogStatus"></aliyun-ons-topic-dialog>
+    <aliyun-ons-topic-msg-dialog ref="aliyunOnsTopicMsgDialog"
+                                 :formStatus="aliyunOnsTopicMsgDialogStatus"></aliyun-ons-topic-msg-dialog>
   </div>
 </template>
 
 <script>
-import AliyunOnsGroupSubDrawer from '@/components/opscloud/drawer/AliyunOnsGroupSubDrawer'
-import AliyunOnsGroupDialog from '@/components/opscloud/dialog/AliyunOnsGroupDialog'
-import AliyunOnsGroupStatusDialog from '@/components/opscloud/dialog/AliyunOnsGroupStatusDialog'
-import AliyunOnsGroupAlarmDialog from '@/components/opscloud/dialog/AliyunOnsGroupAlarmDialog'
+import AliyunOnsTopicSubDrawer from '@/components/opscloud/drawer/AliyunOnsTopicSubDrawer'
+import AliyunOnsTopicDialog from '@/components/opscloud/aliyun/ons/AliyunOnsTopicDialog'
+import AliyunOnsTopicMsgDialog from '@/components/opscloud/aliyun/ons/AliyunOnsTopicMsgDialog'
 
 // API
 import { queryONSInstanceAll } from '@api/cloud/aliyun.ons.instance.js'
-import {
-  syncONSGroup,
-  queryOnsGroupSubDetail,
-  queryONSGroupPage,
-  onsGroupStatus,
-  queryONSGroupAlarm
-} from '@api/cloud/aliyun.ons.group.js'
+import { syncONSTopic, queryOnsTopicSubDetail, queryONSTopicPage } from '@api/cloud/aliyun.ons.topic.js'
 import { mapActions, mapState } from 'vuex'
+import { onsMessagePageQuery } from '@api/cloud/aliyun.ons.topic'
+
+const topicMsgData = {
+  msgList: '',
+  regionId: '',
+  instanceId: '',
+  topic: ''
+}
 
 export default {
   data () {
     return {
       syncLoading: false,
-      aliyunONSGroupSubDrawerStatus: {
+      aliyunONSTopicSubDrawerStatus: {
         visible: false
       },
-      aliyunONSGroupDialogStatus: {
+      aliyunONSTopicDialogStatus: {
         visible: false
       },
-      aliyunONSGroupDialogStatusStatus: {
-        visible: false
-      },
-      aliyunOnsGroupAlarmDialogStatus: {
+      aliyunOnsTopicMsgDialogStatus: {
         visible: false
       },
       tableData: [],
@@ -137,20 +117,29 @@ export default {
       querying: false,
       queryParam: {
         instanceId: '',
-        groupId: '',
-        groupType: 'tcp'
+        topic: '',
+        messageType: ''
       },
       instanceOptions: [],
       regionId: '',
-      groupTypeOptions: [{
-        value: 'tcp',
-        label: 'tcp'
+      messageTypeOptions: [{
+        value: 0,
+        label: '普通消息'
       }, {
-        value: 'http',
-        label: 'http'
+        value: 1,
+        label: '分区顺序消息'
+      }, {
+        value: 2,
+        label: '全局顺序消息'
+      }, {
+        value: 4,
+        label: '事务消息'
+      }, {
+        value: 5,
+        label: '定时/延时消息'
       }],
-      groupSubDetail: {},
-      groupStatus: {}
+      topicSubDetail: {},
+      topicMsgData: topicMsgData
     }
   },
   computed: {
@@ -163,29 +152,31 @@ export default {
     this.getInstance()
   },
   components: {
-    AliyunOnsGroupSubDrawer,
-    AliyunOnsGroupDialog,
-    AliyunOnsGroupStatusDialog,
-    AliyunOnsGroupAlarmDialog
+    AliyunOnsTopicSubDrawer,
+    AliyunOnsTopicDialog,
+    AliyunOnsTopicMsgDialog
   },
   filters: {
     instanceFilters (instance) {
       return instance.instanceName + '<' + instance.envName + '>'
     },
-    userFilters (user) {
-      return user.username + '<' + user.displayName + '>'
-    },
-    alarmStatusFilters (alarmStatus) {
-      if (alarmStatus === 0) {
-        return '停用'
+    messageTypeFilters (messageType) {
+      if (messageType === 0) {
+        return '普通消息'
       }
-      if (alarmStatus === 1) {
-        return '启用'
+      if (messageType === 1) {
+        return '分区顺序消息'
       }
-      if (alarmStatus === -1) {
-        return '异常'
+      if (messageType === 2) {
+        return '全局顺序消息'
       }
-      return '暂未配置'
+      if (messageType === 4) {
+        return '事务消息'
+      }
+      if (messageType === 5) {
+        return '定时/延时消息'
+      }
+      return ''
     }
   },
   methods: {
@@ -203,18 +194,6 @@ export default {
         this.pagination.pageSize = this.info.pageSize
       }
     },
-    getAlarmStatusAColor (alarmStatus) {
-      if (alarmStatus === 0) {
-        return 'warning'
-      }
-      if (alarmStatus === 1) {
-        return 'success'
-      }
-      if (alarmStatus === -1) {
-        return 'danger'
-      }
-      return 'info'
-    },
     getInstance () {
       queryONSInstanceAll()
         .then(res => {
@@ -224,61 +203,63 @@ export default {
     getRegionId (item) {
       this.regionId = item.regionId
     },
-    getGroupSubDetail (row) {
-      this.aliyunONSGroupSubDrawerStatus.visible = true
-      this.groupSubDetail = {}
+    getTopicMsg (row) {
+      this.topicMsgData = Object.assign({}, topicMsgData)
       let requestBody = {
         'regionId': this.regionId,
         'instanceId': row.instanceId,
-        'groupId': row.groupId
+        'topic': row.topic
       }
-      queryOnsGroupSubDetail(requestBody)
+      onsMessagePageQuery(requestBody)
         .then(res => {
-          this.groupSubDetail = res.body
-          this.groupSubDetail.groupId = row.groupId
-          this.$refs.aliyunONSGroupSubDrawer.initData(this.groupSubDetail)
+          this.topicMsgData = {
+            'msgList': res.body,
+            'regionId': this.regionId,
+            'instanceId': row.instanceId,
+            'topic': row.topic
+          }
+          this.$refs.aliyunOnsTopicMsgDialog.initData(this.topicMsgData)
+          this.aliyunOnsTopicMsgDialogStatus.visible = true
         })
     },
-    getGroupStatus (row) {
-      this.aliyunONSGroupDialogStatusStatus.visible = true
-      this.groupStatus = {}
+    getTopicSubDetail (row) {
+      this.aliyunONSTopicSubDrawerStatus.visible = true
+      this.topicSubDetail = {}
       let requestBody = {
         'regionId': this.regionId,
         'instanceId': row.instanceId,
-        'groupId': row.groupId
+        'topic': row.topic
       }
-      onsGroupStatus(requestBody)
+      queryOnsTopicSubDetail(requestBody)
         .then(res => {
-          this.groupStatus = res.body
-          this.groupStatus.groupId = row.groupId
-          this.$refs.aliyunONSGroupStatusDialog.initData(this.groupStatus)
-        })
-    },
-    getGroupAlarm (row) {
-      this.aliyunOnsGroupAlarmDialogStatus.visible = true
-      queryONSGroupAlarm(row.id)
-        .then(res => {
-          this.$refs.aliyunOnsGroupAlarmDialog.initData(res.body, this.regionId, row.id)
+          this.topicSubDetail = res.body
+          this.topicSubDetail.topic = row.topic
+          this.topicSubDetail.instanceId = row.instanceId
+          this.topicSubDetail.regionId = this.regionId
+          this.$refs.aliyunONSTopicSubDrawer.initData(this.topicSubDetail)
         })
     },
     handlerAdd () {
-      this.aliyunONSGroupDialogStatus.visible = true
-      this.$refs.aliyunONSGroupDialog.initData(this.instanceOptions)
+      this.aliyunONSTopicDialogStatus.visible = true
+      this.$refs.aliyunONSTopicDialog.initData(this.instanceOptions)
     },
     handlerSync () {
-      this.$confirm('确定全量GroupId吗?', '提示', {
+      this.$confirm('确定全量Topic吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         this.syncLoading = true
-        this.$message.info('后台同步数据中')
+        this.$message({
+          message: '后台同步数据中',
+          type: 'info'
+        })
         setTimeout(() => {
           let requestBody = {
             'regionId': this.regionId,
             'instanceId': this.queryParam.instance.instanceId
           }
-          syncONSGroup(requestBody)
+          syncONSTopic(requestBody)
             .then(res => {
               this.$message({
                 message: '后台同步数据完成',
@@ -303,12 +284,12 @@ export default {
       this.loading = true
       let requestBody = {
         'instanceId': this.queryParam.instance.instanceId,
-        'groupId': this.queryParam.groupId,
-        'groupType': this.queryParam.groupType,
+        'topic': this.queryParam.topic,
+        'messageType': this.queryParam.messageType === '' ? -1 : this.queryParam.messageType,
         'page': this.pagination.currentPage,
         'length': this.pagination.pageSize
       }
-      queryONSGroupPage(requestBody)
+      queryONSTopicPage(requestBody)
         .then(res => {
           this.tableData = res.body.data
           this.pagination.total = res.body.totalNum
@@ -336,4 +317,5 @@ export default {
 .select {
   margin-right: 5px;
 }
+
 </style>

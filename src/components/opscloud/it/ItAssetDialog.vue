@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import ItAssetNameDialog from '@/components/opscloud/dialog/ItAssetNameDialog'
+import ItAssetNameDialog from '@/components/opscloud/it/ItAssetNameDialog'
 
 // API
 import {

@@ -20,9 +20,9 @@
 
 <script>
 
-import AliyunOnsInstanceTable from '@/components/opscloud/table/AliyunOnsInstanceTable.vue'
-import AliyunOnsTopicTable from '@/components/opscloud/table/AliyunOnsTopicTable.vue'
-import AliyunOnsGroupTable from '@/components/opscloud/table/AliyunOnsGroupTable.vue'
+import AliyunOnsInstanceTable from '@/components/opscloud/aliyun/ons/AliyunOnsInstanceTable.vue'
+import AliyunOnsTopicTable from '@/components/opscloud/aliyun/ons/AliyunOnsTopicTable.vue'
+import AliyunOnsGroupTable from '@/components/opscloud/aliyun/ons/AliyunOnsGroupTable.vue'
 
 import { queryDocByKey } from '@api/doc/doc.js'
 

@@ -55,7 +55,7 @@
       <el-table-column prop="ramType" label="类型" width="80">
         <template slot-scope="scope">
           <el-tag class="filters" :type="scope.row.ramType | getRAMUserType" size="small">
-            {{scope.row.ramType | getRAMUserTypeText}}
+            {{ scope.row.ramType | getRAMUserTypeText }}
           </el-tag>
         </template>
       </el-table-column>
@@ -74,142 +74,142 @@
 </template>
 
 <script>
-  import { mapActions, mapState } from 'vuex'
-  // Filters
-  import { getRAMUserType, getRAMUserTypeText } from '@/filters/cloud.js'
-  // API
-  import { queryAliyunAccount } from '@api/cloud/cloud.js'
-  import { queryAliyunRAMUserPage, syncAliyunRAMUser } from '@api/cloud/aliyun.ram.user.js'
+import { mapActions, mapState } from 'vuex'
+// Filters
+import { getRAMUserType, getRAMUserTypeText } from '@/filters/cloud.js'
+// API
+import { queryAliyunAccount } from '@api/cloud/cloud.js'
+import { queryAliyunRAMUserPage, syncAliyunRAMUser } from '@api/cloud/aliyun.ram.user.js'
 
-  const hasKeysOptions = [
-    {
-      value: true,
-      label: '有AK'
-    }, {
-      value: false,
-      label: '无AK'
-    }]
+const hasKeysOptions = [
+  {
+    value: true,
+    label: '有AK'
+  }, {
+    value: false,
+    label: '无AK'
+  }]
 
-  export default {
-    data () {
-      return {
-        tableData: [],
-        options: {
-          stripe: true
-        },
-        loading: false,
-        pagination: {
-          currentPage: 1,
-          pageSize: 10,
-          total: 0
-        },
-        queryParam: {
-          accountUid: '',
-          extend: 1,
-          hasKeys: '',
-          queryName: ''
-        },
-        hasKeysOptions: hasKeysOptions,
-        syncLoading: false,
-        accountOptions: []
-      }
-    },
-    name: 'AliyunRAMUserTable',
-    mounted () {
-      this.initPageSize()
+export default {
+  data () {
+    return {
+      tableData: [],
+      options: {
+        stripe: true
+      },
+      loading: false,
+      pagination: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
+      },
+      queryParam: {
+        accountUid: '',
+        extend: 1,
+        hasKeys: '',
+        queryName: ''
+      },
+      hasKeysOptions: hasKeysOptions,
+      syncLoading: false,
+      accountOptions: []
+    }
+  },
+  name: 'AliyunRAMUserTable',
+  mounted () {
+    this.initPageSize()
+    this.fetchData()
+    this.getAliyunAccount()
+  },
+  computed: {
+    ...mapState('d2admin/user', [
+      'info'
+    ])
+  },
+  components: {},
+  filters: {
+    getRAMUserType,
+    getRAMUserTypeText
+  },
+  methods: {
+    ...mapActions({
+      setPageSize: 'd2admin/user/set'
+    }),
+    handleSizeChange (size) {
+      this.pagination.pageSize = size
+      this.info.pageSize = size
+      this.setPageSize(this.info)
       this.fetchData()
-      this.getAliyunAccount()
     },
-    computed: {
-      ...mapState('d2admin/user', [
-        'info'
-      ])
-    },
-    components: {},
-    filters: {
-      getRAMUserType,
-      getRAMUserTypeText
-    },
-    methods: {
-      ...mapActions({
-        setPageSize: 'd2admin/user/set'
-      }),
-      handleSizeChange (size) {
-        this.pagination.pageSize = size
-        this.info.pageSize = size
-        this.setPageSize(this.info)
-        this.fetchData()
-      },
-      initPageSize () {
-        if (typeof (this.info.pageSize) !== 'undefined') {
-          this.pagination.pageSize = this.info.pageSize
-        }
-      },
-      getAliyunAccount () {
-        queryAliyunAccount()
-          .then(res => {
-            this.accountOptions = res.body
-          })
-      },
-      paginationCurrentChange (currentPage) {
-        this.pagination.currentPage = currentPage
-        this.fetchData()
-      },
-      handlerSync () {
-        this.syncLoading = true
-        syncAliyunRAMUser()
-          .then(res => {
-            this.syncLoading = false
-            this.fetchData()
-            this.$message({
-              type: 'success',
-              message: '同步完成!'
-            })
-          })
-      },
-      fetchData () {
-        this.loading = true
-        let requestBody = Object.assign({}, this.queryParam)
-        requestBody.page = this.pagination.currentPage
-        requestBody.length = this.pagination.pageSize
-        queryAliyunRAMUserPage(requestBody)
-          .then(res => {
-            this.tableData = res.body.data
-            this.pagination.total = res.body.totalNum
-            this.loading = false
-          })
+    initPageSize () {
+      if (typeof (this.info.pageSize) !== 'undefined') {
+        this.pagination.pageSize = this.info.pageSize
       }
+    },
+    getAliyunAccount () {
+      queryAliyunAccount()
+        .then(res => {
+          this.accountOptions = res.body
+        })
+    },
+    paginationCurrentChange (currentPage) {
+      this.pagination.currentPage = currentPage
+      this.fetchData()
+    },
+    handlerSync () {
+      this.syncLoading = true
+      syncAliyunRAMUser()
+        .then(res => {
+          this.syncLoading = false
+          this.fetchData()
+          this.$message({
+            type: 'success',
+            message: '同步完成!'
+          })
+        })
+    },
+    fetchData () {
+      this.loading = true
+      let requestBody = Object.assign({}, this.queryParam)
+      requestBody.page = this.pagination.currentPage
+      requestBody.length = this.pagination.pageSize
+      queryAliyunRAMUserPage(requestBody)
+        .then(res => {
+          this.tableData = res.body.data
+          this.pagination.total = res.body.totalNum
+          this.loading = false
+        })
     }
   }
+}
 </script>
 
 <style scoped>
-  .table-expand {
-    font-size: 0;
-  }
+.table-expand {
+  font-size: 0;
+}
 
-  .table-expand label {
-    width: 150px;
-    color: #99a9bf;
-  }
+.table-expand label {
+  width: 150px;
+  color: #99a9bf;
+}
 
-  .table-expand .el-form-item {
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 50%;
-  }
+.table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
+}
 
-  .input {
-    display: inline-block;
-    max-width: 200px;
-    margin-right: 5px;
-  }
+.input {
+  display: inline-block;
+  max-width: 200px;
+  margin-right: 5px;
+}
 
-  .select {
-    margin-right: 5px;
-  }
+.select {
+  margin-right: 5px;
+}
 
-  .button {
-    margin-right: 5px;
-  }
+.button {
+  margin-right: 5px;
+}
 </style>
