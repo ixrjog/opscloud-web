@@ -93,7 +93,12 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="80">
+      <el-table-column fixed="right" label="操作" width="120">
+        <template slot-scope="scope">
+          <el-button type="primary" plain size="mini" :loading="scope.row.syncing"
+                     @click="handleSyncInstance(scope.row)">同步
+          </el-button>
+        </template>
       </el-table-column>
     </el-table>
     <el-pagination background @current-change="paginationCurrentChange" :page-sizes="[10, 15, 20, 25, 30]"
@@ -116,7 +121,7 @@
   } from '@/filters/server.js'
   // API
   import {
-    queryCloudServerChargePage, syncCloudServerByKey
+    queryCloudServerChargePage, syncCloudServerByKey, syncCloudServerById
   } from '@api/cloud/cloud.server.js'
   import { mapActions, mapState } from 'vuex'
 
@@ -257,6 +262,17 @@
             this.tableData = res.body.data
             this.pagination.total = res.body.totalNum
             this.loading = false
+          })
+      },
+      handleSyncInstance (row) {
+        row.syncing = true
+        syncCloudServerById(row.id)
+          .then(res => {
+            this.$message({
+              message: '数据同步成功',
+              type: 'success'
+            })
+            this.fetchData()
           })
       },
       handleSync () {

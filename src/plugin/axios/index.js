@@ -78,6 +78,9 @@ service.interceptors.response.use(
             name: 'login'
           })
           break
+        case 10000:
+          // 前端代码自己处理错误
+          return dataAxios
         case 10101:
         case 10102:
         case 10103:

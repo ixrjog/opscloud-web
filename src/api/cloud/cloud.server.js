@@ -1,8 +1,10 @@
 import request from '@/plugin/axios'
 
+const baseUrl = '/cloud/server'
+
 export function queryCloudServerPage (cloudServerType, serverName, queryIp, serverStatus, page, length) {
   return request({
-    url: '/cloud/server/page/query?cloudServerType=' + cloudServerType + '&serverName=' + serverName +
+    url: baseUrl + '/page/query?cloudServerType=' + cloudServerType + '&serverName=' + serverName +
       '&queryIp=' + queryIp + '&serverStatus=' + serverStatus + '&page=' + page + '&length=' + length,
     method: 'get'
   })
@@ -10,7 +12,7 @@ export function queryCloudServerPage (cloudServerType, serverName, queryIp, serv
 
 export function queryCloudServerChargePage (data) {
   return request({
-    url: '/cloud/server/charge/page/query',
+    url: baseUrl + '/charge/page/query',
     method: 'post',
     data
   })
@@ -18,21 +20,21 @@ export function queryCloudServerChargePage (data) {
 
 export function syncCloudServerByKey (cloudServerKey) {
   return request({
-    url: '/cloud/server/sync?key=' + cloudServerKey,
+    url: baseUrl + '/sync?key=' + cloudServerKey,
     method: 'get'
   })
 }
 
 export function deleteCloudServerById (id) {
   return request({
-    url: '/cloud/server/del?id=' + id,
+    url: baseUrl + '/del?id=' + id,
     method: 'delete'
   })
 }
 
 export function cloudServerPowerOn (data) {
   return request({
-    url: '/cloud/server/power/on',
+    url: baseUrl + '/power/on',
     method: 'post',
     data
   })
@@ -40,8 +42,15 @@ export function cloudServerPowerOn (data) {
 
 export function cloudServerPowerStatus (data) {
   return request({
-    url: '/cloud/server/power/status',
+    url: baseUrl + '/power/status',
     method: 'post',
     data
+  })
+}
+
+export function syncCloudServerById (id) {
+  return request({
+    url: baseUrl + '/instance/sync?id=' + id,
+    method: 'put'
   })
 }

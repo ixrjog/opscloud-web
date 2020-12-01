@@ -6,13 +6,12 @@
         <el-tab-pane label="工单" name="workorder">
           <el-row :gutter="20">
             <el-col :span="8">
-              <el-card v-if="userDeptWarning">
+              <el-card v-if="userDeptWarning" shadow="never">
                 <el-alert title="您尚未加入部门" type="warning" show-icon style="margin-bottom: 5px"
-                          description="前往 OC3-用户管理-部门管理，选中部门后点加入" :closable="false">
+                          :closable="false">
+                  <span>前往 用户管理-部门管理，选中部门后点加入</span>
+                  <el-button type="text" style="margin-left: 10px; padding: 3px 0" @click="handlerOpenDeptMgmt">打开部门管理</el-button>
                 </el-alert>
-                <el-link href="https://oc.xinc818.com/index.html#/org/department">
-                  点击前往<i class="fa fa-ambulance" aria-hidden="true"></i>
-                </el-link>
               </el-card>
               <el-card shadow="never" v-if="!userDeptWarning">
                 <el-collapse accordion v-model="activeNames">
@@ -67,185 +66,191 @@
       <ticket-ons-topic-dialog ref="ticketOnsTopicDialog" :formStatus="formOnsTopicStatus"
                                @closeDialog="fetchData"></ticket-ons-topic-dialog>
       <ticket-ons-group-dialog ref="ticketOnsGroupDialog" :formStatus="formOnsGroupStatus"
-                                @closeDialog="fetchData"></ticket-ons-group-dialog>
+                               @closeDialog="fetchData"></ticket-ons-group-dialog>
     </template>
   </d2-container>
 </template>
 
 <script>
-// Component
-import TicketTable from '@/components/opscloud/workorder/TicketTable.vue'
-import TicketMgmtTable from '@/components/opscloud/workorder/TicketMgmtTable.vue'
-import TicketServerGroupDialog from '@/components/opscloud/workorder/TicketServerGroupDialog'
-import TicketUserGroupDialog from '@/components/opscloud/workorder/TicketUserGroupDialog'
-import TicketAuthRoleDialog from '@/components/opscloud/workorder/TicketAuthRoleDialog'
-import TicketRamPolicyDialog from '@/components/opscloud/workorder/TicketRAMPolicyDialog'
-import TicketOnsTopicDialog from '@/components/opscloud/workorder/TicketOnsTopicDialog'
-import TicketOnsGroupDialog from '@/components/opscloud/workorder/TicketOnsGroupDialog'
 
-// doc
-import DocDialog from '@/components/opscloud/doc/DocDialog.vue'
+  import util from '@/libs/util'
+  // Component
+  import TicketTable from '@/components/opscloud/workorder/TicketTable.vue'
+  import TicketMgmtTable from '@/components/opscloud/workorder/TicketMgmtTable.vue'
+  import TicketServerGroupDialog from '@/components/opscloud/workorder/TicketServerGroupDialog'
+  import TicketUserGroupDialog from '@/components/opscloud/workorder/TicketUserGroupDialog'
+  import TicketAuthRoleDialog from '@/components/opscloud/workorder/TicketAuthRoleDialog'
+  import TicketRamPolicyDialog from '@/components/opscloud/workorder/TicketRAMPolicyDialog'
+  import TicketOnsTopicDialog from '@/components/opscloud/workorder/TicketOnsTopicDialog'
+  import TicketOnsGroupDialog from '@/components/opscloud/workorder/TicketOnsGroupDialog'
 
-import { queryWorkbenchWorkorderGroup } from '@api/workorder/workorder.group.js'
-import { createWorkorderTicket } from '@api/workorder/workorder.ticket.js'
-import { checkUserInTheDepartment } from '@api/org/org.js'
+  // doc
+  import DocDialog from '@/components/opscloud/doc/DocDialog.vue'
 
-import { queryDocById } from '@api/doc/doc.js'
+  import { queryWorkbenchWorkorderGroup } from '@api/workorder/workorder.group.js'
+  import { createWorkorderTicket } from '@api/workorder/workorder.ticket.js'
+  import { checkUserInTheDepartment } from '@api/org/org.js'
 
-export default {
-  data () {
-    return {
-      userDeptWarning: true,
-      formDocStatus: {
-        readMode: true, // 阅读模式
-        visible: false
-      },
-      activeNames: [0],
-      tabActiveName: 'workorder',
-      title: '我的工单',
-      workorderGroups: [],
-      // operationType  0 编辑模式  1 审批模式  2 完成模式
-      formServerGroupStatus: {
-        visible: false,
-        operationType: 0
-      },
-      formUserGroupStatus: {
-        visible: false,
-        operationType: 0
-      },
-      formAuthRoleStatus: {
-        visible: false,
-        operationType: 0
-      },
-      formRAMPolicyStatus: {
-        visible: false,
-        operationType: 0
-      },
-      formOnsTopicStatus: {
-        visible: false,
-        operationType: 0
-      },
-      formOnsGroupStatus: {
-        visible: false,
-        operationType: 0
-      },
-      ticketCreateing: false,
-      ticketTableData: []
-    }
-  },
-  components: {
-    DocDialog,
-    TicketTable,
-    TicketMgmtTable,
-    TicketServerGroupDialog,
-    TicketUserGroupDialog,
-    TicketAuthRoleDialog,
-    TicketRamPolicyDialog,
-    TicketOnsTopicDialog,
-    TicketOnsGroupDialog
-  },
-  mounted () {
-    this.getWorkbenchWorkorderGroup()
-    this.setUserInTheDepartment()
-  },
-  methods: {
-    setUserInTheDepartment () {
-      checkUserInTheDepartment()
-        .then(res => {
-          this.userDeptWarning = false
-        })
-    },
-    getWorkbenchWorkorderGroup () {
-      queryWorkbenchWorkorderGroup()
-        .then(res => {
-          this.workorderGroups = res.body
-        })
-    },
-    handlerQueryTicket () {
-      this.$refs.ticketTable.fetchData()
-    },
-    handlerPreviewDoc (workorder) {
-      queryDocById(workorder.readmeId)
-        .then(res => {
-          // 返回数据
-          let doc = {
-            docContent: res.body.previewDoc
-          }
-          this.$refs.docDialog.initData(doc)
-          this.formDocStatus.visible = true
-        })
-    },
-    /**
-     * 创建工单票据
-     * @param workorder
-     */
-    createTicket (workorder) {
-      this.ticketCreateing = true
-      let requestParam = {
-        workorderKey: workorder.workorderKey
+  import { queryDocById } from '@api/doc/doc.js'
+
+  export default {
+    data () {
+      return {
+        userDeptWarning: false,
+        formDocStatus: {
+          readMode: true, // 阅读模式
+          visible: false
+        },
+        activeNames: [0],
+        tabActiveName: 'workorder',
+        title: '我的工单',
+        workorderGroups: [],
+        // operationType  0 编辑模式  1 审批模式  2 完成模式
+        formServerGroupStatus: {
+          visible: false,
+          operationType: 0
+        },
+        formUserGroupStatus: {
+          visible: false,
+          operationType: 0
+        },
+        formAuthRoleStatus: {
+          visible: false,
+          operationType: 0
+        },
+        formRAMPolicyStatus: {
+          visible: false,
+          operationType: 0
+        },
+        formOnsTopicStatus: {
+          visible: false,
+          operationType: 0
+        },
+        formOnsGroupStatus: {
+          visible: false,
+          operationType: 0
+        },
+        ticketCreateing: false,
+        ticketTableData: []
       }
-      createWorkorderTicket(requestParam)
-        .then(res => {
-          let ticket = res.body
-          ticket.workorder = workorder
-          switch (workorder.workorderKey) {
-            case 'SERVER_GROUP':
-              this.formServerGroupStatus.visible = true
-              this.formServerGroupStatus.operationType = 0
-              this.$refs.ticketServerGroupDialog.initData(ticket)
-              break
-            case 'USER_GROUP':
-              this.formUserGroupStatus.visible = true
-              this.formUserGroupStatus.operationType = 0
-              this.$refs.ticketUserGroupDialog.initData(ticket)
-              break
-            case 'AUTH_ROLE':
-              this.formAuthRoleStatus.visible = true
-              this.formAuthRoleStatus.operationType = 0
-              this.$refs.ticketAuthRoleDialog.initData(ticket)
-              break
-            case 'RAM_POLICY':
-              this.formRAMPolicyStatus.visible = true
-              this.formRAMPolicyStatus.operationType = 0
-              this.$refs.ticketRAMPolicyDialog.initData(ticket)
-              break
-            case 'ALIYUN_ONS_TOPIC':
-              this.formOnsTopicStatus.visible = true
-              this.formOnsTopicStatus.operationType = 0
-              this.$refs.ticketOnsTopicDialog.initData(ticket)
-              break
-            case 'ALIYUN_ONS_GROUP':
-              this.formOnsGroupStatus.visible = true
-              this.formOnsGroupStatus.operationType = 0
-              this.$refs.ticketOnsGroupDialog.initData(ticket)
-              break
-            default:
-              this.$message.error('工单类型错误或未配置!')
-          }
-          this.ticketCreateing = false
-        })
     },
-    fetchData () {
-      console.log('// TODO')
-      this.$refs.ticketTable.fetchData()
+    components: {
+      DocDialog,
+      TicketTable,
+      TicketMgmtTable,
+      TicketServerGroupDialog,
+      TicketUserGroupDialog,
+      TicketAuthRoleDialog,
+      TicketRamPolicyDialog,
+      TicketOnsTopicDialog,
+      TicketOnsGroupDialog
+    },
+    mounted () {
+      this.getWorkbenchWorkorderGroup()
+      this.setUserInTheDepartment()
+    },
+    methods: {
+      setUserInTheDepartment () {
+        checkUserInTheDepartment()
+          .then(res => {
+            this.userDeptWarning = !res.success
+          })
+      },
+      getWorkbenchWorkorderGroup () {
+        queryWorkbenchWorkorderGroup()
+          .then(res => {
+            this.workorderGroups = res.body
+          })
+      },
+      handlerQueryTicket () {
+        this.$refs.ticketTable.fetchData()
+      },
+      handlerOpenDeptMgmt () {
+        let url = 'https://oc.xinc818.com/index.html#/org/department'
+        util.open(url)
+      },
+      handlerPreviewDoc (workorder) {
+        queryDocById(workorder.readmeId)
+          .then(res => {
+            // 返回数据
+            let doc = {
+              docContent: res.body.previewDoc
+            }
+            this.$refs.docDialog.initData(doc)
+            this.formDocStatus.visible = true
+          })
+      },
+      /**
+       * 创建工单票据
+       * @param workorder
+       */
+      createTicket (workorder) {
+        this.ticketCreateing = true
+        let requestParam = {
+          workorderKey: workorder.workorderKey
+        }
+        createWorkorderTicket(requestParam)
+          .then(res => {
+            let ticket = res.body
+            ticket.workorder = workorder
+            switch (workorder.workorderKey) {
+              case 'SERVER_GROUP':
+                this.formServerGroupStatus.visible = true
+                this.formServerGroupStatus.operationType = 0
+                this.$refs.ticketServerGroupDialog.initData(ticket)
+                break
+              case 'USER_GROUP':
+                this.formUserGroupStatus.visible = true
+                this.formUserGroupStatus.operationType = 0
+                this.$refs.ticketUserGroupDialog.initData(ticket)
+                break
+              case 'AUTH_ROLE':
+                this.formAuthRoleStatus.visible = true
+                this.formAuthRoleStatus.operationType = 0
+                this.$refs.ticketAuthRoleDialog.initData(ticket)
+                break
+              case 'RAM_POLICY':
+                this.formRAMPolicyStatus.visible = true
+                this.formRAMPolicyStatus.operationType = 0
+                this.$refs.ticketRAMPolicyDialog.initData(ticket)
+                break
+              case 'ALIYUN_ONS_TOPIC':
+                this.formOnsTopicStatus.visible = true
+                this.formOnsTopicStatus.operationType = 0
+                this.$refs.ticketOnsTopicDialog.initData(ticket)
+                break
+              case 'ALIYUN_ONS_GROUP':
+                this.formOnsGroupStatus.visible = true
+                this.formOnsGroupStatus.operationType = 0
+                this.$refs.ticketOnsGroupDialog.initData(ticket)
+                break
+              default:
+                this.$message.error('工单类型错误或未配置!')
+            }
+            this.ticketCreateing = false
+          })
+      },
+      fetchData () {
+        console.log('// TODO')
+        this.$refs.ticketTable.fetchData()
+      }
     }
   }
-}
 </script>
 
 <style scoped>
-.table-expand {
-  font-size: 0;
-}
+  .table-expand {
+    font-size: 0;
+  }
 
-.table-expand label {
-  width: 150px;
-  color: #99a9bf;
-}
+  .table-expand label {
+    width: 150px;
+    color: #99a9bf;
+  }
 
-.table-expand .el-form-item {
-  margin-right: 0;
-  margin-bottom: 0;
-  width: 50%;
-}
+  .table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+  }
 </style>
