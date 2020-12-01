@@ -2,21 +2,21 @@
   <div>
     <el-dialog :title="title" :visible.sync="formStatus.visible" :before-close="closeDialog" width="40%">
       <div style="margin-bottom: 5px">
-        <el-form :model="topicData" label-width="120px" class="demo-ruleForm"
+        <el-form :model="topicData" ref="topicDataForm" :rules="rules" label-width="120px" class="demo-ruleForm"
                  label-position="left" v-loading="configuring" element-loading-text="工单配置中"
                  element-loading-spinner="el-icon-loading">
-          <el-form-item label="Topic">
+          <el-form-item label="Topic" prop="topic">
             <el-input v-model.lazy="topicData.topic" :readonly="topicChecked" @change="getOnsInstanceByTopic">
               <el-button slot="append" :icon="topicChecked?'el-icon-success':'el-icon-warning'"
                          @click="handlerCheck(topicData.topic)" :disabled="topicChecked"></el-button>
             </el-input>
-            <span class="span-font">
-              <p>1. Topic只能以 “TOPIC_”开头，包含大写英文、数字和下划线（_）</p>
-              <p>2. 长度限制在3~64个字符之间</p>
-              <p>3. Topic一旦创建，则无法修改</p>
-            </span>
+            <el-alert type="warning" show-icon :closable="false">
+              <el-row>1. Topic只能以 “TOPIC_”开头，包含大写英文、数字和下划线（_）</el-row>
+              <el-row>2. 长度限制在3~64个字符之间</el-row>
+              <el-row>3. Topic一旦创建，则无法修改</el-row>
+            </el-alert>
           </el-form-item>
-          <el-form-item label="消息类型">
+          <el-form-item label="消息类型" prop="messageType">
             <el-select v-model="topicData.messageType" placeholder="消息类型" :disabled="topicChecked" @change="dataChange">
               <el-option
                 v-for="item in messageTypeOptions"
@@ -25,6 +25,13 @@
                 :value="item.value">
               </el-option>
             </el-select>
+            <el-tooltip class="item" effect="dark" content="消息类型概述，点击查看" placement="right">
+              <el-link
+                href="https://help.aliyun.com/document_detail/172114.html?spm=5176.11065259.1996646101.searchclickresult.38ad6704oBWYjo"
+                :underline="false" target="_blank">
+                <i class="el-icon-info" style="margin-left: 5px;height: 200%"></i>
+              </el-link>
+            </el-tooltip>
           </el-form-item>
           <el-form-item label="已申请的实例">
             <el-tag v-for="item in topicData.nowInstanceList" :key="item.id" style="margin-left: 5px">
@@ -32,7 +39,7 @@
             </el-tag>
             <span v-if="JSON.stringify(topicData.nowInstanceList) === '[]'">该Topic目前无已申请的实例</span>
           </el-form-item>
-          <el-form-item label="可申请的实例">
+          <el-form-item label="可申请的实例" prop="instance">
             <el-select v-model="topicData.instance" placeholder="请选择实例" :disabled="disabled"
                        value-key="instanceId" filterable v-if="instanceOptions.length !==0" @change="dataChange">
               <el-option
@@ -47,7 +54,7 @@
             <span v-else>该Topic目前无可申请的实例</span>
           </el-form-item>
           <el-form-item label="备注" prop="remark">
-            <el-input v-model="topicData.remark" @change="dataChange" :readonly="disabled"></el-input>
+            <el-input v-model.trim="topicData.remark" @change="dataChange" :readonly="disabled"></el-input>
           </el-form-item>
         </el-form>
         <el-divider></el-divider>
@@ -60,7 +67,7 @@
       </div>
       <el-divider></el-divider>
       <div slot="footer" class="dialog-footer">
-        <span style="margin-right: 10px" v-if="formStatus.operationType != 2">
+        <span style="margin-right: 10px" v-if="formStatus.operationType !== 2">
           <el-button type="primary" v-if="ticket.ticketPhase === 'CREATED_TICKET'" plain size="mini"
                      @click="addTicketEntry">保存</el-button>
           <el-button type="primary" v-if="ticket.ticketPhase === 'CREATED_TICKET'" plain size="mini"
@@ -75,7 +82,6 @@
 </template>
 
 <script>
-
 import {
   addWorkorderTicketEntry,
   submitWorkorderTicket,
@@ -89,7 +95,7 @@ const topicData = {
   topic: 'TOPIC_',
   messageType: 0,
   nowInstanceList: [],
-  instance: {},
+  instance: '',
   remark: ''
 }
 
@@ -124,7 +130,22 @@ export default {
       topicChecked: false,
       configuring: false,
       disabled: false,
-      canSubmit: false
+      canSubmit: false,
+      rules: {
+        topic: [
+          { required: true, message: '请输入Topic', trigger: 'blur' },
+          { min: 3, max: 64, message: '长度在 3 到 64 个字符', trigger: 'blur' }
+        ],
+        instance: [
+          { required: true, message: '请选择MQ实例', trigger: 'change' }
+        ],
+        messageType: [
+          { required: true, message: '请选择消息类型', trigger: 'change' }
+        ],
+        remark: [
+          { required: true, message: '请输入备注，例如：用户领券消息', trigger: 'blur' }
+        ]
+      }
     }
   },
   mounted () {
@@ -178,6 +199,7 @@ export default {
       if (topic === 'TOPIC_') {
         return
       }
+      this.topicData.instance = ''
       queryOnsInstanceByTopic(topic)
         .then(res => {
           this.topicData.nowInstanceList = res.body.nowInstanceList
@@ -190,7 +212,7 @@ export default {
         })
     },
     handlerCheck (topic) {
-      if (topic === '') {
+      if (topic === '' || topic === 'TOPIC_') {
         this.$message.error('请输入Topic')
         return
       }
@@ -206,11 +228,12 @@ export default {
         })
     },
     submitTicket () {
+      debugger
       if (!this.topicChecked) {
         this.$message.error('请先校验Topic')
         return
       }
-      if (JSON.stringify(this.topicData.instance) === '{}') {
+      if (JSON.stringify(this.topicData.instance) === '{}' || this.topicData.instance.id === null) {
         this.$message.error('请选择一个实例')
         return
       }
@@ -237,25 +260,29 @@ export default {
         })
     },
     addTicketEntry () {
-      let data = {
-        'ticketEntry': {
-          'regionId': this.topicData.instance.regionId,
-          'instanceId': this.topicData.instance.instanceId,
-          'messageType': this.topicData.messageType,
-          'topic': this.topicData.topic.trim(),
-          'remark': this.topicData.remark
-        },
-        'workorderTicketId': this.ticket.id,
-        'businessId': this.topicData.instance.id,
-        'entryKey': this.ticket.workorder.workorderKey,
-        'entryStatus': 0,
-        'name': this.topicData.topic
-      }
-      addWorkorderTicketEntry(data)
-        .then(res => {
-          this.$message.success('保存成功')
-          this.canSubmit = true
-        })
+      this.$refs.topicDataForm.validate((valid) => {
+        if (valid) {
+          let data = {
+            'ticketEntry': {
+              'regionId': this.topicData.instance.regionId,
+              'instanceId': this.topicData.instance.instanceId,
+              'messageType': this.topicData.messageType,
+              'topic': this.topicData.topic.trim(),
+              'remark': this.topicData.remark
+            },
+            'workorderTicketId': this.ticket.id,
+            'businessId': this.topicData.instance.id,
+            'entryKey': this.ticket.workorder.workorderKey,
+            'entryStatus': 0,
+            'name': this.topicData.topic
+          }
+          addWorkorderTicketEntry(data)
+            .then(res => {
+              this.$message.success('保存成功')
+              this.canSubmit = true
+            })
+        }
+      })
     },
     dataChange () {
       this.canSubmit = false

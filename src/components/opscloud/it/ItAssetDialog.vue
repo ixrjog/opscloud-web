@@ -9,10 +9,10 @@
           <el-button slot="append" :icon="codeChecked?'el-icon-success':'el-icon-warning'"
                      @click="handlerCheck(assetData.assetCode)" :disabled="codeChecked"></el-button>
         </el-input>
-        <span class="span-font">
-          <p>1. 资产编码只能包含字母、数字和中划线（-）</p>
-          <p>2. 资产编码一旦创建，则无法修改</p>
-        </span>
+        <el-alert type="warning" show-icon :closable="false">
+          <el-row>1. 资产编码只能包含字母、数字和中划线（-）</el-row>
+          <el-row>2. 资产编码一旦创建，则无法修改</el-row>
+        </el-alert>
       </el-form-item>
       <el-form-item label="资产名称" prop="assetNameIds" required>
         <el-cascader v-model="assetData.assetNameIds" :options="assetTypeOptions"
@@ -48,7 +48,7 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item label="备注" prop="remark">
-        <el-input v-model="assetData.remark"></el-input>
+        <el-input v-model.trim="assetData.remark"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -108,6 +108,9 @@ export default {
       codeChecked: false,
       adding: false,
       rules: {
+        assetCode: [
+          { required: true, message: '请输入资产编码', trigger: 'blur' }
+        ],
         assetCompany: [
           { required: true, message: '请选择所属/承租公司', trigger: 'change' }
         ]

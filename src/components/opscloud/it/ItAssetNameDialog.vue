@@ -18,7 +18,7 @@
         <el-input v-model.trim="assetNameData.assetName" ref="assetNameInput"></el-input>
       </el-form-item>
       <el-form-item label="备注" prop="remark">
-        <el-input v-model="assetNameData.remark"></el-input>
+        <el-input v-model.trim="assetNameData.remark"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">

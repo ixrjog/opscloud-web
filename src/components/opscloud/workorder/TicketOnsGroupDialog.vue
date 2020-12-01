@@ -2,21 +2,21 @@
   <div>
     <el-dialog :title="title" :visible.sync="formStatus.visible" :before-close="closeDialog" width="40%">
       <div style="margin-bottom: 5px">
-        <el-form :model="groupData" label-width="120px" class="demo-ruleForm"
+        <el-form :model="groupData" ref="groupDataForm" :rules="rules" label-width="120px" class="demo-ruleForm"
                  label-position="left" v-loading="configuring" element-loading-text="工单配置中"
                  element-loading-spinner="el-icon-loading">
-          <el-form-item label="Group ID">
+          <el-form-item label="Group ID" prop="groupId">
             <el-input v-model.lazy="groupData.groupId" :readonly="groupChecked" @change="getOnsInstanceByGroupId">
               <el-button slot="append" :icon="groupChecked?'el-icon-success':'el-icon-warning'"
                          @click="handlerCheck(groupData.groupId)" :disabled="groupChecked"></el-button>
             </el-input>
-            <span class="span-font">
-              <p>1. 以 “GID_”开头，只能包含大写字母、数字和下划线（_）</p>
-              <p>2. 长度限制在 7~64 字符之间</p>
-              <p>3. Group ID 一旦创建，则无法修改</p>
-            </span>
+            <el-alert type="warning" show-icon :closable="false">
+              <el-row>1. 以 “GID_”开头，只能包含大写字母、数字和下划线（_）</el-row>
+              <el-row>2. 长度限制在 7~64 字符之间</el-row>
+              <el-row>3. Group ID 一旦创建，则无法修改</el-row>
+            </el-alert>
           </el-form-item>
-          <el-form-item label="协议类型">
+          <el-form-item label="协议类型" prop="groupType">
             <el-select v-model="groupData.groupType" placeholder="消息类型" disabled>
               <el-option
                 v-for="item in groupTypeOptions"
@@ -32,7 +32,7 @@
             </el-tag>
             <span v-if="JSON.stringify(groupData.nowInstanceList) === '[]'">该Group ID目前无已申请的实例</span>
           </el-form-item>
-          <el-form-item label="可申请的实例">
+          <el-form-item label="可申请的实例" prop="instance">
             <el-select v-model="groupData.instance" placeholder="请选择实例" :disabled="disabled"
                        value-key="instanceId" filterable v-if="instanceOptions.length !==0" @change="dataChange">
               <el-option
@@ -47,11 +47,11 @@
             <span v-else>该Group ID目前无可申请的实例</span>
           </el-form-item>
           <el-form-item label="备注" prop="remark">
-            <el-input v-model="groupData.remark" @change="dataChange" :readonly="disabled"></el-input>
+            <el-input v-model.trim="groupData.remark" @change="dataChange" :readonly="disabled"></el-input>
           </el-form-item>
         </el-form>
         <el-divider></el-divider>
-        <el-row :gutter="24" style="margin-top: 10px" v-if="ticket != '' && ticket.approvalDetail != null">
+        <el-row :gutter="24" style="margin-top: 10px" v-if="ticket !== '' && ticket.approvalDetail != null">
           <el-steps :active="ticket.approvalDetail.active" align-center>
             <el-step :title="step.title" :description="step.description"
                      v-for="step in ticket.approvalDetail.approvalSteps" :key="step.title"></el-step>
@@ -60,7 +60,7 @@
       </div>
       <el-divider></el-divider>
       <div slot="footer" class="dialog-footer">
-        <span style="margin-right: 10px" v-if="formStatus.operationType != 2">
+        <span style="margin-right: 10px" v-if="formStatus.operationType !== 2">
           <el-button type="primary" v-if="ticket.ticketPhase === 'CREATED_TICKET'" plain size="mini"
                      @click="addTicketEntry">保存</el-button>
           <el-button type="primary" v-if="ticket.ticketPhase === 'CREATED_TICKET'" plain size="mini"
@@ -89,7 +89,7 @@ const groupData = {
   groupType: 'tcp',
   groupId: 'GID_',
   nowInstanceList: [],
-  instance: {},
+  instance: '',
   remark: ''
 }
 
@@ -115,7 +115,22 @@ export default {
       groupChecked: false,
       configuring: false,
       disabled: false,
-      canSubmit: false
+      canSubmit: false,
+      rules: {
+        groupId: [
+          { required: true, message: '请输入GroupId', trigger: 'blur' },
+          { min: 3, max: 64, message: '长度在 7 到 64 个字符', trigger: 'blur' }
+        ],
+        instance: [
+          { required: true, message: '请选择MQ实例', trigger: 'change' }
+        ],
+        groupType: [
+          { required: true, message: '请选择协议类型', trigger: 'change' }
+        ],
+        remark: [
+          { required: true, message: '请输入备注，例如:营销促销优惠', trigger: 'blur' }
+        ]
+      }
     }
   },
   mounted () {
@@ -169,6 +184,7 @@ export default {
       if (groupId === 'GID_') {
         return
       }
+      this.groupData.instance = ''
       queryOcInstanceByGroupId(groupId)
         .then(res => {
           this.groupData.nowInstanceList = res.body.nowInstanceList
@@ -181,7 +197,7 @@ export default {
         })
     },
     handlerCheck (groupId) {
-      if (groupId === '') {
+      if (groupId === '' || groupId === 'GID_') {
         this.$message.error('请输入Group ID')
         return
       }
@@ -201,8 +217,8 @@ export default {
         this.$message.error('请先校验Group ID')
         return
       }
-      if (JSON.stringify(this.groupData.instance) === '{}') {
-        this.$message.error('请选择一个实例')
+      if (JSON.stringify(this.groupData.instance) === '{}' || this.groupData.instance.id === null) {
+        this.$message.error('请选择MQ实例')
         return
       }
       submitWorkorderTicket(this.ticket)
@@ -228,25 +244,29 @@ export default {
         })
     },
     addTicketEntry () {
-      let data = {
-        'ticketEntry': {
-          'regionId': this.groupData.instance.regionId,
-          'instanceId': this.groupData.instance.instanceId,
-          'groupType': this.groupData.groupType,
-          'groupId': this.groupData.groupId.trim(),
-          'remark': this.groupData.remark
-        },
-        'workorderTicketId': this.ticket.id,
-        'businessId': this.groupData.instance.id,
-        'entryKey': this.ticket.workorder.workorderKey,
-        'entryStatus': 0,
-        'name': this.groupData.groupId
-      }
-      addWorkorderTicketEntry(data)
-        .then(res => {
-          this.$message.success('保存成功')
-          this.canSubmit = true
-        })
+      this.$refs.groupDataForm.validate((valid) => {
+        if (valid) {
+          let data = {
+            'ticketEntry': {
+              'regionId': this.groupData.instance.regionId,
+              'instanceId': this.groupData.instance.instanceId,
+              'groupType': this.groupData.groupType,
+              'groupId': this.groupData.groupId.trim(),
+              'remark': this.groupData.remark
+            },
+            'workorderTicketId': this.ticket.id,
+            'businessId': this.groupData.instance.id,
+            'entryKey': this.ticket.workorder.workorderKey,
+            'entryStatus': 0,
+            'name': this.groupData.groupId
+          }
+          addWorkorderTicketEntry(data)
+            .then(res => {
+              this.$message.success('保存成功')
+              this.canSubmit = true
+            })
+        }
+      })
     },
     dataChange () {
       this.canSubmit = false

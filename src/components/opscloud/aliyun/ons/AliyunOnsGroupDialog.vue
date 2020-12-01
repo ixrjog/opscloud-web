@@ -1,9 +1,9 @@
 <template>
-  <el-dialog :title="title" :visible.sync="formStatus.visible" width="30%">
+  <el-dialog :title="title" :visible.sync="formStatus.visible" width="40%">
     <el-form :model="groupData" ref="groupDataForm" :rules="rules" label-width="80px" class="demo-ruleForm"
              label-position="left" v-loading="creating" element-loading-text="GroupId创建中"
              element-loading-spinner="el-icon-loading">
-      <el-form-item label="MQ实例" prop="instance" required>
+      <el-form-item label="MQ实例" prop="instance">
         <el-select v-model="groupData.instance" placeholder="请选择实例" @change="getRegionId"
                    value-key="instanceId">
           <el-option
@@ -16,18 +16,18 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="Group ID" prop="groupId" required>
+      <el-form-item label="Group ID" prop="groupId">
         <el-input v-model.trim="groupData.groupId" :readonly="groupChecked">
           <el-button slot="append" :icon="groupChecked?'el-icon-success':'el-icon-warning'"
                      @click="handlerCheck(groupData.groupId)" :disabled="groupChecked"></el-button>
         </el-input>
-        <span class="span-font">
-          <p>1. 以 “GID_”开头，只能包含大写字母、数字和下划线（_）</p>
-          <p>2. 长度限制在 7~64 字符之间</p>
-          <p>3. Group ID 一旦创建，则无法修改</p>
-        </span>
+        <el-alert type="warning" show-icon :closable="false">
+          <el-row>1. 以 “GID_”开头，只能包含大写字母、数字和下划线（_）</el-row>
+          <el-row>2. 长度限制在 7~64 字符之间</el-row>
+          <el-row>3. Group ID 一旦创建，则无法修改</el-row>
+        </el-alert>
       </el-form-item>
-      <el-form-item label="协议类型" prop="groupType" required>
+      <el-form-item label="协议类型" prop="groupType">
         <el-select v-model="groupData.groupType" placeholder="消息类型" disabled>
           <el-option
             v-for="item in groupTypeOptions"
@@ -38,7 +38,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="备注" prop="remark">
-        <el-input v-model="groupData.remark"></el-input>
+        <el-input v-model.trim="groupData.remark"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -54,7 +54,7 @@ import { onsGroupCreate, onsGroupCheck } from '@api/cloud/aliyun.ons.group.js'
 
 const groupData = {
   regionId: '',
-  instance: {},
+  instance: '',
   groupType: 'tcp',
   groupId: 'GID_',
   remark: ''
@@ -85,6 +85,9 @@ export default {
         ],
         groupType: [
           { required: true, message: '请选择协议类型', trigger: 'change' }
+        ],
+        remark: [
+          { required: true, message: '请输入备注，例如:营销促销优惠', trigger: 'blur' }
         ]
       }
     }
@@ -108,7 +111,7 @@ export default {
       this.groupData.regionId = item.regionId
     },
     handlerCheck (groupId) {
-      if (groupId === '') {
+      if (groupId === '' || groupId === 'GID_') {
         this.$message.error('请输入GroupId')
         return
       }
@@ -156,8 +159,4 @@ export default {
 </script>
 
 <style scoped>
-.span-font {
-  font-size: 6px;
-  color: #99a9bf;
-}
 </style>

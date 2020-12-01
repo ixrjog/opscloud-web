@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :title="title" :visible.sync="formStatus.visible" width="30%">
+  <el-dialog :title="title" :visible.sync="formStatus.visible" width="40%">
     <el-form :model="topicData" ref="topicDataForm" :rules="rules" label-width="80px" class="demo-ruleForm"
              label-position="left" v-loading="creating" element-loading-text="Topic创建中"
              element-loading-spinner="el-icon-loading">
@@ -21,11 +21,11 @@
           <el-button slot="append" :icon="topicChecked?'el-icon-success':'el-icon-warning'"
                      @click="handlerCheck(topicData.topic)" :disabled="topicChecked"></el-button>
         </el-input>
-        <span class="span-font">
-          <p>1. Topic只能以 “TOPIC_”开头，包含大写英文、数字和下划线（_）</p>
-          <p>2. 长度限制在3~64个字符之间</p>
-          <p>3. Topic一旦创建，则无法修改</p>
-        </span>
+        <el-alert type="warning" show-icon :closable="false">
+          <el-row>1. Topic只能以 “TOPIC_”开头，包含大写英文、数字和下划线（_）</el-row>
+          <el-row>2. 长度限制在3~64个字符之间</el-row>
+          <el-row>3. Topic一旦创建，则无法修改</el-row>
+        </el-alert>
       </el-form-item>
       <el-form-item label="消息类型" prop="messageType">
         <el-select v-model="topicData.messageType" placeholder="消息类型">
@@ -36,9 +36,16 @@
             :value="item.value">
           </el-option>
         </el-select>
+        <el-tooltip class="item" effect="dark" content="消息类型概述，点击查看" placement="right">
+          <el-link
+            href="https://help.aliyun.com/document_detail/172114.html?spm=5176.11065259.1996646101.searchclickresult.38ad6704oBWYjo"
+            :underline="false" target="_blank">
+            <i class="el-icon-info" style="margin-left: 5px"></i>
+          </el-link>
+        </el-tooltip>
       </el-form-item>
-      <el-form-item label="备注" prop="remark">
-        <el-input v-model="topicData.remark"></el-input>
+      <el-form-item label="备注" prop="remark" required>
+        <el-input v-model.trim="topicData.remark"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -54,7 +61,7 @@ import { onsTopicCreate, onsTopicCheck } from '@api/cloud/aliyun.ons.topic.js'
 
 const topicData = {
   regionId: '',
-  instance: {},
+  instance: '',
   messageType: 0,
   topic: 'TOPIC_',
   remark: ''
@@ -94,6 +101,9 @@ export default {
         ],
         messageType: [
           { required: true, message: '请选择消息类型', trigger: 'change' }
+        ],
+        remark: [
+          { required: true, message: '请输入备注，例如：用户领券消息', trigger: 'blur' }
         ]
       }
     }
@@ -117,7 +127,7 @@ export default {
       this.topicData.regionId = item.regionId
     },
     handlerCheck (topic) {
-      if (topic === '') {
+      if (topic === '' || topic === 'TOPIC_') {
         this.$message.error('请输入Topic')
         return
       }
@@ -165,8 +175,4 @@ export default {
 </script>
 
 <style scoped>
-.span-font {
-  font-size: 6px;
-  color: #99a9bf;
-}
 </style>
