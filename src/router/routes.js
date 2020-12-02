@@ -567,6 +567,15 @@ const frameIn = [
         }
       },
       {
+        path: '/it/dashboard',
+        name: 'it-dashboard',
+        component: () => import('@/pages/it/dashboard'),
+        meta: {
+          auth: true,
+          title: '资产统计'
+        }
+      },
+      {
         path: '/setting/opscloud/instance',
         name: 'setting-opscloud-instance',
         component: () => import('@/pages/setting/opscloud/instance'),

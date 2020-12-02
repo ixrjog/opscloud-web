@@ -114,3 +114,10 @@ export function queryOcItAssetDisposePage (data) {
     data
   })
 }
+
+export function queryItAssetStatistics () {
+  return request({
+    url: baseUrl + '/stats',
+    method: 'get'
+  })
+}
