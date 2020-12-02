@@ -106,3 +106,11 @@ export function updateReturnAsset (data) {
     data
   })
 }
+
+export function queryOcItAssetDisposePage (data) {
+  return request({
+    url: baseUrl + '/dispose/page/query',
+    method: 'post',
+    data
+  })
+}

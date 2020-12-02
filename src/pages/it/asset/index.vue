@@ -13,6 +13,10 @@
             :key="item.id"
             :label="item.assetCompanyName"
             :value="item.id">
+            <span style="float: left">{{ item.assetCompanyName }}</span>
+            <span style="float: right; color: #8492a6; font-size: 10px;margin-left: 20px">{{
+                item.assetCompanyType | assetCompanyTypeFilters
+              }}</span>
           </el-option>
         </el-select>
         <el-select v-model="queryParam.assetStatus" placeholder="选择状态" class="select" clearable>
@@ -23,14 +27,9 @@
             :value="item.value">
           </el-option>
         </el-select>
-        <el-select v-model="queryParam.assetNameId" placeholder="选择资产名称" class="select" clearable filterable>
-          <el-option
-            v-for="item in assetNameOptions"
-            :key="item.id"
-            :label="item.assetName"
-            :value="item.id">
-          </el-option>
-        </el-select>
+        <el-cascader :options="assetTypeOptions" :props="{ multiple: true }" clearable expandTrigger="hover"
+                     @change="handleChange" class="select" placeholder="选择分类/名称">
+        </el-cascader>
         <el-button @click="fetchData">查询</el-button>
         <el-button @click="handlerAdd" style="margin-left: 5px">新增</el-button>
       </el-row>
@@ -56,7 +55,11 @@
         </el-table-column>
         <el-table-column prop="assetType" label="资产分类"></el-table-column>
         <el-table-column prop="assetName" label="资产名称"></el-table-column>
-        <el-table-column prop="assetCompanyName" label="归属公司"></el-table-column>
+        <el-table-column label="归属公司">
+          <template slot-scope="props">
+            <span>{{ props.row| assetCompanyFilters }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="useTime" label="领用/借用日期"></el-table-column>
         <el-table-column prop="assetAddTime" label="购置/起租日期"></el-table-column>
         <el-table-column label="申领用户" width="220">
@@ -125,7 +128,7 @@ import {
   queryOcItAssetCompanyAll,
   queryOcItAssetPage,
   ableAsset,
-  queryOcItAssetNameAll
+  queryAssetTypeTree
 } from '@api/it/it.asset'
 import { mapActions, mapState } from 'vuex'
 
@@ -161,7 +164,7 @@ export default {
         queryName: '',
         assetCompany: '',
         assetStatus: '',
-        assetNameId: ''
+        assetNameIdList: []
       },
       companyOptions: [],
       assetStatusOptions: [{
@@ -177,7 +180,7 @@ export default {
         value: 4,
         label: '处置'
       }],
-      assetNameOptions: []
+      assetTypeOptions: []
     }
   },
   computed: {
@@ -187,8 +190,8 @@ export default {
   },
   mounted () {
     this.getAssetCompany()
-    this.getAssetName()
     this.fetchData()
+    this.getAssetTypeTree()
   },
   components: {
     ItAssetDialog,
@@ -232,6 +235,27 @@ export default {
         return ''
       }
       return user.username + '<' + user.displayName + '>'
+    },
+    assetCompanyFilters (assetCompany) {
+      if (assetCompany === null || assetCompany === '') {
+        return ''
+      }
+      if (assetCompany.assetCompanyType === 1) {
+        return assetCompany.assetCompanyName + ' <采购>'
+      }
+      if (assetCompany.assetCompanyType === 2) {
+        return assetCompany.assetCompanyName + ' <租赁>'
+      }
+      return ''
+    },
+    assetCompanyTypeFilters (assetCompanyType) {
+      if (assetCompanyType === 1) {
+        return '采购'
+      }
+      if (assetCompanyType === 2) {
+        return '租赁'
+      }
+      return ''
     }
   },
   methods: {
@@ -255,10 +279,10 @@ export default {
           this.companyOptions = res.body
         })
     },
-    getAssetName () {
-      queryOcItAssetNameAll()
+    getAssetTypeTree () {
+      queryAssetTypeTree()
         .then(res => {
-          this.assetNameOptions = res.body
+          this.assetTypeOptions = res.body
         })
     },
     getAssetStatusColor (assetStatus) {
@@ -326,7 +350,7 @@ export default {
         'queryName': this.queryParam.queryName,
         'assetCompany': this.queryParam.assetCompany === '' ? -1 : this.queryParam.assetCompany,
         'assetStatus': this.queryParam.assetStatus === '' ? -1 : this.queryParam.assetStatus,
-        'assetNameId': this.queryParam.assetNameId === '' ? -1 : this.queryParam.assetNameId,
+        'assetNameIdList': this.queryParam.assetNameIdList,
         'page': this.pagination.currentPage,
         'length': this.pagination.pageSize
       }
@@ -343,6 +367,12 @@ export default {
     },
     onError (e) {
       this.$message.error('抱歉，复制失败！')
+    },
+    handleChange (value) {
+      this.queryParam.assetNameIdList = []
+      value.map(assetNameId => {
+        this.queryParam.assetNameIdList.push(assetNameId[(assetNameId.length - 1)])
+      })
     }
   }
 }
@@ -358,5 +388,4 @@ export default {
 .select {
   margin-right: 5px;
 }
-
 </style>

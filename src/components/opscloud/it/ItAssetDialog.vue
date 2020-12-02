@@ -16,7 +16,7 @@
       </el-form-item>
       <el-form-item label="资产名称" prop="assetNameIds" required>
         <el-cascader v-model="assetData.assetNameIds" :options="assetTypeOptions"
-                     expandTrigger="hover" @change="handleChange"></el-cascader>
+                     expandTrigger="hover" @change="handleChange" filterable></el-cascader>
         <el-button-group style="margin-left:5px">
           <el-button type="primary" icon="el-icon-circle-plus-outline" @click="assetNameAdd" size="mini"
                      plain></el-button>
@@ -53,7 +53,7 @@
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="formStatus.visible = false">取消</el-button>
-      <el-button type="primary" @click="assetAdd" :disabled="adding">创建</el-button>
+      <el-button type="primary" @click="assetAdd" :disabled="adding">保存</el-button>
     </div>
     <it-asset-name-dialog ref="itAssetNameDialog" :formStatus="itAssetNameDialogStatus"
                           @closeDialog="getAssetTypeTree"></it-asset-name-dialog>
@@ -181,7 +181,6 @@ export default {
     },
     handleChange (value) {
       this.assetData.assetNameId = value[(value.length - 1)]
-      console.log(this.assetData.assetNameId)
     },
     assetNameAdd () {
       this.itAssetNameDialogStatus.visible = true

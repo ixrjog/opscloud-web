@@ -558,6 +558,15 @@ const frameIn = [
         }
       },
       {
+        path: '/it/asset/dispose',
+        name: 'it-asset-dispose',
+        component: () => import('@/pages/it/asset/dispose'),
+        meta: {
+          auth: true,
+          title: '资产处置'
+        }
+      },
+      {
         path: '/setting/opscloud/instance',
         name: 'setting-opscloud-instance',
         component: () => import('@/pages/setting/opscloud/instance'),
