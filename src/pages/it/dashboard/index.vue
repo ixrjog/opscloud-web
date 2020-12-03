@@ -5,7 +5,7 @@
         <h1>{{ title }}</h1>
       </div>
       <el-row :gutter="24">
-        <el-col :span="12">
+        <el-col :span="16">
           <it-asset-stats-report></it-asset-stats-report>
         </el-col>
       </el-row>

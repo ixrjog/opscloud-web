@@ -199,7 +199,6 @@ export default {
       if (topic === 'TOPIC_') {
         return
       }
-      this.topicData.instance = ''
       queryOnsInstanceByTopic(topic)
         .then(res => {
           this.topicData.nowInstanceList = res.body.nowInstanceList

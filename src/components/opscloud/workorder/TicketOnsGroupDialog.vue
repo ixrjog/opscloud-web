@@ -184,7 +184,6 @@ export default {
       if (groupId === 'GID_') {
         return
       }
-      this.groupData.instance = ''
       queryOcInstanceByGroupId(groupId)
         .then(res => {
           this.groupData.nowInstanceList = res.body.nowInstanceList
