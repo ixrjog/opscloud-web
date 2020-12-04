@@ -9,6 +9,7 @@
           <el-card shadow="hover">
             <div slot="header">
               <span class="span-font-label">空闲</span>
+              <img :src="freeImageUrl" class="img-style">
             </div>
             <span class="font-class">{{ totalStats.freeTotal }}</span>
           </el-card>
@@ -17,6 +18,7 @@
           <el-card shadow="hover">
             <div slot="header">
               <span class="span-font-label">在用</span>
+              <img :src="usedImageUrl" class="img-style">
             </div>
             <span class="font-class">{{ totalStats.usedTotal }}</span>
           </el-card>
@@ -25,6 +27,7 @@
           <el-card shadow="hover">
             <div slot="header">
               <span class="span-font-label">借用</span>
+              <img :src="borrowImageUrl" class="img-style">
             </div>
             <span class="font-class">{{ totalStats.borrowTotal }}</span>
           </el-card>
@@ -33,6 +36,7 @@
           <el-card shadow="hover">
             <div slot="header">
               <span class="span-font-label">处置</span>
+              <img :src="disposeImageUrl" class="img-style">
             </div>
             <span class="font-class">{{ totalStats.disposeTotal }}</span>
           </el-card>
@@ -113,7 +117,11 @@ export default {
         length: 20
       },
       tableData: [],
-      loading: false
+      loading: false,
+      freeImageUrl: require('@/static/icons/asset-free.svg'),
+      usedImageUrl: require('@/static/icons/asset-used.svg'),
+      borrowImageUrl: require('@/static/icons/asset-borrow.svg'),
+      disposeImageUrl: require('@/static/icons/asset-dispose.svg')
     }
   },
   computed: {},
@@ -217,5 +225,10 @@ export default {
   font-size: 50px;
   color: #06b8ee;
   font-weight: lighter;
+  margin-right: 10px;
+}
+.img-style {
+  width: 30px;
+  float: right;
 }
 </style>
