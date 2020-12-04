@@ -1,17 +1,15 @@
 <template>
   <d2-container>
     <template>
-      <div>
-        <h1>{{ title }}</h1>
-      </div>
-      <el-row :gutter="24">
-        <el-col :span="8">
-          <help-desk-type-report></help-desk-type-report>
-        </el-col>
-        <el-col :span="16">
-          <help-desk-report></help-desk-report>
-        </el-col>
-      </el-row>
+      <h1>{{ title }}</h1>
+      <el-tabs v-model="activeName">
+        <el-tab-pane label="HelpDesk报表" name="report">
+          <help-desk-report-table></help-desk-report-table>
+        </el-tab-pane>
+        <el-tab-pane label="HelpDesk详情" name="detail">
+          <help-desk-table></help-desk-table>
+        </el-tab-pane>
+      </el-tabs>
     </template>
   </d2-container>
 </template>
@@ -19,35 +17,27 @@
 <script>
 
 // Component
-import helpDeskReport from '@/components/opscloud/dashboard/HelpDeskReport'
-import helpDeskTypeReport from '@/components/opscloud/dashboard/HelpDeskTypeReport'
+import HelpDeskReportTable from '@/components/opscloud/helpdesk/HelpDeskReportTable'
+import HelpDeskTable from '@/components/opscloud/helpdesk/HelpDeskTable'
 
 export default {
   name: 'HelpDeskReport',
   data () {
     return {
-      title: 'HelpDesk表报'
+      title: 'HelpDesk',
+      activeName: 'report'
     }
   },
   computed: {},
   mounted () {
   },
   components: {
-    helpDeskReport,
-    helpDeskTypeReport
+    HelpDeskReportTable,
+    HelpDeskTable
   },
   methods: {}
 }
 </script>
 
-<style>
-  .el-row {
-    margin-left: 0px;
-    margin-bottom: 5px;
-
-  &
-  :last-child {
-  }
-
-  }
+<style scoped>
 </style>

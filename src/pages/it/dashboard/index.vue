@@ -52,7 +52,7 @@
             <el-row>
               <span style="color: #99a9bf">最新入库资产</span>
               <span style="float: right">
-              <el-tag>资产总计：{{ totalStats.total }}</el-tag>
+              <el-tag>资产总计: {{ totalStats.total }}</el-tag>
               <el-tooltip class="item" effect="dark" content="点击查看资产列表详情" placement="top">
                 <el-link href="https://oc.xinc818.com/index.html#/it/asset" :underline="false" target="_blank">
                   <i style="margin-left: 5px" class="el-icon-position"></i>
