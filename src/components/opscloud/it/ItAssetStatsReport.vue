@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-card class="box-card" shadow="hover">
-      <div id="itAssetStatsReport" style="width: 100%; height: 400px;"></div>
+      <div id="itAssetStatsReport" style="width: 100%; height: 460px;"></div>
     </el-card>
   </div>
 </template>

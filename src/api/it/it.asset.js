@@ -121,3 +121,24 @@ export function queryItAssetStatistics () {
     method: 'get'
   })
 }
+
+export function queryItAssetTotalStats () {
+  return request({
+    url: baseUrl + '/total/stats',
+    method: 'get'
+  })
+}
+
+export function queryItAssetMonthStatistics () {
+  return request({
+    url: baseUrl + '/month/stats',
+    method: 'get'
+  })
+}
+
+export function refreshAssetMonthStatistics () {
+  return request({
+    url: baseUrl + '/month/stats/refresh',
+    method: 'get'
+  })
+}

@@ -227,7 +227,6 @@ export default {
         })
     },
     submitTicket () {
-      debugger
       if (!this.topicChecked) {
         this.$message.error('请先校验Topic')
         return

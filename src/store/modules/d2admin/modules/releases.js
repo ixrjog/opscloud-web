@@ -9,12 +9,12 @@ export default {
      */
     versionShow () {
       util.log.capsule('Opscloud', `v3.0.0`)
-      console.log('OC Manage  https://github.com/ixrjog/opsCloud')
-      console.log('请不要吝啬您的 star，谢谢 ~')
-      util.log.capsule('D2Admin', `v${process.env.VUE_APP_VERSION}`)
-      console.log('前端框架D2 Admin  https://github.com/d2-projects/d2-admin')
-      // console.log('D2 Crud   https://github.com/d2-projects/d2-crud')
-      console.log('Document  https://d2.pub/zh/doc/d2-admin')
+      // console.log('OC Manage  https://github.com/ixrjog/opsCloud')
+      // console.log('请不要吝啬您的 star，谢谢 ~')
+      // util.log.capsule('D2Admin', `v${process.env.VUE_APP_VERSION}`)
+      // console.log('前端框架D2 Admin  https://github.com/d2-projects/d2-admin')
+      // // console.log('D2 Crud   https://github.com/d2-projects/d2-crud')
+      // console.log('Document  https://d2.pub/zh/doc/d2-admin')
     }
   }
 }
