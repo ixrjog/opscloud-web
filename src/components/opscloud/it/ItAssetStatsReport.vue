@@ -34,7 +34,6 @@ export default {
   methods: {
     initChart () {
       let myChart = echarts.init(document.getElementById('itAssetStatsReport'))
-      // 指定图表的配置项和数据
       let nameStats = this.nameStatistics
       let typeStats = this.typeStatistics
       let legendDate = this.legendDate
@@ -51,7 +50,7 @@ export default {
         },
         series: [
           {
-            name: '访问来源',
+            name: '资产分类',
             type: 'pie',
             selectedMode: 'single',
             radius: [0, '30%'],
@@ -65,20 +64,15 @@ export default {
             data: typeStats
           },
           {
-            name: '访问来源',
+            name: '资产名称',
             type: 'pie',
-            radius: ['50%', '65%'],
+            radius: ['40%', '55%'],
             label: {
-              formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
+              formatter: '{per|{d}%}\n{hr|}\n {b|{b}：}{c} ',
               backgroundColor: '#eee',
               borderColor: '#aaa',
               borderWidth: 1,
               borderRadius: 4,
-              shadowBlur: 3,
-              shadowOffsetX: 2,
-              shadowOffsetY: 2,
-              shadowColor: '#999',
-              padding: [0, 7],
               rich: {
                 a: {
                   color: '#999',
@@ -92,13 +86,13 @@ export default {
                   height: 0
                 },
                 b: {
-                  fontSize: 16,
-                  lineHeight: 33
+                  fontSize: 12,
+                  lineHeight: 20
                 },
                 per: {
                   color: '#eee',
                   backgroundColor: '#334455',
-                  padding: [2, 4],
+                  padding: [0, 2],
                   borderRadius: 2
                 }
               }
@@ -107,7 +101,6 @@ export default {
           }
         ]
       }
-      // 使用刚指定的配置项和数据显示图表。
       myChart.setOption(option)
     },
     fetchData () {
