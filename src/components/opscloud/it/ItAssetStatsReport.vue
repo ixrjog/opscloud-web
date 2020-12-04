@@ -68,7 +68,7 @@ export default {
             type: 'pie',
             radius: ['40%', '55%'],
             label: {
-              formatter: '{per|{d}%}\n{hr|}\n {b|{b}：}{c} ',
+              formatter: '{per|{d}%}\n{hr|}\n {b|{b}:}{c} ',
               backgroundColor: '#eee',
               borderColor: '#aaa',
               borderWidth: 1,
