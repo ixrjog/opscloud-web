@@ -126,8 +126,13 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="180">
+        <el-table-column fixed="right" label="操作" width="250">
           <template slot-scope="scope">
+            <el-button :type="scope.row.monitorStatus === 0 ? 'warning' : 'success'" plain size="mini" @click="handlerSetMonitorHostStatus(scope.row)"
+                       style="margin-left: 5px" :loading="scope.row.isSetting"
+                       v-if="scope.row.monitorStatus !== -1">{{ scope.row.monitorStatus === 0 ? '禁用' : '启用' }}
+            </el-button>
+
             <el-button type="success" plain size="mini" @click="handlerCreateMonitorHost(scope.row)"
                        style="margin-left: 5px" :loading="scope.row.isCreating"
                        v-if="scope.row.monitorStatus === -1">创建
@@ -170,7 +175,7 @@
   import { queryEnvPage } from '@api/env/env.js'
   import { queryTagPage } from '@api/tag/tag.js'
   import { queryServerGroupPage } from '@api/server/server.group.js'
-  import { queryMonitorHostPage, syncMonitorHostStatus, createMonitorHost, pushMonitorHost } from '@api/monitor/monitor.js'
+  import { queryMonitorHostPage, syncMonitorHostStatus, createMonitorHost, pushMonitorHost, setMonitorHostStatus } from '@api/monitor/monitor.js'
 
   const monitorStatusOptions = [{
     value: 0,
@@ -325,6 +330,19 @@
             row.isCreating = false
             if (res.success) {
               this.$message.success('添加监控主机成功')
+              this.fetchData()
+            } else {
+              this.$message.error(res.msg)
+            }
+          })
+      },
+      handlerSetMonitorHostStatus (row) {
+        row.isSetting = true
+        setMonitorHostStatus(row.id)
+          .then(res => {
+            row.isSetting = false
+            if (res.success) {
+              this.$message.success('设置监控主机状态成功')
               this.fetchData()
             } else {
               this.$message.error(res.msg)

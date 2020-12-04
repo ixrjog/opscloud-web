@@ -32,3 +32,10 @@ export function pushMonitorHost (data) {
     data
   })
 }
+
+export function setMonitorHostStatus (id) {
+  return request({
+    url: baseUrl + '/host/status/set?id=' + id,
+    method: 'put'
+  })
+}
