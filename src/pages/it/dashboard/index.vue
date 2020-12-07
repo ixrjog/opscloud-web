@@ -62,7 +62,7 @@
             </el-row>
             <div style="margin-bottom: 6px"></div>
             <el-table :data="tableData" style="width: 100%" v-loading="loading">
-              <el-table-column prop="assetCode" label="资产编码"></el-table-column>
+              <el-table-column prop="assetCode" label="资产编码" show-overflow-tooltip></el-table-column>
               <el-table-column label="资产状态">
                 <template slot-scope="props">
                   <el-tag :type="getAssetStatusColor(props.row.assetStatus)">
@@ -73,8 +73,8 @@
                   </el-tag>
                 </template>
               </el-table-column>
-              <el-table-column prop="assetName" label="资产名称"></el-table-column>
-              <el-table-column prop="assetAddTime" label="购置/起租日期"></el-table-column>
+              <el-table-column prop="assetName" label="资产名称" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="assetAddTime" label="购置/起租日期" show-overflow-tooltip></el-table-column>
             </el-table>
           </el-card>
         </el-col>
