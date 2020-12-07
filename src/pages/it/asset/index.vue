@@ -6,6 +6,17 @@
       </div>
       <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
         <el-input v-model.trim="queryParam.queryName" placeholder="输入资产编码模糊查询" class="input"/>
+        <el-select v-model="queryParam.assetStatus" placeholder="选择状态" class="select" clearable>
+          <el-option
+            v-for="item in assetStatusOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <el-cascader :options="assetTypeOptions" :props="{ multiple: true }" clearable expandTrigger="hover"
+                     @change="handleChange" class="cascader" placeholder="选择分类/名称" collapse-tags>
+        </el-cascader>
         <el-select v-model="queryParam.assetCompany" filterable clearable class="select"
                    remote placeholder="选择归属公司" :remote-method="getAssetCompany">
           <el-option
@@ -19,17 +30,6 @@
               }}</span>
           </el-option>
         </el-select>
-        <el-select v-model="queryParam.assetStatus" placeholder="选择状态" class="select" clearable>
-          <el-option
-            v-for="item in assetStatusOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
-        <el-cascader :options="assetTypeOptions" :props="{ multiple: true }" clearable expandTrigger="hover"
-                     @change="handleChange" class="select" placeholder="选择分类/名称">
-        </el-cascader>
         <el-button @click="fetchData">查询</el-button>
         <el-button @click="handlerAdd" style="margin-left: 5px">新增</el-button>
       </el-row>
@@ -387,5 +387,10 @@ export default {
 
 .select {
   margin-right: 5px;
+}
+
+.cascader {
+  margin-right: 5px;
+  width: 220px;
 }
 </style>
