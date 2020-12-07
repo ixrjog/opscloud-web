@@ -9,7 +9,7 @@
           <el-button slot="append" :icon="codeChecked?'el-icon-success':'el-icon-warning'"
                      @click="handlerCheck(assetData.assetCode)" :disabled="codeChecked"></el-button>
         </el-input>
-        <el-alert type="warning" show-icon :closable="false">
+        <el-alert type="warning" show-icon :closable="false" style="margin-top: 10px">
           <el-row>1. 资产编码只能包含字母、数字和中划线（-）</el-row>
           <el-row>2. 资产编码一旦创建，则无法修改</el-row>
         </el-alert>

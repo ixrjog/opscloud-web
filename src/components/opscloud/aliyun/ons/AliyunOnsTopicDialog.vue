@@ -20,7 +20,7 @@
           <el-button slot="append" :icon="topicChecked?'el-icon-success':'el-icon-warning'"
                      @click="handlerCheck(topicData.topic)" :disabled="topicChecked"></el-button>
         </el-input>
-        <el-alert type="warning" show-icon :closable="false">
+        <el-alert type="warning" show-icon :closable="false" style="margin-top: 10px">
           <el-row>1. Topic只能以 “TOPIC_”开头，包含大写英文、数字和下划线（_）</el-row>
           <el-row>2. 长度限制在3~64个字符之间</el-row>
           <el-row>3. Topic一旦创建，则无法修改</el-row>
