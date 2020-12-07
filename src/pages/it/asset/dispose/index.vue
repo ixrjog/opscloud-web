@@ -126,6 +126,9 @@ export default {
       if (disposeType === 4) {
         return '转让出售'
       }
+      if (disposeType === 5) {
+        return '维修处理'
+      }
       return ''
     }
   },

@@ -61,6 +61,9 @@ export default {
       }, {
         value: 4,
         label: '转让出售'
+      }, {
+        value: 5,
+        label: '维修处理'
       }],
       assetCode: ''
     }
