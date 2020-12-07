@@ -4,10 +4,10 @@
       <h1>{{ title }}</h1>
       <el-tabs v-model="activeName">
         <el-tab-pane label="HelpDesk报表" name="report">
-          <help-desk-report-table></help-desk-report-table>
+          <help-desk-report-table ref="helpDeskReportTable"></help-desk-report-table>
         </el-tab-pane>
         <el-tab-pane label="HelpDesk详情" name="detail">
-          <help-desk-table></help-desk-table>
+          <help-desk-table @refreshData="refreshData"></help-desk-table>
         </el-tab-pane>
       </el-tabs>
     </template>
@@ -35,7 +35,11 @@ export default {
     HelpDeskReportTable,
     HelpDeskTable
   },
-  methods: {}
+  methods: {
+    refreshData () {
+      this.$refs.helpDeskReportTable.refreshData()
+    }
+  }
 }
 </script>
 

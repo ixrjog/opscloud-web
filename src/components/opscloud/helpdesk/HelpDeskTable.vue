@@ -37,7 +37,7 @@
                    :page-size="pagination.pageSize">
     </el-pagination>
     <help-desk-dialog ref="helpDeskDialog" :formStatus="helpDeskDialogStatus"
-                      @closeDialog="fetchData"></help-desk-dialog>
+                      @closeDialog="dataChange"></help-desk-dialog>
   </div>
 </template>
 
@@ -150,7 +150,7 @@ export default {
       delHelpdeskReport(row.id)
         .then(res => {
           this.$message.success('删除成功')
-          this.fetchData()
+          this.dataChange()
         })
     },
     handlerAdd () {
@@ -174,6 +174,10 @@ export default {
           this.pagination.total = res.body.totalNum
           this.loading = false
         })
+    },
+    dataChange () {
+      this.fetchData()
+      this.$emit('refreshData')
     }
   }
 }

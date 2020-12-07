@@ -2,10 +2,10 @@
   <div>
     <el-row :gutter="24">
       <el-col :span="8">
-        <help-desk-type-report></help-desk-type-report>
+        <help-desk-type-report ref="helpDeskReport"></help-desk-type-report>
       </el-col>
       <el-col :span="16">
-        <help-desk-report></help-desk-report>
+        <help-desk-report ref="helpDeskTypeReport"></help-desk-report>
       </el-col>
     </el-row>
   </div>
@@ -13,8 +13,8 @@
 
 <script>
 // Component
-import helpDeskReport from '@/components/opscloud/dashboard/HelpDeskReport'
-import helpDeskTypeReport from '@/components/opscloud/dashboard/HelpDeskTypeReport'
+import HelpDeskReport from '@/components/opscloud/dashboard/HelpDeskReport'
+import HelpDeskTypeReport from '@/components/opscloud/dashboard/HelpDeskTypeReport'
 
 export default {
   name: 'HelpDeskReportTable',
@@ -27,10 +27,15 @@ export default {
   mounted () {
   },
   components: {
-    helpDeskReport,
-    helpDeskTypeReport
+    HelpDeskReport,
+    HelpDeskTypeReport
   },
-  methods: {}
+  methods: {
+    refreshData () {
+      this.$refs.helpDeskReport.handlerRefresh()
+      this.$refs.helpDeskTypeReport.handlerRefresh()
+    }
+  }
 }
 </script>
 
