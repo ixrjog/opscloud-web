@@ -77,7 +77,7 @@
                 </el-col>
                 <el-col :span="12">
                   <el-form-item label="命名空间">
-                    <el-tag>{{ item.independentNaming |namingFilters }}</el-tag>
+                    <el-tag type="success">{{ item.independentNaming |namingFilters }}</el-tag>
                   </el-form-item>
                 </el-col>
               </el-row>

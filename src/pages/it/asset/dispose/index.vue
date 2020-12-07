@@ -32,7 +32,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="disposeTime" label="处置日期"></el-table-column>
-        <el-table-column prop="remark" label="备注"></el-table-column>
+        <el-table-column prop="remark" label="备注" show-overflow-tooltip></el-table-column>
         <el-table-column fixed="right" label="操作" width="280">
           <template slot-scope="scope">
             <el-popconfirm @onConfirm="handlerAble(scope.row)" title="确定要还原此资产吗">

@@ -25,9 +25,8 @@
             :label="item.assetCompanyName"
             :value="item.id">
             <span style="float: left">{{ item.assetCompanyName }}</span>
-            <span style="float: right; color: #8492a6; font-size: 10px;margin-left: 20px">{{
-                item.assetCompanyType | assetCompanyTypeFilters
-              }}</span>
+            <span style="float: right; color: #8492a6; font-size: 10px;margin-left: 20px">
+              {{ item.assetCompanyType | assetCompanyTypeFilters }}</span>
           </el-option>
         </el-select>
         <el-button @click="fetchData">查询</el-button>
@@ -105,7 +104,6 @@
                      layout="total, sizes, prev, pager, next, jumper" :total="pagination.total"
                      :current-page="pagination.currentPage" :page-size="pagination.pageSize">
       </el-pagination>
-      <!-- namespace编辑对话框 -->
       <it-asset-dialog ref="itAssetDialog" :formStatus="itAssetDialogStatus" @closeDialog="fetchData"></it-asset-dialog>
       <it-asset-apply-dialog ref="itAssetApplyDialog" :formStatus="itAssetApplyDialogStatus"
                              @closeDialog="fetchData"></it-asset-apply-dialog>
