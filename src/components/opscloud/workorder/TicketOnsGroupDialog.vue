@@ -3,7 +3,7 @@
     <el-dialog :title="title" :visible.sync="formStatus.visible" :before-close="closeDialog" width="40%">
       <el-alert title="工单执行失败" type="error" show-icon style="margin-bottom: 5px"
                 :closable="false" :description="ticketEntry.entryResult"
-                v-if="ticketEntry !== '' && ticket.ticketPhase === 'FINALIZED' && ticketEntry.entryStatus !== 1">
+                v-if="ticketEntry !== '' && ticket.ticketPhase === 'FINALIZED' && !ticket.executorResult">
       </el-alert>
       <div style="margin-bottom: 5px">
         <el-form :model="groupData" ref="groupDataForm" :rules="rules" label-width="120px" class="demo-ruleForm"
@@ -36,7 +36,7 @@
             </el-tag>
             <span v-if="JSON.stringify(groupData.nowInstanceList) === '[]'">该Group ID目前无已申请的实例</span>
           </el-form-item>
-          <el-form-item label="可申请的实例" prop="instance">
+          <el-form-item label="可申请的实例" prop="instance" v-if="ticket.ticketPhase !== 'FINALIZED'">
             <el-select v-model="groupData.instance" placeholder="请选择实例" :disabled="disabled"
                        value-key="instanceId" filterable v-if="instanceOptions.length !==0" @change="dataChange">
               <el-option
@@ -49,6 +49,16 @@
               </el-option>
             </el-select>
             <span v-else>该Group ID目前无可申请的实例</span>
+          </el-form-item>
+          <el-form-item label="申请的实例" v-if="ticket.ticketPhase === 'FINALIZED'">
+            <el-select v-model="groupData.instance" disabled>
+              <el-option
+                v-for="item in instanceAllOptions"
+                :key="item.id"
+                :label="item.instanceName"
+                :value="item.id">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="备注" prop="remark">
             <el-input v-model.trim="groupData.remark" @change="dataChange" :readonly="disabled"></el-input>
@@ -87,7 +97,7 @@ import {
   disagreeWorkorderTicket
 } from '@api/workorder/workorder.ticket.js'
 import { onsGroupCheckV2 } from '@api/cloud/aliyun.ons.group'
-import { queryOcInstanceByGroupId } from '@api/cloud/aliyun.ons.instance'
+import { queryOcInstanceByGroupId, queryONSInstanceAll } from '@api/cloud/aliyun.ons.instance'
 
 const groupData = {
   groupType: 'tcp',
@@ -111,6 +121,7 @@ export default {
       }],
       ticketEntryOptions: [],
       instanceOptions: [],
+      instanceAllOptions: [],
       searchTicketEntryLoading: false,
       ticketEntry: '',
       loading: false,
@@ -156,6 +167,9 @@ export default {
       this.ticket = ticket
       if (ticket.workorder != null) {
         this.title = ticket.workorder.name
+      }
+      if (ticket.ticketPhase === 'FINALIZED') {
+        this.getInstanceAll()
       }
       if (JSON.stringify(ticket.ticketEntries) !== '[]') {
         this.ticketEntries = ticket.ticketEntries
@@ -274,6 +288,12 @@ export default {
     },
     dataChange () {
       this.canSubmit = false
+    },
+    getInstanceAll () {
+      queryONSInstanceAll()
+        .then(res => {
+          this.instanceAllOptions = res.body
+        })
     }
   }
 }
