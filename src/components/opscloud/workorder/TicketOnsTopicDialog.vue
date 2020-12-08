@@ -3,7 +3,7 @@
     <el-dialog :title="title" :visible.sync="formStatus.visible" :before-close="closeDialog" width="40%">
       <el-alert title="工单执行失败" type="error" show-icon style="margin-bottom: 5px"
                 :closable="false" :description="ticketEntry.entryResult"
-                v-if="ticketEntry !== '' && ticketEntry.entryStatus !== 1">
+                v-if="ticketEntry !== '' && ticket.ticketPhase === 'FINALIZED' && ticketEntry.entryStatus !== 1">
       </el-alert>
       <div style="margin-bottom: 5px">
         <el-form :model="topicData" ref="topicDataForm" :rules="rules" label-width="120px" class="demo-ruleForm"
