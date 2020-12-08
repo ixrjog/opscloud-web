@@ -1,6 +1,10 @@
 <template>
   <div>
     <el-dialog :title="title" :visible.sync="formStatus.visible" :before-close="closeDialog" width="40%">
+      <el-alert title="工单执行失败" type="error" show-icon style="margin-bottom: 5px"
+                :closable="false" :description="ticketEntry.entryResult"
+                v-if="ticketEntry !== '' && ticketEntry.entryStatus !== 1">
+      </el-alert>
       <div style="margin-bottom: 5px">
         <el-form :model="groupData" ref="groupDataForm" :rules="rules" label-width="120px" class="demo-ruleForm"
                  label-position="left" v-loading="configuring" element-loading-text="工单配置中"
@@ -166,6 +170,7 @@ export default {
           remark: ticket.ticketEntries[0].ticketEntry.group.remark
         }
         this.getOnsInstanceByGroupId(this.groupData.groupId)
+        this.ticketEntry = Object.assign({}, ticket.ticketEntries[0])
       } else {
         this.groupData = Object.assign({}, groupData)
         this.ticketEntries = []

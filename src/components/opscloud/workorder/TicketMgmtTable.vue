@@ -5,18 +5,18 @@
         <el-input v-model.trim="queryParam.username" placeholder="输入用户名" class="input"/>
         <el-select v-model="queryParam.ticketPhase" clearable placeholder="阶段" class="select">
           <el-option
-            v-for="item in ticketPhaseOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+              v-for="item in ticketPhaseOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
           </el-option>
         </el-select>
         <el-select v-model="queryParam.ticketStatus" clearable placeholder="状态" class="select">
           <el-option
-            v-for="item in ticketStatusOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+              v-for="item in ticketStatusOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
           </el-option>
         </el-select>
         <el-button @click="fetchData" class="botton">查询</el-button>
@@ -29,6 +29,22 @@
         <template slot-scope="scope">
           <el-tag class="filters" :type="scope.row.ticketPhase | getPhaseType" size="small ">
             {{ scope.row.ticketPhase | getPhaseText }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="执行结果">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.executorResult?'success':'danger'" size="small"
+                  v-text="scope.row.executorResult?'成功':'失败'"
+                  v-if="scope.row.ticketPhase === 'FINALIZED'">
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="审批结果">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.approvalStatus?'success':'danger'" size="small"
+                  v-text="scope.row.approvalStatus?'同意':'拒绝'"
+                  v-if="scope.row.ticketPhase === 'FINALIZED'">
           </el-tag>
         </template>
       </el-table-column>
@@ -62,7 +78,7 @@
     <ticket-ons-topic-dialog ref="ticketOnsTopicDialog" :formStatus="formOnsTopicStatus"
                              @closeDialog="fetchData"></ticket-ons-topic-dialog>
     <ticket-ons-group-dialog ref="ticketOnsGroupDialog" :formStatus="formOnsGroupStatus"
-                              @closeDialog="fetchData"></ticket-ons-group-dialog>
+                             @closeDialog="fetchData"></ticket-ons-group-dialog>
   </div>
 </template>
 
@@ -169,17 +185,17 @@ export default {
   methods: {
     delTicket (id) {
       delWorkorderTicketById(id)
-        .then(res => {
-          if (res.success) {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-            this.fetchData()
-          } else {
-            this.$message.error(res.msg)
-          }
-        })
+          .then(res => {
+            if (res.success) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.fetchData()
+            } else {
+              this.$message.error(res.msg)
+            }
+          })
     },
     previewTicket (ticket) {
       this.operationTicket(ticket, 2)
@@ -236,11 +252,11 @@ export default {
       requestBody.page = this.pagination.currentPage
       requestBody.length = this.pagination.pageSize
       queryWorkorderTicketPage(requestBody)
-        .then(res => {
-          this.tableData = res.body.data
-          this.pagination.total = res.body.totalNum
-          this.loading = false
-        })
+          .then(res => {
+            this.tableData = res.body.data
+            this.pagination.total = res.body.totalNum
+            this.loading = false
+          })
     }
   }
 }

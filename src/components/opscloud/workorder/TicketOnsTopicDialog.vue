@@ -1,6 +1,10 @@
 <template>
   <div>
     <el-dialog :title="title" :visible.sync="formStatus.visible" :before-close="closeDialog" width="40%">
+      <el-alert title="工单执行失败" type="error" show-icon style="margin-bottom: 5px"
+                :closable="false" :description="ticketEntry.entryResult"
+                v-if="ticketEntry !== '' && ticketEntry.entryStatus !== 1">
+      </el-alert>
       <div style="margin-bottom: 5px">
         <el-form :model="topicData" ref="topicDataForm" :rules="rules" label-width="120px" class="demo-ruleForm"
                  label-position="left" v-loading="configuring" element-loading-text="工单配置中"
@@ -181,6 +185,7 @@ export default {
           remark: ticket.ticketEntries[0].ticketEntry.topic.remark
         }
         this.getOnsInstanceByTopic(this.topicData.topic)
+        this.ticketEntry = Object.assign({}, ticket.ticketEntries[0])
       } else {
         this.topicData = Object.assign({}, topicData)
         this.ticketEntries = []

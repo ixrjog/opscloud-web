@@ -4,7 +4,7 @@
       <div>
         <h1>{{ title }}</h1>
       </div>
-      <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
+      <el-row style="margin-bottom: 5px" :gutter="24">
         <el-input v-model.trim="queryParam.queryName" placeholder="输入资产编码模糊查询" class="input"/>
         <el-select v-model="queryParam.disposeType" placeholder="选择处置方式" class="select" clearable>
           <el-option
@@ -97,6 +97,9 @@ export default {
       }, {
         value: 4,
         label: '转让出售'
+      }, {
+        value: 5,
+        label: '维修处理'
       }]
     }
   },
