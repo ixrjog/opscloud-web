@@ -285,6 +285,25 @@ const frameIn = [
         }
       },
       {
+        path: '/cloud/aliyun/dns',
+        name: 'cloud-aliyun-dns',
+        component: () => import('@/pages/cloud/aliyun/dns'),
+        meta: {
+          auth: true,
+          title: '域名解析'
+        }
+      },
+      ,
+      {
+        path: '/cloud/aliyun/dns/domain',
+        name: 'cloud-aliyun-dns-domain',
+        component: () => import('@/pages/cloud/aliyun/dns/domain'),
+        meta: {
+          auth: true,
+          title: '域名管理'
+        }
+      },
+      {
         path: '/kubernetes/application',
         name: 'kubernetes-application',
         component: () => import('@/pages/kubernetes/application'),
