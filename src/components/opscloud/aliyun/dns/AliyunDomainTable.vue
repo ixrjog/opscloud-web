@@ -1,9 +1,9 @@
 <template>
   <div>
     <div style="margin-bottom: 5px">
-      <el-input prefix-icon="el-icon-search" v-model.trim="queryParam.queryName" placeholder="关键字查询"
-                class="searchBarHeadStyle" @change="fetchData"/>
-      <el-button @click="fetchData" class="searchBarStyle">查询</el-button>
+      <el-input v-model.trim="queryParam.queryName" placeholder="关键字查询"
+                class="input" @change="fetchData"/>
+      <el-button @click="fetchData" class="button">查询</el-button>
     </div>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column type="expand">
@@ -37,12 +37,14 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="remark" label="域名备注"></el-table-column>
-      <el-table-column fixed="right" label="操作" width="280">
+      <el-table-column prop="remark" label="备注" show-overflow-tooltip></el-table-column>
+      <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
-          <el-button type="primary" plain size="mini" @click="handleSync(scope.row)" :disabled="syncLoading"
-                     :loading="syncLoading">同步DNS解析
-          </el-button>
+          <el-tooltip class="item" effect="dark" content="同步DNS解析" placement="left">
+            <el-button type="primary" plain size="mini" @click="handlerSync(scope.row)"
+                       icon="el-icon-refresh" :disabled="syncLoading">同步
+            </el-button>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
@@ -188,7 +190,7 @@ export default {
           this.loading = false
         })
     },
-    handleSync (row) {
+    handlerSync (row) {
       this.syncLoading = true
       setTimeout(() => {
         syncAliyunDomainRecordByName(row.domainName)
@@ -206,12 +208,12 @@ export default {
 </script>
 
 <style scoped>
-.searchBarHeadStyle {
+.input {
   display: inline-block;
   max-width: 200px;
 }
 
-.searchBarStyle {
+.button {
   margin-left: 5px;
 }
 
