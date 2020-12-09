@@ -1,7 +1,7 @@
 <template>
   <div>
     <div style="margin-bottom: 5px">
-      <el-input v-model="queryParam.queryName" placeholder="关键字查询" class="searchBarHeadStyle"/>
+      <el-input v-model="queryParam.queryName" placeholder="关键字查询" class="input"/>
       <el-select v-model="queryParam.isActive" clearable placeholder="有效性" style="margin-left: 5px">
         <el-option
           v-for="item in activeOptions"
@@ -10,8 +10,8 @@
           :value="item.value">
         </el-option>
       </el-select>
-      <el-button @click="fetchData" class="searchBarStyle">查询</el-button>
-      <el-button @click="handleSync" class="searchBarStyle" :loading="syncLoading">同步</el-button>
+      <el-button @click="fetchData" class="button">查询</el-button>
+      <el-button @click="handlerSync" class="button" :loading="syncLoading">同步</el-button>
     </div>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column type="expand">
@@ -43,7 +43,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="remark" label="域名备注"></el-table-column>
+      <el-table-column prop="remark" label="备注" show-overflow-tooltip></el-table-column>
       <el-table-column prop="isActive" label="有效性">
         <template slot-scope="scope">
           <el-tag :type="getActiveColor(scope.row.isActive)" size="small">
@@ -51,7 +51,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="280">
+      <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
           <el-button :type="scope.row.isActive === 0 ? 'success' : 'info'" plain size="mini"
                      @click="setItemActive(scope.row)">{{ scope.row.isActive === 0 ? '有效' : '无效' }}
@@ -105,6 +105,7 @@ export default {
   },
   mounted () {
     this.fetchData()
+    this.initPageSize()
   },
   components: {},
   filters: {
@@ -210,7 +211,7 @@ export default {
           this.loading = false
         })
     },
-    handleSync () {
+    handlerSync () {
       this.syncLoading = true
       setTimeout(() => {
         syncAliyunDomain()
@@ -229,12 +230,12 @@ export default {
 </script>
 
 <style scoped>
-.searchBarHeadStyle {
+.input {
   display: inline-block;
   max-width: 200px;
 }
 
-.searchBarStyle {
+.button {
   margin-left: 5px;
 }
 </style>
