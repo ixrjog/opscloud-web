@@ -1,10 +1,10 @@
 import request from '@/plugin/axios'
 
-const baseUrl = '/monitor'
+const baseUrl = '/monitor/host'
 
 export function queryMonitorHostPage (data) {
   return request({
-    url: baseUrl + '/host/page/query',
+    url: baseUrl + '/page/query',
     method: 'post',
     data
   })
@@ -12,14 +12,14 @@ export function queryMonitorHostPage (data) {
 
 export function syncMonitorHostStatus () {
   return request({
-    url: baseUrl + '/host/status/sync',
+    url: baseUrl + '/status/sync',
     method: 'get'
   })
 }
 
 export function createMonitorHost (data) {
   return request({
-    url: baseUrl + '/host/create',
+    url: baseUrl + '/create',
     method: 'post',
     data
   })
@@ -27,7 +27,7 @@ export function createMonitorHost (data) {
 
 export function pushMonitorHost (data) {
   return request({
-    url: baseUrl + '/host/push',
+    url: baseUrl + '/push',
     method: 'put',
     data
   })
@@ -35,7 +35,7 @@ export function pushMonitorHost (data) {
 
 export function setMonitorHostStatus (id) {
   return request({
-    url: baseUrl + '/host/status/set?id=' + id,
+    url: baseUrl + '/status/set?id=' + id,
     method: 'put'
   })
 }
