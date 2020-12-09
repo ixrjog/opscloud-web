@@ -55,6 +55,15 @@ const frameIn = [
         }
       },
       {
+        path: '/monitor/user',
+        name: 'monitor-user',
+        component: () => import('@/pages/monitor/user'),
+        meta: {
+          auth: true,
+          title: '用户配置'
+        }
+      },
+      {
         path: '/dashboard/helpdesk',
         name: 'dashboard-helpdesk',
         component: () => import('@/pages/dashboard/helpdesk'),

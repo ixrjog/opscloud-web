@@ -175,7 +175,7 @@
   import { queryEnvPage } from '@api/env/env.js'
   import { queryTagPage } from '@api/tag/tag.js'
   import { queryServerGroupPage } from '@api/server/server.group.js'
-  import { queryMonitorHostPage, syncMonitorHostStatus, createMonitorHost, pushMonitorHost, setMonitorHostStatus } from '@api/monitor/monitor.js'
+  import { queryMonitorHostPage, syncMonitorHostStatus, createMonitorHost, pushMonitorHost, setMonitorHostStatus } from '@api/monitor/monitor.host.js'
 
   const monitorStatusOptions = [{
     value: 0,
