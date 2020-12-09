@@ -23,12 +23,20 @@
           </template>
         </el-table-column>
         <el-table-column prop="username" label="用户名" width="120"></el-table-column>
-        <el-table-column prop="displayName" label="显示名"  width="120"></el-table-column>
-        <el-table-column prop="email" label="邮箱"  width="120"></el-table-column>
+        <el-table-column prop="displayName" label="显示名" width="120"></el-table-column>
+        <el-table-column prop="medias" label="报警媒介" width="300">
+          <template slot-scope="props">
+            <div class="tag-group">
+              <el-tag style="margin-left: 5px" :type="item.active ?'success' :'info'" v-for="item in props.row.medias" :key="item.mediaid">{{ item.sendto }}
+              </el-tag>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column prop="usrgrps" label="用户组">
           <template slot-scope="props">
             <div class="tag-group">
-              <el-tag style="margin-left: 5px" v-for="item in props.row.usrgrps" :key="item.usrgrpid">{{ item.name }}</el-tag>
+              <el-tag style="margin-left: 5px" v-for="item in props.row.usrgrps" :key="item.usrgrpid">{{ item.name }}
+              </el-tag>
             </div>
           </template>
         </el-table-column>
@@ -48,13 +56,13 @@
 </template>
 
 <script>
-  import { mapState, mapActions } from 'vuex'
+  import {mapState, mapActions} from 'vuex'
 
   // API
-  import { syncMonitorUsers, queryMonitorUserPage } from '@api/monitor/monitor.user.js'
+  import {syncMonitorUsers, queryMonitorUserPage} from '@api/monitor/monitor.user.js'
 
   export default {
-    data () {
+    data() {
       return {
         tableData: [],
         options: {
@@ -79,7 +87,7 @@
         'info'
       ])
     },
-    mounted () {
+    mounted() {
       this.initPageSize()
       this.fetchData()
     },
@@ -88,25 +96,25 @@
       ...mapActions({
         setPageSize: 'd2admin/user/set'
       }),
-      handleSizeChange (size) {
+      handleSizeChange(size) {
         this.pagination.pageSize = size
         this.info.pageSize = size
         this.setPageSize(this.info)
         this.fetchData()
       },
-      initPageSize () {
+      initPageSize() {
         if (typeof (this.info.pageSize) !== 'undefined') {
           this.pagination.pageSize = this.info.pageSize
         }
       },
-      handleDialogCancel (done) {
+      handleDialogCancel(done) {
         this.$message({
           message: '取消保存',
           type: 'warning'
         })
         done()
       },
-      handlerSyncMonitorUser () {
+      handlerSyncMonitorUser() {
         setTimeout(() => {
           syncMonitorUsers()
             .then(res => {
@@ -117,11 +125,11 @@
             })
         }, 300)
       },
-      paginationCurrentChange (currentPage) {
+      paginationCurrentChange(currentPage) {
         this.pagination.currentPage = currentPage
         this.fetchData()
       },
-      fetchData () {
+      fetchData() {
         this.loading = true
         let requestBody = {
           'queryName': this.queryParam.queryName,
