@@ -302,7 +302,6 @@ const frameIn = [
           title: '域名解析'
         }
       },
-      ,
       {
         path: '/cloud/aliyun/dns/domain',
         name: 'cloud-aliyun-dns-domain',

@@ -45,10 +45,9 @@
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column prop="assetCode" label="资产编码">
           <template slot-scope="scope">
-            <span>{{ scope.row.assetCode }}</span>
-            <span v-clipboard:copy="scope.row.assetCode" v-clipboard:success="onCopy" v-clipboard:error="onError"
-                  style="float: right">
-              <i class="el-icon-copy-document"></i>
+            <span v-clipboard:copy="scope.row.assetCode" v-clipboard:success="onCopy"
+                  v-clipboard:error="onError">{{ scope.row.assetCode }}
+              <i style="margin-left: 5px" class="el-icon-copy-document"></i>
             </span>
           </template>
         </el-table-column>

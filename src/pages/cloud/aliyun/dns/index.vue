@@ -15,7 +15,7 @@
               :value="item.domainName">
             </el-option>
           </el-select>
-          <el-input v-model.trim="queryParam.queryName" clearable placeholder="输入关键字查询" class="searchBarStyle"/>
+          <el-input v-model.trim="queryParam.queryName" placeholder="输入关键字查询" class="searchBarStyle"/>
           <el-select v-model="queryParam.recordType" clearable placeholder="记录类型" class="searchBarStyle">
             <el-option
               v-for="item in recordTypeOptions"
@@ -49,12 +49,8 @@
           <template slot-scope="props">
             <el-form label-position="left" inline class="table-expand">
               <el-form-item label="完整域名">
-                <!--                <span>{{ getFullDomain(props.row) }}</span>-->
-                <el-tooltip effect="dark" content="点击跳转" placement="right">
-                  <el-link :href="getUrl(props.row)" target="_blank" :underline="false">
-                    {{ getFullDomain(props.row) }}
-                  </el-link>
-                </el-tooltip>
+                <el-link :href="getUrl(props.row)" target="_blank">{{ getFullDomain(props.row) }}
+                </el-link>
                 <el-tooltip effect="dark" content="点击复制" placement="right">
                   <span v-clipboard:copy="getUrl(props.row)" v-clipboard:success="onCopy"
                         v-clipboard:error="onError">
@@ -82,42 +78,27 @@
         </el-table-column>
         <el-table-column prop="domainName" label="域名" width="200">
           <template slot-scope="scope">
-            <el-row>
-              <span>{{ scope.row.domainName }}</span>
-              <el-tooltip effect="dark" content="点击复制" placement="right">
-                <span v-clipboard:copy="scope.row.domainName" v-clipboard:success="onCopy"
-                      v-clipboard:error="onError">
-                <i style="margin-left: 5px" class="el-icon-copy-document"></i>
-                </span>
-              </el-tooltip>
-            </el-row>
+            <span v-clipboard:copy="scope.row.domainName" v-clipboard:success="onCopy"
+                  v-clipboard:error="onError">{{ scope.row.domainName }}
+              <i style="margin-left: 5px" class="el-icon-copy-document"></i>
+            </span>
           </template>
         </el-table-column>
         <el-table-column prop="recordType" label="记录类型" width="150"></el-table-column>
         <el-table-column prop="recordRr" label="主机记录" show-overflow-tooltip>
           <template slot-scope="scope">
-            <el-row>
-              <span>{{ scope.row.recordRr }}</span>
-              <el-tooltip effect="dark" content="点击复制" placement="right">
-                <span v-clipboard:copy="scope.row.recordRr" v-clipboard:success="onCopy"
-                      v-clipboard:error="onError">
-                <i style="margin-left: 5px" class="el-icon-copy-document"></i>
-                </span>
-              </el-tooltip>
-            </el-row>
+            <span v-clipboard:copy="scope.row.recordRr" v-clipboard:success="onCopy"
+                  v-clipboard:error="onError">{{ scope.row.recordRr }}
+              <i style="margin-left: 5px" class="el-icon-copy-document"></i>
+            </span>
           </template>
         </el-table-column>
         <el-table-column label="记录值" show-overflow-tooltip>
           <template slot-scope="scope">
-            <el-row>
-              <span>{{ scope.row.recordValue }}</span>
-              <el-tooltip effect="dark" content="点击复制" placement="right">
-                <span v-clipboard:copy="scope.row.recordValue" v-clipboard:success="onCopy"
-                      v-clipboard:error="onError">
-                <i style="margin-left: 5px" class="el-icon-copy-document"></i>
-                </span>
-              </el-tooltip>
-            </el-row>
+            <span v-clipboard:copy="scope.row.recordValue" v-clipboard:success="onCopy"
+                  v-clipboard:error="onError">{{ scope.row.recordValue }}
+              <i style="margin-left: 5px" class="el-icon-copy-document"></i>
+            </span>
           </template>
         </el-table-column>
         <el-table-column prop="recordStatus" label="状态" width="100">
