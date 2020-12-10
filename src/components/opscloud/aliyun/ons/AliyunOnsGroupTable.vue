@@ -29,10 +29,9 @@
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
       <el-table-column prop="groupId" label="GroupId" show-overflow-tooltip>
         <template slot-scope="scope">
-          <span>{{ scope.row.groupId }}</span>
           <span v-clipboard:copy="scope.row.groupId" v-clipboard:success="onCopy"
-                v-clipboard:error="onError" style="float: right">
-            <i class="el-icon-copy-document"></i>
+                v-clipboard:error="onError">{{ scope.row.groupId }}
+            <i style="margin-left: 5px" class="el-icon-copy-document"></i>
           </span>
         </template>
       </el-table-column>

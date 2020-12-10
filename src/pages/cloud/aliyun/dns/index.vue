@@ -15,7 +15,7 @@
               :value="item.domainName">
             </el-option>
           </el-select>
-          <el-input v-model.trim="queryParam.queryName" clearable placeholder="输入关键字查询" class="searchBarStyle"/>
+          <el-input v-model.trim="queryParam.queryName" placeholder="输入关键字查询" class="searchBarStyle"/>
           <el-select v-model="queryParam.recordType" clearable placeholder="记录类型" class="searchBarStyle">
             <el-option
               v-for="item in recordTypeOptions"
@@ -49,12 +49,8 @@
           <template slot-scope="props">
             <el-form label-position="left" inline class="table-expand">
               <el-form-item label="完整域名">
-                <!--                <span>{{ getFullDomain(props.row) }}</span>-->
-                <el-tooltip effect="dark" content="点击跳转" placement="right">
-                  <el-link :href="getUrl(props.row)" target="_blank" :underline="false">
-                    {{ getFullDomain(props.row) }}
-                  </el-link>
-                </el-tooltip>
+                <el-link :href="getUrl(props.row)" target="_blank">{{ getFullDomain(props.row) }}
+                </el-link>
                 <el-tooltip effect="dark" content="点击复制" placement="right">
                   <span v-clipboard:copy="getUrl(props.row)" v-clipboard:success="onCopy"
                         v-clipboard:error="onError">
@@ -80,60 +76,56 @@
             </el-form>
           </template>
         </el-table-column>
-        <el-table-column prop="domainName" label="域名" width="250">
+        <el-table-column prop="domainName" label="域名" width="200">
           <template slot-scope="scope">
-            <el-row>
-              <span>{{ scope.row.domainName }}</span>
-              <el-tooltip effect="dark" content="点击复制" placement="right">
-                <span v-clipboard:copy="scope.row.domainName" v-clipboard:success="onCopy"
-                      v-clipboard:error="onError">
-                <i style="margin-left: 5px" class="el-icon-copy-document"></i>
-                </span>
-              </el-tooltip>
-            </el-row>
+            <span v-clipboard:copy="scope.row.domainName" v-clipboard:success="onCopy"
+                  v-clipboard:error="onError">{{ scope.row.domainName }}
+              <i style="margin-left: 5px" class="el-icon-copy-document"></i>
+            </span>
           </template>
         </el-table-column>
         <el-table-column prop="recordType" label="记录类型" width="150"></el-table-column>
-        <el-table-column prop="recordRr" label="主机记录" width="250">
+        <el-table-column prop="recordRr" label="主机记录" show-overflow-tooltip>
           <template slot-scope="scope">
-            <el-row>
-              <span>{{ scope.row.recordRr }}</span>
-              <el-tooltip effect="dark" content="点击复制" placement="right">
-                <span v-clipboard:copy="scope.row.recordRr" v-clipboard:success="onCopy"
-                      v-clipboard:error="onError">
-                <i style="margin-left: 5px" class="el-icon-copy-document"></i>
-                </span>
-              </el-tooltip>
-            </el-row>
+            <span v-clipboard:copy="scope.row.recordRr" v-clipboard:success="onCopy"
+                  v-clipboard:error="onError">{{ scope.row.recordRr }}
+              <i style="margin-left: 5px" class="el-icon-copy-document"></i>
+            </span>
           </template>
         </el-table-column>
-        <el-table-column label="记录值" width="500">
+        <el-table-column label="记录值" show-overflow-tooltip>
           <template slot-scope="scope">
-            <el-row>
-              <span>{{ scope.row.recordValue }}</span>
-              <el-tooltip effect="dark" content="点击复制" placement="right">
-                <span v-clipboard:copy="scope.row.recordValue" v-clipboard:success="onCopy"
-                      v-clipboard:error="onError">
-                <i style="margin-left: 5px" class="el-icon-copy-document"></i>
-                </span>
-              </el-tooltip>
-            </el-row>
+            <span v-clipboard:copy="scope.row.recordValue" v-clipboard:success="onCopy"
+                  v-clipboard:error="onError">{{ scope.row.recordValue }}
+              <i style="margin-left: 5px" class="el-icon-copy-document"></i>
+            </span>
           </template>
         </el-table-column>
-        <el-table-column prop="recordStatus" label="状态">
+        <el-table-column prop="recordStatus" label="状态" width="100">
           <template slot-scope="scope">
             <el-tag :type="getColor(scope.row.recordStatus)" size="small" disable-transitions>
               {{ scope.row.recordStatus | recordStatusFilters }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="280">
+        <el-table-column fixed="right" label="操作" width="100">
           <template slot-scope="scope">
-            <el-button type="primary" plain size="mini" @click="editItem(scope.row)">编辑</el-button>
-            <el-button :type="scope.row.recordStatus === 'ENABLE' ? 'warning' : 'success'" plain size="mini"
-                       @click="setRecordStatus(scope.row)">{{ scope.row.recordStatus === 'ENABLE' ? '暂停' : '启用' }}
-            </el-button>
-            <el-button type="danger" plain size="mini" @click="delItem(scope.row)">删除</el-button>
+            <el-dropdown split-button type="primary" size="mini" @click="handlerEdit(scope.row)">
+              <i class="el-icon-edit"></i>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  :icon="scope.row.recordStatus === 'ENABLE' ? 'el-icon-video-pause':'el-icon-video-play'">
+                  <el-button type="text" @click="setRecordStatus(scope.row)"
+                             v-text="scope.row.recordStatus === 'ENABLE' ? '暂停解析' : '启用解析'"
+                             :style="scope.row.recordStatus === 'ENABLE' ? pauseStyle : playStyle">
+                  </el-button>
+                </el-dropdown-item>
+                <el-dropdown-item icon="el-icon-delete">
+                  <el-button type="text" @click="handlerDel(scope.row)" style="margin-left: 5px;color: #F56C6C">删除解析
+                  </el-button>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </template>
         </el-table-column>
       </el-table>
@@ -170,7 +162,8 @@ export default {
         recordType: '',
         recordStatus: ''
       },
-      tagColorType: 'success',
+      pauseStyle: 'margin-left: 5px;color: #E6A23C',
+      playStyle: 'margin-left: 5px;color: #67C23A',
       domainOptions: [],
       recordTypeOptions: [
         {
@@ -294,7 +287,7 @@ export default {
         })
     },
     getColor (recordStatus) {
-      return recordStatus === 'ENABLE' ? 'success' : 'danger'
+      return recordStatus === 'ENABLE' ? 'success' : 'warning'
     },
     fetchData () {
       this.loading = true
@@ -325,7 +318,7 @@ export default {
       }
       this.$refs.domainRecordDialog.initData(domainRecordData)
     },
-    editItem (row) {
+    handlerEdit (row) {
       this.formDomainRecordStatus.visible = true
       this.formDomainRecordStatus.isUpdate = true
       let domainRecordData = {
@@ -361,7 +354,7 @@ export default {
         })
       })
     },
-    delItem (row) {
+    handlerDel (row) {
       this.$confirm('此操作将删除当前配置?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

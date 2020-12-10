@@ -29,10 +29,9 @@
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
       <el-table-column prop="topic" label="Topic" show-overflow-tooltip>
         <template slot-scope="scope">
-          <span>{{ scope.row.topic }}</span>
           <span v-clipboard:copy="scope.row.topic" v-clipboard:success="onCopy"
-                v-clipboard:error="onError" style="float: right">
-            <i class="el-icon-copy-document"></i>
+                v-clipboard:error="onError">{{ scope.row.topic }}
+            <i style="margin-left: 5px" class="el-icon-copy-document"></i>
           </span>
         </template>
       </el-table-column>
