@@ -3,7 +3,7 @@
     <div style="margin-bottom: 5px">
       <el-input prefix-icon="el-icon-search" v-model.trim="queryName" placeholder="关键字查询"
                 class="searchBarHeadStyle" @change="fetchData"/>
-      <el-button @click="handleSync" class="searchBarStyle" :loading="syncLoading">同步</el-button>
+      <el-button @click="handlerSync" class="searchBarStyle" :loading="syncLoading">同步</el-button>
     </div>
     <el-table :data="tableData" style="width: 100%">
       <el-table-column type="expand">
@@ -38,7 +38,7 @@
               <el-col :span="6" v-show="scope.row.updateServerCertificateName !== null">
                 <el-tooltip effect="dark" content="更换" placement="right">
                   <el-popconfirm
-                    title="确定更换证书吗？" @onConfirm="replaceSC(item,scope.row)"
+                    title="确定更换证书吗？" @onConfirm="handlerReplace(item,scope.row)"
                   >
                     <el-button slot="reference" type="success" plain icon="fa fa-level-up" size="mini"></el-button>
                   </el-popconfirm>
@@ -59,12 +59,13 @@
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
-          <el-button type="primary" plain size="mini" @click="editSetSC(scope.row)">编辑</el-button>
+          <el-button type="primary" plain size="mini" @click="handlerEdit(scope.row)">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination background @current-change="paginationCurrentChange"
-                   layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
+    <el-pagination background @current-change="paginationCurrentChange" :page-sizes="[10, 15, 20, 25, 30]"
+                   @size-change="handleSizeChange"
+                   layout="sizes, prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                    :page-size="pagination.pageSize">
     </el-pagination>
     <aliyun-slb-sc-set-dialog :formStatus="formStatus" ref="aliyunSLBSCSetDialog"
@@ -75,7 +76,7 @@
 // Components
 import { queryAliyunSlbSCPage, replaceSC, syncSLBSC } from '@api/cloud/aliyun.slb.sc'
 import AliyunSlbScSetDialog from '@/components/opscloud/aliyun/slb/AliyunSLBSCSetDialog'
-// Api
+import { mapActions, mapState } from 'vuex'
 
 export default {
   data () {
@@ -100,9 +101,15 @@ export default {
   name: 'certificate-mgmt-table',
   mounted () {
     this.fetchData()
+    this.initPageSize()
   },
   components: {
     AliyunSlbScSetDialog
+  },
+  computed: {
+    ...mapState('d2admin/user', [
+      'info'
+    ])
   },
   filters: {
     statusFilters (expirationCurrDateDiff) {
@@ -122,6 +129,20 @@ export default {
     }
   },
   methods: {
+    ...mapActions({
+      setPageSize: 'd2admin/user/set'
+    }),
+    handleSizeChange (size) {
+      this.pagination.pageSize = size
+      this.info.pageSize = size
+      this.setPageSize(this.info)
+      this.fetchData()
+    },
+    initPageSize () {
+      if (typeof (this.info.pageSize) !== 'undefined') {
+        this.pagination.pageSize = this.info.pageSize
+      }
+    },
     getHttpsListenerContent (item) {
       if (item.serverCertificateType === 1) {
         return '默认证书： ' + item.serverCertificateDomain
@@ -173,7 +194,7 @@ export default {
       }
       return 'danger-row'
     },
-    handleSync () {
+    handlerSync () {
       this.$confirm('确定全量同步SLB证书吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -198,11 +219,11 @@ export default {
         })
       })
     },
-    editSetSC (row) {
+    handlerEdit (row) {
       this.formStatus.visible = true
       this.$refs.aliyunSLBSCSetDialog.initData(row)
     },
-    replaceSC (item, row) {
+    handlerReplace (item, row) {
       let requestBody = {
         'updateServerCertificateId': row.updateServerCertificateId,
         'serverCertificateType': item.serverCertificateType
