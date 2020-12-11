@@ -23,12 +23,12 @@
         <template slot-scope="scope">
           <div v-for="item in scope.row.aclListenerList" :key="item.id">
             <el-tooltip effect="dark" content="白名单" placement="left">
-              <i v-show="item.slbAclType === 'white'" style="margin-left: 5px"
-                 class="fa fa-hand-paper-o" aria-hidden="true"></i>
+              <img v-show="item.slbAclType === 'white'" style="margin-left: 5px;width: 15px"
+                :src="whiteListImageUrl">
             </el-tooltip>
             <el-tooltip effect="dark" content="黑名单" placement="left">
-              <i v-show="item.slbAclType === 'black'" style="margin-left: 5px"
-                 class="fa fa-shield" aria-hidden="true"></i>
+              <img v-show="item.slbAclType === 'black'" style="margin-left: 5px;width: 15px"
+                   :src="blackListImageUrl">
             </el-tooltip>
             <el-tag style="margin-left: 5px">{{ item | listenerFilters }}</el-tag>
           </div>
@@ -71,7 +71,9 @@ export default {
       syncLoading: false,
       formEntryStatus: {
         visible: false
-      }
+      },
+      whiteListImageUrl: require('@/static/icons/white-list.svg'),
+      blackListImageUrl: require('@/static/icons/black-list.svg')
     }
   },
   name: 'aliyun-slb-acl-mgmt-table',
