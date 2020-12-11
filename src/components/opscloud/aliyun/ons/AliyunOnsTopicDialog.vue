@@ -127,7 +127,7 @@ export default {
     },
     handlerCheck (topic) {
       if (topic === '' || topic === 'TOPIC_') {
-        this.$message.error('请输入Topic')
+        this.$message.warning('请输入Topic')
         return
       }
       let data = {
@@ -149,7 +149,7 @@ export default {
       this.$refs.topicDataForm.validate((valid) => {
         if (valid) {
           if (!this.topicChecked) {
-            this.$message.error('请先校验Topic')
+            this.$message.warning('请先校验Topic')
             return
           }
           this.creating = true
