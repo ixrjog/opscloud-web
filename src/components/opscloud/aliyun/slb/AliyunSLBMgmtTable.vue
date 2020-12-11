@@ -19,7 +19,7 @@
         </el-option>
       </el-select>
       <el-button @click="fetchData" class="searchBarStyle">查询</el-button>
-      <el-button @click="handleSync" class="searchBarStyle" :loading="syncLoading">同步</el-button>
+      <el-button @click="handlerSync" class="searchBarStyle" :loading="syncLoading">同步</el-button>
     </div>
     <el-table :data="tableData" style="width: 100%" :row-class-name="tableRowClassName"
               @expand-change="getBackendServer">
@@ -124,8 +124,9 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination background @current-change="paginationCurrentChange"
-                   layout="prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
+    <el-pagination background @current-change="paginationCurrentChange" :page-sizes="[10, 15, 20, 25, 30]"
+                   @size-change="handleSizeChange"
+                   layout="sizes, prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                    :page-size="pagination.pageSize">
     </el-pagination>
   </div>
@@ -139,6 +140,7 @@ import {
   refreshSLBListener,
   syncAliyunSLB
 } from '@api/cloud/aliyun.slb'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   data () {
@@ -186,8 +188,14 @@ export default {
   name: 'AliyunSLBMgmtTable',
   mounted () {
     this.fetchData()
+    this.initPageSize()
   },
   components: {},
+  computed: {
+    ...mapState('d2admin/user', [
+      'info'
+    ])
+  },
   filters: {
     statusFilters (status) {
       if (status === 'active') {
@@ -227,6 +235,20 @@ export default {
     }
   },
   methods: {
+    ...mapActions({
+      setPageSize: 'd2admin/user/set'
+    }),
+    handleSizeChange (size) {
+      this.pagination.pageSize = size
+      this.info.pageSize = size
+      this.setPageSize(this.info)
+      this.fetchData()
+    },
+    initPageSize () {
+      if (typeof (this.info.pageSize) !== 'undefined') {
+        this.pagination.pageSize = this.info.pageSize
+      }
+    },
     getAclName (accessControlListener) {
       return accessControlListener.slbAclName
     },
@@ -281,7 +303,7 @@ export default {
           this.loading = false
         })
     },
-    handleSync () {
+    handlerSync () {
       this.$confirm('确定全量同步SLB吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
