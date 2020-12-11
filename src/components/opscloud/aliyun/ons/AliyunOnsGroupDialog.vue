@@ -112,7 +112,7 @@ export default {
     },
     handlerCheck (groupId) {
       if (groupId === '' || groupId === 'GID_') {
-        this.$message.error('请输入GroupId')
+        this.$message.warning('请输入GroupId')
         return
       }
       let data = {
@@ -134,7 +134,7 @@ export default {
       this.$refs.groupDataForm.validate((valid) => {
         if (valid) {
           if (!this.groupChecked) {
-            this.$message.error('请先校验GroupId')
+            this.$message.warning('请先校验GroupId')
             return
           }
           this.creating = true
