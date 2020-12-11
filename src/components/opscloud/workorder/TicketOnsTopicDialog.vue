@@ -85,7 +85,7 @@
           <el-button type="primary" v-if="ticket.ticketPhase === 'CREATED_TICKET'" plain size="mini"
                      @click="addTicketEntry">保存</el-button>
           <el-button type="primary" v-if="ticket.ticketPhase === 'CREATED_TICKET'" plain size="mini"
-                     @click="submitTicket" :disabled="!canSubmit">提交</el-button>
+                     @click="submitTicket">提交</el-button>
           <el-button type="success" v-if="ticket.isInApproval" plain size="mini" @click="agreeTicket">同意</el-button>
           <el-button type="danger" v-if="ticket.isInApproval" plain size="mini" @click="disagreeTicket">拒绝</el-button>
         </span>
@@ -231,7 +231,7 @@ export default {
     },
     handlerCheck (topic) {
       if (topic === '' || topic === 'TOPIC_') {
-        this.$message.error('请输入Topic')
+        this.$message.warning('请输入Topic')
         return
       }
       onsTopicCheckV2(topic)
@@ -247,11 +247,15 @@ export default {
     },
     submitTicket () {
       if (!this.topicChecked) {
-        this.$message.error('请先校验Topic')
+        this.$message.warning('请先校验Topic')
         return
       }
       if (JSON.stringify(this.topicData.instance) === '{}' || this.topicData.instance.id === null) {
-        this.$message.error('请选择一个实例')
+        this.$message.warning('请选择一个实例')
+        return
+      }
+      if (!this.canSubmit) {
+        this.$message.warning('请先保存')
         return
       }
       submitWorkorderTicket(this.ticket)

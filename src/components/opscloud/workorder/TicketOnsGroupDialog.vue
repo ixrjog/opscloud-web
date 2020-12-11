@@ -78,7 +78,7 @@
           <el-button type="primary" v-if="ticket.ticketPhase === 'CREATED_TICKET'" plain size="mini"
                      @click="addTicketEntry">保存</el-button>
           <el-button type="primary" v-if="ticket.ticketPhase === 'CREATED_TICKET'" plain size="mini"
-                     @click="submitTicket" :disabled="!canSubmit">提交</el-button>
+                     @click="submitTicket">提交</el-button>
           <el-button type="success" v-if="ticket.isInApproval" plain size="mini" @click="agreeTicket">同意</el-button>
           <el-button type="danger" v-if="ticket.isInApproval" plain size="mini" @click="disagreeTicket">拒绝</el-button>
         </span>
@@ -216,7 +216,7 @@ export default {
     },
     handlerCheck (groupId) {
       if (groupId === '' || groupId === 'GID_') {
-        this.$message.error('请输入Group ID')
+        this.$message.warning('请输入Group ID')
         return
       }
       onsGroupCheckV2(groupId)
@@ -232,11 +232,15 @@ export default {
     },
     submitTicket () {
       if (!this.groupChecked) {
-        this.$message.error('请先校验Group ID')
+        this.$message.warning('请先校验Group ID')
         return
       }
       if (JSON.stringify(this.groupData.instance) === '{}' || this.groupData.instance.id === null) {
-        this.$message.error('请选择MQ实例')
+        this.$message.warning('请选择MQ实例')
+        return
+      }
+      if (!this.canSubmit) {
+        this.$message.warning('请先保存')
         return
       }
       submitWorkorderTicket(this.ticket)

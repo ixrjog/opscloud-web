@@ -303,6 +303,15 @@ const frameIn = [
         }
       },
       {
+        path: '/cloud/aliyun/slb',
+        name: 'cloud-aliyun-slb',
+        component: () => import('@/pages/cloud/aliyun/slb'),
+        meta: {
+          auth: true,
+          title: '负载均衡'
+        }
+      },
+      {
         path: '/kubernetes/application',
         name: 'kubernetes-application',
         component: () => import('@/pages/kubernetes/application'),

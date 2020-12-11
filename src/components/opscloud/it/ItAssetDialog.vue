@@ -167,7 +167,7 @@ export default {
     },
     handlerCheck (assetCode) {
       if (assetCode === '') {
-        this.$message.error('请输入资产编码')
+        this.$message.warning('请输入资产编码')
         return
       }
       assetCodeCheck(assetCode)
@@ -190,7 +190,7 @@ export default {
       this.$refs.assetDataForm.validate((valid) => {
         if (valid) {
           if (!this.codeChecked) {
-            this.$message.error('请先校验资产编码')
+            this.$message.warning('请先校验资产编码')
             return
           }
           this.adding = true
