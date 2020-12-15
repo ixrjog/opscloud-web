@@ -312,6 +312,24 @@ const frameIn = [
         }
       },
       {
+        path: '/dingtalk/user',
+        name: 'dingtalk-user',
+        component: () => import('@/pages/dingtalk/user'),
+        meta: {
+          auth: true,
+          title: '用户关系'
+        }
+      },
+      {
+        path: '/dingtalk/dept',
+        name: 'dingtalk-dept',
+        component: () => import('@/pages/dingtalk/dept'),
+        meta: {
+          auth: true,
+          title: '部门管理'
+        }
+      },
+      {
         path: '/kubernetes/application',
         name: 'kubernetes-application',
         component: () => import('@/pages/kubernetes/application'),
