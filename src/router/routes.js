@@ -585,15 +585,6 @@ const frameIn = [
         }
       },
       {
-        path: '/it/dashboard',
-        name: 'it-dashboard',
-        component: () => import('@/pages/it/dashboard'),
-        meta: {
-          auth: true,
-          title: '资产大盘'
-        }
-      },
-      {
         path: '/it/asset',
         name: 'it-asset',
         component: () => import('@/pages/it/asset'),

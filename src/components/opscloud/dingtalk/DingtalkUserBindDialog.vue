@@ -5,9 +5,9 @@
       <el-form-item label="员工名称">
         <el-input v-model.trim="bindData.displayName" readonly></el-input>
       </el-form-item>
-      <el-form-item label="oc用户" required>
+      <el-form-item label="oc用户">
         <el-select v-model="bindData.ocUserId" filterable remote reserve-keyword placeholder="搜索用户"
-                   :remote-method="getUser" @change="handlerChange">
+                   :remote-method="getUser" @change="handlerChange" clearable>
           <el-option
             v-for="item in userOptions"
             :key="item.id"
@@ -73,12 +73,15 @@ export default {
     },
     handlerSave () {
       if (this.bindData.ocUserId === '') {
-        this.$message.warning('请选择需要绑定的oc用户')
-        return
+        this.$message.warning('未选择oc用户，本次操作为解绑')
       }
-      bindOcUser(this.bindData)
+      let requestBody = {
+        accountId: this.bindData.accountId,
+        ocUserId: this.bindData.ocUserId === '' ? -1 : this.bindData.ocUserId
+      }
+      bindOcUser(requestBody)
         .then(res => {
-          this.$message.success('绑定成功')
+          this.$message.success('操作成功')
           this.handlerCloseDialog()
         })
     },
