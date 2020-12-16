@@ -116,3 +116,17 @@ export function queryFirstLevelDepartmentPage (data) {
     data
   })
 }
+
+export function queryDepartmentTreeV2 () {
+  return request({
+    url: '/org/department/treeV2/query',
+    method: 'get'
+  })
+}
+
+export function refreshDepartmentTreeV2 () {
+  return request({
+    url: '/org/department/treeV2/refresh',
+    method: 'get'
+  })
+}

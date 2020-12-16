@@ -91,10 +91,9 @@
       },
       executorCommand () {
         try {
-          var requestBody = Object.assign({}, this.executorCommandParam)
+          let requestBody = Object.assign({}, this.executorCommandParam)
           requestBody.uuid = this.$refs.serverTree.getUuid()
           requestBody.hostPatterns = this.$refs.serverTree.getCheckedKeys(true)
-          console.log(JSON.stringify(requestBody))
           // 重置定时器
           executorCommand(requestBody).then(res => {
             if (res.success) {

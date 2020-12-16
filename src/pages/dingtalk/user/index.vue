@@ -57,9 +57,12 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="100">
+        <el-table-column fixed="right" label="操作" width="180">
           <template slot-scope="scope">
             <el-button type="primary" plain size="mini" @click="handlerEdit(scope.row)">绑定</el-button>
+            <el-button type="primary" plain size="mini" @click="handlerImport(scope.row)"
+                       v-if="scope.row.ocUser === null">导入
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -70,6 +73,8 @@
       </el-pagination>
       <dingtalk-user-bind-dialog :formStatus="dingtalkUserBindDialogStatus" ref="dingtalkUserBindDialog"
                                  @closeDialog="fetchData"></dingtalk-user-bind-dialog>
+      <user-dialog :formStatus="userDialogStatus" ref="userDialog"
+                   @closeDialog="fetchData"></user-dialog>
     </template>
   </d2-container>
 </template>
@@ -78,6 +83,8 @@
 import { mapActions, mapState } from 'vuex'
 import { queryDingtalkUserPage, syncUser } from '@api/dingtalk/dintalk.user'
 import DingtalkUserBindDialog from '@/components/opscloud/dingtalk/DingtalkUserBindDialog'
+import UserDialog from '@/components/opscloud/dialog/UserDialog'
+import { chineseToPinYin } from '@api/opscloud/opscloud.common'
 
 export default {
   data () {
@@ -90,6 +97,13 @@ export default {
       tableData: [],
       dingtalkUserBindDialogStatus: {
         visible: false
+      },
+      userDialogStatus: {
+        visible: false,
+        labelWidth: '150px',
+        operationType: true,
+        addTitle: '新增用户信息',
+        updateTitle: '更新用户信息'
       },
       loading: false,
       pagination: {
@@ -114,7 +128,8 @@ export default {
     this.fetchData()
   },
   components: {
-    DingtalkUserBindDialog
+    DingtalkUserBindDialog,
+    UserDialog
   },
   methods: {
     ...mapActions({
@@ -148,6 +163,29 @@ export default {
     handlerEdit (row) {
       this.dingtalkUserBindDialogStatus.visible = true
       this.$refs.dingtalkUserBindDialog.initData(row)
+    },
+    handlerImport (row) {
+      let requestBody = {
+        'text': row.displayName
+      }
+      chineseToPinYin(requestBody)
+        .then(res => {
+          let user = {
+            dingtalkUserId: row.id,
+            id: '',
+            username: res.body,
+            name: row.displayName,
+            displayName: row.displayName,
+            wechat: '',
+            email: row.email,
+            phone: row.phone,
+            comment: '',
+            isRD: false
+          }
+          this.userDialogStatus.visible = true
+          this.userDialogStatus.operationType = true
+          this.$refs.userDialog.initData(user)
+        })
     },
     handlerSync () {
       this.syncLoading = true
