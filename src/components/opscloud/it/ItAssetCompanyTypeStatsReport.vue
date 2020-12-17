@@ -10,7 +10,7 @@
         <el-tag type="success" style="margin-left: 10px">采购总数: {{ assetCompanyTypeStats.purchaseTotal }}</el-tag>
       </el-row>
       <div style="margin-top: 30px"></div>
-      <div id="itAssetCompanyTypeStatsReport" style="width: 100%; height: 400px;"></div>
+      <div id="itAssetCompanyTypeStatsReport" style="width: 100%; height: 366px;"></div>
     </el-card>
   </div>
 </template>
