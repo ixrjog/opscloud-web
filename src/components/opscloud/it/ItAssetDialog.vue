@@ -23,6 +23,9 @@
           <el-button type="primary" icon="el-icon-refresh" @click="assetTypeTreeRefresh" size="mini" plain></el-button>
         </el-button-group>
       </el-form-item>
+      <el-form-item label="资产配置" prop="assetConfiguration">
+        <el-input v-model.trim="assetData.assetConfiguration"></el-input>
+      </el-form-item>
       <el-form-item label="资产状态" prop="assetStatus" required>
         <el-select v-model="assetData.assetStatus" placeholder="选择状态" disabled>
           <el-option
@@ -46,6 +49,12 @@
       <el-form-item label="购置/起租日期" prop="assetAddTimestamp" required>
         <el-date-picker v-model="assetData.assetAddTimestamp" type="date" placeholder="选择日期" value-format="timestamp">
         </el-date-picker>
+      </el-form-item>
+      <el-form-item label="购置金额" prop="assetPrice">
+        <el-input v-model.trim="assetData.assetPrice"></el-input>
+      </el-form-item>
+      <el-form-item label="放置地点" prop="assetPlace">
+        <el-input v-model.trim="assetData.assetPlace"></el-input>
       </el-form-item>
       <el-form-item label="备注" prop="remark">
         <el-input v-model.trim="assetData.remark"></el-input>
@@ -78,6 +87,9 @@ const assetData = {
   assetCode: '',
   assetNameId: '',
   assetNameIds: [],
+  assetConfiguration: '',
+  assetPrice: '',
+  assetPlace: '',
   assetStatus: 1,
   assetAddTimestamp: Date.now().valueOf(),
   remark: ''

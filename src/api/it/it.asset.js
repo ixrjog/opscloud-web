@@ -142,3 +142,10 @@ export function refreshAssetMonthStatistics () {
     method: 'get'
   })
 }
+
+export function queryItAssetCompanyTypeStats () {
+  return request({
+    url: baseUrl + '/company/type/stats',
+    method: 'get'
+  })
+}

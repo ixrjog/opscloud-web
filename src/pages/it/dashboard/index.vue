@@ -4,7 +4,7 @@
       <div>
         <h1>{{ title }}</h1>
       </div>
-      <el-row :gutter="20">
+      <el-row :gutter="15">
         <el-col :span="6">
           <el-card shadow="hover">
             <div slot="header">
@@ -42,18 +42,21 @@
           </el-card>
         </el-col>
       </el-row>
-      <div style="margin-bottom: 20px"></div>
-      <el-row :gutter="20">
-        <el-col :span="16">
+      <div style="margin-bottom: 15px"></div>
+      <el-row :gutter="15">
+        <el-col :span="5">
+          <it-asset-company-type-stats-report ref="itAssetCompanyTypeStatsReport"></it-asset-company-type-stats-report>
+        </el-col>
+        <el-col :span="13">
           <it-asset-stats-report></it-asset-stats-report>
         </el-col>
-        <el-col :span="8">
+        <el-col :span="6">
           <el-card shadow="hover">
             <el-row>
               <span style="color: #99a9bf">最新入库资产</span>
               <span style="float: right">
-              <el-tag>资产总计: {{ totalStats.total }}</el-tag>
-              <el-tooltip class="item" effect="dark" content="点击查看资产列表详情" placement="top">
+<!--              <el-tag>资产总计: {{ totalStats.total }}</el-tag>-->
+              <el-tooltip class="item" effect="dark" content="点击查看详情" placement="top">
                 <el-link href="https://oc.xinc818.com/index.html#/it/asset" :underline="false" target="_blank">
                   <i style="margin-left: 5px" class="el-icon-position"></i>
                 </el-link>
@@ -63,24 +66,24 @@
             <div style="margin-bottom: 6px"></div>
             <el-table :data="tableData" style="width: 100%" v-loading="loading">
               <el-table-column prop="assetCode" label="资产编码" show-overflow-tooltip></el-table-column>
-              <el-table-column label="资产状态">
-                <template slot-scope="props">
-                  <el-tag :type="getAssetStatusColor(props.row.assetStatus)">
-                    {{ props.row.assetStatus | assetStatusFilters }}
-                  </el-tag>
-                  <el-tag v-if="props.row.assetStatus===4" style="margin-left: 5px">
-                    {{ props.row.disposeType | disposeTypeFilters }}
-                  </el-tag>
-                </template>
-              </el-table-column>
+<!--              <el-table-column label="资产状态">-->
+<!--                <template slot-scope="props">-->
+<!--                  <el-tag :type="getAssetStatusColor(props.row.assetStatus)">-->
+<!--                    {{ props.row.assetStatus | assetStatusFilters }}-->
+<!--                  </el-tag>-->
+<!--                  <el-tag v-if="props.row.assetStatus===4" style="margin-left: 5px">-->
+<!--                    {{ props.row.disposeType | disposeTypeFilters }}-->
+<!--                  </el-tag>-->
+<!--                </template>-->
+<!--              </el-table-column>-->
               <el-table-column prop="assetName" label="资产名称" show-overflow-tooltip></el-table-column>
-              <el-table-column prop="assetAddTime" label="购置/起租日期" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="assetAddTime" label="入库日期" show-overflow-tooltip></el-table-column>
             </el-table>
           </el-card>
         </el-col>
       </el-row>
-      <div style="margin-bottom: 20px"></div>
-      <el-row :gutter="20">
+      <div style="margin-bottom: 15px"></div>
+      <el-row :gutter="15">
         <el-col :span="24">
           <it-asset-month-stats-report></it-asset-month-stats-report>
         </el-col>
@@ -95,6 +98,7 @@
 import ItAssetStatsReport from '@/components/opscloud/it/ItAssetStatsReport'
 import ItAssetMonthStatsReport from '@/components/opscloud/it/ItAssetMonthStatsReport'
 import { queryItAssetTotalStats, queryOcItAssetPage } from '@api/it/it.asset'
+import ItAssetCompanyTypeStatsReport from '@/components/opscloud/it/ItAssetCompanyTypeStatsReport'
 
 export default {
   name: 'ItAssetReport',
@@ -131,7 +135,8 @@ export default {
   },
   components: {
     ItAssetStatsReport,
-    ItAssetMonthStatsReport
+    ItAssetMonthStatsReport,
+    ItAssetCompanyTypeStatsReport
   },
   filters: {
     assetStatusFilters (assetStatus) {
@@ -185,6 +190,7 @@ export default {
             borrowTotal: res.body.borrowTotal,
             disposeTotal: res.body.disposeTotal
           }
+          this.$refs.itAssetCompanyTypeStatsReport.initData(this.totalStats.total)
         })
     },
     getAssetStatusColor (assetStatus) {

@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-card class="box-card" shadow="hover">
-      <div id="itAssetStatsReport" style="width: 100%; height: 460px;"></div>
+      <div id="itAssetStatsReport" style="width: 100%; height: 496px;"></div>
     </el-card>
   </div>
 </template>
@@ -44,9 +44,13 @@ export default {
           formatter: '{a} <br/>{b}: {c} ({d}%)'
         },
         legend: {
+          type: 'scroll',
           orient: 'vertical',
           left: 10,
-          data: legendDate
+          top: 20,
+          bottom: 20,
+          data: legendDate,
+          selected: typeStats
         },
         series: [
           {
@@ -68,34 +72,7 @@ export default {
             type: 'pie',
             radius: ['40%', '55%'],
             label: {
-              formatter: '{per|{d}%}\n{hr|}\n {b|{b}:}{c} ',
-              backgroundColor: '#eee',
-              borderColor: '#aaa',
-              borderWidth: 1,
-              borderRadius: 4,
-              rich: {
-                a: {
-                  color: '#999',
-                  lineHeight: 22,
-                  align: 'center'
-                },
-                hr: {
-                  borderColor: '#aaa',
-                  width: '100%',
-                  borderWidth: 0.5,
-                  height: 0
-                },
-                b: {
-                  fontSize: 12,
-                  lineHeight: 20
-                },
-                per: {
-                  color: '#eee',
-                  backgroundColor: '#334455',
-                  padding: [0, 2],
-                  borderRadius: 2
-                }
-              }
+              formatter: '{b}'
             },
             data: nameStats
           }
