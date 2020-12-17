@@ -2,6 +2,9 @@
   <div>
     <el-card class="box-card" shadow="hover">
       <el-row>
+        <span style="color: #99a9bf">月新增统计</span>
+      </el-row>
+      <el-row>
         <span style="float: right">
           <el-checkbox v-model="detail" @change="handlerChange">详情</el-checkbox>
           <el-tooltip class="item" effect="dark" content="刷新" placement="top">

@@ -17,9 +17,8 @@
         <el-input v-model="user.name" placeholder="请输入内容"></el-input>
       </el-form-item>
       <el-form-item label="部门" :label-width="formStatus.labelWidth">
-        <el-cascader v-model="user.deptIds" :options="deptOptions"
-                     :props="{ multiple: true, checkStrictly: true, expandTrigger: 'hover'}"
-                     @change="handleChange" class="cascader" clearable></el-cascader>
+        <el-cascader :options="deptOptions" :props="deptCascaderProps" @change="handleChange"
+                     class="cascader" placeholder="选择需要加入的部门" ></el-cascader>
         <el-button type="primary" icon="el-icon-refresh" @click="deptTreeRefresh" size="mini" plain
                    style="margin-left: 10px"></el-button>
       </el-form-item>
@@ -59,7 +58,12 @@ export default {
       user: '',
       password: '',
       rootDeptId: 0,
-      deptOptions: []
+      deptOptions: [],
+      deptCascaderProps: {
+        multiple: true,
+        checkStrictly: true,
+        expandTrigger: 'hover'
+      }
     }
   },
   name: 'UserDialog',
@@ -74,7 +78,6 @@ export default {
     },
     initData (user) {
       this.user = user
-      this.user.deptIds = []
       this.getDepartmentTree()
     },
     getUserRandomPassword () {
@@ -98,9 +101,6 @@ export default {
         })
     },
     handleChange (value) {
-      if (JSON.stringify(value) === '[]') {
-        this.user.deptIds = []
-      }
       this.user.deptIdList = []
       value.map(deptIds => {
         this.user.deptIdList.push(deptIds[(deptIds.length - 1)])

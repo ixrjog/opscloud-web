@@ -1,11 +1,11 @@
 <template>
   <div>
     <el-card class="box-card" shadow="hover">
-      <el-row :gutter="20">
+      <el-row>
         <span style="color: #99a9bf">资产总数: {{ assetTotal }}</span>
       </el-row>
       <div style="margin-top: 23px"></div>
-      <el-row :gutter="20">
+      <el-row>
         <el-tag>租赁总数: {{ assetCompanyTypeStats.leaseTotal }}</el-tag>
         <el-tag type="success" style="margin-left: 10px">采购总数: {{ assetCompanyTypeStats.purchaseTotal }}</el-tag>
       </el-row>

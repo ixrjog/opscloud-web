@@ -14,7 +14,7 @@
             :value="item.value">
           </el-option>
         </el-select>
-        <el-cascader :options="assetTypeOptions" :props="{ multiple: true }" clearable expandTrigger="hover"
+        <el-cascader :options="assetTypeOptions" :props="assetTypeProps" clearable
                      @change="handleChange" class="cascader" placeholder="选择分类/名称" collapse-tags>
         </el-cascader>
         <el-select v-model="queryParam.assetCompany" filterable clearable class="select"
@@ -45,7 +45,7 @@
               <el-form-item label="购置/起租日期">
                 <span>{{ props.row.assetAddTime }}</span>
               </el-form-item>
-              <el-form-item label="购置金额">
+              <el-form-item label="金额">
                 <span>{{ props.row.assetPrice }}</span>
               </el-form-item>
             </el-form>
@@ -197,7 +197,11 @@ export default {
         value: 4,
         label: '处置'
       }],
-      assetTypeOptions: []
+      assetTypeOptions: [],
+      assetTypeProps: {
+        multiple: true,
+        expandTrigger: 'hover'
+      }
     }
   },
   computed: {
