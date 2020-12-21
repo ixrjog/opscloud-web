@@ -79,12 +79,12 @@
       return {
         tableData: [],
         role: {},
-        formServerGroupStatus: defaultFormStatus,
-        formUserGroupStatus: defaultFormStatus,
-        formAuthRoleStatus: defaultFormStatus,
-        formRAMPolicyStatus: defaultFormStatus,
-        formOnsTopicStatus: defaultFormStatus,
-        formOnsGroupStatus: defaultFormStatus,
+        formServerGroupStatus: Object.assign({}, defaultFormStatus),
+        formUserGroupStatus: Object.assign({}, defaultFormStatus),
+        formAuthRoleStatus: Object.assign({}, defaultFormStatus),
+        formRAMPolicyStatus: Object.assign({}, defaultFormStatus),
+        formOnsTopicStatus: Object.assign({}, defaultFormStatus),
+        formOnsGroupStatus: Object.assign({}, defaultFormStatus),
         loading: false,
         pagination: {
           currentPage: 1,

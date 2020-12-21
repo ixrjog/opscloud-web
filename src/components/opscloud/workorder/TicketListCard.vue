@@ -52,6 +52,11 @@
 
   import { queryDocById } from '@api/doc/doc.js'
 
+  const defaultFormStatus = {
+    visible: false,
+    operationType: 0
+  }
+
   export default {
     name: 'TicketListCard',
     data () {
@@ -63,30 +68,12 @@
         activeNames: [0],
         workorderGroups: [],
         // operationType  0 编辑模式  1 审批模式  2 完成模式
-        formServerGroupStatus: {
-          visible: false,
-          operationType: 0
-        },
-        formUserGroupStatus: {
-          visible: false,
-          operationType: 0
-        },
-        formAuthRoleStatus: {
-          visible: false,
-          operationType: 0
-        },
-        formRAMPolicyStatus: {
-          visible: false,
-          operationType: 0
-        },
-        formOnsTopicStatus: {
-          visible: false,
-          operationType: 0
-        },
-        formOnsGroupStatus: {
-          visible: false,
-          operationType: 0
-        },
+        formServerGroupStatus: Object.assign({}, defaultFormStatus),
+        formUserGroupStatus: Object.assign({}, defaultFormStatus),
+        formAuthRoleStatus: Object.assign({}, defaultFormStatus),
+        formRAMPolicyStatus: Object.assign({}, defaultFormStatus),
+        formOnsTopicStatus: Object.assign({}, defaultFormStatus),
+        formOnsGroupStatus: Object.assign({}, defaultFormStatus),
         ticketCreateing: false,
         ticketTableData: []
       }
