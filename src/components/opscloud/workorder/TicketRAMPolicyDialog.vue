@@ -67,7 +67,7 @@
           <el-button type="success" v-if="ticket.isInApproval" plain size="mini" @click="agreeTicket">同意</el-button>
           <el-button type="danger" v-if="ticket.isInApproval" plain size="mini" @click="disagreeTicket">拒绝</el-button>
         </span>
-        <el-button size="mini" @click="formStatus.visible = false">关闭</el-button>
+        <el-button size="mini" @click="closeDialog">关闭</el-button>
       </div>
     </el-dialog>
   </div>

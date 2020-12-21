@@ -59,7 +59,7 @@
       },
       saveInfo () {
         setTimeout(() => {
-          var requestBody = Object.assign({}, this.userGroup)
+          let requestBody = Object.assign({}, this.userGroup)
           if (this.formStatus.operationType) {
             addUserGroup(requestBody)
               .then(res => {

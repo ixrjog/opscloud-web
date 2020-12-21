@@ -15,9 +15,9 @@
                          @click="handlerCheck(groupData.groupId)" :disabled="groupChecked"></el-button>
             </el-input>
             <el-alert type="warning" show-icon :closable="false" style="margin-top: 10px">
-              <el-row>1. 以 “GID_”开头，只能包含大写字母、数字和下划线（_）</el-row>
-              <el-row>2. 长度限制在 7~64 字符之间</el-row>
-              <el-row>3. Group ID 一旦创建，则无法修改</el-row>
+              <li>以 “GID_”开头，只能包含大写字母、数字和下划线（_）</li>
+              <li>长度限制在 7~64 字符之间</li>
+              <li>Group ID 一旦创建，则无法修改</li>
             </el-alert>
           </el-form-item>
           <el-form-item label="协议类型" prop="groupType">
@@ -82,7 +82,7 @@
           <el-button type="success" v-if="ticket.isInApproval" plain size="mini" @click="agreeTicket">同意</el-button>
           <el-button type="danger" v-if="ticket.isInApproval" plain size="mini" @click="disagreeTicket">拒绝</el-button>
         </span>
-        <el-button size="mini" @click="formStatus.visible = false">关闭</el-button>
+        <el-button size="mini" @click="closeDialog">关闭</el-button>
       </div>
     </el-dialog>
   </div>
