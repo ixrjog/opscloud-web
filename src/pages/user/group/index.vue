@@ -9,7 +9,8 @@
           <el-input v-model.trim="queryParam.name" placeholder="输入关键字查询用户组"
                     style="display: inline-block; max-width:200px; margin-left: 10px"/>
           <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
-          <el-button @click="syncLdapUserGroup" style="margin-left: 5px">同步</el-button>
+          <el-button @click="addItem" style="margin-left: 5px">新建</el-button>
+          <el-button @click="handlerSyncUserGroup" style="margin-left: 5px">同步</el-button>
         </el-row>
       </div>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
@@ -51,7 +52,7 @@
                      :page-size="pagination.pageSize">
       </el-pagination>
       <!-- userGroup编辑对话框-->
-      <UserGroupDialog  ref="userGroupDialog" :formStatus="formGroupStatus" @closeDialog="fetchData"></UserGroupDialog>
+      <user-group-dialog  ref="userGroupDialog" :formStatus="formGroupStatus" @closeDialog="fetchData"></user-group-dialog>
       <!-- userGroup编辑对话框-->
     </template>
   </d2-container>
@@ -60,7 +61,7 @@
 <script>
   import { mapState, mapActions } from 'vuex'
   // Component
-  import UserGroupDialog from '@/components/opscloud/dialog/UserGroupDialog'
+  import UserGroupDialog from '@/components/opscloud/user/UserGroupDialog'
 
   // API
   import { queryUserGroupPage, deleteUserGroupById, syncUserGroup } from '@api/user/user.group.js'
@@ -147,7 +148,7 @@
           id: '',
           name: '',
           grpType: 0,
-          workflow: 0,
+          inWorkorder: 0,
           comment: ''
         }
         this.$refs.userGroupDialog.initData(userGroup)
@@ -161,13 +162,13 @@
         })
         done()
       },
-      syncLdapUserGroup () {
+      handlerSyncUserGroup () {
         setTimeout(() => {
           this.loading = true
           syncUserGroup()
             .then(res => {
               this.$message({
-                message: '同步成功',
+                message: '同步成功！',
                 type: 'success'
               })
               this.fetchData()
