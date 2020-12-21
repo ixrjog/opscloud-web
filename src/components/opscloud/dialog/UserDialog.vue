@@ -17,7 +17,7 @@
         <el-input v-model="user.name" placeholder="请输入内容"></el-input>
       </el-form-item>
       <el-form-item label="部门" :label-width="formStatus.labelWidth">
-        <el-cascader :options="deptOptions" :props="deptCascaderProps" @change="handleChange"
+        <el-cascader v-model="cascaderValue" :options="deptOptions" :props="deptCascaderProps" @change="handleChange"
                      class="cascader" placeholder="选择需要加入的部门" ></el-cascader>
         <el-button type="primary" icon="el-icon-refresh" @click="deptTreeRefresh" size="mini" plain
                    style="margin-left: 10px"></el-button>
@@ -63,7 +63,8 @@ export default {
         multiple: true,
         checkStrictly: true,
         expandTrigger: 'hover'
-      }
+      },
+      cascaderValue: []
     }
   },
   name: 'UserDialog',
@@ -78,6 +79,7 @@ export default {
     },
     initData (user) {
       this.user = user
+      this.cascaderValue = []
       this.getDepartmentTree()
     },
     getUserRandomPassword () {
