@@ -54,3 +54,25 @@ export function syncCloudServerById (id) {
     method: 'put'
   })
 }
+
+export function queryServerMonthStatsReport (queryYear) {
+  return request({
+    url: baseUrl + '/month/stats?queryYear=' + queryYear,
+    method: 'get'
+  })
+}
+
+export function queryServerMonthStatsReportByType (data) {
+  return request({
+    url: baseUrl + '/type/month/stats',
+    method: 'post',
+    data
+  })
+}
+
+export function queryServerResStatsReport (cloudServerType) {
+  return request({
+    url: baseUrl + '/res/stats?cloudServerType=' + cloudServerType,
+    method: 'get'
+  })
+}
