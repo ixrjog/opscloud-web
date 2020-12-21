@@ -15,9 +15,9 @@
                          @click="handlerCheck(topicData.topic)" :disabled="topicChecked"></el-button>
             </el-input>
             <el-alert type="warning" show-icon :closable="false" style="margin-top: 10px">
-              <el-row>1. Topic只能以 “TOPIC_”开头，包含大写英文、数字和下划线（_）</el-row>
-              <el-row>2. 长度限制在3~64个字符之间</el-row>
-              <el-row>3. Topic一旦创建，则无法修改</el-row>
+              <li>Topic只能以 “TOPIC_”开头，包含大写英文、数字和下划线（_）</li>
+              <li>长度限制在3~64个字符之间</li>
+              <li>Topic一旦创建，则无法修改</li>
             </el-alert>
           </el-form-item>
           <el-form-item label="消息类型" prop="messageType">
@@ -89,7 +89,7 @@
           <el-button type="success" v-if="ticket.isInApproval" plain size="mini" @click="agreeTicket">同意</el-button>
           <el-button type="danger" v-if="ticket.isInApproval" plain size="mini" @click="disagreeTicket">拒绝</el-button>
         </span>
-        <el-button size="mini" @click="formStatus.visible = false">关闭</el-button>
+        <el-button size="mini" @click="closeDialog">关闭</el-button>
       </div>
     </el-dialog>
   </div>

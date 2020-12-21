@@ -69,6 +69,14 @@ export function queryMyWorkorderTicketPage (data) {
   })
 }
 
+export function queryMyFinalizedWorkorderTicketPage (data) {
+  return request({
+    url: '/workorder/ticket/my/finalized/page/query',
+    method: 'post',
+    data
+  })
+}
+
 /**
  * 审批同意
  * @param data
