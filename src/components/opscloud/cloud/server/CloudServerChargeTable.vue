@@ -255,6 +255,7 @@
         this.loading = true
         let requestBody = Object.assign({}, this.queryParam)
         requestBody.extend = 1
+        requestBody.cloudServerType = this.formStatus.serverType
         requestBody.page = this.pagination.currentPage
         requestBody.length = this.pagination.pageSize
         queryCloudServerChargePage(requestBody)
