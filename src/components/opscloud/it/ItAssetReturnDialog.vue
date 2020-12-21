@@ -13,7 +13,7 @@
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="formStatus.visible = false">取消</el-button>
-      <el-button type="primary" @click="assetReturnAdd" :disabled="saving">创建</el-button>
+      <el-button type="primary" @click="assetReturnAdd" :disabled="saving">保存</el-button>
     </div>
   </el-dialog>
 </template>

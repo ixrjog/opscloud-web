@@ -27,13 +27,12 @@
       <el-button @click="handlerAdd" style="margin-left: 5px">创建Topic</el-button>
     </el-row>
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
-      <el-table-column prop="topic" label="Topic">
+      <el-table-column prop="topic" label="Topic" show-overflow-tooltip>
         <template slot-scope="scope">
-          <span>{{ scope.row.topic }}</span>
           <span v-clipboard:copy="scope.row.topic" v-clipboard:success="onCopy"
-                v-clipboard:error="onError" style="float: right">
-                    <i class="el-icon-copy-document"></i>
-                  </span>
+                v-clipboard:error="onError">{{ scope.row.topic }}
+            <i style="margin-left: 5px" class="el-icon-copy-document"></i>
+          </span>
         </template>
       </el-table-column>
       <el-table-column prop="messageType" label="消息类型">
@@ -43,7 +42,7 @@
       </el-table-column>
       <el-table-column prop="relationName" label="所有关系"></el-table-column>
       <el-table-column prop="createTime" label="创建时间"></el-table-column>
-      <el-table-column prop="remark" label="备注"></el-table-column>
+      <el-table-column prop="remark" label="备注" show-overflow-tooltip></el-table-column>
       <el-table-column fixed="right" label="操作" width="180">
         <template slot-scope="scope">
           <el-button-group>

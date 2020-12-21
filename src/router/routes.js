@@ -294,6 +294,51 @@ const frameIn = [
         }
       },
       {
+        path: '/cloud/aliyun/dns',
+        name: 'cloud-aliyun-dns',
+        component: () => import('@/pages/cloud/aliyun/dns'),
+        meta: {
+          auth: true,
+          title: '域名解析'
+        }
+      },
+      {
+        path: '/cloud/aliyun/dns/domain',
+        name: 'cloud-aliyun-dns-domain',
+        component: () => import('@/pages/cloud/aliyun/dns/domain'),
+        meta: {
+          auth: true,
+          title: '域名管理'
+        }
+      },
+      {
+        path: '/cloud/aliyun/slb',
+        name: 'cloud-aliyun-slb',
+        component: () => import('@/pages/cloud/aliyun/slb'),
+        meta: {
+          auth: true,
+          title: '负载均衡'
+        }
+      },
+      {
+        path: '/dingtalk/user',
+        name: 'dingtalk-user',
+        component: () => import('@/pages/dingtalk/user'),
+        meta: {
+          auth: true,
+          title: '用户关系'
+        }
+      },
+      {
+        path: '/dingtalk/dept',
+        name: 'dingtalk-dept',
+        component: () => import('@/pages/dingtalk/dept'),
+        meta: {
+          auth: true,
+          title: '部门管理'
+        }
+      },
+      {
         path: '/kubernetes/application',
         name: 'kubernetes-application',
         component: () => import('@/pages/kubernetes/application'),
@@ -540,15 +585,6 @@ const frameIn = [
         }
       },
       {
-        path: '/it/dashboard',
-        name: 'it-dashboard',
-        component: () => import('@/pages/it/dashboard'),
-        meta: {
-          auth: true,
-          title: '资产大盘'
-        }
-      },
-      {
         path: '/it/asset',
         name: 'it-asset',
         component: () => import('@/pages/it/asset'),
@@ -564,6 +600,24 @@ const frameIn = [
         meta: {
           auth: true,
           title: '分配记录'
+        }
+      },
+      {
+        path: '/it/asset/dispose',
+        name: 'it-asset-dispose',
+        component: () => import('@/pages/it/asset/dispose'),
+        meta: {
+          auth: true,
+          title: '资产处置'
+        }
+      },
+      {
+        path: '/it/dashboard',
+        name: 'it-dashboard',
+        component: () => import('@/pages/it/dashboard'),
+        meta: {
+          auth: true,
+          title: '资产统计'
         }
       },
       {

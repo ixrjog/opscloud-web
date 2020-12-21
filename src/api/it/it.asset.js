@@ -106,3 +106,46 @@ export function updateReturnAsset (data) {
     data
   })
 }
+
+export function queryOcItAssetDisposePage (data) {
+  return request({
+    url: baseUrl + '/dispose/page/query',
+    method: 'post',
+    data
+  })
+}
+
+export function queryItAssetStatistics () {
+  return request({
+    url: baseUrl + '/stats',
+    method: 'get'
+  })
+}
+
+export function queryItAssetTotalStats () {
+  return request({
+    url: baseUrl + '/total/stats',
+    method: 'get'
+  })
+}
+
+export function queryItAssetMonthStatistics () {
+  return request({
+    url: baseUrl + '/month/stats',
+    method: 'get'
+  })
+}
+
+export function refreshAssetMonthStatistics () {
+  return request({
+    url: baseUrl + '/month/stats/refresh',
+    method: 'get'
+  })
+}
+
+export function queryItAssetCompanyTypeStats () {
+  return request({
+    url: baseUrl + '/company/type/stats',
+    method: 'get'
+  })
+}

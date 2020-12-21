@@ -21,7 +21,7 @@
           <el-button slot="append" :icon="groupChecked?'el-icon-success':'el-icon-warning'"
                      @click="handlerCheck(groupData.groupId)" :disabled="groupChecked"></el-button>
         </el-input>
-        <el-alert type="warning" show-icon :closable="false">
+        <el-alert type="warning" show-icon :closable="false" style="margin-top: 10px">
           <el-row>1. 以 “GID_”开头，只能包含大写字母、数字和下划线（_）</el-row>
           <el-row>2. 长度限制在 7~64 字符之间</el-row>
           <el-row>3. Group ID 一旦创建，则无法修改</el-row>
@@ -112,7 +112,7 @@ export default {
     },
     handlerCheck (groupId) {
       if (groupId === '' || groupId === 'GID_') {
-        this.$message.error('请输入GroupId')
+        this.$message.warning('请输入GroupId')
         return
       }
       let data = {
@@ -134,7 +134,7 @@ export default {
       this.$refs.groupDataForm.validate((valid) => {
         if (valid) {
           if (!this.groupChecked) {
-            this.$message.error('请先校验GroupId')
+            this.$message.warning('请先校验GroupId')
             return
           }
           this.creating = true

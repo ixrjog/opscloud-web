@@ -6,15 +6,6 @@
       </div>
       <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
         <el-input v-model.trim="queryParam.queryName" placeholder="输入资产编码模糊查询" class="input"/>
-        <el-select v-model="queryParam.assetCompany" filterable clearable class="select"
-                   remote placeholder="选择归属公司" :remote-method="getAssetCompany">
-          <el-option
-            v-for="item in companyOptions"
-            :key="item.id"
-            :label="item.assetCompanyName"
-            :value="item.id">
-          </el-option>
-        </el-select>
         <el-select v-model="queryParam.assetStatus" placeholder="选择状态" class="select" clearable>
           <el-option
             v-for="item in assetStatusOptions"
@@ -23,24 +14,48 @@
             :value="item.value">
           </el-option>
         </el-select>
-        <el-select v-model="queryParam.assetNameId" placeholder="选择资产名称" class="select" clearable filterable>
+        <el-cascader :options="assetTypeOptions" :props="assetTypeProps" clearable
+                     @change="handleChange" class="cascader" placeholder="选择分类/名称" collapse-tags>
+        </el-cascader>
+        <el-select v-model="queryParam.assetCompany" filterable clearable class="select"
+                   remote placeholder="选择归属公司" :remote-method="getAssetCompany">
           <el-option
-            v-for="item in assetNameOptions"
+            v-for="item in companyOptions"
             :key="item.id"
-            :label="item.assetName"
+            :label="item.assetCompanyName"
             :value="item.id">
+            <span style="float: left">{{ item.assetCompanyName }}</span>
+            <span style="float: right; color: #8492a6; font-size: 10px;margin-left: 20px">
+              {{ item.assetCompanyType | assetCompanyTypeFilters }}</span>
           </el-option>
         </el-select>
         <el-button @click="fetchData">查询</el-button>
         <el-button @click="handlerAdd" style="margin-left: 5px">新增</el-button>
       </el-row>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form label-position="left" inline class="table-expand">
+              <el-form-item label="资产配置">
+                <span>{{ props.row.assetConfiguration }}</span>
+              </el-form-item>
+              <el-form-item label="放置地点">
+                <span>{{ props.row.assetPlace }}</span>
+              </el-form-item>
+              <el-form-item label="购置/起租日期">
+                <span>{{ props.row.assetAddTime }}</span>
+              </el-form-item>
+              <el-form-item label="金额">
+                <span>{{ props.row.assetPrice }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
         <el-table-column prop="assetCode" label="资产编码">
           <template slot-scope="scope">
-            <span>{{ scope.row.assetCode }}</span>
-            <span v-clipboard:copy="scope.row.assetCode" v-clipboard:success="onCopy" v-clipboard:error="onError"
-                  style="float: right">
-              <i class="el-icon-copy-document"></i>
+            <span v-clipboard:copy="scope.row.assetCode" v-clipboard:success="onCopy"
+                  v-clipboard:error="onError">{{ scope.row.assetCode }}
+              <i style="margin-left: 5px" class="el-icon-copy-document"></i>
             </span>
           </template>
         </el-table-column>
@@ -54,23 +69,29 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="assetType" label="资产分类"></el-table-column>
-        <el-table-column prop="assetName" label="资产名称"></el-table-column>
-        <el-table-column prop="assetCompanyName" label="归属公司"></el-table-column>
-        <el-table-column prop="useTime" label="领用/借用日期"></el-table-column>
-        <el-table-column prop="assetAddTime" label="购置/起租日期"></el-table-column>
+        <el-table-column label="资产分类/名称">
+          <template slot-scope="props">
+            <span>{{ props.row.assetType }} / {{ props.row.assetName }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="归属公司">
+          <template slot-scope="props">
+            <span>{{ props.row| assetCompanyFilters }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="申领用户" width="220">
           <template slot-scope="props">
             <span>{{ props.row.user | userFilters }}</span>
           </template>
         </el-table-column>
+        <el-table-column prop="useTime" label="领用/借用日期"></el-table-column>
         <el-table-column label="备注">
           <template slot-scope="props">
             <span v-if="props.row.assetStatus===4">{{ props.row.disposeRemark }}</span>
             <span v-else>{{ props.row.remark }}</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="280">
+        <el-table-column label="操作" width="120">
           <template slot-scope="scope">
             <el-dropdown split-button type="primary" size="mini" @click="handlerRowEdit(scope.row)">
               编辑
@@ -102,7 +123,6 @@
                      layout="total, sizes, prev, pager, next, jumper" :total="pagination.total"
                      :current-page="pagination.currentPage" :page-size="pagination.pageSize">
       </el-pagination>
-      <!-- namespace编辑对话框 -->
       <it-asset-dialog ref="itAssetDialog" :formStatus="itAssetDialogStatus" @closeDialog="fetchData"></it-asset-dialog>
       <it-asset-apply-dialog ref="itAssetApplyDialog" :formStatus="itAssetApplyDialogStatus"
                              @closeDialog="fetchData"></it-asset-apply-dialog>
@@ -125,7 +145,7 @@ import {
   queryOcItAssetCompanyAll,
   queryOcItAssetPage,
   ableAsset,
-  queryOcItAssetNameAll
+  queryAssetTypeTree
 } from '@api/it/it.asset'
 import { mapActions, mapState } from 'vuex'
 
@@ -161,7 +181,7 @@ export default {
         queryName: '',
         assetCompany: '',
         assetStatus: '',
-        assetNameId: ''
+        assetNameIdList: []
       },
       companyOptions: [],
       assetStatusOptions: [{
@@ -177,7 +197,11 @@ export default {
         value: 4,
         label: '处置'
       }],
-      assetNameOptions: []
+      assetTypeOptions: [],
+      assetTypeProps: {
+        multiple: true,
+        expandTrigger: 'hover'
+      }
     }
   },
   computed: {
@@ -187,8 +211,8 @@ export default {
   },
   mounted () {
     this.getAssetCompany()
-    this.getAssetName()
     this.fetchData()
+    this.getAssetTypeTree()
   },
   components: {
     ItAssetDialog,
@@ -225,6 +249,9 @@ export default {
       if (disposeType === 4) {
         return '转让出售'
       }
+      if (disposeType === 5) {
+        return '维修处理'
+      }
       return '暂未配置'
     },
     userFilters (user) {
@@ -232,6 +259,27 @@ export default {
         return ''
       }
       return user.username + '<' + user.displayName + '>'
+    },
+    assetCompanyFilters (assetCompany) {
+      if (assetCompany === null || assetCompany === '') {
+        return ''
+      }
+      if (assetCompany.assetCompanyType === 1) {
+        return assetCompany.assetCompanyName + ' <采购>'
+      }
+      if (assetCompany.assetCompanyType === 2) {
+        return assetCompany.assetCompanyName + ' <租赁>'
+      }
+      return ''
+    },
+    assetCompanyTypeFilters (assetCompanyType) {
+      if (assetCompanyType === 1) {
+        return '采购'
+      }
+      if (assetCompanyType === 2) {
+        return '租赁'
+      }
+      return ''
     }
   },
   methods: {
@@ -255,10 +303,10 @@ export default {
           this.companyOptions = res.body
         })
     },
-    getAssetName () {
-      queryOcItAssetNameAll()
+    getAssetTypeTree () {
+      queryAssetTypeTree()
         .then(res => {
-          this.assetNameOptions = res.body
+          this.assetTypeOptions = res.body
         })
     },
     getAssetStatusColor (assetStatus) {
@@ -326,7 +374,7 @@ export default {
         'queryName': this.queryParam.queryName,
         'assetCompany': this.queryParam.assetCompany === '' ? -1 : this.queryParam.assetCompany,
         'assetStatus': this.queryParam.assetStatus === '' ? -1 : this.queryParam.assetStatus,
-        'assetNameId': this.queryParam.assetNameId === '' ? -1 : this.queryParam.assetNameId,
+        'assetNameIdList': this.queryParam.assetNameIdList,
         'page': this.pagination.currentPage,
         'length': this.pagination.pageSize
       }
@@ -343,6 +391,12 @@ export default {
     },
     onError (e) {
       this.$message.error('抱歉，复制失败！')
+    },
+    handleChange (value) {
+      this.queryParam.assetNameIdList = []
+      value.map(assetNameId => {
+        this.queryParam.assetNameIdList.push(assetNameId[(assetNameId.length - 1)])
+      })
     }
   }
 }
@@ -359,4 +413,25 @@ export default {
   margin-right: 5px;
 }
 
+.cascader {
+  margin-right: 5px;
+  width: 220px;
+}
+</style>
+
+<style>
+.table-expand {
+  font-size: 0;
+}
+
+.table-expand label {
+  width: 150px;
+  color: #99a9bf;
+}
+
+.table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
+}
 </style>

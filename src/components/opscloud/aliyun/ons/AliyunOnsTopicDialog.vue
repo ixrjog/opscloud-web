@@ -4,8 +4,7 @@
              label-position="left" v-loading="creating" element-loading-text="Topic创建中"
              element-loading-spinner="el-icon-loading">
       <el-form-item label="MQ实例" prop="instance" required>
-        <el-select v-model="topicData.instance" placeholder="请选择实例" @change="getRegionId"
-                   value-key="instanceId">
+        <el-select v-model="topicData.instance" placeholder="请选择实例" @change="getRegionId" value-key="instanceId">
           <el-option
             v-for="item in instanceOptions"
             :key="item.id"
@@ -21,7 +20,7 @@
           <el-button slot="append" :icon="topicChecked?'el-icon-success':'el-icon-warning'"
                      @click="handlerCheck(topicData.topic)" :disabled="topicChecked"></el-button>
         </el-input>
-        <el-alert type="warning" show-icon :closable="false">
+        <el-alert type="warning" show-icon :closable="false" style="margin-top: 10px">
           <el-row>1. Topic只能以 “TOPIC_”开头，包含大写英文、数字和下划线（_）</el-row>
           <el-row>2. 长度限制在3~64个字符之间</el-row>
           <el-row>3. Topic一旦创建，则无法修改</el-row>
@@ -128,7 +127,7 @@ export default {
     },
     handlerCheck (topic) {
       if (topic === '' || topic === 'TOPIC_') {
-        this.$message.error('请输入Topic')
+        this.$message.warning('请输入Topic')
         return
       }
       let data = {
@@ -150,7 +149,7 @@ export default {
       this.$refs.topicDataForm.validate((valid) => {
         if (valid) {
           if (!this.topicChecked) {
-            this.$message.error('请先校验Topic')
+            this.$message.warning('请先校验Topic')
             return
           }
           this.creating = true

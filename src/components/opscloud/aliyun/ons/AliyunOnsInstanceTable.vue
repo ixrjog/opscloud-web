@@ -61,10 +61,9 @@
             <el-form label-position="left" label-width="130px">
               <el-row>
                 <el-form-item label="实例ID">
-                  <span>{{ item.instanceId }}</span>
                   <span v-clipboard:copy="item.instanceId" v-clipboard:success="onCopy"
-                        v-clipboard:error="onError" style="float: right">
-                    <i class="el-icon-copy-document"></i>
+                        v-clipboard:error="onError">{{ item.instanceId }}
+                    <i style="margin-left: 5px" class="el-icon-copy-document"></i>
                   </span>
                 </el-form-item>
               </el-row>
@@ -77,7 +76,7 @@
                 </el-col>
                 <el-col :span="12">
                   <el-form-item label="命名空间">
-                    <el-tag>{{ item.independentNaming |namingFilters }}</el-tag>
+                    <el-tag type="success">{{ item.independentNaming |namingFilters }}</el-tag>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -95,37 +94,33 @@
               </el-row>
               <el-row v-if="item.tcpEndpoint !== ''">
                 <el-form-item label="TCP接入点">
-                  <span>{{ item.tcpEndpoint }}</span>
                   <span v-clipboard:copy="item.tcpEndpoint" v-clipboard:success="onCopy"
-                        v-clipboard:error="onError" style="float: right">
-                    <i class="el-icon-copy-document"></i>
+                        v-clipboard:error="onError">{{ item.tcpEndpoint }}
+                    <i style="margin-left: 5px" class="el-icon-copy-document"></i>
                   </span>
                 </el-form-item>
               </el-row>
               <el-row v-if="item.httpInternetEndpoint !== ''">
                 <el-form-item label="HTTP公网接入点">
-                  <span>{{ item.httpInternetEndpoint }}</span>
                   <span v-clipboard:copy="item.httpInternetEndpoint" v-clipboard:success="onCopy"
-                        v-clipboard:error="onError" style="float: right">
-                    <i class="el-icon-copy-document"></i>
+                        v-clipboard:error="onError">{{ item.httpInternetEndpoint }}
+                    <i style="margin-left: 5px" class="el-icon-copy-document"></i>
                   </span>
                 </el-form-item>
               </el-row>
               <el-row v-if="item.httpInternetSecureEndpoint !== ''">
                 <el-form-item label="HTTPS公网接入点">
-                  <span>{{ item.httpInternetSecureEndpoint }}</span>
                   <span v-clipboard:copy="item.httpInternetSecureEndpoint" v-clipboard:success="onCopy"
-                        v-clipboard:error="onError" style="float: right">
-                    <i class="el-icon-copy-document"></i>
+                        v-clipboard:error="onError">{{ item.httpInternetSecureEndpoint }}
+                    <i style="margin-left: 5px" class="el-icon-copy-document"></i>
                   </span>
                 </el-form-item>
               </el-row>
               <el-row v-if="item.httpInternalEndpoint !== ''">
                 <el-form-item label="HTTP内网接入点">
-                  <span>{{ item.httpInternalEndpoint }}</span>
                   <span v-clipboard:copy="item.httpInternalEndpoint" v-clipboard:success="onCopy"
-                        v-clipboard:error="onError" style="float: right">
-                    <i class="el-icon-copy-document"></i>
+                        v-clipboard:error="onError">{{ item.httpInternalEndpoint }}
+                    <i style="margin-left: 5px" class="el-icon-copy-document"></i>
                   </span>
                 </el-form-item>
               </el-row>
@@ -163,10 +158,9 @@
             <el-form label-position="left" label-width="130px">
               <el-row>
                 <el-form-item label="实例ID">
-                  <span>{{ item.instanceId }}</span>
                   <span v-clipboard:copy="item.instanceId" v-clipboard:success="onCopy"
-                        v-clipboard:error="onError" style="float: right">
-                    <i class="el-icon-copy-document"></i>
+                        v-clipboard:error="onError">{{ item.instanceId }}
+                    <i style="margin-left: 5px" class="el-icon-copy-document"></i>
                   </span>
                 </el-form-item>
               </el-row>
@@ -197,37 +191,33 @@
               </el-row>
               <el-row v-if="item.tcpEndpoint !== ''">
                 <el-form-item label="TCP接入点">
-                  <span>{{ item.tcpEndpoint }}</span>
                   <span v-clipboard:copy="item.tcpEndpoint" v-clipboard:success="onCopy"
-                        v-clipboard:error="onError" style="float: right">
-                    <i class="el-icon-copy-document"></i>
+                        v-clipboard:error="onError">{{ item.tcpEndpoint }}
+                    <i style="margin-left: 5px" class="el-icon-copy-document"></i>
                   </span>
                 </el-form-item>
               </el-row>
               <el-row v-if="item.httpInternetEndpoint !== ''">
                 <el-form-item label="HTTP公网接入点">
-                  <span>{{ item.httpInternetEndpoint }}</span>
                   <span v-clipboard:copy="item.httpInternetEndpoint" v-clipboard:success="onCopy"
-                        v-clipboard:error="onError" style="float: right">
-                    <i class="el-icon-copy-document"></i>
+                        v-clipboard:error="onError">{{ item.httpInternetEndpoint }}
+                    <i style="margin-left: 5px" class="el-icon-copy-document"></i>
                   </span>
                 </el-form-item>
               </el-row>
               <el-row v-if="item.httpInternetSecureEndpoint !== ''">
                 <el-form-item label="HTTPS公网接入点">
-                  <span>{{ item.httpInternetSecureEndpoint }}</span>
                   <span v-clipboard:copy="item.httpInternetSecureEndpoint" v-clipboard:success="onCopy"
-                        v-clipboard:error="onError" style="float: right">
-                    <i class="el-icon-copy-document"></i>
+                        v-clipboard:error="onError">{{ item.httpInternetSecureEndpoint }}
+                    <i style="margin-left: 5px" class="el-icon-copy-document"></i>
                   </span>
                 </el-form-item>
               </el-row>
               <el-row v-if="item.httpInternalEndpoint !== ''">
                 <el-form-item label="HTTP内网接入点">
-                  <span>{{ item.httpInternalEndpoint }}</span>
                   <span v-clipboard:copy="item.httpInternalEndpoint" v-clipboard:success="onCopy"
-                        v-clipboard:error="onError" style="float: right">
-                    <i class="el-icon-copy-document"></i>
+                        v-clipboard:error="onError">{{ item.httpInternalEndpoint }}
+                    <i style="margin-left: 5px" class="el-icon-copy-document"></i>
                   </span>
                 </el-form-item>
               </el-row>

@@ -9,19 +9,22 @@
           <el-button slot="append" :icon="codeChecked?'el-icon-success':'el-icon-warning'"
                      @click="handlerCheck(assetData.assetCode)" :disabled="codeChecked"></el-button>
         </el-input>
-        <el-alert type="warning" show-icon :closable="false">
+        <el-alert type="warning" show-icon :closable="false" style="margin-top: 10px">
           <el-row>1. 资产编码只能包含字母、数字和中划线（-）</el-row>
           <el-row>2. 资产编码一旦创建，则无法修改</el-row>
         </el-alert>
       </el-form-item>
       <el-form-item label="资产名称" prop="assetNameIds" required>
         <el-cascader v-model="assetData.assetNameIds" :options="assetTypeOptions"
-                     expandTrigger="hover" @change="handleChange"></el-cascader>
+                     expandTrigger="hover" @change="handleChange" filterable></el-cascader>
         <el-button-group style="margin-left:5px">
           <el-button type="primary" icon="el-icon-circle-plus-outline" @click="assetNameAdd" size="mini"
                      plain></el-button>
           <el-button type="primary" icon="el-icon-refresh" @click="assetTypeTreeRefresh" size="mini" plain></el-button>
         </el-button-group>
+      </el-form-item>
+      <el-form-item label="资产配置" prop="assetConfiguration">
+        <el-input v-model.trim="assetData.assetConfiguration"></el-input>
       </el-form-item>
       <el-form-item label="资产状态" prop="assetStatus" required>
         <el-select v-model="assetData.assetStatus" placeholder="选择状态" disabled>
@@ -47,13 +50,19 @@
         <el-date-picker v-model="assetData.assetAddTimestamp" type="date" placeholder="选择日期" value-format="timestamp">
         </el-date-picker>
       </el-form-item>
+      <el-form-item label="购置金额" prop="assetPrice">
+        <el-input v-model.trim="assetData.assetPrice"></el-input>
+      </el-form-item>
+      <el-form-item label="放置地点" prop="assetPlace">
+        <el-input v-model.trim="assetData.assetPlace"></el-input>
+      </el-form-item>
       <el-form-item label="备注" prop="remark">
         <el-input v-model.trim="assetData.remark"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="formStatus.visible = false">取消</el-button>
-      <el-button type="primary" @click="assetAdd" :disabled="adding">创建</el-button>
+      <el-button type="primary" @click="assetAdd" :disabled="adding">保存</el-button>
     </div>
     <it-asset-name-dialog ref="itAssetNameDialog" :formStatus="itAssetNameDialogStatus"
                           @closeDialog="getAssetTypeTree"></it-asset-name-dialog>
@@ -78,6 +87,9 @@ const assetData = {
   assetCode: '',
   assetNameId: '',
   assetNameIds: [],
+  assetConfiguration: '',
+  assetPrice: '',
+  assetPlace: '',
   assetStatus: 1,
   assetAddTimestamp: Date.now().valueOf(),
   remark: ''
@@ -167,7 +179,7 @@ export default {
     },
     handlerCheck (assetCode) {
       if (assetCode === '') {
-        this.$message.error('请输入资产编码')
+        this.$message.warning('请输入资产编码')
         return
       }
       assetCodeCheck(assetCode)
@@ -181,7 +193,6 @@ export default {
     },
     handleChange (value) {
       this.assetData.assetNameId = value[(value.length - 1)]
-      console.log(this.assetData.assetNameId)
     },
     assetNameAdd () {
       this.itAssetNameDialogStatus.visible = true
@@ -191,7 +202,7 @@ export default {
       this.$refs.assetDataForm.validate((valid) => {
         if (valid) {
           if (!this.codeChecked) {
-            this.$message.error('请先校验资产编码')
+            this.$message.warning('请先校验资产编码')
             return
           }
           this.adding = true

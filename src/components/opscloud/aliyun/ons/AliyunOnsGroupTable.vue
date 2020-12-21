@@ -27,13 +27,12 @@
       <el-button @click="handlerAdd" style="margin-left: 5px">创建GroupId</el-button>
     </el-row>
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
-      <el-table-column prop="groupId" label="GroupId">
+      <el-table-column prop="groupId" label="GroupId" show-overflow-tooltip>
         <template slot-scope="scope">
-          <span>{{ scope.row.groupId }}</span>
           <span v-clipboard:copy="scope.row.groupId" v-clipboard:success="onCopy"
-                v-clipboard:error="onError" style="float: right">
-                    <i class="el-icon-copy-document"></i>
-                  </span>
+                v-clipboard:error="onError">{{ scope.row.groupId }}
+            <i style="margin-left: 5px" class="el-icon-copy-document"></i>
+          </span>
         </template>
       </el-table-column>
       <el-table-column label="协议类型" width="100">
@@ -42,7 +41,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="createTime" label="创建时间" width="200"></el-table-column>
-      <el-table-column prop="remark" label="备注"></el-table-column>
+      <el-table-column prop="remark" label="备注" show-overflow-tooltip></el-table-column>
       <el-table-column label="告警状态" width="100">
         <template slot-scope="scope">
           <el-tag :type="getAlarmStatusAColor(scope.row.alarmStatus)">

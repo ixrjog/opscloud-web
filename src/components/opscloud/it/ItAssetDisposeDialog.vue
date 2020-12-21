@@ -16,13 +16,17 @@
           </el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="处置日期">
+        <el-date-picker v-model="assetDisposeData.disposeTime" type="date" placeholder="选择日期" value-format="timestamp">
+        </el-date-picker>
+      </el-form-item>
       <el-form-item label="备注">
         <el-input v-model="assetDisposeData.remark"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="formStatus.visible = false">取消</el-button>
-      <el-button type="primary" @click="assetDisposeAdd" :disabled="saving">创建</el-button>
+      <el-button type="primary" @click="assetDisposeAdd" :disabled="saving">保存</el-button>
     </div>
   </el-dialog>
 </template>
@@ -35,6 +39,7 @@ import { disposeAsset } from '@api/it/it.asset'
 const assetDisposeData = {
   assetId: '',
   disposeType: 1,
+  disposeTime: Date.now().valueOf(),
   remark: ''
 }
 
@@ -56,6 +61,9 @@ export default {
       }, {
         value: 4,
         label: '转让出售'
+      }, {
+        value: 5,
+        label: '维修处理'
       }],
       assetCode: ''
     }

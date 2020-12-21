@@ -1,6 +1,10 @@
 <template>
   <div>
     <el-dialog :title="title" :visible.sync="formStatus.visible" :before-close="closeDialog" width="40%">
+      <el-alert title="工单执行失败" type="error" show-icon style="margin-bottom: 5px"
+                :closable="false" :description="ticketEntry.entryResult"
+                v-if="ticketEntry !== '' && ticket.ticketPhase === 'FINALIZED' && !ticket.executorResult">
+      </el-alert>
       <div style="margin-bottom: 5px">
         <el-form :model="topicData" ref="topicDataForm" :rules="rules" label-width="120px" class="demo-ruleForm"
                  label-position="left" v-loading="configuring" element-loading-text="工单配置中"
@@ -10,7 +14,7 @@
               <el-button slot="append" :icon="topicChecked?'el-icon-success':'el-icon-warning'"
                          @click="handlerCheck(topicData.topic)" :disabled="topicChecked"></el-button>
             </el-input>
-            <el-alert type="warning" show-icon :closable="false">
+            <el-alert type="warning" show-icon :closable="false" style="margin-top: 10px">
               <el-row>1. Topic只能以 “TOPIC_”开头，包含大写英文、数字和下划线（_）</el-row>
               <el-row>2. 长度限制在3~64个字符之间</el-row>
               <el-row>3. Topic一旦创建，则无法修改</el-row>
@@ -39,7 +43,7 @@
             </el-tag>
             <span v-if="JSON.stringify(topicData.nowInstanceList) === '[]'">该Topic目前无已申请的实例</span>
           </el-form-item>
-          <el-form-item label="可申请的实例" prop="instance">
+          <el-form-item label="可申请的实例" prop="instance" v-if="ticket.ticketPhase !== 'FINALIZED'">
             <el-select v-model="topicData.instance" placeholder="请选择实例" :disabled="disabled"
                        value-key="instanceId" filterable v-if="instanceOptions.length !==0" @change="dataChange">
               <el-option
@@ -52,6 +56,16 @@
               </el-option>
             </el-select>
             <span v-else>该Topic目前无可申请的实例</span>
+          </el-form-item>
+          <el-form-item label="申请的实例" v-if="ticket.ticketPhase === 'FINALIZED'">
+            <el-select v-model="topicData.instance" disabled>
+              <el-option
+                v-for="item in instanceAllOptions"
+                :key="item.id"
+                :label="item.instanceName"
+                :value="item.id">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="备注" prop="remark">
             <el-input v-model.trim="topicData.remark" @change="dataChange" :readonly="disabled"></el-input>
@@ -71,7 +85,7 @@
           <el-button type="primary" v-if="ticket.ticketPhase === 'CREATED_TICKET'" plain size="mini"
                      @click="addTicketEntry">保存</el-button>
           <el-button type="primary" v-if="ticket.ticketPhase === 'CREATED_TICKET'" plain size="mini"
-                     @click="submitTicket" :disabled="!canSubmit">提交</el-button>
+                     @click="submitTicket">提交</el-button>
           <el-button type="success" v-if="ticket.isInApproval" plain size="mini" @click="agreeTicket">同意</el-button>
           <el-button type="danger" v-if="ticket.isInApproval" plain size="mini" @click="disagreeTicket">拒绝</el-button>
         </span>
@@ -89,7 +103,7 @@ import {
   disagreeWorkorderTicket
 } from '@api/workorder/workorder.ticket.js'
 import { onsTopicCheckV2 } from '@api/cloud/aliyun.ons.topic'
-import { queryOnsInstanceByTopic } from '@api/cloud/aliyun.ons.instance'
+import { queryONSInstanceAll, queryOnsInstanceByTopic } from '@api/cloud/aliyun.ons.instance'
 
 const topicData = {
   topic: 'TOPIC_',
@@ -122,6 +136,7 @@ export default {
       }],
       ticketEntryOptions: [],
       instanceOptions: [],
+      instanceAllOptions: [],
       searchTicketEntryLoading: false,
       ticketEntry: '',
       loading: false,
@@ -168,6 +183,9 @@ export default {
       if (ticket.workorder != null) {
         this.title = ticket.workorder.name
       }
+      if (ticket.ticketPhase === 'FINALIZED') {
+        this.getInstanceAll()
+      }
       if (JSON.stringify(ticket.ticketEntries) !== '[]') {
         this.ticketEntries = ticket.ticketEntries
         this.topicData = {
@@ -181,6 +199,7 @@ export default {
           remark: ticket.ticketEntries[0].ticketEntry.topic.remark
         }
         this.getOnsInstanceByTopic(this.topicData.topic)
+        this.ticketEntry = Object.assign({}, ticket.ticketEntries[0])
       } else {
         this.topicData = Object.assign({}, topicData)
         this.ticketEntries = []
@@ -199,7 +218,6 @@ export default {
       if (topic === 'TOPIC_') {
         return
       }
-      this.topicData.instance = ''
       queryOnsInstanceByTopic(topic)
         .then(res => {
           this.topicData.nowInstanceList = res.body.nowInstanceList
@@ -213,7 +231,7 @@ export default {
     },
     handlerCheck (topic) {
       if (topic === '' || topic === 'TOPIC_') {
-        this.$message.error('请输入Topic')
+        this.$message.warning('请输入Topic')
         return
       }
       onsTopicCheckV2(topic)
@@ -228,13 +246,16 @@ export default {
         })
     },
     submitTicket () {
-      debugger
       if (!this.topicChecked) {
-        this.$message.error('请先校验Topic')
+        this.$message.warning('请先校验Topic')
         return
       }
       if (JSON.stringify(this.topicData.instance) === '{}' || this.topicData.instance.id === null) {
-        this.$message.error('请选择一个实例')
+        this.$message.warning('请选择一个实例')
+        return
+      }
+      if (!this.canSubmit) {
+        this.$message.warning('请先保存')
         return
       }
       submitWorkorderTicket(this.ticket)
@@ -286,6 +307,12 @@ export default {
     },
     dataChange () {
       this.canSubmit = false
+    },
+    getInstanceAll () {
+      queryONSInstanceAll()
+        .then(res => {
+          this.instanceAllOptions = res.body
+        })
     }
   }
 }

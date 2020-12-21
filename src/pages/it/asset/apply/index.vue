@@ -5,6 +5,7 @@
         <h1>{{ title }}</h1>
       </div>
       <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
+        <el-input v-model.trim="queryParam.queryName" placeholder="输入资产编码模糊查询" class="input"/>
         <el-select v-model="queryParam.userId" filterable remote reserve-keyword placeholder="搜索用户"
                    :remote-method="getUser" class="select" clearable>
           <el-option
@@ -44,10 +45,9 @@
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column prop="assetCode" label="资产编码">
           <template slot-scope="scope">
-            <span>{{ scope.row.assetCode }}</span>
-            <span v-clipboard:copy="scope.row.assetCode" v-clipboard:success="onCopy" v-clipboard:error="onError"
-                  style="float: right">
-              <i class="el-icon-copy-document"></i>
+            <span v-clipboard:copy="scope.row.assetCode" v-clipboard:success="onCopy"
+                  v-clipboard:error="onError">{{ scope.row.assetCode }}
+              <i style="margin-left: 5px" class="el-icon-copy-document"></i>
             </span>
           </template>
         </el-table-column>
@@ -124,6 +124,7 @@ export default {
         total: 0
       },
       queryParam: {
+        queryName: '',
         userId: '',
         userOrgDeptId: '',
         applyType: '',
@@ -241,6 +242,7 @@ export default {
     fetchData () {
       this.loading = true
       let requestBody = {
+        'queryName': this.queryParam.queryName,
         'userId': this.queryParam.userId === '' ? -1 : this.queryParam.userId,
         'userOrgDeptId': this.queryParam.userOrgDeptId === '' ? -1 : this.queryParam.userOrgDeptId,
         'applyType': this.queryParam.applyType === '' ? -1 : this.queryParam.applyType,
@@ -267,9 +269,13 @@ export default {
 </script>
 
 <style scoped>
+.input {
+  display: inline-block;
+  max-width: 200px;
+  margin-right: 5px;
+}
 
 .select {
   margin-right: 5px;
 }
-
 </style>

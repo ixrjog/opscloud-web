@@ -21,10 +21,9 @@
       <el-table-column label="Message ID" width="300">
         <template slot-scope="scope">
           <el-row>
-            <span>{{ scope.row.msgId }}</span>
             <span v-clipboard:copy="scope.row.msgId" v-clipboard:success="onCopy"
-                  v-clipboard:error="onError" style="float: right">
-              <i class="el-icon-copy-document"></i>
+                  v-clipboard:error="onError">{{ scope.row.msgId }}
+              <i style="margin-left: 5px" class="el-icon-copy-document"></i>
             </span>
           </el-row>
           <el-row>

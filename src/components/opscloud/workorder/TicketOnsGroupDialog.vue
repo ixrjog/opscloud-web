@@ -1,6 +1,10 @@
 <template>
   <div>
     <el-dialog :title="title" :visible.sync="formStatus.visible" :before-close="closeDialog" width="40%">
+      <el-alert title="工单执行失败" type="error" show-icon style="margin-bottom: 5px"
+                :closable="false" :description="ticketEntry.entryResult"
+                v-if="ticketEntry !== '' && ticket.ticketPhase === 'FINALIZED' && !ticket.executorResult">
+      </el-alert>
       <div style="margin-bottom: 5px">
         <el-form :model="groupData" ref="groupDataForm" :rules="rules" label-width="120px" class="demo-ruleForm"
                  label-position="left" v-loading="configuring" element-loading-text="工单配置中"
@@ -10,7 +14,7 @@
               <el-button slot="append" :icon="groupChecked?'el-icon-success':'el-icon-warning'"
                          @click="handlerCheck(groupData.groupId)" :disabled="groupChecked"></el-button>
             </el-input>
-            <el-alert type="warning" show-icon :closable="false">
+            <el-alert type="warning" show-icon :closable="false" style="margin-top: 10px">
               <el-row>1. 以 “GID_”开头，只能包含大写字母、数字和下划线（_）</el-row>
               <el-row>2. 长度限制在 7~64 字符之间</el-row>
               <el-row>3. Group ID 一旦创建，则无法修改</el-row>
@@ -32,7 +36,7 @@
             </el-tag>
             <span v-if="JSON.stringify(groupData.nowInstanceList) === '[]'">该Group ID目前无已申请的实例</span>
           </el-form-item>
-          <el-form-item label="可申请的实例" prop="instance">
+          <el-form-item label="可申请的实例" prop="instance" v-if="ticket.ticketPhase !== 'FINALIZED'">
             <el-select v-model="groupData.instance" placeholder="请选择实例" :disabled="disabled"
                        value-key="instanceId" filterable v-if="instanceOptions.length !==0" @change="dataChange">
               <el-option
@@ -45,6 +49,16 @@
               </el-option>
             </el-select>
             <span v-else>该Group ID目前无可申请的实例</span>
+          </el-form-item>
+          <el-form-item label="申请的实例" v-if="ticket.ticketPhase === 'FINALIZED'">
+            <el-select v-model="groupData.instance" disabled>
+              <el-option
+                v-for="item in instanceAllOptions"
+                :key="item.id"
+                :label="item.instanceName"
+                :value="item.id">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="备注" prop="remark">
             <el-input v-model.trim="groupData.remark" @change="dataChange" :readonly="disabled"></el-input>
@@ -64,7 +78,7 @@
           <el-button type="primary" v-if="ticket.ticketPhase === 'CREATED_TICKET'" plain size="mini"
                      @click="addTicketEntry">保存</el-button>
           <el-button type="primary" v-if="ticket.ticketPhase === 'CREATED_TICKET'" plain size="mini"
-                     @click="submitTicket" :disabled="!canSubmit">提交</el-button>
+                     @click="submitTicket">提交</el-button>
           <el-button type="success" v-if="ticket.isInApproval" plain size="mini" @click="agreeTicket">同意</el-button>
           <el-button type="danger" v-if="ticket.isInApproval" plain size="mini" @click="disagreeTicket">拒绝</el-button>
         </span>
@@ -83,7 +97,7 @@ import {
   disagreeWorkorderTicket
 } from '@api/workorder/workorder.ticket.js'
 import { onsGroupCheckV2 } from '@api/cloud/aliyun.ons.group'
-import { queryOcInstanceByGroupId } from '@api/cloud/aliyun.ons.instance'
+import { queryOcInstanceByGroupId, queryONSInstanceAll } from '@api/cloud/aliyun.ons.instance'
 
 const groupData = {
   groupType: 'tcp',
@@ -107,6 +121,7 @@ export default {
       }],
       ticketEntryOptions: [],
       instanceOptions: [],
+      instanceAllOptions: [],
       searchTicketEntryLoading: false,
       ticketEntry: '',
       loading: false,
@@ -153,6 +168,9 @@ export default {
       if (ticket.workorder != null) {
         this.title = ticket.workorder.name
       }
+      if (ticket.ticketPhase === 'FINALIZED') {
+        this.getInstanceAll()
+      }
       if (JSON.stringify(ticket.ticketEntries) !== '[]') {
         this.ticketEntries = ticket.ticketEntries
         this.groupData = {
@@ -166,6 +184,7 @@ export default {
           remark: ticket.ticketEntries[0].ticketEntry.group.remark
         }
         this.getOnsInstanceByGroupId(this.groupData.groupId)
+        this.ticketEntry = Object.assign({}, ticket.ticketEntries[0])
       } else {
         this.groupData = Object.assign({}, groupData)
         this.ticketEntries = []
@@ -184,7 +203,6 @@ export default {
       if (groupId === 'GID_') {
         return
       }
-      this.groupData.instance = ''
       queryOcInstanceByGroupId(groupId)
         .then(res => {
           this.groupData.nowInstanceList = res.body.nowInstanceList
@@ -198,7 +216,7 @@ export default {
     },
     handlerCheck (groupId) {
       if (groupId === '' || groupId === 'GID_') {
-        this.$message.error('请输入Group ID')
+        this.$message.warning('请输入Group ID')
         return
       }
       onsGroupCheckV2(groupId)
@@ -214,11 +232,15 @@ export default {
     },
     submitTicket () {
       if (!this.groupChecked) {
-        this.$message.error('请先校验Group ID')
+        this.$message.warning('请先校验Group ID')
         return
       }
       if (JSON.stringify(this.groupData.instance) === '{}' || this.groupData.instance.id === null) {
-        this.$message.error('请选择MQ实例')
+        this.$message.warning('请选择MQ实例')
+        return
+      }
+      if (!this.canSubmit) {
+        this.$message.warning('请先保存')
         return
       }
       submitWorkorderTicket(this.ticket)
@@ -270,6 +292,12 @@ export default {
     },
     dataChange () {
       this.canSubmit = false
+    },
+    getInstanceAll () {
+      queryONSInstanceAll()
+        .then(res => {
+          this.instanceAllOptions = res.body
+        })
     }
   }
 }
