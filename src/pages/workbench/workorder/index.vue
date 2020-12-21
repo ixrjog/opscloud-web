@@ -16,13 +16,8 @@
               <ticket-list-card v-if="!userDeptWarning" @handlerFetchData="fetchData"></ticket-list-card>
             </el-col>
             <el-col :span="16">
-              <el-card shadow="never">
-                <div slot="header" class="clearfix">
-                  <span>待处理工单</span>
-                  <el-button style="float: right; padding: 3px 0" type="text" @click="handlerQueryTicket">手动刷新</el-button>
-                </div>
-                <ticket-table ref="ticketTable"></ticket-table>
-              </el-card>
+              <my-ticket-card ref="myTicketCard"></my-ticket-card>
+              <my-ticket-history-card style="margin-top: 15px"></my-ticket-history-card>
             </el-col>
           </el-row>
         </el-tab-pane>
@@ -40,7 +35,8 @@
 
   // Component
   import TicketListCard from '@/components/opscloud/workorder/TicketListCard'
-  import TicketTable from '@/components/opscloud/workorder/TicketTable.vue'
+  import MyTicketCard from '@/components/opscloud/workorder/MyTicketCard'
+  import MyTicketHistoryCard from '@/components/opscloud/workorder/MyTicketHistoryCard'
   import TicketMgmtTable from '@/components/opscloud/workorder/TicketMgmtTable.vue'
 
   import { checkUserInTheDepartment } from '@api/org/org.js'
@@ -63,7 +59,8 @@
     },
     components: {
       TicketListCard,
-      TicketTable,
+      MyTicketCard,
+      MyTicketHistoryCard,
       TicketMgmtTable
     },
     mounted () {
@@ -76,15 +73,12 @@
             this.userDeptWarning = !res.success
           })
       },
-      handlerQueryTicket () {
-        this.$refs.ticketTable.fetchData()
-      },
       handlerOpenDeptMgmt () {
         let url = 'https://oc.xinc818.com/index.html#/org/department'
         util.open(url)
       },
       fetchData () {
-        this.$refs.ticketTable.fetchData()
+        this.$refs.myTicketCard.fetchData()
       }
     }
   }
