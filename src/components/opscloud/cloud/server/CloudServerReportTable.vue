@@ -7,8 +7,11 @@
             <span>服务器总数</span>
             <el-tag style="float: right" type="text">server</el-tag>
           </div>
-          <div style="font-size: 45px;color:#20A9D9 ;font-weight: 300">{{ resStats.serverTotal }}</div>
-          <div style="font-size: 10px; color: #B7B6B6">All server</div>
+          <el-row>
+            <span class="font-size">{{ resStats.serverTotal }}</span>
+            <span class="font-unit">台</span>
+          </el-row>
+          <el-row class="font-subtext">All SERVER</el-row>
         </el-card>
       </el-col>
       <el-col :span="6">
@@ -17,8 +20,11 @@
             <span>CPU总数</span>
             <el-tag style="float: right" type="text">cpu</el-tag>
           </div>
-          <div style="font-size: 45px; color:#20A9D9; font-weight: 300">{{ resStats.cpuTotal }}</div>
-          <div style="font-size: 10px; color: #B7B6B6">All cpu</div>
+          <el-row>
+            <span class="font-size">{{ resStats.cpuTotal }}</span>
+            <span class="font-unit">C</span>
+          </el-row>
+          <el-row class="font-subtext">All CPU</el-row>
         </el-card>
       </el-col>
       <el-col :span="6">
@@ -27,8 +33,11 @@
             <span>内存总数</span>
             <el-tag style="float: right" type="text">memory</el-tag>
           </div>
-          <div style="font-size: 45px; color:#20A9D9; font-weight: 300">{{ resStats.memoryTotal }}</div>
-          <div style="font-size: 10px; color: #B7B6B6">All memory</div>
+          <el-row>
+            <span class="font-size">{{ resStats.memory }}</span>
+            <span class="font-unit">{{ resStats.memoryUnit }}</span>
+          </el-row>
+          <el-row class="font-subtext">All MEMORY</el-row>
         </el-card>
       </el-col>
       <el-col :span="6">
@@ -37,8 +46,11 @@
             <span>磁盘总容量</span>
             <el-tag style="float: right" type="text">disk</el-tag>
           </div>
-          <div style="font-size: 45px; color:#20A9D9; font-weight: 300">{{ resStats.diskTotal }}</div>
-          <div style="font-size: 10px; color: #B7B6B6">All disk</div>
+          <el-row>
+            <span class="font-size">{{ resStats.disk }}</span>
+            <span class="font-unit">{{ resStats.diskUnit }}</span>
+          </el-row>
+          <el-row class="font-subtext">All DISK</el-row>
         </el-card>
       </el-col>
     </el-row>
@@ -62,7 +74,11 @@ export default {
         serverTotal: 0,
         cupTotal: 0,
         memoryTotal: 0,
-        diskTotal: 0
+        diskTotal: 0,
+        memory: '',
+        memoryUnit: '',
+        disk: '',
+        diskUnit: ''
       }
     }
   },
@@ -88,4 +104,21 @@ export default {
 </script>
 
 <style scoped>
+.font-size {
+  font-size: 45px;
+  color: #20A9D9;
+  font-weight: 300;
+}
+
+.font-unit {
+  margin-left: 10px;
+  font-size: 25px;
+  color: #aba4a4;
+}
+
+.font-subtext {
+  font-size: 12px;
+  color: #B7B6B6;
+  margin-top: 5px
+}
 </style>
