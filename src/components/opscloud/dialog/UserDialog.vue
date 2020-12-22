@@ -3,7 +3,10 @@
              :visible.sync="formStatus.visible" :before-close="closeDialog">
     <el-form :model="user">
       <el-form-item label="用户名" :label-width="formStatus.labelWidth" :required="true">
-        <el-input v-model="user.username" placeholder="请输入内容" :disabled="!formStatus.operationType"></el-input>
+        <el-input v-model.trim="user.username" :readonly="nameChecked" placeholder="请输入内容">
+          <el-button slot="append" :icon="nameChecked?'el-icon-success':'el-icon-warning'"
+                     @click="handlerCheck(user.username)" :disabled="nameChecked"></el-button>
+        </el-input>
       </el-form-item>
       <el-form-item label="密码" :label-width="formStatus.labelWidth" :required="formStatus.operationType">
         <el-input v-model="password" clearable placeholder="请输入内容">
@@ -18,7 +21,7 @@
       </el-form-item>
       <el-form-item label="部门" :label-width="formStatus.labelWidth">
         <el-cascader v-model="cascaderValue" :options="deptOptions" :props="deptCascaderProps" @change="handleChange"
-                     class="cascader" placeholder="选择需要加入的部门" ></el-cascader>
+                     class="cascader" placeholder="选择需要加入的部门"></el-cascader>
         <el-button type="primary" icon="el-icon-refresh" @click="deptTreeRefresh" size="mini" plain
                    style="margin-left: 10px"></el-button>
       </el-form-item>
@@ -49,12 +52,13 @@
 <script>
 
 // API
-import { getRandomPassword, updateUser, createUser } from '@api/user/user.js'
+import { getRandomPassword, updateUser, createUser, checkUsername } from '@api/user/user'
 import { queryDepartmentTreeV2, refreshDepartmentTreeV2 } from '@api/org/org'
 
 export default {
   data () {
     return {
+      nameChecked: false,
       user: '',
       password: '',
       rootDeptId: 0,
@@ -79,13 +83,31 @@ export default {
     },
     initData (user) {
       this.user = user
+      this.nameChecked = false
       this.cascaderValue = []
       this.getDepartmentTree()
+      if (!this.formStatus.operationType) {
+        this.nameChecked = true
+      }
     },
     getUserRandomPassword () {
       getRandomPassword()
         .then(res => {
           this.password = res.body
+        })
+    },
+    handlerCheck (username) {
+      if (username === '') {
+        this.$message.warning('请输入用户名')
+        return
+      }
+      checkUsername(username)
+        .then(res => {
+          this.nameChecked = res.success
+          if (this.nameChecked) {
+            this.$message.success('校验通过')
+            this.nameChecked = true
+          }
         })
     },
     getDepartmentTree () {
@@ -109,6 +131,10 @@ export default {
       })
     },
     saveInfo () {
+      if (!this.nameChecked) {
+        this.$message.warning('请先校验用户名')
+        return
+      }
       setTimeout(() => {
         let requestBody = Object.assign({}, this.user)
         requestBody.password = this.password
