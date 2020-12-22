@@ -115,3 +115,10 @@ export function queryUserServerTree (data) {
     data
   })
 }
+
+export function checkUsername (username) {
+  return request({
+    url: '/user/name/check?username=' + username,
+    method: 'get'
+  })
+}

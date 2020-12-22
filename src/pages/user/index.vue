@@ -2,7 +2,7 @@
   <d2-container>
     <template>
       <div>
-        <h1>{{title}}</h1>
+        <h1>{{ title }}</h1>
       </div>
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
@@ -36,13 +36,13 @@
                 </div>
               </el-form-item>
               <el-form-item label="服务器组">
-                  <div class="tag-group">
+                <div class="tag-group">
                        <span v-for="item in props.row.serverGroups" :key="item.id">
                           <el-tooltip class="item" effect="light" :content="item.comment || '没有填写'" placement="bottom">
                            <el-tag style="margin-left: 5px"
                                    :type=" item.isAdmin ? 'danger': '' ">{{ item.name }}</el-tag>
                           </el-tooltip></span>
-                  </div>
+                </div>
               </el-form-item>
             </el-form>
           </template>
@@ -87,192 +87,191 @@
 </template>
 
 <script>
-  import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
-  // Component
-  import UserDialog from '@/components/opscloud/dialog/UserDialog'
-  import UserUserGroupDialog from '@/components/opscloud/dialog/UserUserGroupDialog'
-  import UserServerGroupDialog from '@/components/opscloud/dialog/UserServerGroupDialog'
-  // API
-  import { fuzzyQueryUserPage, syncUser, retireUserById } from '@api/user/user.js'
+// Component
+import UserDialog from '@/components/opscloud/dialog/UserDialog'
+import UserUserGroupDialog from '@/components/opscloud/dialog/UserUserGroupDialog'
+import UserServerGroupDialog from '@/components/opscloud/dialog/UserServerGroupDialog'
+// API
+import { fuzzyQueryUserPage, syncUser, retireUserById } from '@api/user/user.js'
 
-  export default {
-    data () {
-      return {
-        formUserStatus: {
-          visible: false,
-          labelWidth: '150px',
-          operationType: true,
-          addTitle: '新增用户信息',
-          updateTitle: '更新用户信息'
-        },
-        formUserUserGroupStatus: {
-          visible: false,
-          labelWidth: '150px',
-          title: '用户组授权'
-        },
-        formUserServerGroupStatus: {
-          visible: false,
-          labelWidth: '150px',
-          title: '服务器组授权'
-        },
-        tableData: [],
-        options: {
-          stripe: true
-        },
-        loading: false,
-        pagination: {
-          currentPage: 1,
-          pageSize: 10,
-          total: 0
-        },
-        queryParam: {
-          queryName: '',
-          isActive: true
-        },
-        title: '用户管理'
-      }
-    },
-    computed: {
-      ...mapState('d2admin/user', [
-        'info'
-      ])
-    },
-    mounted () {
-      this.initPageSize()
+export default {
+  data () {
+    return {
+      formUserStatus: {
+        visible: false,
+        labelWidth: '150px',
+        operationType: true,
+        addTitle: '新增用户信息',
+        updateTitle: '更新用户信息'
+      },
+      formUserUserGroupStatus: {
+        visible: false,
+        labelWidth: '150px',
+        title: '用户组授权'
+      },
+      formUserServerGroupStatus: {
+        visible: false,
+        labelWidth: '150px',
+        title: '服务器组授权'
+      },
+      tableData: [],
+      options: {
+        stripe: true
+      },
+      loading: false,
+      pagination: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
+      },
+      queryParam: {
+        queryName: '',
+        isActive: true
+      },
+      title: '用户管理'
+    }
+  },
+  computed: {
+    ...mapState('d2admin/user', [
+      'info'
+    ])
+  },
+  mounted () {
+    this.initPageSize()
+    this.fetchData()
+  },
+  components: {
+    UserDialog,
+    UserUserGroupDialog,
+    UserServerGroupDialog
+  },
+  methods: {
+    ...mapActions({
+      setPageSize: 'd2admin/user/set'
+    }),
+    handleSizeChange (size) {
+      this.pagination.pageSize = size
+      this.info.pageSize = size
+      this.setPageSize(this.info)
       this.fetchData()
     },
-    components: {
-      UserDialog,
-      UserUserGroupDialog,
-      UserServerGroupDialog
-    },
-    methods: {
-      ...mapActions({
-        setPageSize: 'd2admin/user/set'
-      }),
-      handleSizeChange (size) {
-        this.pagination.pageSize = size
-        this.info.pageSize = size
-        this.setPageSize(this.info)
-        this.fetchData()
-      },
-      initPageSize () {
-        if (typeof (this.info.pageSize) !== 'undefined') {
-          this.pagination.pageSize = this.info.pageSize
-        }
-      },
-      retireUser (row) {
-        this.$confirm('确认用户离职操作?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          retireUserById(row.id).then(res => {
-            this.fetchData()
-            this.$message({
-              type: 'success',
-              message: '离职成功!'
-            })
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消操作'
-          })
-        })
-      },
-      editItem (row) {
-        // user
-        let user = Object.assign({}, row)
-        this.$refs.userDialog.initData(user)
-        this.formUserStatus.visible = true
-        this.formUserStatus.operationType = false
-      },
-      editUserGroup (row) {
-        let user = Object.assign({}, row)
-        this.$refs.userUserGroupDialog.initData(user)
-        this.formUserUserGroupStatus.visible = true
-      },
-      editServerGroup (row) {
-        let user = Object.assign({}, row)
-        this.$refs.userServerGroupDialog.initData(user)
-        this.formUserServerGroupStatus.visible = true
-      },
-      addItem () {
-        let user = {
-          id: '',
-          username: '',
-          name: '',
-          displayName: '',
-          wechat: '',
-          email: '',
-          phone: '',
-          comment: '',
-          isRD: false
-        }
-        this.$refs.userDialog.initData(user)
-        // form
-        this.formUserStatus.visible = true
-        this.formUserStatus.operationType = true
-      },
-      handleDialogCancel (done) {
-        this.$message({
-          message: '取消保存',
-          type: 'warning'
-        })
-        done()
-      },
-      syncLdapUser () {
-        setTimeout(() => {
-          this.loading = true
-          syncUser()
-            .then(res => {
-              this.$message({
-                message: '同步成功',
-                type: 'success'
-              })
-              this.fetchData()
-            })
-        }, 300)
-      },
-      paginationCurrentChange (currentPage) {
-        this.pagination.currentPage = currentPage
-        this.fetchData()
-      },
-      fetchData () {
-        this.loading = true
-        let requestBody = {
-          'queryName': this.queryParam.queryName,
-          'isActive': this.queryParam.isActive,
-          'extend': 1,
-          'page': this.pagination.currentPage,
-          'length': this.pagination.pageSize
-        }
-        fuzzyQueryUserPage(requestBody)
-          .then(res => {
-            this.tableData = res.body.data
-            this.pagination.total = res.body.totalNum
-            this.loading = false
-          })
+    initPageSize () {
+      if (typeof (this.info.pageSize) !== 'undefined') {
+        this.pagination.pageSize = this.info.pageSize
       }
+    },
+    retireUser (row) {
+      this.$confirm('确认用户离职操作?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        retireUserById(row.id).then(res => {
+          this.fetchData()
+          this.$message({
+            type: 'success',
+            message: '离职成功!'
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消操作'
+        })
+      })
+    },
+    editItem (row) {
+      // user
+      let user = Object.assign({}, row)
+      this.formUserStatus.visible = true
+      this.formUserStatus.operationType = false
+      this.$refs.userDialog.initData(user)
+    },
+    editUserGroup (row) {
+      let user = Object.assign({}, row)
+      this.$refs.userUserGroupDialog.initData(user)
+      this.formUserUserGroupStatus.visible = true
+    },
+    editServerGroup (row) {
+      let user = Object.assign({}, row)
+      this.$refs.userServerGroupDialog.initData(user)
+      this.formUserServerGroupStatus.visible = true
+    },
+    addItem () {
+      let user = {
+        id: '',
+        username: '',
+        name: '',
+        displayName: '',
+        wechat: '',
+        email: '',
+        phone: '',
+        comment: '',
+        isRD: false
+      }
+      this.formUserStatus.visible = true
+      this.formUserStatus.operationType = true
+      this.$refs.userDialog.initData(user)
+    },
+    handleDialogCancel (done) {
+      this.$message({
+        message: '取消保存',
+        type: 'warning'
+      })
+      done()
+    },
+    syncLdapUser () {
+      setTimeout(() => {
+        this.loading = true
+        syncUser()
+          .then(res => {
+            this.$message({
+              message: '同步成功',
+              type: 'success'
+            })
+            this.fetchData()
+          })
+      }, 300)
+    },
+    paginationCurrentChange (currentPage) {
+      this.pagination.currentPage = currentPage
+      this.fetchData()
+    },
+    fetchData () {
+      this.loading = true
+      let requestBody = {
+        'queryName': this.queryParam.queryName,
+        'isActive': this.queryParam.isActive,
+        'extend': 1,
+        'page': this.pagination.currentPage,
+        'length': this.pagination.pageSize
+      }
+      fuzzyQueryUserPage(requestBody)
+        .then(res => {
+          this.tableData = res.body.data
+          this.pagination.total = res.body.totalNum
+          this.loading = false
+        })
     }
   }
+}
 </script>
 
 <style scoped>
-  .table-expand {
-    font-size: 0;
-  }
+.table-expand {
+  font-size: 0;
+}
 
-  .table-expand label {
-    width: 150px;
-    color: #99a9bf;
-  }
+.table-expand label {
+  width: 150px;
+  color: #99a9bf;
+}
 
-  .table-expand .el-form-item {
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 50%;
-  }
+.table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
+}
 </style>
