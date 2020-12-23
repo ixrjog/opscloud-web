@@ -9,9 +9,8 @@
           </div>
           <el-row>
             <span class="font-size">{{ resStats.serverTotal }}</span>
-            <span class="font-unit">台</span>
           </el-row>
-          <el-row class="font-subtext">All SERVER</el-row>
+          <el-row class="font-subtext">All server</el-row>
         </el-card>
       </el-col>
       <el-col :span="6">
@@ -24,7 +23,7 @@
             <span class="font-size">{{ resStats.cpuTotal }}</span>
             <span class="font-unit">C</span>
           </el-row>
-          <el-row class="font-subtext">All CPU</el-row>
+          <el-row class="font-subtext">All cpu</el-row>
         </el-card>
       </el-col>
       <el-col :span="6">
@@ -37,7 +36,7 @@
             <span class="font-size">{{ resStats.memory }}</span>
             <span class="font-unit">{{ resStats.memoryUnit }}</span>
           </el-row>
-          <el-row class="font-subtext">All MEMORY</el-row>
+          <el-row class="font-subtext">All memory</el-row>
         </el-card>
       </el-col>
       <el-col :span="6">
@@ -50,7 +49,7 @@
             <span class="font-size">{{ resStats.disk }}</span>
             <span class="font-unit">{{ resStats.diskUnit }}</span>
           </el-row>
-          <el-row class="font-subtext">All DISK</el-row>
+          <el-row class="font-subtext">All disk</el-row>
         </el-card>
       </el-col>
     </el-row>
