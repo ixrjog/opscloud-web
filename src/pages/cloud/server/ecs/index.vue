@@ -52,15 +52,15 @@ export default {
         serverType: 2
       },
       formCloudImageStatus: {
-        cloudImageKey: 'AliyunECSCloudServer',
+        cloudImageKey: 'AliyunCloudImage',
         cloudType: 2
       },
       formCloudVPCStatus: {
-        cloudVPCKey: 'AliyunECSCloudServer',
+        cloudVPCKey: 'AliyunCloudVPC',
         cloudType: 2
       },
       formCloudInstanceTemplateStatus: {
-        cloudInstanceKey: 'AliyunECSCloudServer',
+        cloudInstanceKey: 'AliyunCloudInstance',
         cloudType: 2
       },
       title: 'Aliyun:ECS实例管理'
