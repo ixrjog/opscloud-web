@@ -4,7 +4,7 @@
       <el-row>
         <span style="float: right">
           <el-tooltip class="item" effect="dark" content="刷新" placement="top">
-            <el-button type="text" icon="el-icon-refresh" :disabled="loading" style="margin-left: 5px"
+            <el-button type="text" icon="el-icon-refresh" style="margin-left: 5px"
                        @click="fetchData" size="mini" plain></el-button>
           </el-tooltip>
         </span>
