@@ -15,8 +15,24 @@
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column label="执行结果">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.executorResult?'success':'danger'" size="small"
+                    v-text="scope.row.executorResult?'成功':'失败'"
+                    v-if="scope.row.ticketPhase === 'FINALIZED'">
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="审批结果">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.approvalStatus?'success':'danger'" size="small"
+                    v-text="scope.row.approvalStatus?'同意':'拒绝'"
+                    v-if="scope.row.ticketPhase === 'FINALIZED'">
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="ago" label="申请时间"></el-table-column>
-        <el-table-column fixed="right" label="操作" width="280">
+        <el-table-column fixed="right" label="操作" width="100">
           <template slot-scope="scope">
             <el-button type="success" plain size="mini" @click="previewTicket(scope.row)">查看</el-button>
           </template>
