@@ -20,7 +20,6 @@ export default {
   name: 'HelpDeskReportTable',
   data () {
     return {
-      title: 'HelpDesk'
     }
   },
   computed: {},
