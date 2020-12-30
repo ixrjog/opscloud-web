@@ -24,3 +24,11 @@ export function bindOcUser (data) {
     data
   })
 }
+
+export function updateDingtalkUser (data) {
+  return request({
+    url: baseURL + '/update',
+    method: 'post',
+    data
+  })
+}
