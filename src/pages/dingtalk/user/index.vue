@@ -34,6 +34,13 @@
           </template>
         </el-table-column>
         <el-table-column prop="displayName" label="员工名称"></el-table-column>
+        <el-table-column label="所属部门" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span v-for="dept in scope.row.deptList" :key="dept.id" style="margin-left: 5px">
+              {{ dept.deptName }}
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column prop="email" label="邮箱">
           <template slot-scope="scope">
             <span v-clipboard:copy="scope.row.email" v-clipboard:success="onCopy"
@@ -57,8 +64,9 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="180">
+        <el-table-column fixed="right" label="操作" width="270">
           <template slot-scope="scope">
+            <el-button type="primary" plain size="mini" @click="handlerUpdate(scope.row)">刷新</el-button>
             <el-button type="primary" plain size="mini" @click="handlerEdit(scope.row)">绑定</el-button>
             <el-button type="primary" plain size="mini" @click="handlerImport(scope.row)"
                        v-if="scope.row.ocUser === null">导入
@@ -81,7 +89,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import { queryDingtalkUserPage, syncUser } from '@api/dingtalk/dintalk.user'
+import { queryDingtalkUserPage, syncUser, updateDingtalkUser } from '@api/dingtalk/dintalk.user'
 import DingtalkUserBindDialog from '@/components/opscloud/dingtalk/DingtalkUserBindDialog'
 import UserDialog from '@/components/opscloud/dialog/UserDialog'
 import { chineseToPinYin } from '@api/opscloud/opscloud.common'
@@ -89,7 +97,7 @@ import { chineseToPinYin } from '@api/opscloud/opscloud.common'
 export default {
   data () {
     return {
-      title: '用户关系',
+      title: '用户管理',
       syncLoading: false,
       queryParam: {
         queryName: ''
@@ -163,6 +171,17 @@ export default {
     handlerEdit (row) {
       this.dingtalkUserBindDialogStatus.visible = true
       this.$refs.dingtalkUserBindDialog.initData(row)
+    },
+    handlerUpdate (row) {
+      let requestBody = {
+        'uid': row.uid,
+        'userid': row.username
+      }
+      updateDingtalkUser(requestBody)
+        .then(res => {
+          this.$message.success('刷新成功')
+          this.fetchData()
+        })
     },
     handlerImport (row) {
       let requestBody = {
