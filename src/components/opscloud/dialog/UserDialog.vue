@@ -3,7 +3,7 @@
              :visible.sync="formStatus.visible" :before-close="closeDialog">
     <el-form :model="user">
       <el-form-item label="用户名" :label-width="formStatus.labelWidth" :required="true">
-        <el-input v-model.trim="user.username" :readonly="nameChecked" placeholder="请输入内容">
+        <el-input v-model.trim="user.username" :readonly="nameChecked" placeholder="请输入内容" @change="smartEmail()">
           <el-button slot="append" :icon="nameChecked?'el-icon-success':'el-icon-warning'"
                      @click="handlerCheck(user.username)" :disabled="nameChecked"></el-button>
         </el-input>
@@ -96,9 +96,6 @@ export default {
     },
     initData (user) {
       this.user = user
-      if (this.user.email === '' || this.user.email === null) {
-        this.user.email = '@xinc818.group'
-      }
       this.nameChecked = false
       this.emailChecked = false
       this.canCreateEmail = false
@@ -125,6 +122,7 @@ export default {
           if (this.nameChecked) {
             this.$message.success('校验通过')
             this.nameChecked = true
+            this.smartEmail()
           }
         })
     },
@@ -177,6 +175,9 @@ export default {
           this.canCreateEmail = false
           this.$message.success('用户邮箱创建成功')
         })
+    },
+    smartEmail () {
+      this.user.email = this.user.username + '@xinc818.group'
     },
     saveInfo () {
       if (!this.nameChecked) {
