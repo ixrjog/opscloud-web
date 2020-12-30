@@ -1,7 +1,7 @@
 <template>
   <el-dialog :title="title" :visible.sync="formStatus.visible" width="30%" append-to-body>
     <el-form :model="assetNameData" label-width="80px"
-             label-position="left" v-loading="adding" element-loading-text="资产名称添加中"
+             v-loading="adding" element-loading-text="资产名称添加中"
              element-loading-spinner="el-icon-loading">
       <el-form-item label="资产类型" prop="assetType" required>
         <el-select v-model.trim="assetNameData.assetType" placeholder="选择类型" allow-create filterable

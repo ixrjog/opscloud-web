@@ -1,7 +1,7 @@
 <template>
   <el-dialog :title="title" :visible.sync="formStatus.visible" width="40%">
     <el-form :model="topicData" ref="topicDataForm" :rules="rules" label-width="80px" class="demo-ruleForm"
-             label-position="left" v-loading="creating" element-loading-text="Topic创建中"
+             v-loading="creating" element-loading-text="Topic创建中"
              element-loading-spinner="el-icon-loading">
       <el-form-item label="MQ实例" prop="instance" required>
         <el-select v-model="topicData.instance" placeholder="请选择实例" @change="getRegionId" value-key="instanceId">

@@ -10,7 +10,7 @@
     </el-switch>
     <el-divider></el-divider>
     <el-form :model="groupAlarmData" ref="groupAlarmDataForm" label-width="160px" class="demo-ruleForm"
-             label-position="left" v-loading="saving" element-loading-text="GroupId告警保存中"
+             v-loading="saving" element-loading-text="GroupId告警保存中"
              element-loading-spinner="el-icon-loading" :disabled="!isActive">
       <el-form-item label="是否在线" prop="online">
         <el-switch v-model="groupAlarmData.online"></el-switch>

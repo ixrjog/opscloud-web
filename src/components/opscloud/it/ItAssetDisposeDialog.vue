@@ -1,7 +1,7 @@
 <template>
   <el-dialog :title="title" :visible.sync="formStatus.visible" width="35%">
     <el-form :model="assetDisposeData" label-width="120px" class="demo-ruleForm"
-             label-position="left" v-loading="saving" element-loading-text="资产归还中"
+             v-loading="saving" element-loading-text="资产归还中"
              element-loading-spinner="el-icon-loading">
       <el-form-item label="资产编码">
         <el-input v-model.trim="assetCode" readonly></el-input>

@@ -7,7 +7,7 @@
       </el-alert>
       <div style="margin-bottom: 5px">
         <el-form :model="groupData" ref="groupDataForm" :rules="rules" label-width="120px" class="demo-ruleForm"
-                 label-position="left" v-loading="configuring" element-loading-text="工单配置中"
+                 v-loading="configuring" element-loading-text="工单配置中"
                  element-loading-spinner="el-icon-loading">
           <el-form-item label="Group ID" prop="groupId">
             <el-input v-model.lazy="groupData.groupId" :readonly="groupChecked" @change="getOnsInstanceByGroupId">

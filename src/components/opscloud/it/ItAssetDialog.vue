@@ -2,7 +2,7 @@
   <el-dialog :title="formStatus.operationType ? formStatus.addTitle : formStatus.updateTitle"
              :visible.sync="formStatus.visible" width="35%" v-loading="loading">
     <el-form :model="assetData" ref="assetDataForm" :rules="rules" label-width="120px" class="demo-ruleForm"
-             label-position="left" v-loading="adding" element-loading-text="资产保存中"
+             v-loading="adding" element-loading-text="资产保存中"
              element-loading-spinner="el-icon-loading">
       <el-form-item label="资产编码" prop="assetCode" required>
         <el-input v-model.trim="assetData.assetCode" :readonly="codeChecked">
