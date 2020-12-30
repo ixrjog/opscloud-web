@@ -62,6 +62,13 @@ export function retireUserById (id) {
   })
 }
 
+export function beReinstatedUser (id) {
+  return request({
+    url: '/user/reinstate?id=' + id,
+    method: 'put'
+  })
+}
+
 export function deleteUserById (id) {
   return request({
     url: '/user/del?id=' + id,
