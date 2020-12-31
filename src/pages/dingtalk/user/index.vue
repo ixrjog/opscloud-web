@@ -36,8 +36,17 @@
         <el-table-column prop="displayName" label="员工名称"></el-table-column>
         <el-table-column label="所属部门" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span v-for="dept in scope.row.deptList" :key="dept.id" style="margin-left: 5px">
-              {{ dept.deptName }}
+            <span v-for="(value,key) in scope.row.deptMap" :key="key" :label="key">
+              <el-popover
+                placement="top"
+                trigger="hover">
+                <el-breadcrumb separator="/">
+                  <el-breadcrumb-item v-for="item in value" :key="item.id">
+                    {{ item.deptName }}
+                  </el-breadcrumb-item>
+                </el-breadcrumb>
+                <span slot="reference" style="margin-left: 10px">{{ key }}</span>
+              </el-popover>
             </span>
           </template>
         </el-table-column>

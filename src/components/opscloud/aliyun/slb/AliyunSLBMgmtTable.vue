@@ -25,7 +25,8 @@
               @expand-change="getBackendServer">
       <el-table-column type="expand">
         <template slot-scope="props">
-          <el-form label-position="left" inline class="table-expand" v-loading="querying">
+          <el-form label-position="left" inline class="table-expand"
+                   v-if="JSON.stringify(props.row.backendServers) !== '{}'">
             <el-form-item v-for="(value,key) in props.row.backendServers" :key="key" :label="key">
               <div v-for="item in value" :key="item.serverId">{{ item | serverFilters }}</div>
             </el-form-item>
@@ -151,7 +152,6 @@ export default {
         stripe: true
       },
       loading: false,
-      querying: false,
       refreshing: false,
       pagination: {
         currentPage: 1,
@@ -339,11 +339,12 @@ export default {
       })
     },
     getBackendServer (row, expandedRows) {
-      this.querying = true
+      if (JSON.stringify(expandedRows) === '[]') {
+        return
+      }
       querySLBListenerBackendServers(row.loadBalancerId)
         .then(res => {
           row.backendServers = res.body
-          this.querying = false
         })
     },
     handlerRefresh (row) {
