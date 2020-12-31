@@ -44,8 +44,19 @@
                           </el-tooltip></span>
                 </div>
               </el-form-item>
-              <el-form-item label="部门" v-if="JSON.stringify(props.row.orgList) !== '[]'">
-                <span v-for="org in props.row.orgList" :key="org.id" style="margin-left: 5px">{{ org.name }}</span>
+              <el-form-item label="部门" v-if="JSON.stringify(props.row.orgDeptMap) !== '{}'">
+                <span v-for="(value,key) in props.row.orgDeptMap" :key="key" :label="key">
+                  <el-popover
+                    placement="top"
+                    trigger="hover">
+                    <el-breadcrumb separator="/">
+                      <el-breadcrumb-item v-for="item in value" :key="item.id">
+                        {{ item.name }}
+                      </el-breadcrumb-item>
+                    </el-breadcrumb>
+                    <span slot="reference" style="margin-left: 10px">{{ key }}</span>
+                  </el-popover>
+                </span>
               </el-form-item>
             </el-form>
           </template>
@@ -249,7 +260,7 @@ export default {
       }
       queryOrgByUser(row.id)
         .then(res => {
-          row.orgList = res.body
+          row.orgDeptMap = res.body
         })
     },
     fetchData () {
