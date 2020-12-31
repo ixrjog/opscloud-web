@@ -13,7 +13,7 @@
           <el-button @click="addItem" style="margin-left: 5px">新建</el-button>
         </el-row>
       </div>
-      <el-table :data="tableData" style="width: 100%" v-loading="loading">
+      <el-table :data="tableData" style="width: 100%" v-loading="loading" @expand-change="getUserOrgList">
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline class="table-expand">
@@ -43,6 +43,9 @@
                                    :type=" item.isAdmin ? 'danger': '' ">{{ item.name }}</el-tag>
                           </el-tooltip></span>
                 </div>
+              </el-form-item>
+              <el-form-item label="部门" v-if="JSON.stringify(props.row.orgList) !== '[]'">
+                <span v-for="org in props.row.orgList" :key="org.id" style="margin-left: 5px">{{ org.name }}</span>
               </el-form-item>
             </el-form>
           </template>
@@ -95,6 +98,7 @@ import UserUserGroupDialog from '@/components/opscloud/dialog/UserUserGroupDialo
 import UserServerGroupDialog from '@/components/opscloud/dialog/UserServerGroupDialog'
 // API
 import { fuzzyQueryUserPage, syncUser, retireUserById } from '@api/user/user.js'
+import { queryOrgByUser } from '@api/org/org'
 
 export default {
   data () {
@@ -238,6 +242,15 @@ export default {
     paginationCurrentChange (currentPage) {
       this.pagination.currentPage = currentPage
       this.fetchData()
+    },
+    getUserOrgList (row, expandedRows) {
+      if (JSON.stringify(expandedRows) === '[]') {
+        return
+      }
+      queryOrgByUser(row.id)
+        .then(res => {
+          row.orgList = res.body
+        })
     },
     fetchData () {
       this.loading = true

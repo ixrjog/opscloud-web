@@ -130,3 +130,10 @@ export function refreshDepartmentTreeV2 () {
     method: 'get'
   })
 }
+
+export function queryOrgByUser (userId) {
+  return request({
+    url: '/org/department/user/query?userId=' + userId,
+    method: 'get'
+  })
+}
