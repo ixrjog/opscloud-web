@@ -137,3 +137,10 @@ export function queryOrgByUser (userId) {
     method: 'get'
   })
 }
+
+export function queryOrgByUserV2 (userId) {
+  return request({
+    url: '/org/department/userV2/query?userId=' + userId,
+    method: 'get'
+  })
+}
