@@ -24,6 +24,13 @@
               <el-button @click="addDepartment">新增</el-button>
               <span style="float: right">组织架构</span>
             </div>
+            <el-row v-if="JSON.stringify(orgPath) !== '[]'" style="margin-bottom: 10px">
+              <el-breadcrumb separator="/">
+                <el-breadcrumb-item v-for="item in orgPath" :key="item.id">
+                  {{ item.name }}
+                </el-breadcrumb-item>
+              </el-breadcrumb>
+            </el-row>
             <el-tree draggable default-expand-all highlight-current node-key="id"
                      :data="deptTree.tree" @node-drop="handleDrop" @node-click="handleNodeClick">
               <span class="custom-tree-node" slot-scope="{ node, data }">
@@ -168,7 +175,7 @@ import DepartmentDialog from '@/components/opscloud/dialog/DepartmentDialog'
 import {
   queryDepartmentTree, dropDepartmentTree, queryDepartmentMemberPage,
   addDepartmentMember, joinDepartmentMember, removeDepartmentMemberById, updateDepartmentMemberLeader,
-  updateDepartmentMemberApproval, queryDepartmentById, queryDepartmentPage, queryOrgByUserV2
+  updateDepartmentMemberApproval, queryDepartmentById, queryDepartmentPage, queryOrgByUserV2, queryOrgPath
 } from '@api/org/org.js'
 import { fuzzyQueryUserPage } from '@api/user/user.js'
 
@@ -217,7 +224,8 @@ export default {
         updateTitle: '更新部门信息'
       },
       showType: true,
-      orgDeptList: []
+      orgDeptList: [],
+      orgPath: []
     }
   },
   mounted () {
@@ -284,7 +292,6 @@ export default {
           }
         })
     },
-    // 编辑部门
     addDepartment () {
       let departmentData = {
         id: 0,
@@ -307,7 +314,6 @@ export default {
           this.orgDeptList = res.body
         })
     },
-    // 编辑部门
     editDepartment (node, data) {
       queryDepartmentById(node.key)
         .then(res => {
@@ -319,9 +325,7 @@ export default {
           }
         })
     },
-    // 删除部门
     delDepartment (node, data) {
-      // console.log(node.key)
     },
     setDeptMemberLeader (row) {
       updateDepartmentMemberLeader(row.id)
@@ -369,8 +373,6 @@ export default {
         })
     },
     handleDrop (draggingNode, dropNode, dropType, ev) {
-      // console.log('tree drop: ', draggingNode.label, dropNode.label, dropType)
-      // console.log('tree drop: ', draggingNode.key, dropNode.key, dropType)
       dropDepartmentTree(draggingNode.key, dropNode.key, dropType)
         .then(res => {
           if (res.success) {
@@ -390,12 +392,23 @@ export default {
         this.departmentName = node.label
         this.fetchDeptMemberData()
         this.showType = true
+        this.getOrgPath()
       } catch (e) {
       }
     },
     paginationCurrentChange (currentPage) {
       this.pagination.currentPage = currentPage
       this.fetchDeptMemberData()
+    },
+    getOrgPath () {
+      this.orgPath = []
+      if (this.departmentId === '') {
+        return
+      }
+      queryOrgPath(this.departmentId)
+      .then(res => {
+        this.orgPath = res.body
+      })
     },
     fetchDeptTreeData () {
       this.searching = true

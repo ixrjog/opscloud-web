@@ -144,3 +144,10 @@ export function queryOrgByUserV2 (userId) {
     method: 'get'
   })
 }
+
+export function queryOrgPath (departmentId) {
+  return request({
+    url: '/org/department/path/query?departmentId=' + departmentId,
+    method: 'get'
+  })
+}
