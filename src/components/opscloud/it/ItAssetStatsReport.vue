@@ -1,7 +1,10 @@
 <template>
   <div>
     <el-card class="box-card" shadow="hover">
-      <div id="itAssetStatsReport" style="width: 100%; height: 460px;"></div>
+      <el-row>
+        <span style="color: #99a9bf">资产分类统计</span>
+      </el-row>
+      <div id="itAssetStatsReport" style="width: 100%; height: 474px;"></div>
     </el-card>
   </div>
 </template>

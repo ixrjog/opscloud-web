@@ -7,38 +7,50 @@
       <el-row :gutter="15">
         <el-col :span="6">
           <el-card shadow="hover">
-            <div slot="header">
-              <span class="span-font-label">空闲</span>
-              <img :src="freeImageUrl" class="img-style">
+            <div slot="header" class="clearfix">
+              <span>空闲</span>
+              <el-tag style="float: right" type="text">free</el-tag>
             </div>
-            <span class="font-class">{{ totalStats.freeTotal }}</span>
+            <el-row>
+              <span class="font-size">{{ totalStats.freeTotal }}</span>
+            </el-row>
+            <el-row class="font-subtext">All free</el-row>
           </el-card>
         </el-col>
         <el-col :span="6">
           <el-card shadow="hover">
-            <div slot="header">
-              <span class="span-font-label">在用</span>
-              <img :src="usedImageUrl" class="img-style">
+            <div slot="header" class="clearfix">
+              <span>在用</span>
+              <el-tag style="float: right" type="text">used</el-tag>
             </div>
-            <span class="font-class">{{ totalStats.usedTotal }}</span>
+            <el-row>
+              <span class="font-size">{{ totalStats.usedTotal }}</span>
+            </el-row>
+            <el-row class="font-subtext">All used</el-row>
           </el-card>
         </el-col>
         <el-col :span="6">
           <el-card shadow="hover">
-            <div slot="header">
-              <span class="span-font-label">借用</span>
-              <img :src="borrowImageUrl" class="img-style">
+            <div slot="header" class="clearfix">
+              <span>借用</span>
+              <el-tag style="float: right" type="text">borrow</el-tag>
             </div>
-            <span class="font-class">{{ totalStats.borrowTotal }}</span>
+            <el-row>
+              <span class="font-size">{{ totalStats.borrowTotal }}</span>
+            </el-row>
+            <el-row class="font-subtext">All borrow</el-row>
           </el-card>
         </el-col>
         <el-col :span="6">
           <el-card shadow="hover">
-            <div slot="header">
-              <span class="span-font-label">处置</span>
-              <img :src="disposeImageUrl" class="img-style">
+            <div slot="header" class="clearfix">
+              <span>处置</span>
+              <el-tag style="float: right" type="text">dispose</el-tag>
             </div>
-            <span class="font-class">{{ totalStats.disposeTotal }}</span>
+            <el-row>
+              <span class="font-size">{{ totalStats.disposeTotal }}</span>
+            </el-row>
+            <el-row class="font-subtext">All dispose</el-row>
           </el-card>
         </el-col>
       </el-row>
@@ -111,7 +123,7 @@ export default {
         assetStatus: -1,
         assetNameIdList: [],
         page: 1,
-        length: 20
+        length: 12
       },
       tableData: [],
       loading: false,
@@ -226,8 +238,21 @@ export default {
   font-weight: lighter;
   margin-right: 10px;
 }
+
 .img-style {
   width: 30px;
   float: right;
+}
+
+.font-size {
+  font-size: 45px;
+  color: #20A9D9;
+  font-weight: 300;
+}
+
+.font-subtext {
+  font-size: 12px;
+  color: #B7B6B6;
+  margin-top: 5px
 }
 </style>
