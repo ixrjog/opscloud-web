@@ -628,6 +628,34 @@ const frameIn = [
           auth: true,
           title: '实例管理'
         }
+      },
+      // fault
+      {
+        path: '/fault/info',
+        name: 'fault-info',
+        component: () => import('@/pages/fault/info/index'),
+        meta: {
+          auth: true,
+          title: '故障信息'
+        }
+      },
+      {
+        path: '/fault/report',
+        name: 'fault-report',
+        component: () => import('@/pages/fault/report/index'),
+        meta: {
+          auth: true,
+          title: '故障报表'
+        }
+      },
+      {
+        path: '/fault/info/detail',
+        name: 'fault-info-detail',
+        component: () => import('@/pages/fault/info/detail/index'),
+        meta: {
+          auth: true,
+          title: '故障信息详情'
+        }
       }
     ]
   }

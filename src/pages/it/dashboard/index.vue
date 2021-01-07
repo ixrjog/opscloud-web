@@ -226,24 +226,6 @@ export default {
 </script>
 
 <style scoped>
-.span-font-label {
-  font-size: 16px;
-  color: #99a9bf;
-}
-
-.font-class {
-  float: right;
-  font-size: 50px;
-  color: #06b8ee;
-  font-weight: lighter;
-  margin-right: 10px;
-}
-
-.img-style {
-  width: 30px;
-  float: right;
-}
-
 .font-size {
   font-size: 45px;
   color: #20A9D9;
