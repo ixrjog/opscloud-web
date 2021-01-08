@@ -190,6 +190,7 @@ export default {
       chineseToPinYin(requestBody)
         .then(res => {
           this.user.username = res.body
+          this.handlerCheck(this.user.username)
         })
     },
     saveInfo () {

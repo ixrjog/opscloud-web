@@ -63,9 +63,10 @@
                 <el-select v-model="userId" filterable clearable :style="searchBarStyle"
                            remote reserve-keyword placeholder="搜索用户" :remote-method="getUser" :loading="getUserLoading">
                   <el-option v-for="user in userOptions" :key="user.id" :label="user.displayName" :value="user.id">
-                    <span style="float: left">{{ user.displayName }}</span>
-                    <span style="margin-left: 20px">{{ user.username }}</span>
-                    <span style="float: right; color: #8492a6; font-size: 10px;margin-left: 20px">{{ user.email }}</span>
+                    <span style="float: left">{{ user | userFilters }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 10px;margin-left: 20px">{{
+                        user.email
+                      }}</span>
                   </el-option>
                 </el-select>
                 <el-button @click="addDeptMember" style="margin-left: 5px"
@@ -128,7 +129,9 @@
                   <el-option v-for="user in userOptions" :key="user.id" :label="user.displayName" :value="user.id">
                     <span style="float: left">{{ user.displayName }}</span>
                     <span style="margin-left: 20px">{{ user.username }}</span>
-                    <span style="float: right; color: #8492a6; font-size: 10px;margin-left: 20px">{{ user.email }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 10px;margin-left: 20px">{{
+                        user.email
+                      }}</span>
                   </el-option>
                 </el-select>
                 <el-button @click="getUserOrgList" style="margin-left: 5px" :disabled="userId === ''">搜索
@@ -239,6 +242,11 @@ export default {
   },
   components: {
     DepartmentDialog
+  },
+  filters: {
+    userFilters (user) {
+      return user.username + '<' + user.displayName + '>'
+    }
   },
   methods: {
     getDepartment (queryName) {
@@ -412,9 +420,9 @@ export default {
         return
       }
       queryOrgPath(this.departmentId)
-      .then(res => {
-        this.orgPath = res.body
-      })
+        .then(res => {
+          this.orgPath = res.body
+        })
     },
     fetchDeptTreeData () {
       this.searching = true

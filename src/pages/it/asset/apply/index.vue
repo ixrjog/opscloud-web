@@ -13,8 +13,7 @@
             :key="user.id"
             :label="user.displayName"
             :value="user.id">
-            <span style="float: left">{{ user.displayName }}</span>
-            <span style="margin-left: 20px">{{ user.username }}</span>
+            <span style="float: left">{{ user | userFilters }}</span>
             <span style="float: right; color: #8492a6; font-size: 10px;margin-left: 20px">{{ user.email }}</span>
           </el-option>
         </el-select>
