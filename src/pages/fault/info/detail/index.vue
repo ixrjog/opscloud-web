@@ -93,7 +93,10 @@
                   <span>所属团队</span>
                 </div>
                 <div>
-                  <span>{{ card.responsibleTeam }}</span>
+                  <span v-if="card.responsibleTeam !== '' && card.responsibleTeam !== null">
+                    {{ card.responsibleTeam }}
+                  </span>
+                  <span v-else>待定</span>
                 </div>
               </el-card>
             </el-col>

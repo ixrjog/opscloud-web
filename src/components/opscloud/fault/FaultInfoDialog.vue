@@ -68,10 +68,11 @@
       <el-form-item label="解决方案">
         <el-tooltip class="item" effect="dark" content="新增解决方案" placement="top-start">
           <el-button type="primary" size="mini" icon="el-icon-circle-plus-outline" plain
-                     @click="handlerAddAction()" style="margin-left: 10px"></el-button>
+                     @click="handlerAddAction()"></el-button>
         </el-tooltip>
       </el-form-item>
-      <span v-for="(action, index)  in faultInfoData.todoAction" :key="index">
+      <div style="margin-left: 60px">
+        <span v-for="(action, index)  in faultInfoData.todoAction" :key="index">
         <el-form-item :label="'Action' + (index +1)">
             <el-input v-model="action.faultAction"></el-input>
         </el-form-item>
@@ -98,6 +99,7 @@
           </el-col>
         </el-row>
       </span>
+      </div>
       <el-form-item label="主要责任人">
         <el-select v-model.trim="faultInfoData.primaryResponsiblePersonIdList" value-key="username"
                    filterable clearable multiple remote placeholder="输入关键词搜用户" :remote-method="getUser">

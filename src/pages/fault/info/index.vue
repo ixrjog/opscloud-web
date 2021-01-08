@@ -128,7 +128,7 @@
                   <span>主要责任人</span>
                 </div>
                 <div>
-                  <span v-if="JSON.stringify(card.primaryResponsiblePerson) === '[]'" type="info">待定</span>
+                  <span v-if="JSON.stringify(card.primaryResponsiblePerson) === '[]'">待定</span>
                   <el-tag v-else v-for="person in card.primaryResponsiblePerson" :key="person.id"
                           style="margin-left: 5px">
                     {{ person | personFilters }}
@@ -142,7 +142,7 @@
                   <span>次要责任人</span>
                 </div>
                 <div>
-                  <span v-if="JSON.stringify(card.secondaryResponsiblePerson) === '[]'" type="info">待定</span>
+                  <span v-if="JSON.stringify(card.secondaryResponsiblePerson) === '[]'">待定</span>
                   <el-tag v-else v-for="person in card.secondaryResponsiblePerson" :key="person.id"
                           style="margin-left: 5px">
                     {{ person | personFilters }}
@@ -156,7 +156,10 @@
                   <span>所属团队</span>
                 </div>
                 <div>
-                  <span>{{ card.responsibleTeam }}</span>
+                  <span v-if="card.responsibleTeam !== '' && card.responsibleTeam !== null">
+                    {{ card.responsibleTeam }}
+                  </span>
+                  <span v-else>待定</span>
                 </div>
               </el-card>
             </el-col>
@@ -444,6 +447,6 @@ export default {
 }
 
 .card {
-  margin-bottom: 10px;
+  margin-bottom: 30px;
 }
 </style>
