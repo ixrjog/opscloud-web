@@ -45,7 +45,10 @@
       <el-form-item label="告警接收人" prop="userIdList" :rules="selectRules">
         <el-select v-model="groupAlarmData.userIdList" filterable clearable multiple
                    remote reserve-keyword placeholder="搜索用户" :remote-method="getUser">
-          <el-option v-for="item in userOptions" :key="item.id" :label="item.displayName" :value="item.id">
+          <el-option v-for="user in userOptions" :key="user.id" :label="user.displayName" :value="user.id">
+            <span style="float: left">{{ user.displayName }}</span>
+            <span style="margin-left: 20px">{{ user.username }}</span>
+            <span style="float: right; color: #8492a6; font-size: 10px;margin-left: 20px">{{ user.email }}</span>
           </el-option>
         </el-select>
       </el-form-item>

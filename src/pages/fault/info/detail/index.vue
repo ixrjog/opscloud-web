@@ -5,7 +5,7 @@
         <h1>{{ title }}</h1>
       </div>
       <el-card shadow="never" class="card">
-        <div slot="header">
+        <div slot="header" style="height: 15px">
           <el-row>
             <el-tag type="warning">{{ card.faultLevel | faultLevelFilters }}</el-tag>
             <el-tag type="success" style="margin-left: 10px">{{ card.startTime + ' -> ' + card.endTime }}</el-tag>

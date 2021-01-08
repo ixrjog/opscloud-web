@@ -32,11 +32,11 @@
         </el-row>
       </div>
       <el-card v-for="card in cardData" :key="card.id" v-loading="loading" shadow="never" class="card">
-        <div slot="header">
+        <div slot="header" style="height: 15px">
           <el-row>
             <el-tag type="warning">{{ card.faultLevel | faultLevelFilters }}</el-tag>
             <el-tag type="success" style="margin-left: 10px">{{ card.startTime + ' -> ' + card.endTime }}</el-tag>
-            <span style="float: right; padding: 3px 0">
+            <span style="float: right">
               <el-button type="success" icon="el-icon-lock" v-if="card.finalized" plain
                          @click="updateFinalized(card)" size="mini">完成
               </el-button>
@@ -47,7 +47,7 @@
                 更多菜单
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item type="text" icon="el-icon-position">
-                    <el-button type="text" size="mini" @click="openDetail(card)">详情页</el-button>
+                    <el-button type="text" size="mini" @click="openDetail(card)">详情</el-button>
                   </el-dropdown-item>
                   <el-dropdown-item type="text" icon="el-icon-edit">
                     <el-button type="text" size="mini" @click="editItem(card)"

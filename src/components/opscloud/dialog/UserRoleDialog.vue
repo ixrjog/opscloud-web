@@ -6,10 +6,13 @@
         <el-select v-model="formData.username" filterable clearable
                    remote reserve-keyword placeholder="输入关键词搜索用户" :remote-method="getUser" :loading="loading">
           <el-option
-            v-for="item in userOptions"
-            :key="item.id"
-            :label="item.username"
-            :value="item.username">
+            v-for="user in userOptions"
+            :key="user.id"
+            :label="user.username"
+            :value="user.username">
+            <span style="float: left">{{ user.displayName }}</span>
+            <span style="margin-left: 20px">{{ user.username }}</span>
+            <span style="float: right; color: #8492a6; font-size: 10px;margin-left: 20px">{{ user.email }}</span>
           </el-option>
         </el-select>
       </el-form-item>
