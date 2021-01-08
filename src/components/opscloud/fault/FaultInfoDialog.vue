@@ -1,6 +1,6 @@
 <template>
   <el-dialog :title="formStatus.isUpdate ? title.updateTitle : title.addTitle"
-             :visible.sync="formStatus.visible">
+             :visible.sync="formStatus.visible" :before-close='handlerCloseDialog'>
     <el-alert v-if="!formStatus.isUpdate" description="相关内容建议使用Markdown语法"
               style="margin-bottom: 10px" center show-icon type="info" close-text="知道了">
     </el-alert>
@@ -281,6 +281,14 @@ export default {
     },
     handleClick () {
       this.$emit('input', !this.value)
+    },
+    handlerCloseDialog (done) {
+      this.$confirm('确定退出?')
+        .then(_ => {
+          this.formStatus.visible = false
+        })
+        .catch(_ => {
+        })
     },
     handleSave () {
       this.faultInfoData.startTime = this.faultInfoData.faultDate[0]

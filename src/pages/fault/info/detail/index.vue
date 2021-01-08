@@ -4,141 +4,98 @@
       <div>
         <h1>{{ title }}</h1>
       </div>
-      <el-card shadow="never" class="card">
-        <div slot="header" style="height: 15px">
-          <el-row>
-            <el-tag type="warning">{{ card.faultLevel | faultLevelFilters }}</el-tag>
-            <el-tag type="success" style="margin-left: 10px">{{ card.startTime + ' -> ' + card.endTime }}</el-tag>
-          </el-row>
+      <el-card shadow="never">
+        <div slot="header" style="height: 20px">
+          <span>{{ card.faultTitle }}</span>
+          <el-tag type="warning" style="margin-left: 10px">{{ card.faultLevel | faultLevelFilters }}</el-tag>
+          <el-tag type="primary" style="margin-left: 10px">{{ card.startTime + ' -> ' + card.endTime }}</el-tag>
         </div>
         <div>
-          <el-row>
-            <el-col :span="4">
-              <span class="span">故障标题</span>
+          <el-row :gutter="15" style="margin-bottom: 15px">
+            <el-col :span="12">
+              <fault-info-content-card title="故障现象" :content="card.faultPerformance"></fault-info-content-card>
             </el-col>
-            <el-col :span="20">
-              <d2-markdown v-if="card.faultTitle !== '' && card.faultTitle !==  null"
-                           :source="card.faultTitle"></d2-markdown>
-            </el-col>
-          </el-row>
-          <el-divider></el-divider>
-          <el-row>
-            <el-col :span="4">
-              <span class="span">故障标题</span>
-            </el-col>
-            <el-col :span="20">
-              <d2-markdown v-if="card.faultTitle !== '' && card.faultTitle !==  null"
-                           :source="card.faultTitle"></d2-markdown>
+            <el-col :span="12">
+              <fault-info-content-card title="故障原因" :content="card.rootCause"></fault-info-content-card>
             </el-col>
           </el-row>
-          <el-divider></el-divider>
-          <el-row>
-            <el-col :span="4">
-              <span class="span">故障现象</span>
+          <el-row :gutter="15" style="margin-bottom: 15px">
+            <el-col :span="12">
+              <fault-info-content-card title="详细过程" :content="card.faultDetail"></fault-info-content-card>
             </el-col>
-            <el-col :span="20">
-              <d2-markdown v-if="card.faultPerformance !== '' && card.faultPerformance !==  null"
-                           :source="card.faultPerformance"></d2-markdown>
+            <el-col :span="12">
+              <fault-info-content-card title="造成影响" :content="card.effect"></fault-info-content-card>
             </el-col>
           </el-row>
-          <el-divider></el-divider>
-          <el-row>
-            <el-col :span="4">
-              <span class="span">故障原因</span>
+          <el-row :gutter="15" style="margin-bottom: 15px">
+            <el-col :span="12">
+              <fault-info-content-card title="评级原因" :content="card.faultJudge"></fault-info-content-card>
             </el-col>
-            <el-col :span="20">
-              <d2-markdown v-if="card.rootCause !== '' && card.rootCause !==  null"
-                           :source="card.rootCause"></d2-markdown>
-            </el-col>
-          </el-row>
-          <el-divider></el-divider>
-          <el-row>
-            <el-col :span="4">
-              <span class="span">详细过程</span>
-            </el-col>
-            <el-col :span="20">
-              <d2-markdown v-if="card.faultDetail !== '' && card.faultDetail !==  null"
-                           :source="card.faultDetail"></d2-markdown>
-            </el-col>
-          </el-row>
-          <el-divider></el-divider>
-          <el-row>
-            <el-col :span="4">
-              <span class="span">造成影响</span>
-            </el-col>
-            <el-col :span="20">
-              <d2-markdown v-if="card.effect !== '' && card.effect !==  null" :source="card.effect"></d2-markdown>
-            </el-col>
-          </el-row>
-          <el-divider></el-divider>
-          <el-row>
-            <el-col :span="4">
-              <span class="span">评级原因</span>
-            </el-col>
-            <el-col :span="20">
-              <d2-markdown v-if="card.faultJudge !== '' && card.faultJudge !==  null"
-                           :source="card.faultJudge"></d2-markdown>
+            <el-col :span="12">
+              <el-card shadow="never">
+                <div slot="header" style="height: 5px">
+                  <span>解决方案</span>
+                </div>
+                <div>
+                  <el-table :data="card.todoAction" style="width: 100%">
+                    <el-table-column type="index"></el-table-column>
+                    <el-table-column prop="faultAction" label="Action"></el-table-column>
+                    <el-table-column label="跟进人" width="80">
+                      <template slot-scope="scope">
+                        <span>{{ scope.row.followUser.displayName }}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column prop="deadline" label="截止日期" width="90"></el-table-column>
+                    <el-table-column label="状态" width="70">
+                      <template slot-scope="scope">
+                        <el-tag :type="getActionStatusColor(scope.row.actionStatus)">
+                          {{ scope.row.actionStatus | actionStatusFilters }}
+                        </el-tag>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </div>
+              </el-card>
             </el-col>
           </el-row>
-          <el-divider></el-divider>
-          <el-row>
-            <el-col :span="4">
-              <span class="span">解决方案</span>
+          <el-row :gutter="15">
+            <el-col :span="8">
+              <el-card shadow="never">
+                <div slot="header" style="height: 5px">
+                  <span>主要责任人</span>
+                </div>
+                <div>
+                  <span v-if="JSON.stringify(card.primaryResponsiblePerson) === '[]'" type="info">待定</span>
+                  <el-tag v-else v-for="person in card.primaryResponsiblePerson" :key="person.id"
+                          style="margin-left: 5px">
+                    {{ person | personFilters }}
+                  </el-tag>
+                </div>
+              </el-card>
             </el-col>
-            <el-col :span="20" v-if="JSON.stringify(card.todoAction) !== '[]'">
-              <el-table :data="card.todoAction" style="width: 100%">
-                <el-table-column type="index"></el-table-column>
-                <el-table-column prop="faultAction" label="Action"></el-table-column>
-                <el-table-column label="跟进人">
-                  <template slot-scope="scope">
-                    <span>{{ scope.row.followUser.displayName }}</span>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="deadline" label="截止日期"></el-table-column>
-                <el-table-column label="状态">
-                  <template slot-scope="scope">
-                    <el-tag :type="getActionStatusColor(scope.row.actionStatus)">
-                      {{ scope.row.actionStatus | actionStatusFilters }}
-                    </el-tag>
-                  </template>
-                </el-table-column>
-              </el-table>
+            <el-col :span="8">
+              <el-card shadow="never">
+                <div slot="header" style="height: 5px">
+                  <span>次要责任人</span>
+                </div>
+                <div>
+                  <span v-if="JSON.stringify(card.secondaryResponsiblePerson) === '[]'" type="info">待定</span>
+                  <el-tag v-else v-for="person in card.secondaryResponsiblePerson" :key="person.id"
+                          style="margin-left: 5px">
+                    {{ person | personFilters }}
+                  </el-tag>
+                </div>
+              </el-card>
             </el-col>
-          </el-row>
-          <el-divider></el-divider>
-          <el-row>
-            <el-col :span="4">
-              <span class="span">主要责任人</span>
-            </el-col>
-            <el-col :span="20">
-              <el-tag v-if="JSON.stringify(card.primaryResponsiblePerson) === '{}'" type="info">待定</el-tag>
-              <el-tag v-else v-for="person in card.primaryResponsiblePerson" :key="person.id" style="margin-left: 5px">
-                {{ person | personFilters }}
-              </el-tag>
-            </el-col>
-          </el-row>
-          <el-divider></el-divider>
-          <el-row>
-            <el-col :span="4">
-              <span class="span">次要责任人</span>
-            </el-col>
-            <el-col :span="20">
-              <el-tag v-if="JSON.stringify(card.secondaryResponsiblePerson) === '[]'" type="info">待定</el-tag>
-              <el-tag v-else v-for="person in card.secondaryResponsiblePerson" :key="person.id"
-                      style="margin-left: 5px">
-                {{ person | personFilters }}
-              </el-tag>
-            </el-col>
-          </el-row>
-          <el-divider></el-divider>
-          <el-row>
-            <el-col :span="4">
-              <span class="span">所属团队</span>
-            </el-col>
-            <el-col :span="20">
-              <span v-if="card.responsibleTeam !== '' && card.responsibleTeam !==  null">
-                {{ card.responsibleTeam }}
-              </span>
+            <el-col :span="8">
+              <el-card shadow="never">
+                <div slot="header" style="height: 5px">
+                  <span>所属团队</span>
+                </div>
+                <div>
+                  <span>{{ card.responsibleTeam }}</span>
+                </div>
+              </el-card>
             </el-col>
           </el-row>
         </div>
@@ -149,6 +106,7 @@
 
 <script>
 import { queryFaultInfo } from '@api/fault/fault.info.js'
+import FaultInfoContentCard from '@/components/opscloud/fault/FaultInfoContentCard'
 
 export default {
   data () {
@@ -179,6 +137,9 @@ export default {
     this.$store.dispatch('d2admin/menu/asideCollapseSet', true)
     this.faultId = this.$route.query.faultId
     this.fetchData()
+  },
+  components: {
+    FaultInfoContentCard
   },
   filters: {
     actionStatusFilters (actionStatus) {
@@ -228,12 +189,4 @@ export default {
 </script>
 
 <style scoped>
-.span {
-  font-size: 16px;
-  color: #99a9bf;
-}
-
-.card {
-  margin-bottom: 10px;
-}
 </style>
