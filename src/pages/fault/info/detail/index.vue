@@ -11,28 +11,27 @@
           <el-tag type="primary" style="margin-left: 10px">{{ card.startTime + ' -> ' + card.endTime }}</el-tag>
         </div>
         <div>
-          <el-row :gutter="15" style="margin-bottom: 15px">
+          <el-row :gutter="15">
             <el-col :span="12">
               <fault-info-content-card title="故障现象" :content="card.faultPerformance"></fault-info-content-card>
             </el-col>
             <el-col :span="12">
               <fault-info-content-card title="故障原因" :content="card.rootCause"></fault-info-content-card>
             </el-col>
-          </el-row>
-          <el-row :gutter="15" style="margin-bottom: 15px">
             <el-col :span="12">
-              <fault-info-content-card title="详细过程" :content="card.faultDetail"></fault-info-content-card>
+              <fault-info-content-card title="详细过程" :content="card.faultDetail"
+                                       style="margin-top: 15px"></fault-info-content-card>
             </el-col>
             <el-col :span="12">
-              <fault-info-content-card title="造成影响" :content="card.effect"></fault-info-content-card>
-            </el-col>
-          </el-row>
-          <el-row :gutter="15" style="margin-bottom: 15px">
-            <el-col :span="12">
-              <fault-info-content-card title="评级原因" :content="card.faultJudge"></fault-info-content-card>
+              <fault-info-content-card title="造成影响" :content="card.effect"
+                                       style="margin-top: 15px"></fault-info-content-card>
             </el-col>
             <el-col :span="12">
-              <el-card shadow="never">
+              <fault-info-content-card title="评级原因" :content="card.faultJudge"
+                                       style="margin-top: 15px"></fault-info-content-card>
+            </el-col>
+            <el-col :span="12">
+              <el-card shadow="never" style="margin-top: 15px">
                 <div slot="header" style="height: 5px">
                   <span>解决方案</span>
                 </div>
@@ -58,7 +57,7 @@
               </el-card>
             </el-col>
           </el-row>
-          <el-row :gutter="15">
+          <el-row :gutter="15" style="margin-top: 15px">
             <el-col :span="8">
               <el-card shadow="never">
                 <div slot="header" style="height: 5px">
@@ -124,7 +123,7 @@ export default {
         faultDate: '',
         rootCause: '',
         faultDetail: '',
-        todoAction: '',
+        todoAction: [],
         faultJudge: '',
         responsibleTeam: '',
         primaryResponsiblePerson: [],

@@ -31,149 +31,64 @@
           <el-button @click="addItem" class="button">新增</el-button>
         </el-row>
       </div>
-      <el-card v-for="card in cardData" :key="card.id" v-loading="loading" shadow="never" class="card">
-        <div slot="header" style="height: 20px">
-          <span>{{ card.faultTitle }}</span>
-          <el-tag type="warning" style="margin-left: 10px">{{ card.faultLevel | faultLevelFilters }}</el-tag>
-          <el-tag type="primary" style="margin-left: 10px">{{ card.startTime + ' -> ' + card.endTime }}</el-tag>
-          <span style="float: right">
-              <el-button type="success" icon="el-icon-lock" v-if="card.finalized" plain
-                         @click="updateFinalized(card)" size="mini">锁定
+      <el-table :data="cardData" style="width: 100%">
+        <el-table-column type="index"></el-table-column>
+        <el-table-column prop="faultTitle" label="故障标题"></el-table-column>
+        <el-table-column prop="rootCauseType" label="故障分类"></el-table-column>
+        <el-table-column label="故障级别">
+          <template slot-scope="scope">
+            <el-tag type="warning">{{ scope.row.faultLevel | faultLevelFilters }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="影响时间">
+          <template slot-scope="scope">
+            <el-tag type="primary">{{ scope.row.startTime + ' -> ' + scope.row.endTime }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column fixed="right" label="操作" width="240">
+          <template slot-scope="scope">
+            <el-tooltip class="item" effect="dark" content="故障信息锁定中" placement="top">
+              <el-button type="success" icon="el-icon-lock" v-if="scope.row.finalized" plain
+                         @click="updateFinalized(scope.row)" size="mini"></el-button>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="故障信息开放中" placement="top">
+              <el-button type="warning" icon="el-icon-unlock" v-if="!scope.row.finalized" plain
+                         @click="updateFinalized(scope.row)" size="mini">
               </el-button>
-              <el-button type="warning" icon="el-icon-unlock" v-if="!card.finalized" plain
-                         @click="updateFinalized(card)" size="mini" style="margin-left: 5px">开放
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="更新Action状态" placement="top">
+              <el-button type="primary" icon="el-icon-bell" plain @click="updateAction(scope.row)" size="mini">
               </el-button>
-              <el-dropdown split-button type="primary" size="mini" style="margin-left: 5px" @click="openDetail(card)">
-                详情
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item type="text" icon="el-icon-edit">
-                    <el-button type="text" size="mini" @click="editItem(card)"
-                               :disabled="card.finalized === true">编辑
+            </el-tooltip>
+            <el-dropdown split-button type="primary" size="mini" style="margin-left: 10px"
+                         @click="openDetail(scope.row)">
+              详情
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item type="text" icon="el-icon-edit">
+                  <el-button type="text" size="mini" @click="editItem(scope.row)"
+                             :disabled="scope.row.finalized === true">编辑
+                  </el-button>
+                </el-dropdown-item>
+                <el-dropdown-item icon="el-icon-delete">
+                  <el-popconfirm title="确定删除吗？" @onConfirm="delItem(scope.row)">
+                    <el-button slot="reference" type="text" size="mini" style="color: #F56C6C"
+                               :disabled="scope.row.finalized === true">删除
                     </el-button>
-                  </el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-delete">
-                    <el-popconfirm title="确定删除吗？" @onConfirm="delItem(card)">
-                      <el-button slot="reference" type="text" size="mini" style="color: #F56C6C"
-                                 :disabled="card.finalized === true">删除
-                      </el-button>
-                    </el-popconfirm>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </span>
-        </div>
-        <div>
-          <el-row :gutter="15" style="margin-bottom: 15px">
-            <el-col :span="12">
-              <fault-info-content-card title="故障现象" :content="card.faultPerformance"></fault-info-content-card>
-            </el-col>
-            <el-col :span="12">
-              <fault-info-content-card title="故障原因" :content="card.rootCause"></fault-info-content-card>
-            </el-col>
-          </el-row>
-          <el-row :gutter="15" style="margin-bottom: 15px">
-            <el-col :span="12">
-              <fault-info-content-card title="详细过程" :content="card.faultDetail"></fault-info-content-card>
-            </el-col>
-            <el-col :span="12">
-              <fault-info-content-card title="造成影响" :content="card.effect"></fault-info-content-card>
-            </el-col>
-          </el-row>
-          <el-row :gutter="15" style="margin-bottom: 15px">
-            <el-col :span="12">
-              <fault-info-content-card title="评级原因" :content="card.faultJudge"></fault-info-content-card>
-            </el-col>
-            <el-col :span="12">
-              <el-card shadow="never">
-                <div slot="header" style="height: 5px">
-                  <span>解决方案</span>
-                </div>
-                <div>
-                  <el-table :data="card.todoAction" style="width: 100%">
-                    <el-table-column type="index"></el-table-column>
-                    <el-table-column prop="faultAction" label="Action"></el-table-column>
-                    <el-table-column label="跟进人" width="80">
-                      <template slot-scope="scope">
-                        <span>{{ scope.row.followUser.displayName }}</span>
-                      </template>
-                    </el-table-column>
-                    <el-table-column prop="deadline" label="截止日期" width="90"></el-table-column>
-                    <el-table-column label="状态" width="70">
-                      <template slot-scope="scope">
-                        <el-tag :type="getActionStatusColor(scope.row.actionStatus)">
-                          {{ scope.row.actionStatus | actionStatusFilters }}
-                        </el-tag>
-                      </template>
-                    </el-table-column>
-                    <el-table-column label="操作" width="150">
-                      <template slot-scope="scope">
-                        <el-select v-model="actionUpdateStatus" placeholder="更新状态" @change="updateAction(scope.row)">
-                          <el-option v-for="item in actionStatusOptions"
-                                     :key="item.value"
-                                     :label="item.label"
-                                     :value="item.value">
-                          </el-option>
-                        </el-select>
-                      </template>
-                    </el-table-column>
-                  </el-table>
-                </div>
-              </el-card>
-            </el-col>
-          </el-row>
-          <el-row :gutter="15">
-            <el-col :span="8">
-              <el-card shadow="never">
-                <div slot="header" style="height: 5px">
-                  <span>主要责任人</span>
-                </div>
-                <div>
-                  <span v-if="JSON.stringify(card.primaryResponsiblePerson) === '[]'">待定</span>
-                  <el-tag v-else v-for="person in card.primaryResponsiblePerson" :key="person.id"
-                          style="margin-left: 5px">
-                    {{ person | personFilters }}
-                  </el-tag>
-                </div>
-              </el-card>
-            </el-col>
-            <el-col :span="8">
-              <el-card shadow="never">
-                <div slot="header" style="height: 5px">
-                  <span>次要责任人</span>
-                </div>
-                <div>
-                  <span v-if="JSON.stringify(card.secondaryResponsiblePerson) === '[]'">待定</span>
-                  <el-tag v-else v-for="person in card.secondaryResponsiblePerson" :key="person.id"
-                          style="margin-left: 5px">
-                    {{ person | personFilters }}
-                  </el-tag>
-                </div>
-              </el-card>
-            </el-col>
-            <el-col :span="8">
-              <el-card shadow="never">
-                <div slot="header" style="height: 5px">
-                  <span>所属团队</span>
-                </div>
-                <div>
-                  <span v-if="card.responsibleTeam !== '' && card.responsibleTeam !== null">
-                    {{ card.responsibleTeam }}
-                  </span>
-                  <span v-else>待定</span>
-                </div>
-              </el-card>
-            </el-col>
-          </el-row>
-        </div>
-      </el-card>
+                  </el-popconfirm>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
+        </el-table-column>
+      </el-table>
       <el-pagination background @current-change="paginationCurrentChange" :page-sizes="[10, 15, 20, 25, 30]"
                      @size-change="handleSizeChange"
                      layout="sizes, prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                      :page-size="pagination.pageSize">
       </el-pagination>
-      <!-- 数据预览-->
       <fault-info-dialog :formStatus="formFaultInfoStatus" ref="faultInfoDialog"
                          @closeFaultInfoDialog="fetchData"></fault-info-dialog>
+      <fault-action-dialog :formStatus="formFaultActionStatus" ref="faultActionDialog"></fault-action-dialog>
     </template>
   </d2-container>
 </template>
@@ -189,8 +104,7 @@ import {
 
 import util from '@/libs/util'
 import FaultInfoDialog from '@/components/opscloud/fault/FaultInfoDialog'
-import { updateFaultAction } from '@api/fault/fault.info'
-import FaultInfoContentCard from '@/components/opscloud/fault/FaultInfoContentCard'
+import FaultActionDialog from '@/components/opscloud/fault/FaultActionDialog'
 
 const faultInfoData = {
   id: '',
@@ -219,6 +133,9 @@ export default {
         visible: false,
         isUpdate: false
       },
+      formFaultActionStatus: {
+        visible: false
+      },
       cardData: [],
       loading: false,
       pagination: {
@@ -232,16 +149,6 @@ export default {
         rootCauseTypeId: '',
         queryDate: ''
       },
-      actionStatusOptions: [{
-        value: 0,
-        label: '完成'
-      }, {
-        value: 1,
-        label: '待完成'
-      }, {
-        value: 2,
-        label: '关闭'
-      }],
       faultLevelOptions: [{
         value: 'P1',
         label: 'P1'
@@ -262,8 +169,7 @@ export default {
         label: '未定级'
       }],
       title: '故障公告',
-      causeTypeOptions: [],
-      actionUpdateStatus: ''
+      causeTypeOptions: []
     }
   },
   mounted () {
@@ -272,17 +178,6 @@ export default {
     this.getCauseType()
   },
   filters: {
-    actionStatusFilters (actionStatus) {
-      if (actionStatus === 0) {
-        return '完成'
-      }
-      if (actionStatus === 1) {
-        return '待完成'
-      }
-      if (actionStatus === 2) {
-        return '关闭'
-      }
-    },
     personFilters (person) {
       return person.displayName + '<' + person.username + '>'
     },
@@ -298,7 +193,7 @@ export default {
   },
   components: {
     FaultInfoDialog,
-    FaultInfoContentCard
+    FaultActionDialog
   },
   computed: {
     ...mapState('d2admin/user', [
@@ -320,17 +215,6 @@ export default {
         this.pagination.pageSize = this.info.pageSize
       }
     },
-    getActionStatusColor (actionStatus) {
-      if (actionStatus === 0) {
-        return 'success'
-      }
-      if (actionStatus === 1) {
-        return 'danger'
-      }
-      if (actionStatus === 2) {
-        return 'info'
-      }
-    },
     getCauseType () {
       let requestBody = {
         'rootCauseType': this.queryParam.rootCauseType,
@@ -342,21 +226,8 @@ export default {
           this.causeTypeOptions = res.body.data
         })
     },
-    updateAction (row) {
-      if (this.actionUpdateStatus === '') {
-        this.$message.warning('状态错误')
-        return
-      }
-      row.actionStatus = this.actionUpdateStatus
-      updateFaultAction(row)
-        .then(res => {
-          this.$message.success('更新故障Action成功')
-          this.actionUpdateStatus = ''
-        })
-    },
     updateFinalized (card) {
       updateFaultInfoFinalized(card.id).then(res => {
-        // this.fetchData()
         this.$message({
           type: 'success',
           message: '成功!'
@@ -425,6 +296,10 @@ export default {
       let httpProtocol = window.location.href.split('://')[0]
       let buildDetailsUrl = httpProtocol + '://' + host + '/#/fault/info/detail?faultId=' + row.id
       util.open(buildDetailsUrl)
+    },
+    updateAction (row) {
+      this.formFaultActionStatus.visible = true
+      this.$refs.faultActionDialog.initData(row.id)
     }
   }
 }
@@ -444,9 +319,5 @@ export default {
 .searchBarStyle {
   margin-left: 5px;
   max-width: 200px;
-}
-
-.card {
-  margin-bottom: 30px;
 }
 </style>
