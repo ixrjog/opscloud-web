@@ -8,13 +8,13 @@
                      @click="handlerCheck(user.username)" :disabled="nameChecked"></el-button>
         </el-input>
       </el-form-item>
-      <el-form-item label="密码" :label-width="formStatus.labelWidth" :required="formStatus.operationType">
+      <el-form-item label="密码" :label-width="formStatus.labelWidth">
         <el-input v-model="password" clearable placeholder="请输入内容">
           <el-button slot="append" icon="el-icon-key" @click="getUserRandomPassword"></el-button>
         </el-input>
       </el-form-item>
-      <el-form-item label="显示名" :label-width="formStatus.labelWidth" :required="true">
-        <el-input v-model="user.displayName" placeholder="请输入内容"></el-input>
+      <el-form-item label="显示名" :label-width="formStatus.labelWidth" required>
+        <el-input v-model="user.displayName" placeholder="请输入内容" @change="smartUsername()"></el-input>
       </el-form-item>
       <el-form-item label="姓名" :label-width="formStatus.labelWidth">
         <el-input v-model="user.name" placeholder="请输入内容"></el-input>
@@ -28,7 +28,7 @@
       <el-form-item label="电话" :label-width="formStatus.labelWidth">
         <el-input v-model="user.phone" placeholder="请输入内容"></el-input>
       </el-form-item>
-      <el-form-item label="邮箱" :label-width="formStatus.labelWidth" :required="true">
+      <el-form-item label="邮箱" :label-width="formStatus.labelWidth">
         <el-input v-model.trim="user.email" placeholder="请输入内容" class="input"></el-input>
         <el-button-group style="margin-left: 10px">
           <el-tooltip class="item" effect="dark" content="查询邮箱" placement="top-start">
@@ -65,6 +65,7 @@
 import { getRandomPassword, updateUser, createUser, checkUsername } from '@api/user/user'
 import { queryDepartmentTreeV2, refreshDepartmentTreeV2 } from '@api/org/org'
 import { checkUser, createUserMail } from '@api/tencent/tencent.exmail.user'
+import { chineseToPinYin } from '@api/opscloud/opscloud.common'
 
 export default {
   data () {
@@ -178,6 +179,18 @@ export default {
     },
     smartEmail () {
       this.user.email = this.user.username + '@xinc818.group'
+    },
+    smartUsername () {
+      if (this.user.username !== '') {
+        return
+      }
+      let requestBody = {
+        'text': this.user.displayName
+      }
+      chineseToPinYin(requestBody)
+        .then(res => {
+          this.user.username = res.body
+        })
     },
     saveInfo () {
       if (!this.nameChecked) {
