@@ -7,7 +7,7 @@
                  v-loading="configuring" element-loading-text="工单配置中"
                  element-loading-spinner="el-icon-loading" v-if="ticket.ticketPhase === 'CREATED_TICKET'">
           <el-form-item label="Topic" prop="topic">
-            <el-input v-model.lazy="topicData.topic" :readonly="topicChecked" @change="getOnsInstanceByTopic">
+            <el-input v-model.lazy="topicData.topic" :readonly="topicChecked" @change="getOnsInstaneceByTopic">
               <el-button slot="append" :icon="topicChecked?'el-icon-success':'el-icon-warning'"
                          @click="handlerCheck(topicData.topic)" :disabled="topicChecked"></el-button>
             </el-input>
@@ -36,7 +36,7 @@
             </el-tooltip>
           </el-form-item>
           <el-form-item label="申请说明" prop="remark">
-            <el-input v-model.trim="topicData.remark" @change="dataChange" :readonly="disabled"></el-input>
+            <el-input v-model.trim="topicData.remark"></el-input>
           </el-form-item>
           <el-form-item label="已申请的实例">
             <el-tag v-for="item in topicData.nowInstanceList" :key="item.id" style="margin-left: 5px">
@@ -73,7 +73,7 @@
         </el-form>
         <el-divider content-position="left">工单详情</el-divider>
         <el-table :data="ticketEntries" style="width: 100%" v-loading="configuring" element-loading-text="工单配置中"
-                  element-loading-spinner="el-icon-loading" >
+                  element-loading-spinner="el-icon-loading">
           <el-table-column prop="name" label="Topic"></el-table-column>
           <el-table-column label="实例环境">
             <template slot-scope="scope">

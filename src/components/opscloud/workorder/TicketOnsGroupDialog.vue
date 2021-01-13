@@ -27,7 +27,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="申请说明" prop="remark">
-            <el-input v-model.trim="groupData.remark" :readonly="disabled"></el-input>
+            <el-input v-model.trim="groupData.remark"></el-input>
           </el-form-item>
           <el-form-item label="已申请的实例">
             <el-tag v-for="item in groupData.nowInstanceList" :key="item.id" style="margin-left: 5px">
