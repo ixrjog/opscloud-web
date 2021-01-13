@@ -218,6 +218,13 @@ export default {
       this.$emit('closeDialog')
     },
     initData (ticket) {
+      if (this.formStatus.operationType === 0) {
+        this.disabled = false
+        this.topicChecked = false
+      } else {
+        this.disabled = true
+        this.topicChecked = true
+      }
       this.ticket = ticket
       if (ticket.workorder != null) {
         this.title = ticket.workorder.name
@@ -228,17 +235,11 @@ export default {
           messageType: ticket.ticketEntries[0].ticketEntry.topic.messageType,
           remark: ticket.ticketEntries[0].ticketEntry.topic.remark
         }
+        this.topicChecked = true
         this.getOnsInstanceByTopic(this.topicData.topic)
       } else {
         this.topicData = Object.assign({}, topicData)
         this.ticketEntries = []
-      }
-      if (this.formStatus.operationType === 0) {
-        this.disabled = false
-        this.topicChecked = false
-      } else {
-        this.disabled = true
-        this.topicChecked = true
       }
       this.getTicketAliyunONS()
     },

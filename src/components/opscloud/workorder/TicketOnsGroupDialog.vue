@@ -186,6 +186,13 @@ export default {
       this.$emit('closeDialog')
     },
     initData (ticket) {
+      if (this.formStatus.operationType === 0) {
+        this.disabled = false
+        this.groupChecked = false
+      } else {
+        this.disabled = true
+        this.groupChecked = true
+      }
       this.ticket = ticket
       if (ticket.workorder != null) {
         this.title = ticket.workorder.name
@@ -200,17 +207,11 @@ export default {
           groupType: ticket.ticketEntries[0].ticketEntry.group.groupType,
           remark: ticket.ticketEntries[0].ticketEntry.group.remark
         }
+        this.groupChecked = true
         this.getOnsInstanceByGroupId(this.groupData.groupId)
       } else {
         this.groupData = Object.assign({}, groupData)
         this.ticketEntries = []
-      }
-      if (this.formStatus.operationType === 0) {
-        this.disabled = false
-        this.groupChecked = false
-      } else {
-        this.disabled = true
-        this.groupChecked = true
       }
       this.getTicketAliyunONS()
     },
