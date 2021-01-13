@@ -7,7 +7,7 @@
                  v-loading="configuring" element-loading-text="工单配置中"
                  element-loading-spinner="el-icon-loading" v-if="ticket.ticketPhase === 'CREATED_TICKET'">
           <el-form-item label="Topic" prop="topic">
-            <el-input v-model.lazy="topicData.topic" :readonly="topicChecked" @change="getOnsInstaneceByTopic">
+            <el-input v-model.lazy="topicData.topic" :readonly="topicChecked" @change="getOnsInstanceByTopic">
               <el-button slot="append" :icon="topicChecked?'el-icon-success':'el-icon-warning'"
                          @click="handlerCheck(topicData.topic)" :disabled="topicChecked"></el-button>
             </el-input>
