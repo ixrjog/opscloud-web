@@ -1,14 +1,11 @@
 <template>
   <div>
-    <el-dialog :title="title" :visible.sync="formStatus.visible" :before-close="closeDialog" width="40%">
-      <el-alert title="工单执行失败" type="error" show-icon style="margin-bottom: 5px"
-                :closable="false" :description="ticketEntry.entryResult"
-                v-if="ticketEntry !== '' && ticket.ticketPhase === 'FINALIZED' && !ticket.executorResult">
-      </el-alert>
+    <el-dialog :title="title" :visible.sync="formStatus.visible" :before-close="closeDialog" width="50%">
       <div style="margin-bottom: 5px">
+        <el-divider content-position="left" v-if="ticket.ticketPhase === 'CREATED_TICKET'">配置选项</el-divider>
         <el-form :model="topicData" ref="topicDataForm" :rules="rules" label-width="120px" class="demo-ruleForm"
                  v-loading="configuring" element-loading-text="工单配置中"
-                 element-loading-spinner="el-icon-loading">
+                 element-loading-spinner="el-icon-loading" v-if="ticket.ticketPhase === 'CREATED_TICKET'">
           <el-form-item label="Topic" prop="topic">
             <el-input v-model.lazy="topicData.topic" :readonly="topicChecked" @change="getOnsInstanceByTopic">
               <el-button slot="append" :icon="topicChecked?'el-icon-success':'el-icon-warning'"
@@ -21,7 +18,8 @@
             </el-alert>
           </el-form-item>
           <el-form-item label="消息类型" prop="messageType">
-            <el-select v-model="topicData.messageType" placeholder="消息类型" :disabled="topicChecked" @change="dataChange">
+            <el-select v-model="topicData.messageType" placeholder="消息类型"
+                       :disabled="JSON.stringify(ticketEntries) !== '[]'">
               <el-option
                 v-for="item in messageTypeOptions"
                 :key="item.value"
@@ -37,6 +35,9 @@
               </el-link>
             </el-tooltip>
           </el-form-item>
+          <el-form-item label="申请说明" prop="remark">
+            <el-input v-model.trim="topicData.remark" @change="dataChange" :readonly="disabled"></el-input>
+          </el-form-item>
           <el-form-item label="已申请的实例">
             <el-tag v-for="item in topicData.nowInstanceList" :key="item.id" style="margin-left: 5px">
               {{ item.instanceName }}
@@ -45,7 +46,7 @@
           </el-form-item>
           <el-form-item label="可申请的实例" prop="instance" v-if="ticket.ticketPhase !== 'FINALIZED'">
             <el-select v-model="topicData.instance" placeholder="请选择实例" :disabled="disabled"
-                       value-key="instanceId" filterable v-if="instanceOptions.length !==0" @change="dataChange">
+                       value-key="instanceId" filterable v-if="instanceOptions.length !==0">
               <el-option
                 v-for="item in instanceOptions"
                 :key="item.id"
@@ -56,6 +57,8 @@
               </el-option>
             </el-select>
             <span v-else>该Topic目前无可申请的实例</span>
+            <el-button type="primary" size="mini" icon="el-icon-circle-plus-outline" plain
+                       @click="addTicketEntry()" style="margin-left: 10px"></el-button>
           </el-form-item>
           <el-form-item label="申请的实例" v-if="ticket.ticketPhase === 'FINALIZED'">
             <el-select v-model="topicData.instance" disabled>
@@ -67,10 +70,33 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="备注" prop="remark">
-            <el-input v-model.trim="topicData.remark" @change="dataChange" :readonly="disabled"></el-input>
-          </el-form-item>
         </el-form>
+        <el-divider content-position="left">工单详情</el-divider>
+        <el-table :data="ticketEntries" style="width: 100%" v-loading="configuring" element-loading-text="工单配置中"
+                  element-loading-spinner="el-icon-loading" >
+          <el-table-column prop="name" label="Topic"></el-table-column>
+          <el-table-column label="实例环境">
+            <template slot-scope="scope">
+              <span>{{ scope.row.instance.envName }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="消息类型">
+            <template slot-scope="scope">
+              <span>{{ scope.row.ticketEntry.messageType  | messageTypeFilters }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="描述">
+            <template slot-scope="scope">
+              <span>{{ scope.row.ticketEntry.remark }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="entryResult" label="执行结果" v-if="ticket.ticketPhase === 'FINALIZED'"></el-table-column>
+          <el-table-column fixed="right" label="操作" width="80" v-if="ticket.ticketPhase === 'CREATED_TICKET'">
+            <template slot-scope="scope">
+              <el-button type="danger" plain size="mini" @click="removeTicketEntry(scope.row)">移除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
         <el-divider></el-divider>
         <el-row :gutter="24" style="margin-top: 10px" v-if="ticket != '' && ticket.approvalDetail != null">
           <el-steps :active="ticket.approvalDetail.active" align-center>
@@ -82,8 +108,6 @@
       <el-divider></el-divider>
       <div slot="footer" class="dialog-footer">
         <span style="margin-right: 10px" v-if="formStatus.operationType !== 2">
-          <el-button type="primary" v-if="ticket.ticketPhase === 'CREATED_TICKET'" plain size="mini"
-                     @click="addTicketEntry">保存</el-button>
           <el-button type="primary" v-if="ticket.ticketPhase === 'CREATED_TICKET'" plain size="mini"
                      @click="submitTicket">提交</el-button>
           <el-button type="success" v-if="ticket.isInApproval" plain size="mini" @click="agreeTicket">同意</el-button>
@@ -100,8 +124,10 @@ import {
   addWorkorderTicketEntry,
   submitWorkorderTicket,
   agreeWorkorderTicket,
-  disagreeWorkorderTicket
-} from '@api/workorder/workorder.ticket.js'
+  disagreeWorkorderTicket,
+  delWorkorderTicketEntryById,
+  queryAliyunONSTicketByParam
+} from '@api/workorder/workorder.ticket'
 import { onsTopicCheckV2 } from '@api/cloud/aliyun.ons.topic'
 import { queryONSInstanceAll, queryOnsInstanceByTopic } from '@api/cloud/aliyun.ons.instance'
 
@@ -137,15 +163,11 @@ export default {
       ticketEntryOptions: [],
       instanceOptions: [],
       instanceAllOptions: [],
-      searchTicketEntryLoading: false,
-      ticketEntry: '',
-      loading: false,
       ticketEntries: [],
       topicData: topicData,
       topicChecked: false,
       configuring: false,
       disabled: false,
-      canSubmit: false,
       rules: {
         topic: [
           { required: true, message: '请输入Topic', trigger: 'blur' },
@@ -171,6 +193,23 @@ export default {
   filters: {
     instanceFilters (instance) {
       return instance.instanceName + '<' + instance.envName + '>'
+    },
+    messageTypeFilters (messageType) {
+      if (messageType === 0) {
+        return '普通消息'
+      }
+      if (messageType === 1) {
+        return '分区顺序消息'
+      }
+      if (messageType === 2) {
+        return '全局顺序消息'
+      }
+      if (messageType === 4) {
+        return '事务消息'
+      }
+      if (messageType === 5) {
+        return '定时/延时消息'
+      }
     }
   },
   methods: {
@@ -183,23 +222,13 @@ export default {
       if (ticket.workorder != null) {
         this.title = ticket.workorder.name
       }
-      if (ticket.ticketPhase === 'FINALIZED') {
-        this.getInstanceAll()
-      }
       if (JSON.stringify(ticket.ticketEntries) !== '[]') {
-        this.ticketEntries = ticket.ticketEntries
         this.topicData = {
           topic: ticket.ticketEntries[0].ticketEntry.topic.topic,
           messageType: ticket.ticketEntries[0].ticketEntry.topic.messageType,
-          instance: {
-            id: ticket.ticketEntries[0].businessId,
-            instanceId: ticket.ticketEntries[0].ticketEntry.topic.instanceId,
-            regionId: ticket.ticketEntries[0].ticketEntry.topic.regionId
-          },
           remark: ticket.ticketEntries[0].ticketEntry.topic.remark
         }
         this.getOnsInstanceByTopic(this.topicData.topic)
-        this.ticketEntry = Object.assign({}, ticket.ticketEntries[0])
       } else {
         this.topicData = Object.assign({}, topicData)
         this.ticketEntries = []
@@ -207,12 +236,11 @@ export default {
       if (this.formStatus.operationType === 0) {
         this.disabled = false
         this.topicChecked = false
-        this.canSubmit = false
       } else {
         this.disabled = true
         this.topicChecked = true
-        this.canSubmit = true
       }
+      this.getTicketAliyunONS()
     },
     getOnsInstanceByTopic (topic) {
       if (topic === 'TOPIC_') {
@@ -251,11 +279,11 @@ export default {
         return
       }
       if (JSON.stringify(this.topicData.instance) === '{}' || this.topicData.instance.id === null) {
-        this.$message.warning('请选择一个实例')
+        this.$message.warning('请选择至少一个申请实例')
         return
       }
-      if (!this.canSubmit) {
-        this.$message.warning('请先保存')
+      if (JSON.stringify(this.ticketEntries) === '[]') {
+        this.$message.warning('请选择至少一个申请实例')
         return
       }
       submitWorkorderTicket(this.ticket)
@@ -281,6 +309,10 @@ export default {
         })
     },
     addTicketEntry () {
+      if (!this.topicChecked) {
+        this.$message.warning('请先校验Topic')
+        return
+      }
       this.$refs.topicDataForm.validate((valid) => {
         if (valid) {
           let data = {
@@ -300,18 +332,36 @@ export default {
           addWorkorderTicketEntry(data)
             .then(res => {
               this.$message.success('保存成功')
-              this.canSubmit = true
+              this.getTicketAliyunONS()
             })
         }
       })
     },
-    dataChange () {
-      this.canSubmit = false
+    removeTicketEntry (ticketEntry) {
+      delWorkorderTicketEntryById(ticketEntry.id)
+        .then(res => {
+          // 返回数据
+          if (res.success) {
+            this.$message({
+              message: '移除成功',
+              type: 'success'
+            })
+            this.getTicketAliyunONS()
+          } else {
+            this.$message.error(res.msg)
+          }
+        })
     },
     getInstanceAll () {
       queryONSInstanceAll()
         .then(res => {
           this.instanceAllOptions = res.body
+        })
+    },
+    getTicketAliyunONS () {
+      queryAliyunONSTicketByParam(this.ticket.id)
+        .then(res => {
+          this.ticketEntries = res.body
         })
     }
   }

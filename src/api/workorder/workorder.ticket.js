@@ -152,3 +152,10 @@ export function queryUserTicketRAMPolicyPage (data) {
     data
   })
 }
+
+export function queryAliyunONSTicketByParam (id) {
+  return request({
+    url: '/workorder/ticket/aliyun/ons/query?id=' + id,
+    method: 'get'
+  })
+}
