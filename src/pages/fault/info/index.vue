@@ -99,7 +99,7 @@ import {
   queryFaultRootCauseTypePage,
   queryFaultInfoPage,
   delFaultInfo,
-  updateFaultInfoFinalized
+  updateFaultInfoFinalized, queryFaultInfo
 } from '@api/fault/fault.info.js'
 
 import util from '@/libs/util'
@@ -253,12 +253,15 @@ export default {
     editItem (card) {
       this.formFaultInfoStatus.visible = true
       this.formFaultInfoStatus.isUpdate = true
-      let data = Object.assign({}, card)
-      let faultDate = []
-      faultDate.push(card.startTime)
-      faultDate.push(card.endTime)
-      data.faultDate = faultDate
-      this.$refs.faultInfoDialog.initData(data)
+      queryFaultInfo(card.id)
+        .then(res => {
+          let data = Object.assign({}, res.body)
+          let faultDate = []
+          faultDate.push(card.startTime)
+          faultDate.push(card.endTime)
+          data.faultDate = faultDate
+          this.$refs.faultInfoDialog.initData(data)
+        })
     },
     handleDialogCancel (done) {
       this.$message({
