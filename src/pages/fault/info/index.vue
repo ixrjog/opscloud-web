@@ -251,8 +251,6 @@ export default {
       this.$refs.faultInfoDialog.initData(data)
     },
     editItem (card) {
-      this.formFaultInfoStatus.visible = true
-      this.formFaultInfoStatus.isUpdate = true
       queryFaultInfo(card.id)
         .then(res => {
           let data = Object.assign({}, res.body)
@@ -260,6 +258,8 @@ export default {
           faultDate.push(card.startTime)
           faultDate.push(card.endTime)
           data.faultDate = faultDate
+          this.formFaultInfoStatus.visible = true
+          this.formFaultInfoStatus.isUpdate = true
           this.$refs.faultInfoDialog.initData(data)
         })
     },
