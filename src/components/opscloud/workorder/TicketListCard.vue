@@ -25,142 +25,166 @@
       </el-collapse>
     </el-card>
     <doc-dialog ref="docDialog" :formStatus="formDocStatus"></doc-dialog>
-    <ticket-server-group-dialog ref="ticketServerGroupDialog" :formStatus="formServerGroupStatus" @closeDialog="fetchData"></ticket-server-group-dialog>
-    <ticket-user-group-dialog ref="ticketUserGroupDialog" :formStatus="formUserGroupStatus" @closeDialog="fetchData"></ticket-user-group-dialog>
-    <ticket-auth-role-dialog ref="ticketAuthRoleDialog" :formStatus="formAuthRoleStatus" @closeDialog="fetchData"></ticket-auth-role-dialog>
-    <ticket-ram-policy-dialog ref="ticketRAMPolicyDialog" :formStatus="formRAMPolicyStatus" @closeDialog="fetchData"></ticket-ram-policy-dialog>
-    <ticket-ons-topic-dialog ref="ticketOnsTopicDialog" :formStatus="formOnsTopicStatus" @closeDialog="fetchData"></ticket-ons-topic-dialog>
-    <ticket-ons-group-dialog ref="ticketOnsGroupDialog" :formStatus="formOnsGroupStatus" @closeDialog="fetchData"></ticket-ons-group-dialog>
+    <ticket-server-group-dialog ref="ticketServerGroupDialog" :formStatus="formServerGroupStatus"
+                                @closeDialog="fetchData"></ticket-server-group-dialog>
+    <ticket-user-group-dialog ref="ticketUserGroupDialog" :formStatus="formUserGroupStatus"
+                              @closeDialog="fetchData"></ticket-user-group-dialog>
+    <ticket-auth-role-dialog ref="ticketAuthRoleDialog" :formStatus="formAuthRoleStatus"
+                             @closeDialog="fetchData"></ticket-auth-role-dialog>
+    <ticket-ram-policy-dialog ref="ticketRAMPolicyDialog" :formStatus="formRAMPolicyStatus"
+                              @closeDialog="fetchData"></ticket-ram-policy-dialog>
+    <ticket-ons-topic-dialog ref="ticketOnsTopicDialog" :formStatus="formOnsTopicStatus"
+                             @closeDialog="fetchData"></ticket-ons-topic-dialog>
+    <ticket-ons-group-dialog ref="ticketOnsGroupDialog" :formStatus="formOnsGroupStatus"
+                             @closeDialog="fetchData"></ticket-ons-group-dialog>
+    <ticket-kafka-topic-dialog ref="ticketKafkaTopicDialog" :formStatus="formKafkaTopicStatus"
+                               @closeDialog="fetchData"></ticket-kafka-topic-dialog>
+    <ticket-kafka-group-dialog ref="ticketKafkaGroupDialog" :formStatus="formKafkaGroupStatus"
+                               @closeDialog="fetchData"></ticket-kafka-group-dialog>
   </div>
 </template>
 
 <script>
 
-  // doc
-  import DocDialog from '@/components/opscloud/doc/DocDialog.vue'
+// doc
+import DocDialog from '@/components/opscloud/doc/DocDialog.vue'
 
-  // Component
-  import TicketServerGroupDialog from '@/components/opscloud/workorder/TicketServerGroupDialog'
-  import TicketUserGroupDialog from '@/components/opscloud/workorder/TicketUserGroupDialog'
-  import TicketAuthRoleDialog from '@/components/opscloud/workorder/TicketAuthRoleDialog'
-  import TicketRamPolicyDialog from '@/components/opscloud/workorder/TicketRAMPolicyDialog'
-  import TicketOnsTopicDialog from '@/components/opscloud/workorder/TicketOnsTopicDialog'
-  import TicketOnsGroupDialog from '@/components/opscloud/workorder/TicketOnsGroupDialog'
+// Component
+import TicketServerGroupDialog from '@/components/opscloud/workorder/TicketServerGroupDialog'
+import TicketUserGroupDialog from '@/components/opscloud/workorder/TicketUserGroupDialog'
+import TicketAuthRoleDialog from '@/components/opscloud/workorder/TicketAuthRoleDialog'
+import TicketRamPolicyDialog from '@/components/opscloud/workorder/TicketRAMPolicyDialog'
+import TicketOnsTopicDialog from '@/components/opscloud/workorder/TicketOnsTopicDialog'
+import TicketOnsGroupDialog from '@/components/opscloud/workorder/TicketOnsGroupDialog'
 
-  import { queryWorkbenchWorkorderGroup } from '@api/workorder/workorder.group.js'
-  import { createWorkorderTicket } from '@api/workorder/workorder.ticket.js'
+import { queryWorkbenchWorkorderGroup } from '@api/workorder/workorder.group.js'
+import { createWorkorderTicket } from '@api/workorder/workorder.ticket.js'
 
-  import { queryDocById } from '@api/doc/doc.js'
+import { queryDocById } from '@api/doc/doc.js'
+import TicketKafkaTopicDialog from '@/components/opscloud/workorder/TicketKafkaTopicDialog'
+import TicketKafkaGroupDialog from '@/components/opscloud/workorder/TicketKafkaGroupDialog'
 
-  const defaultFormStatus = {
-    visible: false,
-    operationType: 0
-  }
+const defaultFormStatus = {
+  visible: false,
+  operationType: 0
+}
 
-  export default {
-    name: 'TicketListCard',
-    data () {
-      return {
-        formDocStatus: {
-          readMode: true, // 阅读模式
-          visible: false
-        },
-        activeNames: [0],
-        workorderGroups: [],
-        // operationType  0 编辑模式  1 审批模式  2 完成模式
-        formServerGroupStatus: Object.assign({}, defaultFormStatus),
-        formUserGroupStatus: Object.assign({}, defaultFormStatus),
-        formAuthRoleStatus: Object.assign({}, defaultFormStatus),
-        formRAMPolicyStatus: Object.assign({}, defaultFormStatus),
-        formOnsTopicStatus: Object.assign({}, defaultFormStatus),
-        formOnsGroupStatus: Object.assign({}, defaultFormStatus),
-        ticketCreateing: false,
-        ticketTableData: []
+export default {
+  name: 'TicketListCard',
+  data () {
+    return {
+      formDocStatus: {
+        readMode: true, // 阅读模式
+        visible: false
+      },
+      activeNames: [0],
+      workorderGroups: [],
+      // operationType  0 编辑模式  1 审批模式  2 完成模式
+      formServerGroupStatus: Object.assign({}, defaultFormStatus),
+      formUserGroupStatus: Object.assign({}, defaultFormStatus),
+      formAuthRoleStatus: Object.assign({}, defaultFormStatus),
+      formRAMPolicyStatus: Object.assign({}, defaultFormStatus),
+      formOnsTopicStatus: Object.assign({}, defaultFormStatus),
+      formOnsGroupStatus: Object.assign({}, defaultFormStatus),
+      formKafkaTopicStatus: Object.assign({}, defaultFormStatus),
+      formKafkaGroupStatus: Object.assign({}, defaultFormStatus),
+      ticketCreateing: false,
+      ticketTableData: []
+    }
+  },
+  mounted () {
+    this.getWorkorderGroup()
+  },
+  components: {
+    DocDialog,
+    TicketServerGroupDialog,
+    TicketUserGroupDialog,
+    TicketAuthRoleDialog,
+    TicketRamPolicyDialog,
+    TicketOnsTopicDialog,
+    TicketOnsGroupDialog,
+    TicketKafkaTopicDialog,
+    TicketKafkaGroupDialog
+  },
+  methods: {
+    getWorkorderGroup () {
+      queryWorkbenchWorkorderGroup()
+        .then(res => {
+          this.workorderGroups = res.body
+        })
+    },
+    handlerPreviewDoc (workorder) {
+      queryDocById(workorder.readmeId)
+        .then(res => {
+          // 返回数据
+          let doc = {
+            docContent: res.body.previewDoc
+          }
+          this.$refs.docDialog.initData(doc)
+          this.formDocStatus.visible = true
+        })
+    },
+    invokeWorkorderTicketStatus (formStatus) {
+      formStatus.visible = true
+      formStatus.operationType = 0
+    },
+    /**
+     * 创建工单票据
+     * @param workorder
+     */
+    createTicket (workorder) {
+      this.ticketCreateing = true
+      let requestParam = {
+        workorderKey: workorder.workorderKey
       }
+      createWorkorderTicket(requestParam)
+        .then(res => {
+          let ticket = res.body
+          ticket.workorder = workorder
+          switch (workorder.workorderKey) {
+            case 'SERVER_GROUP':
+              this.invokeWorkorderTicketStatus(this.formServerGroupStatus)
+              this.$refs.ticketServerGroupDialog.initData(ticket)
+              break
+            case 'USER_GROUP':
+              this.invokeWorkorderTicketStatus(this.formUserGroupStatus)
+              this.$refs.ticketUserGroupDialog.initData(ticket)
+              break
+            case 'AUTH_ROLE':
+              this.invokeWorkorderTicketStatus(this.formAuthRoleStatus)
+              this.$refs.ticketAuthRoleDialog.initData(ticket)
+              break
+            case 'RAM_POLICY':
+              this.invokeWorkorderTicketStatus(this.formRAMPolicyStatus)
+              this.$refs.ticketRAMPolicyDialog.initData(ticket)
+              break
+            case 'ALIYUN_ONS_TOPIC':
+              this.invokeWorkorderTicketStatus(this.formOnsTopicStatus)
+              this.$refs.ticketOnsTopicDialog.initData(ticket)
+              break
+            case 'ALIYUN_ONS_GROUP':
+              this.invokeWorkorderTicketStatus(this.formOnsGroupStatus)
+              this.$refs.ticketOnsGroupDialog.initData(ticket)
+              break
+            case 'KAFKA_TOPIC':
+              this.invokeWorkorderTicketStatus(this.formKafkaTopicStatus)
+              this.$refs.ticketKafkaTopicDialog.initData(ticket)
+              break
+            case 'KAFKA_GROUP':
+              this.invokeWorkorderTicketStatus(this.formKafkaGroupStatus)
+              this.$refs.ticketKafkaGroupDialog.initData(ticket)
+              break
+            default:
+              this.$message.error('工单类型错误或未配置!')
+          }
+          this.ticketCreateing = false
+        })
     },
-    mounted () {
-      this.getWorkorderGroup()
-    },
-    components: {
-      DocDialog,
-      TicketServerGroupDialog,
-      TicketUserGroupDialog,
-      TicketAuthRoleDialog,
-      TicketRamPolicyDialog,
-      TicketOnsTopicDialog,
-      TicketOnsGroupDialog
-    },
-    methods: {
-      getWorkorderGroup () {
-        queryWorkbenchWorkorderGroup()
-          .then(res => {
-            this.workorderGroups = res.body
-          })
-      },
-      handlerPreviewDoc (workorder) {
-        queryDocById(workorder.readmeId)
-          .then(res => {
-            // 返回数据
-            let doc = {
-              docContent: res.body.previewDoc
-            }
-            this.$refs.docDialog.initData(doc)
-            this.formDocStatus.visible = true
-          })
-      },
-      invokeWorkorderTicketStatus (formStatus) {
-        formStatus.visible = true
-        formStatus.operationType = 0
-      },
-      /**
-       * 创建工单票据
-       * @param workorder
-       */
-      createTicket (workorder) {
-        this.ticketCreateing = true
-        let requestParam = {
-          workorderKey: workorder.workorderKey
-        }
-        createWorkorderTicket(requestParam)
-          .then(res => {
-            let ticket = res.body
-            ticket.workorder = workorder
-            switch (workorder.workorderKey) {
-              case 'SERVER_GROUP':
-                this.invokeWorkorderTicketStatus(this.formServerGroupStatus)
-                this.$refs.ticketServerGroupDialog.initData(ticket)
-                break
-              case 'USER_GROUP':
-                this.invokeWorkorderTicketStatus(this.formUserGroupStatus)
-                this.$refs.ticketUserGroupDialog.initData(ticket)
-                break
-              case 'AUTH_ROLE':
-                this.invokeWorkorderTicketStatus(this.formAuthRoleStatus)
-                this.$refs.ticketAuthRoleDialog.initData(ticket)
-                break
-              case 'RAM_POLICY':
-                this.invokeWorkorderTicketStatus(this.formRAMPolicyStatus)
-                this.$refs.ticketRAMPolicyDialog.initData(ticket)
-                break
-              case 'ALIYUN_ONS_TOPIC':
-                this.invokeWorkorderTicketStatus(this.formOnsTopicStatus)
-                this.$refs.ticketOnsTopicDialog.initData(ticket)
-                break
-              case 'ALIYUN_ONS_GROUP':
-                this.invokeWorkorderTicketStatus(this.formOnsGroupStatus)
-                this.$refs.ticketOnsGroupDialog.initData(ticket)
-                break
-              default:
-                this.$message.error('工单类型错误或未配置!')
-            }
-            this.ticketCreateing = false
-          })
-      },
-      fetchData () {
-        this.$emit('handlerFetchData')
-      }
+    fetchData () {
+      this.$emit('handlerFetchData')
     }
   }
+}
 </script>
 
 <style scoped>

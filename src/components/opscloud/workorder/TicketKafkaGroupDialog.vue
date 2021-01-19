@@ -5,76 +5,39 @@
         <el-divider content-position="left" v-if="ticket.ticketPhase === 'CREATED_TICKET'">配置选项</el-divider>
         <el-form :model="groupData" ref="groupDataForm" :rules="rules" label-width="120px" class="demo-ruleForm"
                  v-if="ticket.ticketPhase === 'CREATED_TICKET'">
-          <el-form-item label="Group ID" prop="groupId">
-            <el-input v-model.lazy="groupData.groupId" :readonly="groupChecked" @change="getOnsInstanceByGroupId">
+          <el-form-item label="Consumer Group" prop="consumerId">
+            <el-input v-model.lazy="groupData.consumerId" :readonly="groupChecked">
               <el-button slot="append" :icon="groupChecked?'el-icon-success':'el-icon-warning'"
-                         @click="handlerCheck(groupData.groupId)" :disabled="groupChecked"></el-button>
+                         @click="handlerCheck(groupData.consumerId)" :disabled="groupChecked"></el-button>
             </el-input>
             <el-alert type="warning" show-icon :closable="false" style="margin-top: 10px">
-              <li>以 “GID_”开头，只能包含大写字母、数字和下划线（_）</li>
+              <li>以 “GID_”开头，只能包含大写字母和下划线（_）</li>
               <li>长度限制在 7~64 字符之间</li>
               <li>Group ID 一旦创建，则无法修改</li>
             </el-alert>
           </el-form-item>
-          <el-form-item label="协议类型" prop="groupType">
-            <el-select v-model="groupData.groupType" placeholder="消息类型" disabled>
-              <el-option
-                v-for="item in groupTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
           <el-form-item label="申请说明" prop="remark">
             <el-input v-model.trim="groupData.remark"></el-input>
           </el-form-item>
-          <el-form-item label="已申请的实例">
-            <el-tag v-for="item in groupData.nowInstanceList" :key="item.id" style="margin-left: 5px">
-              {{ item.instanceName }}
-            </el-tag>
-            <span v-if="JSON.stringify(groupData.nowInstanceList) === '[]'">该Group ID目前无已申请的实例</span>
-          </el-form-item>
-          <el-form-item label="可申请的实例" prop="instance" v-if="ticket.ticketPhase !== 'FINALIZED'">
-            <span v-if="instanceOptions.length !==0">
-              <el-select v-model="groupData.instance" placeholder="请选择实例" :disabled="disabled"
-                         value-key="instanceId" filterable>
-                <el-option
-                  v-for="item in instanceOptions"
-                  :key="item.id"
-                  :label="item.instanceName"
-                  :value="item">
-                <span style="float: left">{{ item|instanceFilters }}</span>
-                <span style="float: right; color: #8492a6; font-size: 10px;margin-left: 20px">{{ item.remark }}</span>
-                </el-option>
-            </el-select>
-            <el-button size="mini" plain @click="addTicketEntry()" style="margin-left: 10px">新增</el-button>
-            </span>
-            <span v-else>该Group ID目前无可申请的实例</span>
-          </el-form-item>
-          <el-form-item label="申请的实例" v-if="ticket.ticketPhase === 'FINALIZED'">
-            <el-select v-model="groupData.instance" disabled>
+          <el-form-item label="申请实例" prop="instance" v-if="ticket.ticketPhase !== 'FINALIZED'">
+            <el-select v-model="groupData.instance" placeholder="实例名称" value-key="instanceName">
               <el-option
-                v-for="item in instanceAllOptions"
-                :key="item.id"
-                :label="item.instanceName"
-                :value="item.id">
+                v-for="item in instanceOptions"
+                :key="item.instanceName"
+                :label="item.label"
+                :value="item">
               </el-option>
             </el-select>
+            <el-button size="mini" plain @click="addTicketEntry()" style="margin-left: 10px">新增</el-button>
           </el-form-item>
         </el-form>
         <el-divider content-position="left">工单详情</el-divider>
         <el-table :data="ticketEntries" style="width: 100%" v-loading="configuring" element-loading-text="工单配置中"
                   element-loading-spinner="el-icon-loading">
-          <el-table-column prop="name" label="Group ID"></el-table-column>
-          <el-table-column label="实例环境">
+          <el-table-column prop="name" label="Consumer Group"></el-table-column>
+          <el-table-column label="实例名称">
             <template slot-scope="scope">
-              <span>{{ scope.row.instance.envName }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="协议类型">
-            <template slot-scope="scope">
-              <span>{{ scope.row.ticketEntry.groupType }}</span>
+              <span>{{ scope.row.ticketEntry.instanceName }}</span>
             </template>
           </el-table-column>
           <el-table-column label="描述">
@@ -119,15 +82,12 @@ import {
   agreeWorkorderTicket,
   disagreeWorkorderTicket,
   delWorkorderTicketEntryById,
-  queryAliyunONSTicketByParam
+  queryUserTicketKafkaParam
 } from '@api/workorder/workorder.ticket'
 import { onsGroupCheckV2 } from '@api/cloud/aliyun.ons.group'
-import { queryOcInstanceByGroupId, queryONSInstanceAll } from '@api/cloud/aliyun.ons.instance'
 
 const groupData = {
-  groupType: 'tcp',
-  groupId: 'GID_',
-  nowInstanceList: [],
+  consumerId: 'GID_',
   instance: '',
   remark: ''
 }
@@ -137,24 +97,22 @@ export default {
     return {
       title: '',
       ticket: '',
-      groupTypeOptions: [{
-        value: 'tcp',
-        label: 'tcp'
+      instanceOptions: [{
+        id: 4,
+        instanceName: 'kafka-bigdata-prod',
+        label: '大数据专用-阿里云服务'
       }, {
-        value: 'http',
-        label: 'http'
+        id: 5,
+        instanceName: 'kafka-canal-prod',
+        label: '打点及canal-阿里云服务'
       }],
-      ticketEntryOptions: [],
-      instanceOptions: [],
-      instanceAllOptions: [],
       ticketEntries: [],
       groupData: groupData,
       groupChecked: false,
       configuring: false,
-      disabled: false,
       rules: {
-        groupId: [
-          { required: true, message: '请输入GroupId', trigger: 'blur' },
+        consumerGroup: [
+          { required: true, message: '请输入ConsumerGroup', trigger: 'blur' },
           { min: 3, max: 64, message: '长度在 7 到 64 个字符', trigger: 'blur' }
         ],
         instance: [
@@ -186,55 +144,33 @@ export default {
     },
     initData (ticket) {
       if (this.formStatus.operationType === 0) {
-        this.disabled = false
         this.groupChecked = false
       } else {
-        this.disabled = true
         this.groupChecked = true
       }
       this.ticket = ticket
       if (ticket.workorder != null) {
         this.title = ticket.workorder.name
       }
-      if (ticket.ticketPhase === 'FINALIZED') {
-        this.getInstanceAll()
-      }
       if (JSON.stringify(ticket.ticketEntries) !== '[]') {
         this.ticketEntries = ticket.ticketEntries
         this.groupData = {
-          groupId: ticket.ticketEntries[0].ticketEntry.group.groupId,
-          groupType: ticket.ticketEntries[0].ticketEntry.group.groupType,
+          consumerId: ticket.ticketEntries[0].ticketEntry.group.consumerId,
           remark: ticket.ticketEntries[0].ticketEntry.group.remark
         }
         this.groupChecked = true
-        this.getOnsInstanceByGroupId(this.groupData.groupId)
       } else {
         this.groupData = Object.assign({}, groupData)
         this.ticketEntries = []
       }
-      this.getTicketAliyunONS()
+      this.getTicketKafka()
     },
-    getOnsInstanceByGroupId (groupId) {
-      if (groupId === 'GID_') {
+    handlerCheck (consumerId) {
+      if (consumerId === '' || consumerId === 'GID_') {
+        this.$message.warning('请输入Consumer Group')
         return
       }
-      queryOcInstanceByGroupId(groupId)
-        .then(res => {
-          this.groupData.nowInstanceList = res.body.nowInstanceList
-          this.instanceOptions = res.body.selectInstanceList
-          if (JSON.stringify(this.groupData.nowInstanceList) !== '[]') {
-            this.groupChecked = true
-            this.groupData.groupType = res.body.group.groupType
-            this.groupData.remark = res.body.group.remark
-          }
-        })
-    },
-    handlerCheck (groupId) {
-      if (groupId === '' || groupId === 'GID_') {
-        this.$message.warning('请输入Group ID')
-        return
-      }
-      onsGroupCheckV2(groupId)
+      onsGroupCheckV2(consumerId)
         .then(res => {
           this.nameCheck = res.success
           if (this.nameCheck) {
@@ -247,11 +183,7 @@ export default {
     },
     submitTicket () {
       if (!this.groupChecked) {
-        this.$message.warning('请先校验Group ID')
-        return
-      }
-      if (JSON.stringify(this.groupData.instance) === '{}' || this.groupData.instance.id === null) {
-        this.$message.warning('请选择至少一个申请实例')
+        this.$message.warning('请先校验Consumer Group')
         return
       }
       if (JSON.stringify(this.ticketEntries) === '[]') {
@@ -282,29 +214,27 @@ export default {
     },
     addTicketEntry () {
       if (!this.groupChecked) {
-        this.$message.warning('请先校验Group ID')
+        this.$message.warning('请先校验Consumer Group')
         return
       }
       this.$refs.groupDataForm.validate((valid) => {
         if (valid) {
           let data = {
             'ticketEntry': {
-              'regionId': this.groupData.instance.regionId,
-              'instanceId': this.groupData.instance.instanceId,
-              'groupType': this.groupData.groupType,
-              'groupId': this.groupData.groupId.trim(),
+              'instanceName': this.groupData.instance.instanceName,
+              'consumerId': this.groupData.consumerId.trim(),
               'remark': this.groupData.remark
             },
             'workorderTicketId': this.ticket.id,
             'businessId': this.groupData.instance.id,
             'entryKey': this.ticket.workorder.workorderKey,
             'entryStatus': 0,
-            'name': this.groupData.groupId
+            'name': this.groupData.consumerId
           }
           addWorkorderTicketEntry(data)
             .then(res => {
               this.$message.success('保存成功')
-              this.getTicketAliyunONS()
+              this.getTicketKafka()
             })
         }
       })
@@ -318,20 +248,14 @@ export default {
               message: '移除成功',
               type: 'success'
             })
-            this.getTicketAliyunONS()
+            this.getTicketKafka()
           } else {
             this.$message.error(res.msg)
           }
         })
     },
-    getInstanceAll () {
-      queryONSInstanceAll()
-        .then(res => {
-          this.instanceAllOptions = res.body
-        })
-    },
-    getTicketAliyunONS () {
-      queryAliyunONSTicketByParam(this.ticket.id)
+    getTicketKafka () {
+      queryUserTicketKafkaParam(this.ticket.id)
         .then(res => {
           this.ticketEntries = res.body
         })

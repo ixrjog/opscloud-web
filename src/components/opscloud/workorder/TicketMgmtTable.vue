@@ -5,18 +5,18 @@
         <el-input v-model.trim="queryParam.username" placeholder="输入用户名" class="input"/>
         <el-select v-model="queryParam.ticketPhase" clearable placeholder="阶段" class="select">
           <el-option
-              v-for="item in ticketPhaseOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
+            v-for="item in ticketPhaseOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
           </el-option>
         </el-select>
         <el-select v-model="queryParam.ticketStatus" clearable placeholder="状态" class="select">
           <el-option
-              v-for="item in ticketStatusOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
+            v-for="item in ticketStatusOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
           </el-option>
         </el-select>
         <el-button @click="fetchData" class="botton">查询</el-button>
@@ -79,6 +79,10 @@
                              @closeDialog="fetchData"></ticket-ons-topic-dialog>
     <ticket-ons-group-dialog ref="ticketOnsGroupDialog" :formStatus="formOnsGroupStatus"
                              @closeDialog="fetchData"></ticket-ons-group-dialog>
+    <ticket-kafka-topic-dialog ref="ticketKafkaTopicDialog" :formStatus="formKafkaTopicStatus"
+                               @closeDialog="fetchData"></ticket-kafka-topic-dialog>
+    <ticket-kafka-group-dialog ref="ticketKafkaGroupDialog" :formStatus="formKafkaGroupStatus"
+                               @closeDialog="fetchData"></ticket-kafka-group-dialog>
   </div>
 </template>
 
@@ -89,12 +93,18 @@ import TicketAuthRoleDialog from '@/components/opscloud/workorder/TicketAuthRole
 import TicketRamPolicyDialog from '@/components/opscloud/workorder/TicketRAMPolicyDialog'
 import TicketOnsTopicDialog from '@/components/opscloud/workorder/TicketOnsTopicDialog'
 import TicketOnsGroupDialog from '@/components/opscloud/workorder/TicketOnsGroupDialog'
-
+import TicketKafkaTopicDialog from '@/components/opscloud/workorder/TicketKafkaTopicDialog'
+import TicketKafkaGroupDialog from '@/components/opscloud/workorder/TicketKafkaGroupDialog'
 // Filters
 import { getPhaseText, getPhaseType } from '@/filters/ticket.js'
 
 // API
 import { queryWorkorderTicketPage, delWorkorderTicketById } from '@api/workorder/workorder.ticket.js'
+
+const defaultFormStatus = {
+  visible: false,
+  operationType: 1
+}
 
 export default {
   name: 'TicketMgmtTable',
@@ -102,30 +112,14 @@ export default {
     return {
       tableData: [],
       role: {},
-      formServerGroupStatus: {
-        visible: false,
-        operationType: 1
-      },
-      formUserGroupStatus: {
-        visible: false,
-        operationType: 1
-      },
-      formAuthRoleStatus: {
-        visible: false,
-        operationType: 1
-      },
-      formRAMPolicyStatus: {
-        visible: false,
-        operationType: 0
-      },
-      formOnsTopicStatus: {
-        visible: false,
-        operationType: 0
-      },
-      formOnsGroupStatus: {
-        visible: false,
-        operationType: 0
-      },
+      formServerGroupStatus: Object.assign({}, defaultFormStatus),
+      formUserGroupStatus: Object.assign({}, defaultFormStatus),
+      formAuthRoleStatus: Object.assign({}, defaultFormStatus),
+      formRAMPolicyStatus: Object.assign({}, defaultFormStatus),
+      formOnsTopicStatus: Object.assign({}, defaultFormStatus),
+      formOnsGroupStatus: Object.assign({}, defaultFormStatus),
+      formKafkaTopicStatus: Object.assign({}, defaultFormStatus),
+      formKafkaGroupStatus: Object.assign({}, defaultFormStatus),
       loading: false,
       pagination: {
         currentPage: 1,
@@ -176,7 +170,9 @@ export default {
     TicketAuthRoleDialog,
     TicketRamPolicyDialog,
     TicketOnsTopicDialog,
-    TicketOnsGroupDialog
+    TicketOnsGroupDialog,
+    TicketKafkaTopicDialog,
+    TicketKafkaGroupDialog
   },
   filters: {
     getPhaseText,
@@ -185,17 +181,17 @@ export default {
   methods: {
     delTicket (id) {
       delWorkorderTicketById(id)
-          .then(res => {
-            if (res.success) {
-              this.$message({
-                type: 'success',
-                message: '删除成功!'
-              })
-              this.fetchData()
-            } else {
-              this.$message.error(res.msg)
-            }
-          })
+        .then(res => {
+          if (res.success) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.fetchData()
+          } else {
+            this.$message.error(res.msg)
+          }
+        })
     },
     previewTicket (ticket) {
       this.operationTicket(ticket, 2)
@@ -238,6 +234,16 @@ export default {
           this.formOnsGroupStatus.operationType = operationType
           this.$refs.ticketOnsGroupDialog.initData(ticket)
           break
+        case 'KAFKA_TOPIC':
+          this.formKafkaTopicStatus.visible = true
+          this.formKafkaTopicStatus.operationType = operationType
+          this.$refs.ticketKafkaTopicDialog.initData(ticket)
+          break
+        case 'KAFKA_GROUP':
+          this.formKafkaGroupStatus.visible = true
+          this.formKafkaGroupStatus.operationType = operationType
+          this.$refs.ticketKafkaGroupDialog.initData(ticket)
+          break
         default:
           this.$message.error('工单类型错误或未配置!')
       }
@@ -252,11 +258,11 @@ export default {
       requestBody.page = this.pagination.currentPage
       requestBody.length = this.pagination.pageSize
       queryWorkorderTicketPage(requestBody)
-          .then(res => {
-            this.tableData = res.body.data
-            this.pagination.total = res.body.totalNum
-            this.loading = false
-          })
+        .then(res => {
+          this.tableData = res.body.data
+          this.pagination.total = res.body.totalNum
+          this.loading = false
+        })
     }
   }
 }

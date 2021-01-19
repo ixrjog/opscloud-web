@@ -31,8 +31,9 @@
         </el-select>
         <el-input v-model.trim="newRootCauseType" class="input" placeholder="新增原因归类"></el-input>
         <el-tooltip class="item" effect="dark" content="新增原因归类" placement="top-start">
-          <el-button type="primary" size="mini" icon="el-icon-circle-plus-outline" plain
-                     :disabled="newRootCauseType ===''" @click="addCauseType()" style="margin-left: 10px"></el-button>
+          <el-button size="mini" plain :disabled="newRootCauseType ===''" @click="addCauseType()"
+                     style="margin-left: 10px">新增
+          </el-button>
         </el-tooltip>
       </el-form-item>
       <el-form-item label="故障时间" required>
@@ -67,8 +68,7 @@
       </el-form-item>
       <el-form-item label="解决方案">
         <el-tooltip class="item" effect="dark" content="新增解决方案" placement="top-start">
-          <el-button type="primary" size="mini" icon="el-icon-circle-plus-outline" plain
-                     @click="handlerAddAction()"></el-button>
+          <el-button size="mini" plain @click="handlerAddAction()">新增</el-button>
         </el-tooltip>
       </el-form-item>
       <div style="margin-left: 60px">

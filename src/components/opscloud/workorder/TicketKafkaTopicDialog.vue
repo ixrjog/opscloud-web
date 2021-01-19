@@ -7,81 +7,48 @@
                  v-loading="configuring" element-loading-text="工单配置中"
                  element-loading-spinner="el-icon-loading" v-if="ticket.ticketPhase === 'CREATED_TICKET'">
           <el-form-item label="Topic" prop="topic">
-            <el-input v-model.lazy="topicData.topic" :readonly="topicChecked" @change="getOnsInstanceByTopic">
+            <el-input v-model.lazy="topicData.topic" :readonly="topicChecked">
               <el-button slot="append" :icon="topicChecked?'el-icon-success':'el-icon-warning'"
                          @click="handlerCheck(topicData.topic)" :disabled="topicChecked"></el-button>
             </el-input>
             <el-alert type="warning" show-icon :closable="false" style="margin-top: 10px">
-              <li>Topic只能以 “TOPIC_”开头，包含大写英文、数字和下划线（_）</li>
+              <li>Topic只能以 “TOPIC_”开头，包含大写英文和下划线（_）</li>
               <li>长度限制在3~64个字符之间</li>
               <li>Topic一旦创建，则无法修改</li>
             </el-alert>
           </el-form-item>
-          <el-form-item label="消息类型" prop="messageType">
-            <el-select v-model="topicData.messageType" placeholder="消息类型"
-                       :disabled="JSON.stringify(ticketEntries) !== '[]'">
-              <el-option
-                v-for="item in messageTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-            <el-tooltip class="item" effect="dark" content="消息类型概述，点击查看" placement="right">
-              <el-link
-                href="https://help.aliyun.com/document_detail/172114.html?spm=5176.11065259.1996646101.searchclickresult.38ad6704oBWYjo"
-                :underline="false" target="_blank">
-                <i class="el-icon-info" style="margin-left: 5px;height: 200%"></i>
-              </el-link>
-            </el-tooltip>
-          </el-form-item>
           <el-form-item label="申请说明" prop="remark">
             <el-input v-model.trim="topicData.remark"></el-input>
           </el-form-item>
-          <el-form-item label="已申请的实例">
-            <el-tag v-for="item in topicData.nowInstanceList" :key="item.id" style="margin-left: 5px">
-              {{ item.instanceName }}
-            </el-tag>
-            <span v-if="JSON.stringify(topicData.nowInstanceList) === '[]'">该Topic目前无已申请的实例</span>
-          </el-form-item>
-          <el-form-item label="可申请的实例" prop="instance" v-if="ticket.ticketPhase !== 'FINALIZED'">
-            <el-select v-model="topicData.instance" placeholder="请选择实例" :disabled="disabled"
-                       value-key="instanceId" filterable v-if="instanceOptions.length !==0">
+          <el-form-item label="申请实例" prop="instance" v-if="ticket.ticketPhase !== 'FINALIZED'">
+            <el-select v-model="topicData.instance" placeholder="实例名称" value-key="instanceName"
+                       @change="handlerChange()">
               <el-option
                 v-for="item in instanceOptions"
-                :key="item.id"
-                :label="item.instanceName"
+                :key="item.instanceName"
+                :label="item.label"
                 :value="item">
-                <span style="float: left">{{ item|instanceFilters }}</span>
-                <span style="float: right; color: #8492a6; font-size: 10px;margin-left: 20px">{{ item.remark }}</span>
               </el-option>
             </el-select>
-            <span v-else>该Topic目前无可申请的实例</span>
             <el-button size="mini" plain @click="addTicketEntry()" style="margin-left: 10px">新增</el-button>
           </el-form-item>
-          <el-form-item label="申请的实例" v-if="ticket.ticketPhase === 'FINALIZED'">
-            <el-select v-model="topicData.instance" disabled>
-              <el-option
-                v-for="item in instanceAllOptions"
-                :key="item.id"
-                :label="item.instanceName"
-                :value="item.id">
-              </el-option>
-            </el-select>
+          <el-form-item label="Partition">
+            <el-input-number v-model="topicData.partitionNum" :step="partitionStep" step-strictly
+                             :disabled="topicData.instance === ''"></el-input-number>
           </el-form-item>
         </el-form>
         <el-divider content-position="left">工单详情</el-divider>
         <el-table :data="ticketEntries" style="width: 100%" v-loading="configuring" element-loading-text="工单配置中"
                   element-loading-spinner="el-icon-loading">
           <el-table-column prop="name" label="Topic"></el-table-column>
-          <el-table-column label="实例环境">
+          <el-table-column label="实例名称">
             <template slot-scope="scope">
-              <span>{{ scope.row.instance.envName }}</span>
+              <span>{{ scope.row.ticketEntry.instanceName }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="消息类型">
+          <el-table-column label="partition">
             <template slot-scope="scope">
-              <span>{{ scope.row.ticketEntry.messageType  | messageTypeFilters }}</span>
+              <span>{{ scope.row.ticketEntry.partitionNum }}</span>
             </template>
           </el-table-column>
           <el-table-column label="描述">
@@ -125,15 +92,13 @@ import {
   agreeWorkorderTicket,
   disagreeWorkorderTicket,
   delWorkorderTicketEntryById,
-  queryAliyunONSTicketByParam
+  queryUserTicketKafkaParam
 } from '@api/workorder/workorder.ticket'
-import { onsTopicCheckV2 } from '@api/cloud/aliyun.ons.topic'
-import { queryONSInstanceAll, queryOnsInstanceByTopic } from '@api/cloud/aliyun.ons.instance'
+import { kafkaTopicCheck } from '@api/kafka/kafka.topic'
 
 const topicData = {
   topic: 'TOPIC_',
-  messageType: 0,
-  nowInstanceList: [],
+  partitionNum: 0,
   instance: '',
   remark: ''
 }
@@ -143,40 +108,44 @@ export default {
     return {
       title: '',
       ticket: '',
-      messageTypeOptions: [{
-        value: 0,
-        label: '普通消息'
+      partitionStep: 3,
+      instanceOptions: [{
+        id: 1,
+        instanceName: 'kafka-dev',
+        partitionStep: 3,
+        label: 'dev环境-自建'
       }, {
-        value: 1,
-        label: '分区顺序消息'
+        id: 2,
+        instanceName: 'kafka-daily',
+        partitionStep: 3,
+        label: 'daily环境-自建'
       }, {
-        value: 2,
-        label: '全局顺序消息'
+        id: 3,
+        instanceName: 'kafka-gray',
+        partitionStep: 3,
+        label: 'gray环境-自建'
       }, {
-        value: 4,
-        label: '事务消息'
+        id: 4,
+        instanceName: 'kafka-bigdata-prod',
+        partitionStep: 6,
+        label: '大数据专用-阿里云服务'
       }, {
-        value: 5,
-        label: '定时/延时消息'
+        id: 5,
+        instanceName: 'kafka-canal-prod',
+        partitionStep: 6,
+        label: '打点及canal-阿里云服务'
       }],
-      ticketEntryOptions: [],
-      instanceOptions: [],
-      instanceAllOptions: [],
       ticketEntries: [],
       topicData: topicData,
       topicChecked: false,
       configuring: false,
-      disabled: false,
       rules: {
         topic: [
           { required: true, message: '请输入Topic', trigger: 'blur' },
           { min: 3, max: 64, message: '长度在 3 到 64 个字符', trigger: 'blur' }
         ],
         instance: [
-          { required: true, message: '请选择MQ实例', trigger: 'change' }
-        ],
-        messageType: [
-          { required: true, message: '请选择消息类型', trigger: 'change' }
+          { required: true, message: '请选择实例', trigger: 'change' }
         ],
         remark: [
           { required: true, message: '请输入备注，例如：用户领券消息', trigger: 'blur' }
@@ -187,29 +156,9 @@ export default {
   mounted () {
   },
   components: {},
-  name: 'TicketAliyunOnsTopicDialog',
+  name: 'TicketKafkaTopicDialog',
   props: ['formStatus'],
   filters: {
-    instanceFilters (instance) {
-      return instance.instanceName + '<' + instance.envName + '>'
-    },
-    messageTypeFilters (messageType) {
-      if (messageType === 0) {
-        return '普通消息'
-      }
-      if (messageType === 1) {
-        return '分区顺序消息'
-      }
-      if (messageType === 2) {
-        return '全局顺序消息'
-      }
-      if (messageType === 4) {
-        return '事务消息'
-      }
-      if (messageType === 5) {
-        return '定时/延时消息'
-      }
-    }
   },
   methods: {
     closeDialog () {
@@ -218,10 +167,8 @@ export default {
     },
     initData (ticket) {
       if (this.formStatus.operationType === 0) {
-        this.disabled = false
         this.topicChecked = false
       } else {
-        this.disabled = true
         this.topicChecked = true
       }
       this.ticket = ticket
@@ -229,40 +176,24 @@ export default {
         this.title = ticket.workorder.name
       }
       if (JSON.stringify(ticket.ticketEntries) !== '[]') {
+        this.ticketEntries = ticket.ticketEntries
         this.topicData = {
           topic: ticket.ticketEntries[0].ticketEntry.topic.topic,
-          messageType: ticket.ticketEntries[0].ticketEntry.topic.messageType,
           remark: ticket.ticketEntries[0].ticketEntry.topic.remark
         }
         this.topicChecked = true
-        this.getOnsInstanceByTopic(this.topicData.topic)
       } else {
         this.topicData = Object.assign({}, topicData)
         this.ticketEntries = []
       }
-      this.getTicketAliyunONS()
-    },
-    getOnsInstanceByTopic (topic) {
-      if (topic === 'TOPIC_') {
-        return
-      }
-      queryOnsInstanceByTopic(topic)
-        .then(res => {
-          this.topicData.nowInstanceList = res.body.nowInstanceList
-          this.instanceOptions = res.body.selectInstanceList
-          if (JSON.stringify(this.topicData.nowInstanceList) !== '[]') {
-            this.topicChecked = true
-            this.topicData.messageType = res.body.topic.messageType
-            this.topicData.remark = res.body.topic.remark
-          }
-        })
+      this.getTicketKafka()
     },
     handlerCheck (topic) {
       if (topic === '' || topic === 'TOPIC_') {
         this.$message.warning('请输入Topic')
         return
       }
-      onsTopicCheckV2(topic)
+      kafkaTopicCheck(topic)
         .then(res => {
           this.nameCheck = res.success
           if (this.nameCheck) {
@@ -276,10 +207,6 @@ export default {
     submitTicket () {
       if (!this.topicChecked) {
         this.$message.warning('请先校验Topic')
-        return
-      }
-      if (JSON.stringify(this.topicData.instance) === '{}' || this.topicData.instance.id === null) {
-        this.$message.warning('请选择至少一个申请实例')
         return
       }
       if (JSON.stringify(this.ticketEntries) === '[]') {
@@ -313,14 +240,17 @@ export default {
         this.$message.warning('请先校验Topic')
         return
       }
+      if (!(this.topicData.partitionNum > 0)) {
+        this.$message.warning('partition必须大于0')
+        return
+      }
       this.$refs.topicDataForm.validate((valid) => {
         if (valid) {
           let data = {
             'ticketEntry': {
-              'regionId': this.topicData.instance.regionId,
-              'instanceId': this.topicData.instance.instanceId,
-              'messageType': this.topicData.messageType,
+              'instanceName': this.topicData.instance.instanceName,
               'topic': this.topicData.topic.trim(),
+              'partitionNum': this.topicData.partitionNum,
               'remark': this.topicData.remark
             },
             'workorderTicketId': this.ticket.id,
@@ -332,7 +262,7 @@ export default {
           addWorkorderTicketEntry(data)
             .then(res => {
               this.$message.success('保存成功')
-              this.getTicketAliyunONS()
+              this.getTicketKafka()
             })
         }
       })
@@ -346,20 +276,18 @@ export default {
               message: '移除成功',
               type: 'success'
             })
-            this.getTicketAliyunONS()
+            this.getTicketKafka()
           } else {
             this.$message.error(res.msg)
           }
         })
     },
-    getInstanceAll () {
-      queryONSInstanceAll()
-        .then(res => {
-          this.instanceAllOptions = res.body
-        })
+    handlerChange () {
+      this.partitionStep = this.topicData.instance.partitionStep
+      this.topicData.partitionNum = 0
     },
-    getTicketAliyunONS () {
-      queryAliyunONSTicketByParam(this.ticket.id)
+    getTicketKafka () {
+      queryUserTicketKafkaParam(this.ticket.id)
         .then(res => {
           this.ticketEntries = res.body
         })
