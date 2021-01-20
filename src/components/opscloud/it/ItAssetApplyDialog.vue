@@ -18,7 +18,7 @@
       </el-form-item>
       <el-form-item label="领用人" prop="userId" required>
         <el-select v-model="assetApplyData.userId" filterable remote reserve-keyword placeholder="搜索用户"
-                   :remote-method="getUser">
+                   :remote-method="getUser" @change="getUserOrgList">
           <el-option
             v-for="user in userOptions"
             :key="user.id"
@@ -28,6 +28,18 @@
             <span style="float: right; color: #8492a6; font-size: 10px;margin-left: 20px">{{ user.email }}</span>
           </el-option>
         </el-select>
+        <span v-for="(value,key) in orgDeptMap" :key="key" :label="key">
+          <el-popover
+            placement="top"
+            trigger="hover">
+            <el-breadcrumb separator="/">
+              <el-breadcrumb-item v-for="item in value" :key="item.id">
+                {{ item.name }}
+              </el-breadcrumb-item>
+            </el-breadcrumb>
+            <span slot="reference" style="margin-left: 10px">{{ key }}</span>
+          </el-popover>
+        </span>
       </el-form-item>
       <el-form-item label="使用部门" prop="userOrgDeptId" required>
         <el-select v-model="assetApplyData.userOrgDeptId" filterable remote reserve-keyword placeholder="搜索部门"
@@ -62,7 +74,7 @@
 // API
 import { applyAsset } from '@api/it/it.asset'
 import { fuzzyQueryUserPage } from '@api/user/user'
-import { queryFirstLevelDepartmentPage } from '@api/org/org'
+import { queryFirstLevelDepartmentPage, queryOrgByUser } from '@api/org/org'
 import { updateAssetApply } from '@api/it/it.asset.apply'
 
 const assetApplyData = {
@@ -95,7 +107,8 @@ export default {
         userOrgDeptId: [
           { required: true, message: '请选择部门', trigger: 'change' }
         ]
-      }
+      },
+      orgDeptMap: ''
     }
   },
   name: 'ItAssetApplyDialog',
@@ -135,6 +148,7 @@ export default {
         this.assetApplyData.assetId = data.id
         this.assetApplyData.assetCode = data.assetCode
       }
+      this.orgDeptMap = ''
     },
     getUser (queryName) {
       let requestBody = {
@@ -146,6 +160,12 @@ export default {
       fuzzyQueryUserPage(requestBody)
         .then(res => {
           this.userOptions = res.body.data
+        })
+    },
+    getUserOrgList (id) {
+      queryOrgByUser(id)
+        .then(res => {
+          this.orgDeptMap = res.body
         })
     },
     getOrgDept (queryName) {
