@@ -129,3 +129,10 @@ export function checkUsername (username) {
     method: 'get'
   })
 }
+
+export function queryUserDetailByUsername (username) {
+  return request({
+    url: '/user/detail/query?username=' + username,
+    method: 'get'
+  })
+}
