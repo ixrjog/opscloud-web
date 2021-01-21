@@ -69,3 +69,11 @@ export function queryFaultInfoMonthStats (year) {
     method: 'get'
   })
 }
+
+export function queryFaultActionPage (data) {
+  return request({
+    url: baseURL + '/action/page/query',
+    method: 'post',
+    data
+  })
+}

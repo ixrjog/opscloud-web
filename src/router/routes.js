@@ -649,6 +649,15 @@ const frameIn = [
         }
       },
       {
+        path: '/fault/action',
+        name: 'fault-action',
+        component: () => import('@/pages/fault/action/index'),
+        meta: {
+          auth: true,
+          title: '故障Action'
+        }
+      },
+      {
         path: '/fault/info/detail',
         name: 'fault-info-detail',
         component: () => import('@/pages/fault/info/detail/index'),
