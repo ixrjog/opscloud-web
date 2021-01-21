@@ -22,20 +22,20 @@
       <el-table-column label="关联监听">
         <template slot-scope="scope">
           <div v-for="item in scope.row.aclListenerList" :key="item.id">
-            <el-tooltip effect="dark" content="白名单" placement="left">
-              <img v-show="item.slbAclType === 'white'" style="margin-left: 5px;width: 15px"
-                :src="whiteListImageUrl">
+            <el-tag style="margin-left: 5px">{{ item | listenerFilters }}</el-tag>
+            <el-tooltip effect="dark" content="白名单" placement="right">
+              <img v-show="item.slbAclType === 'white'" style="margin-left: 5px;width: 12px"
+                   :src="whiteListImageUrl">
             </el-tooltip>
-            <el-tooltip effect="dark" content="黑名单" placement="left">
-              <img v-show="item.slbAclType === 'black'" style="margin-left: 5px;width: 15px"
+            <el-tooltip effect="dark" content="黑名单" placement="right">
+              <img v-show="item.slbAclType === 'black'" style="margin-left: 5px;width: 12px"
                    :src="blackListImageUrl">
             </el-tooltip>
-            <el-tag style="margin-left: 5px">{{ item | listenerFilters }}</el-tag>
           </div>
         </template>
       </el-table-column>
       <el-table-column prop="addressIpVersion" label="IP地址类型"></el-table-column>
-      <el-table-column fixed="right" label="操作" width="100">
+      <el-table-column fixed="right" label="操作" width="180">
         <template slot-scope="scope">
           <el-button type="primary" plain size="mini" @click="getACLEntry(scope.row)">查询条目</el-button>
         </template>

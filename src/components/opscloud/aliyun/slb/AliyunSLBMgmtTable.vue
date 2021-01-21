@@ -61,16 +61,6 @@
           <div v-for="item in scope.row.listenerList" :key="item.id">
             <el-row>
               <el-col :span="12">
-                <span v-if="item.accessControlListener !== null">
-                  <el-tooltip effect="dark" :content="getAclName(item.accessControlListener)" placement="left">
-                    <img v-if="item.accessControlListener.slbAclType === 'white'" :src="whiteListImageUrl"
-                         style="width: 15px;margin-left: 5px">
-                  </el-tooltip>
-                  <el-tooltip effect="dark" :content="getAclName(item.accessControlListener)" placement="left">
-                    <img v-if="item.accessControlListener.slbAclType === 'black'" :src="blackListImageUrl"
-                         style="width: 15px;margin-left: 5px">
-                  </el-tooltip>
-                </span>
                 <span v-if="item.httpsListenerList === null">
                   <el-tag style="margin-left: 5px">{{ item | listenerFilters }}</el-tag>
                 </span>
@@ -88,6 +78,16 @@
                      </el-table>
                      <el-tag style="margin-left: 5px" slot="reference">{{ item | listenerFilters }}</el-tag>
                    </el-popover>
+                </span>
+                <span v-if="item.accessControlListener !== null">
+                  <el-tooltip effect="dark" :content="getAclName(item.accessControlListener)" placement="right">
+                    <img v-if="item.accessControlListener.slbAclType === 'white'" :src="whiteListImageUrl"
+                         style="width: 12px;margin-left: 5px">
+                  </el-tooltip>
+                  <el-tooltip effect="dark" :content="getAclName(item.accessControlListener)" placement="right">
+                    <img v-if="item.accessControlListener.slbAclType === 'black'" :src="blackListImageUrl"
+                         style="width: 12px;margin-left: 5px">
+                  </el-tooltip>
                 </span>
               </el-col>
               <el-col :span="12" v-if="item.listenerForward === 'on'">
