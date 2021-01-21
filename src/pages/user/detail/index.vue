@@ -41,6 +41,20 @@
           <el-col :span="16">
 
             <el-card class="box-card" shadow="never">
+              <div slot="header" class="clearfix">资产</div>
+              <el-table :data="formUserDetail.assets" style="width: 100%">
+                <el-table-column prop="assetCode" label="资产编码">
+                  <template slot-scope="props">
+                    <span style="color: #20a9d9">{{ props.row.assetCode }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="assetName" label="资产名称"></el-table-column>
+                <el-table-column prop="useTime" label="领用日期"></el-table-column>
+                <el-table-column prop="remark" label="备注"></el-table-column>
+              </el-table>
+            </el-card>
+
+            <el-card class="box-card" shadow="never" style="margin-top: 10px">
               <div slot="header" class="clearfix">用户组<i class="header-icon el-icon-info"></i>(角色授权)</div>
               <div class="tag-group">
                    <span v-for="item in formUserDetail.userGroups" :key="item.id">
@@ -183,7 +197,7 @@
           labelWidth: '100px',
           title: '编辑SSH公钥'
         },
-        labelWidth: '100px',
+        labelWidth: '80px',
         loading: false,
         pagination: {
           currentPage: 1,
