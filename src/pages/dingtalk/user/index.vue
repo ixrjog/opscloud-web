@@ -8,9 +8,7 @@
         <el-row :gutter="24" style="margin-bottom: 5px">
           <el-input v-model.trim="queryParam.queryName" placeholder="输入关键字查询" class="searchBarStyle"/>
           <el-button @click="fetchData" class="searchBarStyle">查询</el-button>
-          <el-popconfirm
-            title="确定全量同步用户吗？" @onConfirm="handlerSync"
-          >
+          <el-popconfirm title="确定全量同步用户吗？" @onConfirm="handlerSync">
             <el-button slot="reference" class="searchBarStyle" :loading="syncLoading" :disabled="syncLoading"
                        size="mini">同步
             </el-button>

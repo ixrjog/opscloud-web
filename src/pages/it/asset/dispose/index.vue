@@ -190,7 +190,7 @@ export default {
 .input {
   display: inline-block;
   max-width: 200px;
-  margin-right: 5px;
+  margin-left: 10px;
 }
 
 .select {

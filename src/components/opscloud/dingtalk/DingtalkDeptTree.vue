@@ -2,9 +2,7 @@
   <div>
     <el-card class="box-card" shadow="hover">
       <el-row>
-        <el-popconfirm
-          title="确定全量同步部门吗？" @onConfirm="handlerSync"
-        >
+        <el-popconfirm title="确定全量同步部门吗？" @onConfirm="handlerSync">
           <el-button slot="reference" :loading="syncLoading" :disabled="syncLoading" size="mini">同步
           </el-button>
         </el-popconfirm>

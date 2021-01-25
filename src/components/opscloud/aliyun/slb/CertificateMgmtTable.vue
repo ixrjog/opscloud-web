@@ -37,9 +37,7 @@
               </el-col>
               <el-col :span="6" v-show="scope.row.updateServerCertificateName !== null">
                 <el-tooltip effect="dark" content="更换" placement="right">
-                  <el-popconfirm
-                    title="确定更换证书吗？" @onConfirm="handlerReplace(item,scope.row)"
-                  >
+                  <el-popconfirm title="确定更换证书吗？" @onConfirm="handlerReplace(item,scope.row)">
                     <el-button slot="reference" type="success" plain icon="fa fa-level-up" size="mini"></el-button>
                   </el-popconfirm>
                 </el-tooltip>

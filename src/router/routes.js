@@ -629,6 +629,15 @@ const frameIn = [
           title: '实例管理'
         }
       },
+      {
+        path: '/setting/announcement/',
+        name: 'setting-announcement',
+        component: () => import('@/pages/setting/announcement'),
+        meta: {
+          auth: true,
+          title: '公告管理'
+        }
+      },
       // fault
       {
         path: '/fault/info',

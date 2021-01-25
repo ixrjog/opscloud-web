@@ -17,6 +17,7 @@
               <ticket-list-card v-if="!userDeptWarning" @handlerFetchData="fetchData"></ticket-list-card>
             </el-col>
             <el-col :span="16">
+              <announcement-carousel></announcement-carousel>
               <my-ticket-card ref="myTicketCard"></my-ticket-card>
               <my-ticket-history-card style="margin-top: 15px"></my-ticket-history-card>
             </el-col>
@@ -42,6 +43,7 @@ import MyTicketCard from '@/components/opscloud/workorder/MyTicketCard'
 import MyTicketHistoryCard from '@/components/opscloud/workorder/MyTicketHistoryCard'
 import TicketMgmtTable from '@/components/opscloud/workorder/TicketMgmtTable'
 import WorkorderReportTable from '@/components/opscloud/workorder/WorkorderReportTable'
+import AnnouncementCarousel from '@/components/opscloud/announcement/AnnouncementCarousel'
 
 import { checkUserInTheDepartment } from '@api/org/org.js'
 
@@ -66,7 +68,8 @@ export default {
     MyTicketCard,
     MyTicketHistoryCard,
     TicketMgmtTable,
-    WorkorderReportTable
+    WorkorderReportTable,
+    AnnouncementCarousel
   },
   mounted () {
     this.setUserInTheDepartment()

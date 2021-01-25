@@ -35,9 +35,7 @@
             </el-option>
           </el-select>
           <el-button @click="fetchData" class="searchBarStyle">查询</el-button>
-          <el-popconfirm
-            title="确定全量同步DNS解析吗？" @onConfirm="handleSync"
-          >
+          <el-popconfirm title="确定全量同步DNS解析吗？" @onConfirm="handleSync">
             <el-button slot="reference" class="searchBarStyle" :loading="syncLoading" :disabled="syncLoading">同步
             </el-button>
           </el-popconfirm>

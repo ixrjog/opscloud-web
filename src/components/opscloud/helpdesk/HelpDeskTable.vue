@@ -23,9 +23,7 @@
       <el-table-column prop="comment" label="说明"></el-table-column>
       <el-table-column fixed="right" label="操作" width="180">
         <template slot-scope="scope">
-          <el-popconfirm
-            title="是否删除改HelpDesk？" @onConfirm="handlerDel(scope.row)"
-          >
+          <el-popconfirm title="是否删除改HelpDesk？" @onConfirm="handlerDel(scope.row)">
             <el-button slot="reference" type="danger" plain size="mini" icon="el-icon-delete">删除</el-button>
           </el-popconfirm>
         </template>
