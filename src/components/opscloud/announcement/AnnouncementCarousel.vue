@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-carousel height="150px" v-if="isShow && JSON.stringify(announcementData) !== '[]'" style="margin-bottom: 10px">
+    <el-carousel height="150px" v-if="isShow && JSON.stringify(announcementData) !== '[]'" style="margin-bottom: 15px">
       <el-carousel-item v-for="announcement in announcementData" :key="announcement.id">
         <el-row>
           <b>{{ announcement.title }}</b>
