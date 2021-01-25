@@ -24,53 +24,53 @@
 </template>
 
 <script>
-  // API
-  import { saveUserCredential } from '@api/user/user.js'
+// API
+import { saveUserCredential } from '@api/user/user.js'
 
-  export default {
-    data () {
-      return {
-        sshPubKey: {}
-        // keyTitle: '',
-        // keyCredential: '',
-        // keyFingerprint: ''
-      }
+export default {
+  data () {
+    return {
+      sshPubKey: {}
+      // keyTitle: '',
+      // keyCredential: '',
+      // keyFingerprint: ''
+    }
+  },
+  name: 'user-ssh-key-dialog',
+  props: ['formStatus'],
+  mixins: [],
+  mounted () {
+  },
+  mutation () {
+  },
+  methods: {
+    initData (sshPubKey) {
+      this.sshPubKey = sshPubKey
     },
-    name: 'user-ssh-key-dialog',
-    props: ['formStatus'],
-    mixins: [],
-    mounted () {
+    closeDialog () {
+      this.formStatus.visible = false
+      this.$emit('closeUserSSHKeyDialog')
     },
-    mutation () {
+    handleClick () {
+      this.$emit('input', !this.value)
     },
-    methods: {
-      initData (sshPubKey) {
-        this.sshPubKey = sshPubKey
-      },
-      closeDialog () {
-        this.formStatus.visible = false
-        this.$emit('closeUserSSHKeyDialog')
-      },
-      handleClick () {
-        this.$emit('input', !this.value)
-      },
-      saveInfo () {
-        setTimeout(() => {
-          saveUserCredential(this.sshPubKey)
-            .then(res => {
-              // 返回数据
-              if (res.success) {
-                this.$message({
-                  message: '成功',
-                  type: 'success'
-                })
-                this.sshPubKey = res.body
-              } else {
-                this.$message.error('错误:' + res.msg)
-              }
-            })
-        }, 30)
-      }
+    saveInfo () {
+      setTimeout(() => {
+        saveUserCredential(this.sshPubKey)
+          .then(res => {
+            // 返回数据
+            if (res.success) {
+              this.$message({
+                message: '成功',
+                type: 'success'
+              })
+              this.sshPubKey = res.body
+            } else {
+              this.$message.error('错误:' + res.msg)
+            }
+          })
+      }, 30)
     }
   }
+}
 </script>

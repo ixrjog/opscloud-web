@@ -36,104 +36,104 @@
 </template>
 
 <script>
-  // API
-  import { applyApiToken } from '@api/user/user.js'
+// API
+import { applyApiToken } from '@api/user/user.js'
 
-  export default {
-    data () {
-      return {
-        userApiToken: {},
-        tokenId: '',
-        apiToken: '',
-        pickerOptions: {
-          disabledDate (time) {
-            return time.getTime() > new Date('2030-12-12 00:00:00')
+export default {
+  data () {
+    return {
+      userApiToken: {},
+      tokenId: '',
+      apiToken: '',
+      pickerOptions: {
+        disabledDate (time) {
+          return time.getTime() > new Date('2030-12-12 00:00:00')
+        },
+        shortcuts: [{
+          text: '30天',
+          onClick (picker) {
+            const date = new Date()
+            date.setTime(date.getTime() + 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', date)
+          }
+        }, {
+          text: '90天',
+          onClick (picker) {
+            const date = new Date()
+            date.setTime(date.getTime() + 3600 * 1000 * 24 * 90)
+            picker.$emit('pick', date)
+          }
+        }, {
+          text: '180天',
+          onClick (picker) {
+            const date = new Date()
+            date.setTime(date.getTime() + 3600 * 1000 * 24 * 180)
+            picker.$emit('pick', date)
+          }
+        },
+          {
+            text: '1年',
+            onClick (picker) {
+              const date = new Date()
+              date.setTime(date.getTime() + 3600 * 1000 * 24 * 365)
+              picker.$emit('pick', date)
+            }
           },
-          shortcuts: [{
-            text: '30天',
+          {
+            text: '2年',
             onClick (picker) {
               const date = new Date()
-              date.setTime(date.getTime() + 3600 * 1000 * 24 * 30)
-              picker.$emit('pick', date)
-            }
-          }, {
-            text: '90天',
-            onClick (picker) {
-              const date = new Date()
-              date.setTime(date.getTime() + 3600 * 1000 * 24 * 90)
-              picker.$emit('pick', date)
-            }
-          }, {
-            text: '180天',
-            onClick (picker) {
-              const date = new Date()
-              date.setTime(date.getTime() + 3600 * 1000 * 24 * 180)
+              date.setTime(date.getTime() + 3600 * 1000 * 24 * 365 * 2)
               picker.$emit('pick', date)
             }
           },
-            {
-              text: '1年',
-              onClick (picker) {
-                const date = new Date()
-                date.setTime(date.getTime() + 3600 * 1000 * 24 * 365)
-                picker.$emit('pick', date)
-              }
-            },
-            {
-              text: '2年',
-              onClick (picker) {
-                const date = new Date()
-                date.setTime(date.getTime() + 3600 * 1000 * 24 * 365 * 2)
-                picker.$emit('pick', date)
-              }
-            },
-            {
-              text: '3年',
-              onClick (picker) {
-                const date = new Date()
-                date.setTime(date.getTime() + 3600 * 1000 * 24 * 365 * 3)
-                picker.$emit('pick', date)
-              }
-            }]
-        }
-      }
-    },
-    name: 'UserApiTokenDialog',
-    props: ['formStatus'],
-    mixins: [],
-    mounted () {
-    },
-    mutation () {
-    },
-    methods: {
-      closeDialog () {
-        this.userApiToken = {}
-        this.tokenId = ''
-        this.apiToken = ''
-        this.formStatus.visible = false
-        this.$emit('closeDialog')
-      },
-      initData (userApiToken) {
-        this.userApiToken = userApiToken
-      },
-      saveItem () {
-        setTimeout(() => {
-          applyApiToken(this.userApiToken)
-            .then(res => {
-              // 返回数据
-              if (res.success) {
-                this.$message({
-                  message: '成功',
-                  type: 'success'
-                })
-                this.tokenId = res.body.tokenId
-                this.apiToken = res.body.token
-              } else {
-                this.$message.error('错误:' + res.msg)
-              }
-            })
-        }, 30)
+          {
+            text: '3年',
+            onClick (picker) {
+              const date = new Date()
+              date.setTime(date.getTime() + 3600 * 1000 * 24 * 365 * 3)
+              picker.$emit('pick', date)
+            }
+          }]
       }
     }
+  },
+  name: 'UserApiTokenDialog',
+  props: ['formStatus'],
+  mixins: [],
+  mounted () {
+  },
+  mutation () {
+  },
+  methods: {
+    closeDialog () {
+      this.userApiToken = {}
+      this.tokenId = ''
+      this.apiToken = ''
+      this.formStatus.visible = false
+      this.$emit('closeDialog')
+    },
+    initData (userApiToken) {
+      this.userApiToken = userApiToken
+    },
+    saveItem () {
+      setTimeout(() => {
+        applyApiToken(this.userApiToken)
+          .then(res => {
+            // 返回数据
+            if (res.success) {
+              this.$message({
+                message: '成功',
+                type: 'success'
+              })
+              this.tokenId = res.body.tokenId
+              this.apiToken = res.body.token
+            } else {
+              this.$message.error('错误:' + res.msg)
+            }
+          })
+      }, 30)
+    }
   }
+}
 </script>

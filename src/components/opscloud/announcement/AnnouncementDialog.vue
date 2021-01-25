@@ -3,14 +3,14 @@
              :visible.sync="formStatus.visible">
     <el-form :model="announcementData" label-width="120px">
       <el-form-item label="公告标题" required>
-        <el-input v-model="announcementData.title" placeholder="请输入内容"></el-input>
+        <el-input v-model="announcementData.title" placeholder="请输入标题"></el-input>
       </el-form-item>
       <el-form-item label="公告标题" required>
-        <editor v-model="announcementData.content" @init="editorInit" lang="yaml" theme="chrome"
+        <editor v-model="announcementData.content" @init="editorInit" lang="html" theme="chrome"
                 width="100%" height="400"></editor>
       </el-form-item>
       <el-form-item label="公告备注">
-        <el-input v-model="announcementData.remark" placeholder="请输入内容"></el-input>
+        <el-input v-model="announcementData.remark" placeholder="请输入备注"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -49,7 +49,7 @@ export default {
   methods: {
     editorInit: function () {
       require('brace/ext/language_tools')
-      require('brace/mode/yaml')
+      require('brace/mode/html')
       require('brace/theme/chrome')
       require('brace/snippets/yaml')
     },

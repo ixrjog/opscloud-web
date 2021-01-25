@@ -4,7 +4,7 @@
       <h1>{{ title }}</h1>
       <el-tabs v-model="tabActiveName" @tab-click="handleClick">
         <el-tab-pane label="工单" name="workorder">
-          <el-row :gutter="20">
+          <el-row :gutter="15">
             <el-col :span="8">
               <el-card v-if="userDeptWarning" shadow="never">
                 <el-alert title="您尚未加入部门" type="warning" show-icon style="margin-bottom: 5px"

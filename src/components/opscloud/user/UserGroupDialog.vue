@@ -31,60 +31,60 @@
 </template>
 <script>
 
-  // API
-  import { updateUserGroup, addUserGroup } from '@api/user/user.group.js'
+// API
+import { updateUserGroup, addUserGroup } from '@api/user/user.group.js'
 
-  const workorderOptions = [{
-    value: 0,
-    label: '禁止工单申请'
-  }, {
-    value: 1,
-    label: '允许工单申请'
-  }]
+const workorderOptions = [{
+  value: 0,
+  label: '禁止工单申请'
+}, {
+  value: 1,
+  label: '允许工单申请'
+}]
 
-  export default {
-    data () {
-      return {
-        userGroup: '',
-        workorderOptions: workorderOptions
-      }
+export default {
+  data () {
+    return {
+      userGroup: '',
+      workorderOptions: workorderOptions
+    }
+  },
+  name: 'UserGroupDialog',
+  props: ['formStatus'],
+  mounted () {
+  },
+  methods: {
+    initData (userGroup) {
+      this.userGroup = userGroup
     },
-    name: 'UserGroupDialog',
-    props: ['formStatus'],
-    mounted () {
-    },
-    methods: {
-      initData (userGroup) {
-        this.userGroup = userGroup
-      },
-      saveInfo () {
-        setTimeout(() => {
-          let requestBody = Object.assign({}, this.userGroup)
-          if (this.formStatus.operationType) {
-            addUserGroup(requestBody)
-              .then(res => {
-                // 返回数据
-                this.$message({
-                  message: '成功',
-                  type: 'success'
-                })
-                this.formStatus.visible = false
-                this.$emit('closeDialog')
+    saveInfo () {
+      setTimeout(() => {
+        let requestBody = Object.assign({}, this.userGroup)
+        if (this.formStatus.operationType) {
+          addUserGroup(requestBody)
+            .then(res => {
+              // 返回数据
+              this.$message({
+                message: '成功',
+                type: 'success'
               })
-          } else {
-            updateUserGroup(requestBody)
-              .then(res => {
-                // 返回数据
-                this.$message({
-                  message: '成功',
-                  type: 'success'
-                })
-                this.formStatus.visible = false
-                this.$emit('closeDialog')
+              this.formStatus.visible = false
+              this.$emit('closeDialog')
+            })
+        } else {
+          updateUserGroup(requestBody)
+            .then(res => {
+              // 返回数据
+              this.$message({
+                message: '成功',
+                type: 'success'
               })
-          }
-        }, 600)
-      }
+              this.formStatus.visible = false
+              this.$emit('closeDialog')
+            })
+        }
+      }, 600)
     }
   }
+}
 </script>
