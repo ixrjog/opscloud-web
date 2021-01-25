@@ -4,7 +4,7 @@
       <div>
         <h1>{{ title }}</h1>
       </div>
-      <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
+      <el-row style="margin-bottom: 5px" :gutter="24">
         <el-input v-model.trim="queryParam.queryName" placeholder="输入资产编码模糊查询" class="input"/>
         <el-select v-model="queryParam.assetStatus" placeholder="选择状态" class="select" clearable>
           <el-option
@@ -29,8 +29,8 @@
               {{ item.assetCompanyType | assetCompanyTypeFilters }}</span>
           </el-option>
         </el-select>
-        <el-button @click="fetchData">查询</el-button>
-        <el-button @click="handlerAdd" style="margin-left: 5px">新增</el-button>
+        <el-button @click="fetchData" class="button">查询</el-button>
+        <el-button @click="handlerAdd" class="button">新增</el-button>
       </el-row>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column type="expand">
@@ -63,9 +63,6 @@
           <template slot-scope="props">
             <el-tag :type="getAssetStatusColor(props.row.assetStatus)">
               {{ props.row.assetStatus | assetStatusFilters }}
-            </el-tag>
-            <el-tag v-if="props.row.assetStatus===4" style="margin-left: 5px">
-              {{ props.row.disposeType | disposeTypeFilters }}
             </el-tag>
           </template>
         </el-table-column>
@@ -193,9 +190,6 @@ export default {
       }, {
         value: 3,
         label: '借用'
-      }, {
-        value: 4,
-        label: '处置'
       }],
       assetTypeOptions: [],
       assetTypeProps: {
@@ -230,27 +224,6 @@ export default {
       }
       if (assetStatus === 3) {
         return '借用'
-      }
-      if (assetStatus === 4) {
-        return '处置'
-      }
-      return '暂未配置'
-    },
-    disposeTypeFilters (disposeType) {
-      if (disposeType === 1) {
-        return '退租处理'
-      }
-      if (disposeType === 2) {
-        return '报废清理'
-      }
-      if (disposeType === 3) {
-        return '盘亏处理'
-      }
-      if (disposeType === 4) {
-        return '转让出售'
-      }
-      if (disposeType === 5) {
-        return '维修处理'
       }
       return '暂未配置'
     },
@@ -406,17 +379,22 @@ export default {
 .input {
   display: inline-block;
   max-width: 200px;
-  margin-right: 5px;
+  margin-left: 10px;
 }
 
 .select {
-  margin-right: 5px;
+  margin-left: 5px;
 }
 
 .cascader {
-  margin-right: 5px;
+  margin-left: 5px;
   width: 220px;
 }
+
+.button {
+  margin-left: 5px;
+}
+
 </style>
 
 <style>

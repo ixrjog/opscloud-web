@@ -14,7 +14,7 @@
             :value="item.value">
           </el-option>
         </el-select>
-        <el-button @click="fetchData">查询</el-button>
+        <el-button @click="fetchData" class="button">查询</el-button>
       </el-row>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column prop="assetCode" label="资产编码">
@@ -194,6 +194,10 @@ export default {
 }
 
 .select {
-  margin-right: 5px;
+  margin-left: 5px;
+}
+
+.button {
+  margin-left: 5px;
 }
 </style>
