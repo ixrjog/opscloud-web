@@ -63,10 +63,10 @@
         </el-table-column>
         <el-table-column prop="username" label="用户名">
           <template slot-scope="scope">
-            <span>{{ scope.row.username }}</span>
-            <el-tooltip class="item" effect="dark" content="点击查看用户详情" placement="top">
-              <el-button style="float: right" type="text" icon="el-icon-position"
-                         @click="openUserDetail(scope.row.username)"></el-button>
+            <el-tooltip class="item" effect="dark" content="点击查看用户详情" placement="right">
+              <el-button type="text" @click="openUserDetail(scope.row.username)">
+                {{ scope.row.username }}
+              </el-button>
             </el-tooltip>
           </template>
         </el-table-column>
