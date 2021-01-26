@@ -145,6 +145,7 @@ import {
   queryAssetTypeTree
 } from '@api/it/it.asset'
 import { mapActions, mapState } from 'vuex'
+import { userFilters } from '@/filters/user'
 
 export default {
   data () {
@@ -227,12 +228,7 @@ export default {
       }
       return '暂未配置'
     },
-    userFilters (user) {
-      if (user === null) {
-        return ''
-      }
-      return user.username + '<' + user.displayName + '>'
-    },
+    userFilters,
     assetCompanyFilters (assetCompany) {
       if (assetCompany === null || assetCompany === '') {
         return ''

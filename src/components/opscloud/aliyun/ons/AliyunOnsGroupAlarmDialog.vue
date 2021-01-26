@@ -63,6 +63,7 @@
 // API
 import { saveONSGroupAlarm } from '@api/cloud/aliyun.ons.group.js'
 import { fuzzyQueryUserPage } from '@api/user/user.js'
+import { userFilters } from '@/filters/user'
 
 const groupAlarmData = {
   id: '',
@@ -97,9 +98,7 @@ export default {
   mounted () {
   },
   filters: {
-    userFilters (user) {
-      return user.username + '<' + user.displayName + '>'
-    }
+    userFilters
   },
   methods: {
     initData (data, regionId, onsGroupId) {

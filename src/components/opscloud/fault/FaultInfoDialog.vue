@@ -141,6 +141,7 @@
 // API
 import { addRootCauseType, queryFaultRootCauseTypePage, saveFaultInfo } from '@api/fault/fault.info'
 import { fuzzyQueryUserPage } from '@api/user/user'
+import { userFilters } from '@/filters/user'
 
 const faultAction = {
   id: '',
@@ -200,9 +201,7 @@ export default {
     this.getCauseType()
   },
   filters: {
-    userFilters (user) {
-      return user.username + '<' + user.displayName + '>'
-    }
+    userFilters
   },
   methods: {
     editorInit: function () {

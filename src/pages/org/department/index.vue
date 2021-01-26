@@ -187,6 +187,7 @@ import {
   updateDepartmentMemberApproval, queryDepartmentById, queryDepartmentPage, queryOrgByUserV2, queryOrgPath
 } from '@api/org/org.js'
 import { fuzzyQueryUserPage } from '@api/user/user.js'
+import { userFilters } from '@/filters/user'
 
 export default {
   data () {
@@ -244,9 +245,7 @@ export default {
     DepartmentDialog
   },
   filters: {
-    userFilters (user) {
-      return user.username + '<' + user.displayName + '>'
-    }
+    userFilters
   },
   methods: {
     getDepartment (queryName) {

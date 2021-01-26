@@ -106,6 +106,7 @@ import {
   queryONSGroupAlarm
 } from '@api/cloud/aliyun.ons.group.js'
 import { mapActions, mapState } from 'vuex'
+import { userFilters } from '@/filters/user'
 
 export default {
   data () {
@@ -168,11 +169,9 @@ export default {
     AliyunOnsGroupAlarmDialog
   },
   filters: {
+    userFilters,
     instanceFilters (instance) {
       return instance.instanceName + '<' + instance.envName + '>'
-    },
-    userFilters (user) {
-      return user.username + '<' + user.displayName + '>'
     },
     alarmStatusFilters (alarmStatus) {
       if (alarmStatus === 0) {

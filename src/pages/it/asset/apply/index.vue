@@ -105,6 +105,7 @@ import { queryOcItAssetApplyPage } from '@api/it/it.asset.apply'
 import { mapActions, mapState } from 'vuex'
 import { fuzzyQueryUserPage } from '@api/user/user'
 import { queryFirstLevelDepartmentPage } from '@api/org/org'
+import { userFilters } from '@/filters/user'
 
 export default {
   data () {
@@ -163,9 +164,7 @@ export default {
     ItAssetApplyDialog
   },
   filters: {
-    userFilters (user) {
-      return user.username + '<' + user.displayName + '>'
-    },
+    userFilters,
     applyTypeFilters (applyType) {
       if (applyType === 1) {
         return '使用'

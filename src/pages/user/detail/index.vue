@@ -56,6 +56,7 @@ import UserDetailApiTokenCard from '@/components/opscloud/user/UserDetailApiToke
 
 // API
 import { queryUserDetail, queryUserDetailByUsername, fuzzyQueryUserPage } from '@api/user/user'
+import { userFilters } from '@/filters/user'
 
 export default {
   data () {
@@ -96,9 +97,7 @@ export default {
     UserDetailApiTokenCard
   },
   filters: {
-    userFilters (user) {
-      return user.username + '<' + user.displayName + '>'
-    }
+    userFilters
   },
   methods: {
     editItem () {

@@ -76,6 +76,7 @@ import { applyAsset } from '@api/it/it.asset'
 import { fuzzyQueryUserPage } from '@api/user/user'
 import { queryFirstLevelDepartmentPage, queryOrgByUser } from '@api/org/org'
 import { updateAssetApply } from '@api/it/it.asset.apply'
+import { userFilters } from '@/filters/user'
 
 const assetApplyData = {
   userId: '',
@@ -118,9 +119,7 @@ export default {
   },
   components: {},
   filters: {
-    userFilters (user) {
-      return user.username + '<' + user.displayName + '>'
-    }
+    userFilters
   },
   methods: {
     initData (data) {

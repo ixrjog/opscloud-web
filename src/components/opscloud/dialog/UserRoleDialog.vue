@@ -42,6 +42,7 @@
 import { queryRolePage } from '@api/auth/auth.role.js'
 import { queryUserPage } from '@api/user/user.js'
 import { addUserRole } from '@api/auth/auth.user.role.js'
+import { userFilters } from '@/filters/user'
 
 export default {
   data () {
@@ -58,9 +59,7 @@ export default {
     this.getUser('')
   },
   filters: {
-    userFilters (user) {
-      return user.username + '<' + user.displayName + '>'
-    }
+    userFilters
   },
   methods: {
     getRole (roleName) {

@@ -100,6 +100,7 @@ import { queryDingtalkUserPage, syncUser, updateDingtalkUser } from '@api/dingta
 import DingtalkUserBindDialog from '@/components/opscloud/dingtalk/DingtalkUserBindDialog'
 import UserDialog from '@/components/opscloud/dialog/UserDialog'
 import { chineseToPinYin } from '@api/opscloud/opscloud.common'
+import { userFilters } from '@/filters/user'
 
 export default {
   data () {
@@ -129,9 +130,7 @@ export default {
     }
   },
   filters: {
-    userFilters (user) {
-      return user.username + '<' + user.displayName + '>'
-    }
+    userFilters
   },
   computed: {
     ...mapState('d2admin/user', [
