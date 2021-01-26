@@ -107,32 +107,27 @@ export default {
   },
   methods: {
     closeDialog () {
-      this.userApiToken = {}
-      this.tokenId = ''
-      this.apiToken = ''
       this.formStatus.visible = false
       this.$emit('closeDialog')
     },
     initData (userApiToken) {
+      this.userApiToken = {}
+      this.tokenId = ''
+      this.apiToken = ''
       this.userApiToken = userApiToken
     },
     saveItem () {
-      setTimeout(() => {
-        applyApiToken(this.userApiToken)
-          .then(res => {
-            // 返回数据
-            if (res.success) {
-              this.$message({
-                message: '成功',
-                type: 'success'
-              })
-              this.tokenId = res.body.tokenId
-              this.apiToken = res.body.token
-            } else {
-              this.$message.error('错误:' + res.msg)
-            }
+      applyApiToken(this.userApiToken)
+        .then(res => {
+          // 返回数据
+          this.$message({
+            message: '成功',
+            type: 'success'
           })
-      }, 30)
+          this.tokenId = res.body.tokenId
+          this.apiToken = res.body.token
+          this.closeDialog()
+        })
     }
   }
 }

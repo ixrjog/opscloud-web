@@ -22,7 +22,7 @@
       </div>
     </el-card>
     <user-ssh-key-dialog :formStatus="formUserSSHKeyStatus" ref="userSSHKeyDialog"
-                         @closeUserSSHKeyDialog="closeUserSSHKeyDialog"></user-ssh-key-dialog>
+                         @fetchData="fetchData"></user-ssh-key-dialog>
   </div>
 </template>
 
@@ -63,8 +63,8 @@ export default {
       this.$refs.userSSHKeyDialog.initData(userSSHKey)
       this.formUserSSHKeyStatus.visible = true
     },
-    closeUserSSHKeyDialog () {
-      this.$emit('closeUserSSHKeyDialog')
+    fetchData () {
+      this.$emit('fetchData')
     }
   }
 }

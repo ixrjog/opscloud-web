@@ -585,6 +585,15 @@ const frameIn = [
         }
       },
       {
+        path: '/user/detail/other',
+        name: 'user-detail-other',
+        component: () => import('@/pages/user/detail/other'),
+        meta: {
+          auth: true,
+          title: '个人详情'
+        }
+      },
+      {
         path: '/it/asset',
         name: 'it-asset',
         component: () => import('@/pages/it/asset'),

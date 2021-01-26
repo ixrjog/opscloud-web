@@ -6,39 +6,22 @@
       </div>
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
-          <el-select v-model="queryParam.queryName" filterable remote reserve-keyword placeholder="搜索用户"
-                     :remote-method="getUser" class="select" clearable>
-            <el-option
-              v-for="user in userOptions"
-              :key="user.username"
-              :label="user.displayName"
-              :value="user.username">
-              <span style="float: left">{{ user | userFilters }}</span>
-              <span style="float: right; color: #8492a6; font-size: 10px;margin-left: 20px">{{ user.email }}</span>
-            </el-option>
-          </el-select>
-          <el-button @click="queryOtherUserDetail" class="button">查询</el-button>
-        </el-row>
-        <el-row :gutter="24" style="margin-bottom: 5px">
           <el-col :span="8">
             <user-detail-card :userDetail="formUserDetail"></user-detail-card>
           </el-col>
-          <!-- 用户资源详情-->
           <el-col :span="16">
             <user-detail-asset-card :userDetail="formUserDetail"></user-detail-asset-card>
             <user-detail-user-group-card :userDetail="formUserDetail"></user-detail-user-group-card>
             <user-detail-server-group-card :userDetail="formUserDetail"></user-detail-server-group-card>
             <user-detail-ram-card :userDetail="formUserDetail"></user-detail-ram-card>
             <user-detail-ssh-card :userDetail="formUserDetail"
-                                  @fetchData="fetchData"></user-detail-ssh-card>
+                                  @fetchData="queryOtherUserDetail"></user-detail-ssh-card>
             <user-detail-api-token-card :userDetail="formUserDetail"
-                                        @fetchData="fetchData"></user-detail-api-token-card>
+                                        @fetchData="queryOtherUserDetail"></user-detail-api-token-card>
           </el-col>
         </el-row>
-        <!-- 用户资源详情-->
       </div>
-      <!--用户编辑-->
-      <UserDialog :formStatus="formUserStatus" ref="userDialog" @closeUserDialog="fetchData"></UserDialog>
+      <UserDialog :formStatus="formUserStatus" ref="userDialog" @closeUserDialog="queryOtherUserDetail"></UserDialog>
     </template>
   </d2-container>
 </template>
@@ -55,13 +38,12 @@ import UserDetailSshCard from '@/components/opscloud/user/UserDetailSSHCard'
 import UserDetailApiTokenCard from '@/components/opscloud/user/UserDetailApiTokenCard'
 
 // API
-import { queryUserDetail, queryUserDetailByUsername, fuzzyQueryUserPage } from '@api/user/user'
+import { queryUserDetailByUsername } from '@api/user/user'
 
 export default {
   data () {
     return {
       formUserDetail: {},
-      user: {},
       formUserStatus: {
         visible: false,
         labelWidth: '150px',
@@ -75,16 +57,15 @@ export default {
         pageSize: 10,
         total: 0
       },
-      queryParam: {
-        queryName: ''
-      },
-      title: '我的详情',
-      userOptions: []
+      username: '',
+      title: '的详情'
     }
   },
   mounted () {
-    this.fetchData()
+    this.username = this.$route.query.username
+    this.queryOtherUserDetail()
   },
+  computed: {},
   components: {
     UserDialog,
     UserDetailCard,
@@ -95,47 +76,20 @@ export default {
     UserDetailSshCard,
     UserDetailApiTokenCard
   },
-  filters: {
-    userFilters (user) {
-      return user.username + '<' + user.displayName + '>'
-    }
-  },
+  filters: {},
   methods: {
     editItem () {
       this.formUserStatus.visible = true
       this.formUserStatus.operationType = false
       this.$refs.userDialog.initData(Object.assign({}, this.formUserDetail))
     },
-    fetchData () {
-      this.loading = true
-      queryUserDetail()
-        .then(res => {
-          this.formUserDetail = res.body
-          this.loading = false
-        })
-    },
     queryOtherUserDetail () {
-      if (this.queryParam.queryName === '') {
-        this.$message.warning('请选择用户')
-        return
-      }
       this.loading = true
-      queryUserDetailByUsername(this.queryParam.queryName)
+      queryUserDetailByUsername(this.username)
         .then(res => {
           this.formUserDetail = res.body
+          this.title = this.formUserDetail.displayName + this.title
           this.loading = false
-        })
-    },
-    getUser (queryName) {
-      let requestBody = {
-        'queryName': queryName,
-        'extend': 0,
-        'page': 1,
-        'length': 20
-      }
-      fuzzyQueryUserPage(requestBody)
-        .then(res => {
-          this.userOptions = res.body.data
         })
     }
   }

@@ -49,27 +49,21 @@ export default {
     },
     closeDialog () {
       this.formStatus.visible = false
-      this.$emit('closeUserSSHKeyDialog')
+      this.$emit('fetchData')
     },
     handleClick () {
       this.$emit('input', !this.value)
     },
     saveInfo () {
-      setTimeout(() => {
-        saveUserCredential(this.sshPubKey)
-          .then(res => {
-            // 返回数据
-            if (res.success) {
-              this.$message({
-                message: '成功',
-                type: 'success'
-              })
-              this.sshPubKey = res.body
-            } else {
-              this.$message.error('错误:' + res.msg)
-            }
+      saveUserCredential(this.sshPubKey)
+        .then(res => {
+          this.$message({
+            message: '成功',
+            type: 'success'
           })
-      }, 30)
+          this.sshPubKey = res.body
+          this.closeDialog()
+        })
     }
   }
 }

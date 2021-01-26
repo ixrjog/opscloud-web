@@ -61,7 +61,15 @@
             </el-form>
           </template>
         </el-table-column>
-        <el-table-column prop="username" label="用户名"></el-table-column>
+        <el-table-column prop="username" label="用户名">
+          <template slot-scope="scope">
+            <span>{{ scope.row.username }}</span>
+            <el-tooltip class="item" effect="dark" content="点击查看用户详情" placement="top">
+              <el-button style="float: right" type="text" icon="el-icon-position"
+                         @click="openUserDetail(scope.row.username)"></el-button>
+            </el-tooltip>
+          </template>
+        </el-table-column>
         <el-table-column prop="displayName" label="显示名"></el-table-column>
         <el-table-column prop="email" label="邮箱"></el-table-column>
         <el-table-column prop="userGroups.length" label="用户组"></el-table-column>
@@ -110,6 +118,7 @@ import UserServerGroupDialog from '@/components/opscloud/dialog/UserServerGroupD
 // API
 import { fuzzyQueryUserPage, syncUser, retireUserById } from '@api/user/user.js'
 import { queryOrgByUser } from '@api/org/org'
+import util from '@/libs/util'
 
 export default {
   data () {
@@ -262,6 +271,12 @@ export default {
         .then(res => {
           row.orgDeptMap = res.body
         })
+    },
+    openUserDetail (username) {
+      let host = window.location.host
+      let httpProtocol = window.location.href.split('://')[0]
+      let buildDetailsUrl = httpProtocol + '://' + host + '/#/user/detail/other?username=' + username
+      util.open(buildDetailsUrl)
     },
     fetchData () {
       this.loading = true
