@@ -273,10 +273,10 @@ export default {
 .input {
   display: inline-block;
   max-width: 200px;
-  margin-right: 5px;
+  margin-left: 5px;
 }
 
 .select {
-  margin-right: 5px;
+  margin-left: 5px;
 }
 </style>
