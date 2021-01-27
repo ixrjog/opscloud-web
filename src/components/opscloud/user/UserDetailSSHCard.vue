@@ -53,8 +53,8 @@ export default {
       } else {
         userSSHKey = {
           id: '',
-          userId: this.formUserDetail.id,
-          username: this.formUserDetail.username,
+          userId: this.userDetail.id,
+          username: this.userDetail.username,
           title: '',
           credential: '',
           credentialType: 2 // ssh pub-key
