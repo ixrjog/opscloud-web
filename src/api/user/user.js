@@ -136,3 +136,10 @@ export function queryUserDetailByUsername (username) {
     method: 'get'
   })
 }
+
+export function queryUserToBeRetired () {
+  return request({
+    url: '/user/tobe/retired/query',
+    method: 'get'
+  })
+}

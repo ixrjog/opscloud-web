@@ -93,7 +93,7 @@ export default {
     closeDialog () {
       this.password = ''
       this.formStatus.visible = false
-      this.$emit('closeDialog')
+      this.$emit('fetchData')
     },
     initData (user) {
       this.user = user

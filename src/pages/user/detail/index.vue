@@ -21,7 +21,7 @@
         </el-row>
         <el-row :gutter="24" style="margin-bottom: 5px">
           <el-col :span="8">
-            <user-detail-card :userDetail="formUserDetail"></user-detail-card>
+            <user-detail-card :userDetail="formUserDetail" @fetchData="fetchData"></user-detail-card>
           </el-col>
           <!-- 用户资源详情-->
           <el-col :span="16">
@@ -37,15 +37,12 @@
         </el-row>
         <!-- 用户资源详情-->
       </div>
-      <!--用户编辑-->
-      <UserDialog :formStatus="formUserStatus" ref="userDialog" @closeUserDialog="fetchData"></UserDialog>
     </template>
   </d2-container>
 </template>
 
 <script>
 // Component
-import UserDialog from '@/components/opscloud/dialog/UserDialog'
 import UserDetailCard from '@/components/opscloud/user/UserDetailCard'
 import UserDetailAssetCard from '@/components/opscloud/user/UserDetailAssetCard'
 import UserDetailUserGroupCard from '@/components/opscloud/user/UserDetailUserGroupCard'
@@ -63,13 +60,6 @@ export default {
     return {
       formUserDetail: {},
       user: {},
-      formUserStatus: {
-        visible: false,
-        labelWidth: '150px',
-        operationType: true,
-        addTitle: '新增用户信息',
-        updateTitle: '更新用户信息'
-      },
       loading: false,
       pagination: {
         currentPage: 1,
@@ -87,7 +77,6 @@ export default {
     this.fetchData()
   },
   components: {
-    UserDialog,
     UserDetailCard,
     UserDetailAssetCard,
     UserDetailUserGroupCard,
@@ -100,11 +89,6 @@ export default {
     userFilters
   },
   methods: {
-    editItem () {
-      this.formUserStatus.visible = true
-      this.formUserStatus.operationType = false
-      this.$refs.userDialog.initData(Object.assign({}, this.formUserDetail))
-    },
     fetchData () {
       this.loading = true
       queryUserDetail()

@@ -7,7 +7,7 @@
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
           <el-col :span="8">
-            <user-detail-card :userDetail="formUserDetail"></user-detail-card>
+            <user-detail-card :userDetail="formUserDetail" @fetchData="queryOtherUserDetail"></user-detail-card>
           </el-col>
           <el-col :span="16">
             <user-detail-asset-card :userDetail="formUserDetail"></user-detail-asset-card>
@@ -58,7 +58,7 @@ export default {
         total: 0
       },
       username: '',
-      title: '的详情'
+      title: ''
     }
   },
   mounted () {
@@ -84,11 +84,12 @@ export default {
       this.$refs.userDialog.initData(Object.assign({}, this.formUserDetail))
     },
     queryOtherUserDetail () {
+      this.title = ''
       this.loading = true
       queryUserDetailByUsername(this.username)
         .then(res => {
           this.formUserDetail = res.body
-          this.title = this.formUserDetail.displayName + this.title
+          this.title = this.formUserDetail.displayName + '的详情'
           this.loading = false
         })
     }
