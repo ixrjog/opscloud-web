@@ -21,7 +21,7 @@
         </el-row>
         <el-row :gutter="24" style="margin-bottom: 5px">
           <el-col :span="8">
-            <user-detail-card :userDetail="formUserDetail" @fetchData="fetchData"></user-detail-card>
+            <user-detail-card :userDetail="formUserDetail" @fetchData="refreshData"></user-detail-card>
           </el-col>
           <!-- 用户资源详情-->
           <el-col :span="16">
@@ -30,9 +30,9 @@
             <user-detail-server-group-card :userDetail="formUserDetail"></user-detail-server-group-card>
             <user-detail-ram-card :userDetail="formUserDetail"></user-detail-ram-card>
             <user-detail-ssh-card :userDetail="formUserDetail"
-                                  @fetchData="fetchData"></user-detail-ssh-card>
+                                  @fetchData="refreshData"></user-detail-ssh-card>
             <user-detail-api-token-card :userDetail="formUserDetail"
-                                        @fetchData="fetchData"></user-detail-api-token-card>
+                                        @fetchData="refreshData"></user-detail-api-token-card>
           </el-col>
         </el-row>
         <!-- 用户资源详情-->
@@ -120,6 +120,13 @@ export default {
         .then(res => {
           this.userOptions = res.body.data
         })
+    },
+    refreshData () {
+      if (this.queryParam.queryName === '') {
+        this.fetchData()
+      } else {
+        this.queryOtherUserDetail()
+      }
     }
   }
 }
