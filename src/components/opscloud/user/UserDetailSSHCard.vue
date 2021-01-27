@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card class="box-card" shadow="never" style="margin-top: 10px">
+    <el-card class="box-card" shadow="never" style="margin-bottom: 10px">
       <div slot="header" class="clearfix">
         <span>SSH密钥<i class="header-icon el-icon-info"></i>(堡垒机,Gitlab)</span>
         <el-button style="float: right; padding: 3px 0" type="text" @click="editSSHKey">编辑</el-button>

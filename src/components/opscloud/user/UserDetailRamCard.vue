@@ -1,5 +1,5 @@
 <template>
-  <el-card class="box-card" shadow="never" style="margin-top: 10px"
+  <el-card class="box-card" shadow="never" style="margin-bottom: 10px"
            v-if="JSON.stringify(userDetail.ramUsers) !== '[]'">
     <div slot="header" class="clearfix">阿里云RAM账户</div>
     <el-table :data="userDetail.ramUsers" style="width: 100%">

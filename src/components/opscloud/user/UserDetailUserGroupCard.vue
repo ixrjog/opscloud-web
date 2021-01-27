@@ -1,5 +1,5 @@
 <template>
-  <el-card class="box-card" shadow="never" style="margin-top: 10px"
+  <el-card class="box-card" shadow="never" style="margin-bottom: 10px"
            v-if="JSON.stringify(userDetail.userGroups) !== '[]'">
     <div slot="header" class="clearfix">用户组<i class="header-icon el-icon-info"></i>(角色授权)</div>
     <div class="tag-group">

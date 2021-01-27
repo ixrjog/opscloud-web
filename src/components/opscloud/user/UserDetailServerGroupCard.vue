@@ -1,5 +1,5 @@
 <template>
-  <el-card class="box-card" shadow="never" style="margin-top: 10px"
+  <el-card class="box-card" shadow="never" style="margin-bottom: 10px"
            v-if="JSON.stringify(userDetail.serverGroups) !== '[]'">
     <div slot="header" class="clearfix">服务器组<i class="header-icon el-icon-info"></i>(深色标签拥有管理员权限)</div>
     <div class="tag-group">

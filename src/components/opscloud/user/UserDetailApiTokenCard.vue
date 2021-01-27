@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card class="box-card" shadow="never" style="margin-top: 10px">
+    <el-card class="box-card" shadow="never" style="margin-bottom: 10px">
       <div slot="header" class="clearfix">
         <span>开发者令牌<i class="header-icon el-icon-info"></i>(API-Token)</span>
         <el-button style="float: right; padding: 3px 0" type="text" @click="addApiToken">申请</el-button>

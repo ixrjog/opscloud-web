@@ -1,6 +1,6 @@
 <template>
-  <el-card class="box-card" shadow="never"
-           v-if="JSON.stringify(userDetail.assets) !== '[]'">
+  <el-card class="box-card" shadow="never" style="margin-bottom: 10px"
+           v-if="JSON.stringify(userDetail.assets) !== '[]'" >
     <div slot="header" class="clearfix">资产</div>
     <el-table :data="userDetail.assets" style="width: 100%">
       <el-table-column prop="assetCode" label="资产编码">
