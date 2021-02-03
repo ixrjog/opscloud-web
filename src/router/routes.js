@@ -639,6 +639,15 @@ const frameIn = [
         }
       },
       {
+        path: '/setting/menu',
+        name: 'setting-menu',
+        component: () => import('@/pages/setting/menu'),
+        meta: {
+          auth: true,
+          title: '菜单管理'
+        }
+      },
+      {
         path: '/setting/announcement/',
         name: 'setting-announcement',
         component: () => import('@/pages/setting/announcement'),

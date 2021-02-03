@@ -35,6 +35,7 @@
     <!-- role编辑-->
     <RoleDialog ref="roleDialog" :formStatus="formRoleStatus" @closeRoleDialog="fetchData"></RoleDialog>
     <MenuDialog :formStatus="formMenuStatus" ref="menuDialog"></MenuDialog>
+    <role-menu-dialog :formStatus="formRoleMenuStatus" ref="roleMenuDialog"></role-menu-dialog>
   </div>
 </template>
 
@@ -44,6 +45,7 @@
   import MenuDialog from '@/components/opscloud/dialog/MenuDialog'
   // API
   import { queryRolePage, deleteRoleById } from '@api/auth/auth.role.js'
+  import RoleMenuDialog from '@/components/opscloud/menu/RoleMenuDialog'
 
   export default {
     name: 'AuthRoleTable',
@@ -59,6 +61,9 @@
           operationType: true,
           addTitle: '新增角色配置',
           updateTitle: '更新角色配置'
+        },
+        formRoleMenuStatus: {
+          visible: false
         },
         loading: false,
         pagination: {
@@ -84,7 +89,8 @@
     },
     components: {
       RoleDialog,
-      MenuDialog
+      MenuDialog,
+      RoleMenuDialog
     },
     methods: {
       ...mapActions({
@@ -108,8 +114,8 @@
       },
       editMenu (row) {
         // form
-        this.formMenuStatus.visible = true
-        this.$refs.menuDialog.initData(row.id)
+        this.formRoleMenuStatus.visible = true
+        this.$refs.roleMenuDialog.initData(row)
       },
       addItem () {
         let role = {
