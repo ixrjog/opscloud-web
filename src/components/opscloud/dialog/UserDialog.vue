@@ -1,34 +1,34 @@
 <template>
   <el-dialog :title="formStatus.operationType ? formStatus.addTitle : formStatus.updateTitle"
-             :visible.sync="formStatus.visible" :before-close="closeDialog">
-    <el-form :model="user">
-      <el-form-item label="用户名" :label-width="formStatus.labelWidth" :required="true">
+             :visible.sync="formStatus.visible" :before-close="closeDialog" width="40%">
+    <el-form :model="user" label-width="80px">
+      <el-form-item label="用户名" :required="true">
         <el-input v-model.trim="user.username" :readonly="nameChecked" placeholder="请输入内容" @change="smartEmail()">
           <el-button slot="append" :icon="nameChecked?'el-icon-success':'el-icon-warning'"
                      @click="handlerCheck(user.username)" :disabled="nameChecked"></el-button>
         </el-input>
       </el-form-item>
-      <el-form-item label="密码" :label-width="formStatus.labelWidth">
+      <el-form-item label="密码">
         <el-input v-model="password" clearable placeholder="请输入内容">
           <el-button slot="append" icon="el-icon-key" @click="getUserRandomPassword"></el-button>
         </el-input>
       </el-form-item>
-      <el-form-item label="显示名" :label-width="formStatus.labelWidth" required>
+      <el-form-item label="显示名" required>
         <el-input v-model="user.displayName" placeholder="请输入内容" @change="smartUsername()"></el-input>
       </el-form-item>
-      <el-form-item label="姓名" :label-width="formStatus.labelWidth">
+      <el-form-item label="姓名">
         <el-input v-model="user.name" placeholder="请输入内容"></el-input>
       </el-form-item>
-      <el-form-item label="部门" :label-width="formStatus.labelWidth">
+      <el-form-item label="部门">
         <el-cascader v-model="cascaderValue" :options="deptOptions" :props="deptCascaderProps" @change="handleChange"
                      class="cascader" placeholder="选择需要加入的部门"></el-cascader>
         <el-button type="primary" icon="el-icon-refresh" @click="deptTreeRefresh" size="mini" plain
                    style="margin-left: 10px"></el-button>
       </el-form-item>
-      <el-form-item label="电话" :label-width="formStatus.labelWidth">
+      <el-form-item label="电话">
         <el-input v-model="user.phone" placeholder="请输入内容"></el-input>
       </el-form-item>
-      <el-form-item label="邮箱" :label-width="formStatus.labelWidth">
+      <el-form-item label="邮箱">
         <el-input v-model.trim="user.email" placeholder="请输入内容" class="input"></el-input>
         <el-button-group style="margin-left: 10px">
           <el-tooltip class="item" effect="dark" content="查询邮箱" placement="top-start">
@@ -41,19 +41,18 @@
           </el-tooltip>
         </el-button-group>
       </el-form-item>
-      <el-form-item label="微信" :label-width="formStatus.labelWidth">
+      <el-form-item label="微信">
         <el-input v-model="user.wechat" placeholder="请输入内容"></el-input>
       </el-form-item>
-      <el-form-item label="留言" :label-width="formStatus.labelWidth">
+      <el-form-item label="留言">
         <el-input v-model="user.comment" placeholder="请输入内容"></el-input>
       </el-form-item>
-      <el-form-item label="角色" :label-width="formStatus.labelWidth" v-if="formStatus.operationType">
+      <el-form-item label="角色" v-if="formStatus.operationType">
         <el-checkbox v-model="user.isRD">研发工程师(授权dev角色)</el-checkbox>
       </el-form-item>
     </el-form>
-    <el-divider></el-divider>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="closeDialog">取消</el-button>
+      <el-button @click="closeDialog">关闭</el-button>
       <el-button type="primary" @click="saveInfo">确定</el-button>
     </div>
   </el-dialog>

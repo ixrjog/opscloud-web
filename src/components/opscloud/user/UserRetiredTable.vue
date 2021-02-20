@@ -160,7 +160,7 @@ export default {
 .input {
   display: inline-block;
   max-width: 200px;
-  margin-left: 10px
+  margin-left: 15px
 }
 
 .table-expand {
