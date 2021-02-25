@@ -6,6 +6,15 @@
       </div>
       <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
         <el-input v-model.trim="queryParam.queryName" placeholder="输入资产编码模糊查询" class="input"/>
+        <el-select v-model="queryParam.userOrgDeptId" filterable remote reserve-keyword placeholder="搜索部门"
+                   :remote-method="getOrgDept" class="select" clearable>
+          <el-option
+            v-for="item in orgDeptOptions"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
         <el-select v-model="queryParam.userId" filterable remote reserve-keyword placeholder="搜索用户"
                    :remote-method="getUser" class="select" clearable>
           <el-option
@@ -15,15 +24,6 @@
             :value="user.id">
             <span style="float: left">{{ user | userFilters }}</span>
             <span style="float: right; color: #8492a6; font-size: 10px;margin-left: 20px">{{ user.email }}</span>
-          </el-option>
-        </el-select>
-        <el-select v-model="queryParam.userOrgDeptId" filterable remote reserve-keyword placeholder="搜索部门"
-                   :remote-method="getOrgDept" class="select" clearable>
-          <el-option
-            v-for="item in orgDeptOptions"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id">
           </el-option>
         </el-select>
         <el-select v-model="queryParam.applyType" placeholder="选择申领方式" class="select" clearable>
@@ -42,7 +42,7 @@
             :value="item.value">
           </el-option>
         </el-select>
-        <el-button @click="fetchData">查询</el-button>
+        <el-button @click="fetchData" class="button">查询</el-button>
       </el-row>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column prop="assetCode" label="资产编码">
@@ -277,6 +277,10 @@ export default {
 }
 
 .select {
+  margin-left: 5px;
+}
+
+.button {
   margin-left: 5px;
 }
 </style>

@@ -27,7 +27,7 @@
         </el-table-column>
         <el-table-column label="处置方式">
           <template slot-scope="props">
-            <el-tag>{{ props.row.disposeType | disposeTypeFilters }}</el-tag>
+            <el-tag :type="getDisposeTypeColor(props.row.disposeType)">{{ props.row.disposeType | disposeTypeFilters }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="disposeTime" label="处置日期"></el-table-column>
@@ -129,7 +129,10 @@ export default {
         return '转让出售'
       }
       if (disposeType === 5) {
-        return '维修处理'
+        return '维修处理(一般)'
+      }
+      if (disposeType === 6) {
+        return '维修处理(紧急)'
       }
       return ''
     }
@@ -148,6 +151,12 @@ export default {
       if (typeof (this.info.pageSize) !== 'undefined') {
         this.pagination.pageSize = this.info.pageSize
       }
+    },
+    getDisposeTypeColor (disposeType) {
+      if (disposeType === 6) {
+        return 'danger'
+      }
+      return 'primary'
     },
     paginationCurrentChange (currentPage) {
       this.pagination.currentPage = currentPage

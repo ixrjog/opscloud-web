@@ -53,6 +53,8 @@
                                @closeDialog="fetchData"></ticket-kafka-topic-dialog>
     <ticket-kafka-group-dialog ref="ticketKafkaGroupDialog" :formStatus="formKafkaGroupStatus"
                                @closeDialog="fetchData"></ticket-kafka-group-dialog>
+    <ticket-gitlab-group-member-dialog ref="ticketGitlabGroupMemberDialog" :formStatus="formGitlabGroupMemberStatus"
+                                       @closeDialog="fetchData"></ticket-gitlab-group-member-dialog>
   </div>
 </template>
 
@@ -67,6 +69,8 @@ import TicketOnsTopicDialog from '@/components/opscloud/workorder/TicketOnsTopic
 import TicketOnsGroupDialog from '@/components/opscloud/workorder/TicketOnsGroupDialog'
 import TicketKafkaTopicDialog from '@/components/opscloud/workorder/TicketKafkaTopicDialog'
 import TicketKafkaGroupDialog from '@/components/opscloud/workorder/TicketKafkaGroupDialog'
+import TicketGitlabGroupMemberDialog from '@/components/opscloud/workorder/TicketGitlabGroupMemberDialog'
+
 // Filters
 import { getPhaseText, getPhaseType } from '@/filters/ticket.js'
 
@@ -92,6 +96,7 @@ export default {
       formOnsGroupStatus: Object.assign({}, defaultFormStatus),
       formKafkaTopicStatus: Object.assign({}, defaultFormStatus),
       formKafkaGroupStatus: Object.assign({}, defaultFormStatus),
+      formGitlabGroupMemberStatus: Object.assign({}, defaultFormStatus),
       loading: false,
       pagination: {
         currentPage: 1,
@@ -121,7 +126,8 @@ export default {
     TicketOnsTopicDialog,
     TicketOnsGroupDialog,
     TicketKafkaTopicDialog,
-    TicketKafkaGroupDialog
+    TicketKafkaGroupDialog,
+    TicketGitlabGroupMemberDialog
   },
   filters: {
     getPhaseText,
@@ -202,6 +208,10 @@ export default {
         case 'KAFKA_GROUP':
           this.invokeTicketFormStatus(this.formKafkaGroupStatus, operationType)
           this.$refs.ticketKafkaGroupDialog.initData(ticket)
+          break
+        case 'GITLAB_GROUP_MEMBER':
+          this.invokeTicketFormStatus(this.formGitlabGroupMemberStatus, operationType)
+          this.$refs.ticketGitlabGroupMemberDialog.initData(ticket)
           break
         default:
           this.$message.error('工单类型错误或未配置!')

@@ -160,9 +160,9 @@ export function queryAliyunONSTicketByParam (id) {
   })
 }
 
-export function queryUserTicketKafkaParam (id) {
+export function queryUserTicketByTicketId (id) {
   return request({
-    url: '/workorder/ticket/kafka/query?id=' + id,
+    url: '/workorder/ticket/id/query?id=' + id,
     method: 'get'
   })
 }

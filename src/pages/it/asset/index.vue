@@ -29,6 +29,11 @@
               {{ item.assetCompanyType | assetCompanyTypeFilters }}</span>
           </el-option>
         </el-select>
+        <el-date-picker
+          v-model="userTime" type="daterange" align="right" unlink-panels value-format="timestamp"
+          start-placeholder="领用开始日期" range-separator="至" end-placeholder="领用结束日期"
+          :picker-options="pickerOptions" class="picker">
+        </el-date-picker>
         <el-button @click="fetchData" class="button">查询</el-button>
         <el-button @click="handlerAdd" class="button">新增</el-button>
       </el-row>
@@ -196,7 +201,35 @@ export default {
       assetTypeProps: {
         multiple: true,
         expandTrigger: 'hover'
-      }
+      },
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一周',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近一个月',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近三个月',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+            picker.$emit('pick', [start, end])
+          }
+        }]
+      },
+      userTime: []
     }
   },
   computed: {
@@ -344,8 +377,14 @@ export default {
         'assetCompany': this.queryParam.assetCompany === '' ? -1 : this.queryParam.assetCompany,
         'assetStatus': this.queryParam.assetStatus === '' ? -1 : this.queryParam.assetStatus,
         'assetNameIdList': this.queryParam.assetNameIdList,
+        'useStartTime': '',
+        'useEndTime': '',
         'page': this.pagination.currentPage,
         'length': this.pagination.pageSize
+      }
+      if (Array.isArray(this.userTime) && this.userTime.length > 0) {
+        requestBody.useStartTime = this.userTime[0]
+        requestBody.useEndTime = this.userTime[1]
       }
       queryOcItAssetPage(requestBody)
         .then(res => {
@@ -375,6 +414,10 @@ export default {
 .input {
   display: inline-block;
   max-width: 200px;
+  margin-left: 10px;
+}
+
+.picker {
   margin-left: 10px;
 }
 

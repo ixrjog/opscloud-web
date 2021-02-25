@@ -92,7 +92,7 @@ import {
   agreeWorkorderTicket,
   disagreeWorkorderTicket,
   delWorkorderTicketEntryById,
-  queryUserTicketKafkaParam
+  queryUserTicketByTicketId
 } from '@api/workorder/workorder.ticket'
 import { kafkaTopicCheck } from '@api/kafka/kafka.topic'
 
@@ -287,7 +287,7 @@ export default {
       this.topicData.partitionNum = 0
     },
     getTicketKafka () {
-      queryUserTicketKafkaParam(this.ticket.id)
+      queryUserTicketByTicketId(this.ticket.id)
         .then(res => {
           this.ticketEntries = res.body
         })
