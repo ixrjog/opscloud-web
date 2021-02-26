@@ -16,6 +16,12 @@
           </el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="报废金额" v-if="assetDisposeData.disposeType === 2">
+        <el-input v-model.trim="assetDisposeData.expand"></el-input>
+      </el-form-item>
+      <el-form-item label="售卖金额" v-if="assetDisposeData.disposeType === 4">
+        <el-input v-model.trim="assetDisposeData.expand"></el-input>
+      </el-form-item>
       <el-form-item label="处置日期">
         <el-date-picker v-model="assetDisposeData.disposeTime" type="date" placeholder="选择日期" value-format="timestamp">
         </el-date-picker>
@@ -39,6 +45,7 @@ import { disposeAsset } from '@api/it/it.asset'
 const assetDisposeData = {
   assetId: '',
   disposeType: 1,
+  expand: '',
   disposeTime: Date.now().valueOf(),
   remark: ''
 }
