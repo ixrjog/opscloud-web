@@ -4,7 +4,7 @@
       <div>
         <h1>{{ title }}</h1>
       </div>
-      <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
+      <el-row style="margin-bottom: 5px" :gutter="24">
         <el-input v-model.trim="queryParam.queryName" placeholder="输入资产编码模糊查询" class="input"/>
         <el-select v-model="queryParam.userOrgDeptId" filterable remote reserve-keyword placeholder="搜索部门"
                    :remote-method="getOrgDept" class="select" clearable>
@@ -42,6 +42,20 @@
             :value="item.value">
           </el-option>
         </el-select>
+        <el-button @click="fetchData" class="button" v-if="!queryMore">查询</el-button>
+        <el-checkbox v-model="queryMore" class="button">更多</el-checkbox>
+      </el-row>
+      <el-row style="margin-bottom: 5px" v-if="queryMore">
+        <el-date-picker
+          v-model="applyTime" type="daterange" align="right" unlink-panels value-format="timestamp"
+          start-placeholder="领用开始日期" range-separator="至" end-placeholder="领用结束日期"
+          :picker-options="pickerOptions">
+        </el-date-picker>
+        <el-date-picker
+          v-model="returnTime" type="daterange" align="right" unlink-panels value-format="timestamp"
+          start-placeholder="归还开始日期" range-separator="至" end-placeholder="归还结束日期"
+          :picker-options="pickerOptions" class="picker">
+        </el-date-picker>
         <el-button @click="fetchData" class="button">查询</el-button>
       </el-row>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
@@ -121,6 +135,36 @@ export default {
       },
       tableData: [],
       loading: false,
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一周',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近一个月',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近三个月',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+            picker.$emit('pick', [start, end])
+          }
+        }]
+      },
+      returnTime: [],
+      applyTime: [],
+      queryMore: false,
       pagination: {
         currentPage: 1,
         pageSize: 10,
@@ -248,8 +292,20 @@ export default {
         'userOrgDeptId': this.queryParam.userOrgDeptId === '' ? -1 : this.queryParam.userOrgDeptId,
         'applyType': this.queryParam.applyType === '' ? -1 : this.queryParam.applyType,
         'isReturn': this.queryParam.isReturn === '' ? -1 : this.queryParam.isReturn,
+        'applyStartTime': '',
+        'applyEndTime': '',
+        'returnStartTime': '',
+        'returnEndTime': '',
         'page': this.pagination.currentPage,
         'length': this.pagination.pageSize
+      }
+      if (Array.isArray(this.applyTime) && this.applyTime.length > 0) {
+        requestBody.applyStartTime = this.applyTime[0]
+        requestBody.applyEndTime = this.applyTime[1]
+      }
+      if (Array.isArray(this.returnTime) && this.returnTime.length > 0) {
+        requestBody.returnStartTime = this.returnTime[0]
+        requestBody.returnEndTime = this.returnTime[1]
       }
       queryOcItAssetApplyPage(requestBody)
         .then(res => {
@@ -273,7 +329,7 @@ export default {
 .input {
   display: inline-block;
   max-width: 200px;
-  margin-left: 5px;
+  margin-left: 10px;
 }
 
 .select {
@@ -281,6 +337,10 @@ export default {
 }
 
 .button {
+  margin-left: 5px;
+}
+
+.picker {
   margin-left: 5px;
 }
 </style>

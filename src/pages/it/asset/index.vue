@@ -78,7 +78,7 @@
         </el-table-column>
         <el-table-column label="归属公司">
           <template slot-scope="props">
-            <span>{{ props.row| assetCompanyFilters }}</span>
+            <span>{{ props.row | assetCompanyFilters }}</span>
           </template>
         </el-table-column>
         <el-table-column label="申领用户" width="220">
@@ -418,7 +418,7 @@ export default {
 }
 
 .picker {
-  margin-left: 10px;
+  margin-left: 5px;
 }
 
 .select {

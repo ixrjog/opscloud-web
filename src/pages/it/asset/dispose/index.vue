@@ -16,7 +16,32 @@
         </el-select>
         <el-button @click="fetchData" class="button">查询</el-button>
       </el-row>
-      <el-table :data="tableData" style="width: 100%" v-loading="loading">
+      <el-table :data="tableData" style="width: 100%" v-loading="loading" @expand-change="getAssetDetail">
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form label-position="left" inline class="table-expand"
+                     v-if="props.row.asset !== null && props.row.asset !== ''">
+              <el-form-item label="资产分类/名称">
+                <span>{{ props.row.asset.assetType }} / {{ props.row.asset.assetName }}</span>
+              </el-form-item>
+              <el-form-item label="归属公司">
+                <span>{{ props.row.asset | assetCompanyFilters }}</span>
+              </el-form-item>
+              <el-form-item label="资产配置">
+                <span>{{ props.row.asset.assetConfiguration }}</span>
+              </el-form-item>
+              <el-form-item label="放置地点">
+                <span>{{ props.row.asset.assetPlace }}</span>
+              </el-form-item>
+              <el-form-item label="购置/起租日期">
+                <span>{{ props.row.asset.assetAddTime }}</span>
+              </el-form-item>
+              <el-form-item label="金额">
+                <span>{{ props.row.asset.assetPrice }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
         <el-table-column prop="assetCode" label="资产编码">
           <template slot-scope="scope">
             <span v-clipboard:copy="scope.row.assetCode" v-clipboard:success="onCopy"
@@ -27,7 +52,9 @@
         </el-table-column>
         <el-table-column label="处置方式">
           <template slot-scope="props">
-            <el-tag :type="getDisposeTypeColor(props.row.disposeType)">{{ props.row.disposeType | disposeTypeFilters }}</el-tag>
+            <el-tag :type="getDisposeTypeColor(props.row.disposeType)">
+              {{ props.row.disposeType | disposeTypeFilters }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="disposeTime" label="处置日期"></el-table-column>
@@ -59,7 +86,7 @@ import ItAssetApplyDialog from '@/components/opscloud/it/ItAssetApplyDialog'
 
 // API
 import { mapActions, mapState } from 'vuex'
-import { ableAsset, queryOcItAssetDisposePage } from '@api/it/it.asset'
+import { ableAsset, queryAssetById, queryOcItAssetDisposePage } from '@api/it/it.asset'
 
 export default {
   data () {
@@ -135,6 +162,18 @@ export default {
         return '维修处理(紧急)'
       }
       return ''
+    },
+    assetCompanyFilters (assetCompany) {
+      if (assetCompany === null || assetCompany === '') {
+        return ''
+      }
+      if (assetCompany.assetCompanyType === 1) {
+        return assetCompany.assetCompanyName + ' <采购>'
+      }
+      if (assetCompany.assetCompanyType === 2) {
+        return assetCompany.assetCompanyName + ' <租赁>'
+      }
+      return ''
     }
   },
   methods: {
@@ -167,6 +206,15 @@ export default {
         .then(res => {
           this.fetchData()
           this.$message.success('资产还原成功')
+        })
+    },
+    getAssetDetail (row, expandedRows) {
+      if (JSON.stringify(expandedRows) === '[]') {
+        return
+      }
+      queryAssetById(row.assetId)
+        .then(res => {
+          row.asset = res.body
         })
     },
     fetchData () {
@@ -208,5 +256,22 @@ export default {
 
 .button {
   margin-left: 5px;
+}
+</style>
+
+<style>
+.table-expand {
+  font-size: 0;
+}
+
+.table-expand label {
+  width: 150px;
+  color: #99a9bf;
+}
+
+.table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
 }
 </style>
