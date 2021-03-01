@@ -28,6 +28,7 @@
                 :label="item.name"
                 :value="item">
                 <span style="float: left">{{ item.name }}</span>
+                <span style="float: right; font-size: 10px;margin-left: 20px">{{ item.description }}</span>
               </el-option>
             </el-select>
             <el-link icon="el-icon-position" :href="addMemberData.group.webUrl" target="_blank"
