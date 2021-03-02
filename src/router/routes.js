@@ -64,6 +64,15 @@ const frameIn = [
         }
       },
       {
+        path: '/monitor/prometheus',
+        name: 'monitor-prometheus',
+        component: () => import('@/pages/monitor/prometheus'),
+        meta: {
+          auth: true,
+          title: 'Prometheus'
+        }
+      },
+      {
         path: '/dashboard/helpdesk',
         name: 'dashboard-helpdesk',
         component: () => import('@/pages/dashboard/helpdesk'),
