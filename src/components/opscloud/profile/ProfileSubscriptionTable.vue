@@ -58,7 +58,7 @@
   import { mapState, mapActions } from 'vuex'
 
   // Component
-  import ProfileSubscriptionDialog from '@/components/opscloud/dialog/ProfileSubscriptionDialog'
+  import ProfileSubscriptionDialog from '@/components/opscloud/profile/ProfileSubscriptionDialog'
   // API
   import {
     queryProfileSubscriptionPage,

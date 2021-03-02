@@ -70,6 +70,10 @@
     {
       value: 'JUMPSERVER',
       label: 'JUMPSERVER'
+    },
+    {
+      value: 'PROMETHEUS_CONFIG',
+      label: 'PROMETHEUS_CONFIG'
     }
   ]
 
