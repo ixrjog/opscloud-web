@@ -44,7 +44,7 @@
                   :label="item.name"
                   :value="item.id">
                   <span style="float: left">{{ item.name }}</span>
-                  <span style="float: right; color: #8492a6; font-size: 13px">{{ item.comment }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px;margin-left: 20px">{{ item.comment }}</span>
                 </el-option>
               </el-select>
             </el-row>
