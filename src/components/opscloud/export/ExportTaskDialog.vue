@@ -119,7 +119,7 @@ export default {
     getDownloadUrl (fileName) {
       let host = window.location.host
       let httpProtocol = window.location.href.split('://')[0]
-      let url = httpProtocol + '://' + host + '/res/export/' + fileName + '.xlsx'
+      let url = httpProtocol + '://' + host + '/static/export/' + fileName + '.xlsx'
       return url
     },
     getStatusColor (taskStatus) {
