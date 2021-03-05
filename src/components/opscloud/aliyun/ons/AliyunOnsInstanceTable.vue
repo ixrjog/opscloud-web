@@ -58,7 +58,7 @@
                 </el-col>
               </el-row>
             </div>
-            <el-form label-position="left" label-width="130px">
+            <el-form label-width="130px">
               <el-row>
                 <el-form-item label="实例ID">
                   <span v-clipboard:copy="item.instanceId" v-clipboard:success="onCopy"

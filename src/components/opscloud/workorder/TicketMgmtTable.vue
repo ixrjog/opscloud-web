@@ -83,6 +83,8 @@
                                @closeDialog="fetchData"></ticket-kafka-topic-dialog>
     <ticket-kafka-group-dialog ref="ticketKafkaGroupDialog" :formStatus="formKafkaGroupStatus"
                                @closeDialog="fetchData"></ticket-kafka-group-dialog>
+    <ticket-gitlab-group-member-dialog ref="ticketGitlabGroupMemberDialog" :formStatus="formGitlabGroupMemberStatus"
+                                       @closeDialog="fetchData"></ticket-gitlab-group-member-dialog>
   </div>
 </template>
 
@@ -100,6 +102,7 @@ import { getPhaseText, getPhaseType } from '@/filters/ticket.js'
 
 // API
 import { queryWorkorderTicketPage, delWorkorderTicketById } from '@api/workorder/workorder.ticket.js'
+import TicketGitlabGroupMemberDialog from '@/components/opscloud/workorder/TicketGitlabGroupMemberDialog'
 
 const defaultFormStatus = {
   visible: false,
@@ -120,6 +123,7 @@ export default {
       formOnsGroupStatus: Object.assign({}, defaultFormStatus),
       formKafkaTopicStatus: Object.assign({}, defaultFormStatus),
       formKafkaGroupStatus: Object.assign({}, defaultFormStatus),
+      formGitlabGroupMemberStatus: Object.assign({}, defaultFormStatus),
       loading: false,
       pagination: {
         currentPage: 1,
@@ -172,7 +176,8 @@ export default {
     TicketOnsTopicDialog,
     TicketOnsGroupDialog,
     TicketKafkaTopicDialog,
-    TicketKafkaGroupDialog
+    TicketKafkaGroupDialog,
+    TicketGitlabGroupMemberDialog
   },
   filters: {
     getPhaseText,
@@ -243,6 +248,11 @@ export default {
           this.formKafkaGroupStatus.visible = true
           this.formKafkaGroupStatus.operationType = operationType
           this.$refs.ticketKafkaGroupDialog.initData(ticket)
+          break
+        case 'GITLAB_GROUP_MEMBER':
+          this.formGitlabGroupMemberStatus.visible = true
+          this.formGitlabGroupMemberStatus.operationType = operationType
+          this.$refs.ticketGitlabGroupMemberDialog.initData(ticket)
           break
         default:
           this.$message.error('工单类型错误或未配置!')

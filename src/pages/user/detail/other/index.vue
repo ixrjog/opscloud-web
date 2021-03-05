@@ -46,7 +46,6 @@ export default {
       formUserDetail: {},
       formUserStatus: {
         visible: false,
-        labelWidth: '150px',
         operationType: true,
         addTitle: '新增用户信息',
         updateTitle: '更新用户信息'
