@@ -150,7 +150,7 @@ import { mapActions, mapState } from 'vuex'
 import { fuzzyQueryUserPage } from '@api/user/user'
 import { queryFirstLevelDepartmentPage } from '@api/org/org'
 import { userFilters } from '@/filters/user'
-import { exportItAsset, queryAssetById } from '@api/it/it.asset'
+import { queryAssetById } from '@api/it/it.asset'
 import ExportTaskDialog from '@/components/opscloud/export/ExportTaskDialog'
 
 export default {
@@ -386,7 +386,7 @@ export default {
         type: 'warning'
       }).then(() => {
         setTimeout(() => {
-          exportItAsset()
+          exportItAssetApply()
             .then(res => {
               this.$message.info('正在导出，文件于下载页面下载')
             })
