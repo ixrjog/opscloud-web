@@ -150,7 +150,7 @@ import { mapActions, mapState } from 'vuex'
 import { fuzzyQueryUserPage } from '@api/user/user'
 import { queryFirstLevelDepartmentPage } from '@api/org/org'
 import { userFilters } from '@/filters/user'
-import { queryAssetById } from '@api/it/it.asset'
+import { exportItAsset, queryAssetById } from '@api/it/it.asset'
 import ExportTaskDialog from '@/components/opscloud/export/ExportTaskDialog'
 
 export default {
@@ -380,10 +380,23 @@ export default {
       this.$message.error('抱歉，复制失败！')
     },
     handlerExport () {
-      exportItAssetApply()
-        .then(res => {
-          this.$message.info('正在导出，文件于下载页面下载')
+      this.$confirm('确定全量导出资产派发记录吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        setTimeout(() => {
+          exportItAsset()
+            .then(res => {
+              this.$message.info('正在导出，文件于下载页面下载')
+            })
         })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消同步'
+        })
+      })
     },
     handlerDownload () {
       this.exportTaskDialogStatus.visible = true

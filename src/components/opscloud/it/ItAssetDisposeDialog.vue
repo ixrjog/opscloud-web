@@ -40,7 +40,7 @@
 <script>
 
 // API
-import { disposeAsset, queryOcItAssetPage } from '@api/it/it.asset'
+import { disposeAsset } from '@api/it/it.asset'
 
 const assetDisposeData = {
   assetId: '',
@@ -91,31 +91,12 @@ export default {
       this.assetDisposeData.assetId = data.assetId
       this.assetCode = data.assetCode
     },
-    paginationCurrentChange (currentPage) {
-      this.pagination.currentPage = currentPage
-      this.fetchData()
-    },
-    fetchData () {
-      this.loading = true
-      let requestBody = {
-        'queryName': this.queryParam.queryName,
-        'assetCompany': this.queryParam.assetCompany === '' ? -1 : this.queryParam.assetCompany,
-        'assetStatus': this.queryParam.assetStatus === '' ? -1 : this.queryParam.assetStatus,
-        'assetNameIdList': this.queryParam.assetNameIdList,
-        'useStartTime': '',
-        'useEndTime': '',
-        'page': this.pagination.currentPage,
-        'length': this.pagination.pageSize
-      }
-      if (Array.isArray(this.userTime) && this.userTime.length > 0) {
-        requestBody.useStartTime = this.userTime[0]
-        requestBody.useEndTime = this.userTime[1]
-      }
-      queryOcItAssetPage(requestBody)
+    assetDisposeAdd () {
+      disposeAsset(this.assetDisposeData)
         .then(res => {
-          this.tableData = res.body.data
-          this.pagination.total = res.body.totalNum
-          this.loading = false
+          this.$message.success('资产处置成功')
+          this.formStatus.visible = false
+          this.$emit('closeDialog')
         })
     }
   }

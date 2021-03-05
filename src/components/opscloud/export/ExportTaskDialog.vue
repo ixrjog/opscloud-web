@@ -13,7 +13,7 @@
       </el-table-column>
       <el-table-column label="状态" width="80">
         <template slot-scope="props">
-          <el-tag>{{ props.row.taskStatus | taskStatusFilters }}</el-tag>
+          <el-tag :type="getStatusColor(props.row.taskStatus)">{{ props.row.taskStatus | taskStatusFilters }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="startTime" label="开始时间"></el-table-column>
@@ -121,6 +121,18 @@ export default {
       let httpProtocol = window.location.href.split('://')[0]
       let url = httpProtocol + '://' + host + '/res/export/' + fileName + '.xlsx'
       return url
+    },
+    getStatusColor (taskStatus) {
+      if (taskStatus === 0) {
+        return 'danger'
+      }
+      if (taskStatus === 1) {
+        return 'info'
+      }
+      if (taskStatus === 2) {
+        return 'success'
+      }
+      return ''
     }
   }
 }
