@@ -36,6 +36,11 @@
         </el-date-picker>
         <el-button @click="fetchData" class="button">查询</el-button>
         <el-button @click="handlerAdd" class="button">新增</el-button>
+        <el-button-group style="float: right;margin-right: 10px">
+          <el-button @click="handlerExport" class="button">导出</el-button>
+          <el-button @click="handlerDownload" class="button">下载</el-button>
+        </el-button-group>
+
       </el-row>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column type="expand">
@@ -132,6 +137,7 @@
                               @closeDialog="fetchData"></it-asset-return-dialog>
       <it-asset-dispose-dialog ref="itAssetDisposeDialog" :formStatus="itAssetDisposeDialogStatus"
                                @closeDialog="fetchData"></it-asset-dispose-dialog>
+      <export-task-dialog ref="exportTaskDialog" :formStatus="exportTaskDialogStatus"></export-task-dialog>
     </template>
   </d2-container>
 </template>
@@ -147,10 +153,12 @@ import {
   queryOcItAssetCompanyAll,
   queryOcItAssetPage,
   ableAsset,
-  queryAssetTypeTree
+  queryAssetTypeTree,
+  exportItAsset
 } from '@api/it/it.asset'
 import { mapActions, mapState } from 'vuex'
 import { userFilters } from '@/filters/user'
+import ExportTaskDialog from '@/components/opscloud/export/ExportTaskDialog'
 
 export default {
   data () {
@@ -171,6 +179,9 @@ export default {
         visible: false
       },
       itAssetDisposeDialogStatus: {
+        visible: false
+      },
+      exportTaskDialogStatus: {
         visible: false
       },
       tableData: [],
@@ -229,7 +240,8 @@ export default {
           }
         }]
       },
-      userTime: []
+      userTime: [],
+      exportType: 1
     }
   },
   computed: {
@@ -246,7 +258,8 @@ export default {
     ItAssetDialog,
     ItAssetApplyDialog,
     ItAssetReturnDialog,
-    ItAssetDisposeDialog
+    ItAssetDisposeDialog,
+    ExportTaskDialog
   },
   filters: {
     assetStatusFilters (assetStatus) {
@@ -405,6 +418,16 @@ export default {
       value.map(assetNameId => {
         this.queryParam.assetNameIdList.push(assetNameId[(assetNameId.length - 1)])
       })
+    },
+    handlerExport () {
+      exportItAsset()
+        .then(res => {
+          this.$message.info('正在导出，文件于下载页面下载')
+        })
+    },
+    handlerDownload () {
+      this.exportTaskDialogStatus.visible = true
+      this.$refs.exportTaskDialog.initData(this.exportType)
     }
   }
 }

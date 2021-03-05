@@ -4,12 +4,12 @@
       <div>
         <h1>{{ title }}</h1>
       </div>
-      <el-row style="margin-bottom: 5px" :gutter="24">
-        <el-button @click="fetchData" style="margin-left: 10px" :loading="loading">查询</el-button>
-        <el-button @click="handlerPush" class="button" :loading="creating">创建</el-button>
-      </el-row>
       <el-row>
         <el-col :span="16" v-if="prometheusConfig === ''">
+          <el-row style="margin-bottom: 5px" :gutter="24">
+            <el-button @click="fetchData" style="margin-left: 10px" :loading="loading">查询</el-button>
+            <el-button @click="handlerPush" class="button" :loading="creating">创建</el-button>
+          </el-row>
           <span>配置文件查询中……</span>
         </el-col>
         <el-col :span="16" v-else>

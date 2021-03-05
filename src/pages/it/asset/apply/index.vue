@@ -44,6 +44,10 @@
         </el-select>
         <el-button @click="fetchData" class="button" v-if="!queryMore">查询</el-button>
         <el-checkbox v-model="queryMore" class="button">更多</el-checkbox>
+        <el-button-group style="float: right;margin-right: 10px">
+          <el-button @click="handlerExport" class="button">导出</el-button>
+          <el-button @click="handlerDownload" class="button">下载</el-button>
+        </el-button-group>
       </el-row>
       <el-row style="margin-bottom: 5px" v-if="queryMore">
         <el-date-picker
@@ -131,6 +135,7 @@
                              @closeDialog="fetchData"></it-asset-apply-dialog>
       <it-asset-return-dialog ref="itAssetReturnDialog" :formStatus="itAssetReturnDialogStatus"
                               @closeDialog="fetchData"></it-asset-return-dialog>
+      <export-task-dialog ref="exportTaskDialog" :formStatus="exportTaskDialogStatus"></export-task-dialog>
     </template>
   </d2-container>
 </template>
@@ -140,12 +145,13 @@ import ItAssetReturnDialog from '@/components/opscloud/it/ItAssetReturnDialog'
 import ItAssetApplyDialog from '@/components/opscloud/it/ItAssetApplyDialog'
 
 // API
-import { queryOcItAssetApplyPage } from '@api/it/it.asset.apply'
+import { exportItAssetApply, queryOcItAssetApplyPage } from '@api/it/it.asset.apply'
 import { mapActions, mapState } from 'vuex'
 import { fuzzyQueryUserPage } from '@api/user/user'
 import { queryFirstLevelDepartmentPage } from '@api/org/org'
 import { userFilters } from '@/filters/user'
 import { queryAssetById } from '@api/it/it.asset'
+import ExportTaskDialog from '@/components/opscloud/export/ExportTaskDialog'
 
 export default {
   data () {
@@ -157,6 +163,9 @@ export default {
       },
       itAssetApplyDialogStatus: {
         isUpdate: true,
+        visible: false
+      },
+      exportTaskDialogStatus: {
         visible: false
       },
       tableData: [],
@@ -218,7 +227,8 @@ export default {
       }, {
         value: 0,
         label: '使用中'
-      }]
+      }],
+      exportType: 2
     }
   },
   computed: {
@@ -231,7 +241,8 @@ export default {
   },
   components: {
     ItAssetReturnDialog,
-    ItAssetApplyDialog
+    ItAssetApplyDialog,
+    ExportTaskDialog
   },
   filters: {
     userFilters,
@@ -367,6 +378,16 @@ export default {
     },
     onError (e) {
       this.$message.error('抱歉，复制失败！')
+    },
+    handlerExport () {
+      exportItAssetApply()
+        .then(res => {
+          this.$message.info('正在导出，文件于下载页面下载')
+        })
+    },
+    handlerDownload () {
+      this.exportTaskDialogStatus.visible = true
+      this.$refs.exportTaskDialog.initData(this.exportType)
     }
   }
 }

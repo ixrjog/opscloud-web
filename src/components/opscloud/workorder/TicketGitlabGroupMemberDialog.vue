@@ -7,7 +7,7 @@
                  v-loading="configuring" element-loading-text="工单配置中"
                  element-loading-spinner="el-icon-loading" v-if="ticket.ticketPhase === 'CREATED_TICKET'">
           <el-form-item label="实例" prop="instance">
-            <el-select v-model="addMemberData.instance" filterable value-key="groupId"
+            <el-select v-model="addMemberData.instance" filterable value-key="groupId" @change="queryGitGroup"
                        remote reserve-keyword placeholder="输入关键词搜索git实例" :remote-method="getGitInstance">
               <el-option
                 v-for="item in instanceOptions"
@@ -241,9 +241,14 @@ export default {
       queryGitlabInstance(queryName)
         .then(res => {
           this.instanceOptions = res.body.data
+          if (Array.isArray(this.instanceOptions) && this.instanceOptions.length > 0) {
+            this.addMemberData.instance = this.instanceOptions[0]
+            this.queryGitGroup()
+          }
         })
     },
     getGitGroup (queryName) {
+      this.groupOptions = []
       let requestBody = {
         instanceId: this.addMemberData.instanceId,
         queryName: queryName
@@ -252,6 +257,9 @@ export default {
         .then(res => {
           this.groupOptions = res.body.data
         })
+    },
+    queryGitGroup () {
+      this.getGitGroup('')
     },
     getTicketEntry () {
       queryUserTicketByTicketId(this.ticket.id)

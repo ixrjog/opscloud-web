@@ -156,3 +156,10 @@ export function queryItAssetCompanyTypeStats () {
     method: 'get'
   })
 }
+
+export function exportItAsset () {
+  return request({
+    url: baseUrl + '/export',
+    method: 'get'
+  })
+}
