@@ -136,15 +136,15 @@ export default {
       }
     },
     getGroupConfig () {
+      this.groupConfig = ''
+      this.groupTarget = ''
       if (this.serverGroupId === '') {
         return
       }
-      this.groupConfig = ''
       prometheusGroupConfigPreview(this.serverGroupId)
         .then(res => {
           this.groupConfig = res.body
         })
-      this.groupTarget = ''
       getTargetMap(this.serverGroupId)
         .then(res => {
           this.groupTarget = res.body
