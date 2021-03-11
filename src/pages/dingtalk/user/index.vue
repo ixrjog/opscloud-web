@@ -255,7 +255,7 @@ export default {
 }
 
 .searchBarStyle {
-  margin-left: 5px;
+  margin-left: 10px;
   max-width: 200px;
 }
 
