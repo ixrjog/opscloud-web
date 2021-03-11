@@ -15,6 +15,11 @@
           </el-tag>
         </template>
       </el-table-column>
+      <el-table-column prop="env" label="环境" width="80">
+        <template slot-scope="scope">
+          <el-tag disable-transitions :style="{ color: scope.row.env.color }">{{ scope.row.env.envName }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="ago" label="推送时间" width="100"></el-table-column>
       <el-table-column fixed="right" label="操作" width="240">
         <template slot-scope="scope">
@@ -101,6 +106,7 @@
           serverGroupId: '',
           serverGroupName: '',
           topic: '',
+          envType: 0,
           comment: ''
         }
         this.formStatus.operationType = true
