@@ -20,7 +20,7 @@
     <el-form :model="logData">
       <el-form-item label="日志库" :label-width="labelWidth" :required="true">
         <el-select v-model.trim="logData.logstore" placeholder="选择logstore" @change="handlerSelLogstore"
-                   :disabled="logData.project === ''">
+                   :disabled="logData.project === ''" filterable>
           <el-option
             v-for="item in logstoreOptions"
             :key="item"
@@ -32,7 +32,7 @@
     </el-form>
     <el-form :model="logData">
       <el-form-item label="Logtail配置" :label-width="labelWidth" :required="true">
-        <el-select v-model.trim="logData.config" placeholder="选择config" :disabled="logData.logstore === ''">
+        <el-select v-model.trim="logData.config" placeholder="选择config" :disabled="logData.logstore === ''" filterable>
           <el-option
             v-for="item in configOptions"
             :key="item"
