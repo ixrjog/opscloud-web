@@ -27,6 +27,20 @@
       </el-form-item>
     </el-form>
     <el-form :model="logMemberData">
+      <el-form-item label="环境" :label-width="labelWidth" :required="true">
+        <el-select v-model.trim="logMemberData.envType" filterable clearable
+                   remote reserve-keyword
+                   :loading="loading">
+          <el-option
+            v-for="item in envTypeOptions"
+            :key="item.envType"
+            :label="item.envName"
+            :value="item.envType">
+          </el-option>
+        </el-select>
+      </el-form-item>
+    </el-form>
+    <el-form :model="logMemberData">
       <el-form-item label="描述" :label-width="labelWidth">
         <el-input v-model.trim="logMemberData.comment" placeholder="请输入内容"></el-input>
       </el-form-item>
@@ -42,11 +56,13 @@
 
   // API
   import { queryLogMemberServerGroupPage, addAliyunLogMember } from '@api/cloud/aliyun.log.member.js'
+  import { queryEnvPage } from '@api/env/env.js'
 
   export default {
     data () {
       return {
         labelWidth: '150px',
+        envTypeOptions: [],
         serverGroup: '',
         logMemberData: {},
         serverGroupOptions: [],
@@ -63,11 +79,18 @@
         this.$emit('closeDialog')
       },
       initData (aliyunLogMember) {
+        this.getEnvType()
         this.logMemberData = aliyunLogMember
         if (this.logMemberData.serverGroup !== null) {
           this.serverGroup = this.logMemberData.serverGroup
         }
         this.getServerGroup('')
+      },
+      getEnvType () {
+        queryEnvPage('', '', 1, 20)
+          .then(res => {
+            this.envTypeOptions = res.body.data
+          })
       },
       getServerGroup (param) {
         let requestBody = {
