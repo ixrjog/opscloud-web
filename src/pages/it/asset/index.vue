@@ -29,8 +29,18 @@
               {{ item.assetCompanyType | assetCompanyTypeFilters }}</span>
           </el-option>
         </el-select>
+        <el-date-picker
+          v-model="userTime" type="daterange" align="right" unlink-panels value-format="timestamp"
+          start-placeholder="领用开始日期" range-separator="至" end-placeholder="领用结束日期"
+          :picker-options="pickerOptions" class="picker">
+        </el-date-picker>
         <el-button @click="fetchData" class="button">查询</el-button>
         <el-button @click="handlerAdd" class="button">新增</el-button>
+        <el-button-group style="float: right;margin-right: 10px">
+          <el-button @click="handlerExport" class="button">导出</el-button>
+          <el-button @click="handlerDownload" class="button">下载</el-button>
+        </el-button-group>
+
       </el-row>
       <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column type="expand">
@@ -73,7 +83,7 @@
         </el-table-column>
         <el-table-column label="归属公司">
           <template slot-scope="props">
-            <span>{{ props.row| assetCompanyFilters }}</span>
+            <span>{{ props.row | assetCompanyFilters }}</span>
           </template>
         </el-table-column>
         <el-table-column label="申领用户" width="220">
@@ -127,6 +137,7 @@
                               @closeDialog="fetchData"></it-asset-return-dialog>
       <it-asset-dispose-dialog ref="itAssetDisposeDialog" :formStatus="itAssetDisposeDialogStatus"
                                @closeDialog="fetchData"></it-asset-dispose-dialog>
+      <export-task-dialog ref="exportTaskDialog" :formStatus="exportTaskDialogStatus"></export-task-dialog>
     </template>
   </d2-container>
 </template>
@@ -142,10 +153,12 @@ import {
   queryOcItAssetCompanyAll,
   queryOcItAssetPage,
   ableAsset,
-  queryAssetTypeTree
+  queryAssetTypeTree,
+  exportItAsset
 } from '@api/it/it.asset'
 import { mapActions, mapState } from 'vuex'
 import { userFilters } from '@/filters/user'
+import ExportTaskDialog from '@/components/opscloud/export/ExportTaskDialog'
 
 export default {
   data () {
@@ -166,6 +179,9 @@ export default {
         visible: false
       },
       itAssetDisposeDialogStatus: {
+        visible: false
+      },
+      exportTaskDialogStatus: {
         visible: false
       },
       tableData: [],
@@ -196,7 +212,36 @@ export default {
       assetTypeProps: {
         multiple: true,
         expandTrigger: 'hover'
-      }
+      },
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一周',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近一个月',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近三个月',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+            picker.$emit('pick', [start, end])
+          }
+        }]
+      },
+      userTime: [],
+      exportType: 1
     }
   },
   computed: {
@@ -213,7 +258,8 @@ export default {
     ItAssetDialog,
     ItAssetApplyDialog,
     ItAssetReturnDialog,
-    ItAssetDisposeDialog
+    ItAssetDisposeDialog,
+    ExportTaskDialog
   },
   filters: {
     assetStatusFilters (assetStatus) {
@@ -344,8 +390,14 @@ export default {
         'assetCompany': this.queryParam.assetCompany === '' ? -1 : this.queryParam.assetCompany,
         'assetStatus': this.queryParam.assetStatus === '' ? -1 : this.queryParam.assetStatus,
         'assetNameIdList': this.queryParam.assetNameIdList,
+        'useStartTime': '',
+        'useEndTime': '',
         'page': this.pagination.currentPage,
         'length': this.pagination.pageSize
+      }
+      if (Array.isArray(this.userTime) && this.userTime.length > 0) {
+        requestBody.useStartTime = this.userTime[0]
+        requestBody.useEndTime = this.userTime[1]
       }
       queryOcItAssetPage(requestBody)
         .then(res => {
@@ -366,6 +418,29 @@ export default {
       value.map(assetNameId => {
         this.queryParam.assetNameIdList.push(assetNameId[(assetNameId.length - 1)])
       })
+    },
+    handlerExport () {
+      this.$confirm('确定全量导出资产信息吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        setTimeout(() => {
+          exportItAsset()
+            .then(res => {
+              this.$message.info('正在导出，文件于下载页面下载')
+            })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消同步'
+        })
+      })
+    },
+    handlerDownload () {
+      this.exportTaskDialogStatus.visible = true
+      this.$refs.exportTaskDialog.initData(this.exportType)
     }
   }
 }
@@ -376,6 +451,10 @@ export default {
   display: inline-block;
   max-width: 200px;
   margin-left: 10px;
+}
+
+.picker {
+  margin-left: 5px;
 }
 
 .select {

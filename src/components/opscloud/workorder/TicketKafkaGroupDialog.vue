@@ -82,7 +82,7 @@ import {
   agreeWorkorderTicket,
   disagreeWorkorderTicket,
   delWorkorderTicketEntryById,
-  queryUserTicketKafkaParam
+  queryUserTicketByTicketId
 } from '@api/workorder/workorder.ticket'
 import { onsGroupCheckV2 } from '@api/cloud/aliyun.ons.group'
 
@@ -130,7 +130,7 @@ export default {
   mounted () {
   },
   components: {},
-  name: 'TicketOnsGroupDialog',
+  name: 'TicketKafkaGroupDialog',
   props: ['formStatus'],
   filters: {
     instanceFilters (instance) {
@@ -255,7 +255,7 @@ export default {
         })
     },
     getTicketKafka () {
-      queryUserTicketKafkaParam(this.ticket.id)
+      queryUserTicketByTicketId(this.ticket.id)
         .then(res => {
           this.ticketEntries = res.body
         })

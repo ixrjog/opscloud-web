@@ -41,6 +41,8 @@
                                @closeDialog="fetchData"></ticket-kafka-topic-dialog>
     <ticket-kafka-group-dialog ref="ticketKafkaGroupDialog" :formStatus="formKafkaGroupStatus"
                                @closeDialog="fetchData"></ticket-kafka-group-dialog>
+    <ticket-gitlab-group-member-dialog ref="ticketGitlabGroupMemberDialog" :formStatus="formGitlabGroupMemberStatus"
+                                       @closeDialog="fetchData"></ticket-gitlab-group-member-dialog>
   </div>
 </template>
 
@@ -63,6 +65,7 @@ import { createWorkorderTicket } from '@api/workorder/workorder.ticket.js'
 import { queryDocById } from '@api/doc/doc.js'
 import TicketKafkaTopicDialog from '@/components/opscloud/workorder/TicketKafkaTopicDialog'
 import TicketKafkaGroupDialog from '@/components/opscloud/workorder/TicketKafkaGroupDialog'
+import TicketGitlabGroupMemberDialog from '@/components/opscloud/workorder/TicketGitlabGroupMemberDialog'
 
 const defaultFormStatus = {
   visible: false,
@@ -88,6 +91,7 @@ export default {
       formOnsGroupStatus: Object.assign({}, defaultFormStatus),
       formKafkaTopicStatus: Object.assign({}, defaultFormStatus),
       formKafkaGroupStatus: Object.assign({}, defaultFormStatus),
+      formGitlabGroupMemberStatus: Object.assign({}, defaultFormStatus),
       ticketCreateing: false,
       ticketTableData: []
     }
@@ -104,7 +108,8 @@ export default {
     TicketOnsTopicDialog,
     TicketOnsGroupDialog,
     TicketKafkaTopicDialog,
-    TicketKafkaGroupDialog
+    TicketKafkaGroupDialog,
+    TicketGitlabGroupMemberDialog
   },
   methods: {
     getWorkorderGroup () {
@@ -173,6 +178,10 @@ export default {
             case 'KAFKA_GROUP':
               this.invokeWorkorderTicketStatus(this.formKafkaGroupStatus)
               this.$refs.ticketKafkaGroupDialog.initData(ticket)
+              break
+            case 'GITLAB_GROUP_MEMBER':
+              this.invokeWorkorderTicketStatus(this.formGitlabGroupMemberStatus)
+              this.$refs.ticketGitlabGroupMemberDialog.initData(ticket)
               break
             default:
               this.$message.error('工单类型错误或未配置!')

@@ -43,7 +43,7 @@
       editor: require('vue2-ace-editor')
     },
     methods: {
-      editorInit: function (e) {
+      editorInit: function () {
         // language extension prerequsite...
         require('brace/ext/language_tools')
         // language

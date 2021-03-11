@@ -64,6 +64,15 @@ const frameIn = [
         }
       },
       {
+        path: '/monitor/prometheus',
+        name: 'monitor-prometheus',
+        component: () => import('@/pages/monitor/prometheus'),
+        meta: {
+          auth: true,
+          title: 'Prometheus'
+        }
+      },
+      {
         path: '/dashboard/helpdesk',
         name: 'dashboard-helpdesk',
         component: () => import('@/pages/dashboard/helpdesk'),
@@ -636,6 +645,15 @@ const frameIn = [
         meta: {
           auth: true,
           title: '实例管理'
+        }
+      },
+      {
+        path: '/setting/menu',
+        name: 'setting-menu',
+        component: () => import('@/pages/setting/menu'),
+        meta: {
+          auth: true,
+          title: '菜单管理'
         }
       },
       {

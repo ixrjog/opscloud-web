@@ -17,3 +17,10 @@ export function updateAssetApply (data) {
     data
   })
 }
+
+export function exportItAssetApply () {
+  return request({
+    url: baseUrl + '/export',
+    method: 'get'
+  })
+}

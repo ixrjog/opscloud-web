@@ -4,8 +4,17 @@
       <div>
         <h1>{{ title }}</h1>
       </div>
-      <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
+      <el-row style="margin-bottom: 5px" :gutter="24">
         <el-input v-model.trim="queryParam.queryName" placeholder="输入资产编码模糊查询" class="input"/>
+        <el-select v-model="queryParam.userOrgDeptId" filterable remote reserve-keyword placeholder="搜索部门"
+                   :remote-method="getOrgDept" class="select" clearable>
+          <el-option
+            v-for="item in orgDeptOptions"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
         <el-select v-model="queryParam.userId" filterable remote reserve-keyword placeholder="搜索用户"
                    :remote-method="getUser" class="select" clearable>
           <el-option
@@ -15,15 +24,6 @@
             :value="user.id">
             <span style="float: left">{{ user | userFilters }}</span>
             <span style="float: right; color: #8492a6; font-size: 10px;margin-left: 20px">{{ user.email }}</span>
-          </el-option>
-        </el-select>
-        <el-select v-model="queryParam.userOrgDeptId" filterable remote reserve-keyword placeholder="搜索部门"
-                   :remote-method="getOrgDept" class="select" clearable>
-          <el-option
-            v-for="item in orgDeptOptions"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id">
           </el-option>
         </el-select>
         <el-select v-model="queryParam.applyType" placeholder="选择申领方式" class="select" clearable>
@@ -42,9 +42,52 @@
             :value="item.value">
           </el-option>
         </el-select>
-        <el-button @click="fetchData">查询</el-button>
+        <el-button @click="fetchData" class="button" v-if="!queryMore">查询</el-button>
+        <el-checkbox v-model="queryMore" class="button">更多</el-checkbox>
+        <el-button-group style="float: right;margin-right: 10px">
+          <el-button @click="handlerExport" class="button">导出</el-button>
+          <el-button @click="handlerDownload" class="button">下载</el-button>
+        </el-button-group>
       </el-row>
-      <el-table :data="tableData" style="width: 100%" v-loading="loading">
+      <el-row style="margin-bottom: 5px" v-if="queryMore">
+        <el-date-picker
+          v-model="applyTime" type="daterange" align="right" unlink-panels value-format="timestamp"
+          start-placeholder="领用开始日期" range-separator="至" end-placeholder="领用结束日期"
+          :picker-options="pickerOptions">
+        </el-date-picker>
+        <el-date-picker
+          v-model="returnTime" type="daterange" align="right" unlink-panels value-format="timestamp"
+          start-placeholder="归还开始日期" range-separator="至" end-placeholder="归还结束日期"
+          :picker-options="pickerOptions" class="picker">
+        </el-date-picker>
+        <el-button @click="fetchData" class="button">查询</el-button>
+      </el-row>
+      <el-table :data="tableData" style="width: 100%" v-loading="loading" @expand-change="getAssetDetail">
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form label-position="left" inline class="table-expand"
+                     v-if="props.row.asset !== null && props.row.asset !== ''">
+              <el-form-item label="资产分类/名称">
+                <span>{{ props.row.asset.assetType }} / {{ props.row.asset.assetName }}</span>
+              </el-form-item>
+              <el-form-item label="归属公司">
+                <span>{{ props.row.asset | assetCompanyFilters }}</span>
+              </el-form-item>
+              <el-form-item label="资产配置">
+                <span>{{ props.row.asset.assetConfiguration }}</span>
+              </el-form-item>
+              <el-form-item label="放置地点">
+                <span>{{ props.row.asset.assetPlace }}</span>
+              </el-form-item>
+              <el-form-item label="购置/起租日期">
+                <span>{{ props.row.asset.assetAddTime }}</span>
+              </el-form-item>
+              <el-form-item label="金额">
+                <span>{{ props.row.asset.assetPrice }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
         <el-table-column prop="assetCode" label="资产编码">
           <template slot-scope="scope">
             <span v-clipboard:copy="scope.row.assetCode" v-clipboard:success="onCopy"
@@ -92,6 +135,7 @@
                              @closeDialog="fetchData"></it-asset-apply-dialog>
       <it-asset-return-dialog ref="itAssetReturnDialog" :formStatus="itAssetReturnDialogStatus"
                               @closeDialog="fetchData"></it-asset-return-dialog>
+      <export-task-dialog ref="exportTaskDialog" :formStatus="exportTaskDialogStatus"></export-task-dialog>
     </template>
   </d2-container>
 </template>
@@ -101,11 +145,13 @@ import ItAssetReturnDialog from '@/components/opscloud/it/ItAssetReturnDialog'
 import ItAssetApplyDialog from '@/components/opscloud/it/ItAssetApplyDialog'
 
 // API
-import { queryOcItAssetApplyPage } from '@api/it/it.asset.apply'
+import { exportItAssetApply, queryOcItAssetApplyPage } from '@api/it/it.asset.apply'
 import { mapActions, mapState } from 'vuex'
 import { fuzzyQueryUserPage } from '@api/user/user'
 import { queryFirstLevelDepartmentPage } from '@api/org/org'
 import { userFilters } from '@/filters/user'
+import { exportItAsset, queryAssetById } from '@api/it/it.asset'
+import ExportTaskDialog from '@/components/opscloud/export/ExportTaskDialog'
 
 export default {
   data () {
@@ -119,8 +165,41 @@ export default {
         isUpdate: true,
         visible: false
       },
+      exportTaskDialogStatus: {
+        visible: false
+      },
       tableData: [],
       loading: false,
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一周',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近一个月',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近三个月',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+            picker.$emit('pick', [start, end])
+          }
+        }]
+      },
+      returnTime: [],
+      applyTime: [],
+      queryMore: false,
       pagination: {
         currentPage: 1,
         pageSize: 10,
@@ -148,7 +227,8 @@ export default {
       }, {
         value: 0,
         label: '使用中'
-      }]
+      }],
+      exportType: 2
     }
   },
   computed: {
@@ -161,7 +241,8 @@ export default {
   },
   components: {
     ItAssetReturnDialog,
-    ItAssetApplyDialog
+    ItAssetApplyDialog,
+    ExportTaskDialog
   },
   filters: {
     userFilters,
@@ -171,6 +252,18 @@ export default {
       }
       if (applyType === 2) {
         return '借用'
+      }
+      return ''
+    },
+    assetCompanyFilters (assetCompany) {
+      if (assetCompany === null || assetCompany === '') {
+        return ''
+      }
+      if (assetCompany.assetCompanyType === 1) {
+        return assetCompany.assetCompanyName + ' <采购>'
+      }
+      if (assetCompany.assetCompanyType === 2) {
+        return assetCompany.assetCompanyName + ' <租赁>'
       }
       return ''
     }
@@ -240,6 +333,15 @@ export default {
       this.itAssetReturnDialogStatus.visible = true
       this.$refs.itAssetReturnDialog.initData(data)
     },
+    getAssetDetail (row, expandedRows) {
+      if (JSON.stringify(expandedRows) === '[]') {
+        return
+      }
+      queryAssetById(row.assetId)
+        .then(res => {
+          row.asset = res.body
+        })
+    },
     fetchData () {
       this.loading = true
       let requestBody = {
@@ -248,8 +350,20 @@ export default {
         'userOrgDeptId': this.queryParam.userOrgDeptId === '' ? -1 : this.queryParam.userOrgDeptId,
         'applyType': this.queryParam.applyType === '' ? -1 : this.queryParam.applyType,
         'isReturn': this.queryParam.isReturn === '' ? -1 : this.queryParam.isReturn,
+        'applyStartTime': '',
+        'applyEndTime': '',
+        'returnStartTime': '',
+        'returnEndTime': '',
         'page': this.pagination.currentPage,
         'length': this.pagination.pageSize
+      }
+      if (Array.isArray(this.applyTime) && this.applyTime.length > 0) {
+        requestBody.applyStartTime = this.applyTime[0]
+        requestBody.applyEndTime = this.applyTime[1]
+      }
+      if (Array.isArray(this.returnTime) && this.returnTime.length > 0) {
+        requestBody.returnStartTime = this.returnTime[0]
+        requestBody.returnEndTime = this.returnTime[1]
       }
       queryOcItAssetApplyPage(requestBody)
         .then(res => {
@@ -264,6 +378,29 @@ export default {
     },
     onError (e) {
       this.$message.error('抱歉，复制失败！')
+    },
+    handlerExport () {
+      this.$confirm('确定全量导出资产派发记录吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        setTimeout(() => {
+          exportItAsset()
+            .then(res => {
+              this.$message.info('正在导出，文件于下载页面下载')
+            })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消同步'
+        })
+      })
+    },
+    handlerDownload () {
+      this.exportTaskDialogStatus.visible = true
+      this.$refs.exportTaskDialog.initData(this.exportType)
     }
   }
 }
@@ -273,10 +410,35 @@ export default {
 .input {
   display: inline-block;
   max-width: 200px;
-  margin-left: 5px;
+  margin-left: 10px;
 }
 
 .select {
   margin-left: 5px;
+}
+
+.button {
+  margin-left: 5px;
+}
+
+.picker {
+  margin-left: 5px;
+}
+</style>
+
+<style>
+.table-expand {
+  font-size: 0;
+}
+
+.table-expand label {
+  width: 150px;
+  color: #99a9bf;
+}
+
+.table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
 }
 </style>

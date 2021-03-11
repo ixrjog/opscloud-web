@@ -10,6 +10,13 @@ export function queryOcItAssetPage (data) {
   })
 }
 
+export function queryAssetById (assetId) {
+  return request({
+    url: baseUrl + '/id/query?assetId=' + assetId,
+    method: 'get'
+  })
+}
+
 export function queryAssetTypeTree () {
   return request({
     url: baseUrl + '/type/tree/query',
@@ -146,6 +153,13 @@ export function refreshAssetMonthStatistics () {
 export function queryItAssetCompanyTypeStats () {
   return request({
     url: baseUrl + '/company/type/stats',
+    method: 'get'
+  })
+}
+
+export function exportItAsset () {
+  return request({
+    url: baseUrl + '/export',
     method: 'get'
   })
 }
