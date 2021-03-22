@@ -16,6 +16,14 @@ export function fuzzyQueryServerPage (data) {
   })
 }
 
+export function queryServerByServerGroup (data) {
+  return request({
+    url: '/server/query/by/group',
+    method: 'post',
+    data
+  })
+}
+
 export function addServer (data) {
   return request({
     url: '/server/add',
@@ -51,5 +59,12 @@ export function saveServerAttribute (data) {
     url: '/server/attribute/save',
     method: 'put',
     data
+  })
+}
+
+export function queryServerById (id) {
+  return request({
+    url: '/server/id/query?id=' + id,
+    method: 'get'
   })
 }

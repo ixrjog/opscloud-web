@@ -29,3 +29,10 @@ export function updateEnv (data) {
     data
   })
 }
+
+export function queryEnvByType (id) {
+  return request({
+    url: '/env/type/query?id=' + id,
+    method: 'get'
+  })
+}

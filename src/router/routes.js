@@ -701,6 +701,15 @@ const frameIn = [
           auth: true,
           title: '故障信息详情'
         }
+      },
+      {
+        path: '/cm/nginx',
+        name: 'cm-nginx',
+        component: () => import('@/pages/cm/nginx/index'),
+        meta: {
+          auth: true,
+          title: 'Nginx配置管理'
+        }
       }
     ]
   }

@@ -72,3 +72,10 @@ export function saveServerGroupAttribute (data) {
     data
   })
 }
+
+export function queryServerGroupById (id) {
+  return request({
+    url: '/server/group/id/query?id=' + id,
+    method: 'get'
+  })
+}
