@@ -29,7 +29,7 @@
           <span>{{ props.row.hostPattern }}</span>
           <div class="tag-group">
             <el-tag style="margin-right: 5px" v-for="item in props.row.servers" :key="item.id">
-              {{ item.name}}-{{item.serialNumber}} {{ item.privateIp }}
+              {{ item.name }}-{{ item.serialNumber }} {{ item.privateIp }}
             </el-tag>
           </div>
         </template>
@@ -55,180 +55,180 @@
 </template>
 
 <script>
-  import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
-  // Component
-  import ProfileSubscriptionDialog from '@/components/opscloud/profile/ProfileSubscriptionDialog'
-  // API
-  import {
-    queryProfileSubscriptionPage,
-    delProfileSubscriptionById,
-    publishProfileSubscriptionById
-  } from '@api/profile/profile.subscription.js'
+// Component
+import ProfileSubscriptionDialog from '@/components/opscloud/profile/ProfileSubscriptionDialog'
+// API
+import {
+  queryProfileSubscriptionPage,
+  delProfileSubscriptionById,
+  publishProfileSubscriptionById
+} from '@api/profile/profile.subscription.js'
 
-  export default {
-    name: 'ProfileSubscriptionTable',
-    data () {
-      return {
-        formStatus: {
-          visible: false,
-          operationType: true,
-          addTitle: '新增订阅配置',
-          updateTitle: '更新订阅配置'
-        },
-        tableData: [],
-        options: {
-          stripe: true
-        },
-        loading: false,
-        pagination: {
-          currentPage: 1,
-          pageSize: 10,
-          total: 0
-        },
-        queryParam: {
-          queryName: ''
-        }
-      }
-    },
-    computed: {
-      ...mapState('d2admin/user', [
-        'info'
-      ])
-    },
-    mounted () {
-      this.initPageSize()
-      this.fetchData()
-    },
-    components: {
-      editor: require('vue2-ace-editor'),
-      ProfileSubscriptionDialog
-    },
-    methods: {
-      ...mapActions({
-        setPageSize: 'd2admin/user/set'
-      }),
-      handleSizeChange (size) {
-        this.pagination.pageSize = size
-        this.info.pageSize = size
-        this.setPageSize(this.info)
-        this.fetchData()
+export default {
+  name: 'ProfileSubscriptionTable',
+  data () {
+    return {
+      formStatus: {
+        visible: false,
+        operationType: true,
+        addTitle: '新增订阅配置',
+        updateTitle: '更新订阅配置'
       },
-      initPageSize () {
-        if (typeof (this.info.pageSize) !== 'undefined') {
-          this.pagination.pageSize = this.info.pageSize
-        }
+      tableData: [],
+      options: {
+        stripe: true
       },
-      editorInit: function (ed) {
-        // language extension prerequsite...
-        require('brace/ext/language_tools')
-        // language
-        require('brace/mode/yaml')
-        require('brace/mode/sh')
-        require('brace/theme/chrome')
-        require('brace/theme/kuroir')
-        // snippet
-        require('brace/snippets/yaml')
-        ed.setReadOnly(true)
+      loading: false,
+      pagination: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
       },
-      handlerRowEdit (row) {
-        // user
-        let profileSubscription = Object.assign({}, row)
-        this.formStatus.visible = true
-        this.formStatus.operationType = false
-        this.$refs.profileSubscriptionDialog.initData(profileSubscription)
-      },
-      handlerRowDel (row) {
-        this.$confirm('此操作将删除当前配置?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          delProfileSubscriptionById(row.id).then(res => {
-            this.fetchData()
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          })
-        })
-      },
-      handlerAdd () {
-        let profileSubscription = {
-          id: '',
-          name: '',
-          subscriptionType: '',
-          hostPattern: '',
-          serverGroupId: 0,
-          serverTaskId: 0,
-          vars: '',
-          comment: ''
-        }
-        this.$refs.profileSubscriptionDialog.initData(profileSubscription)
-        // form
-        this.formStatus.visible = true
-        this.formStatus.operationType = true
-      },
-      // publishProfileSubscriptionById
-      handlerRowPublish (row) {
-        publishProfileSubscriptionById(row.id)
-          .then(res => {
-            if (res.success) {
-              this.$message({
-                type: 'info',
-                message: '任务运行中'
-              })
-            } else {
-              this.$message.error(res.msg)
-            }
-          })
-      },
-      paginationCurrentChange (currentPage) {
-        this.pagination.currentPage = currentPage
-        this.fetchData()
-      },
-      fetchData () {
-        this.loading = true
-        let requestBody = {
-          'queryName': this.queryParam.queryName,
-          'page': this.pagination.currentPage,
-          'length': this.pagination.pageSize
-        }
-        queryProfileSubscriptionPage(requestBody)
-          .then(res => {
-            this.tableData = res.body.data
-            this.pagination.total = res.body.totalNum
-            this.loading = false
-          })
+      queryParam: {
+        queryName: ''
       }
     }
+  },
+  computed: {
+    ...mapState('d2admin/user', [
+      'info'
+    ])
+  },
+  mounted () {
+    this.initPageSize()
+    this.fetchData()
+  },
+  components: {
+    editor: require('vue2-ace-editor'),
+    ProfileSubscriptionDialog
+  },
+  methods: {
+    ...mapActions({
+      setPageSize: 'd2admin/user/set'
+    }),
+    handleSizeChange (size) {
+      this.pagination.pageSize = size
+      this.info.pageSize = size
+      this.setPageSize(this.info)
+      this.fetchData()
+    },
+    initPageSize () {
+      if (typeof (this.info.pageSize) !== 'undefined') {
+        this.pagination.pageSize = this.info.pageSize
+      }
+    },
+    editorInit: function (ed) {
+      // language extension prerequsite...
+      require('brace/ext/language_tools')
+      // language
+      require('brace/mode/yaml')
+      require('brace/mode/sh')
+      require('brace/theme/chrome')
+      require('brace/theme/kuroir')
+      // snippet
+      require('brace/snippets/yaml')
+      ed.setReadOnly(true)
+    },
+    handlerRowEdit (row) {
+      // user
+      let profileSubscription = Object.assign({}, row)
+      this.formStatus.visible = true
+      this.formStatus.operationType = false
+      this.$refs.profileSubscriptionDialog.initData(profileSubscription)
+    },
+    handlerRowDel (row) {
+      this.$confirm('此操作将删除当前配置?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        delProfileSubscriptionById(row.id).then(res => {
+          this.fetchData()
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    handlerAdd () {
+      let profileSubscription = {
+        id: '',
+        name: '',
+        subscriptionType: '',
+        hostPattern: '',
+        serverGroupId: 0,
+        serverTaskId: 0,
+        vars: '',
+        comment: ''
+      }
+      this.$refs.profileSubscriptionDialog.initData(profileSubscription)
+      // form
+      this.formStatus.visible = true
+      this.formStatus.operationType = true
+    },
+    // publishProfileSubscriptionById
+    handlerRowPublish (row) {
+      publishProfileSubscriptionById(row.id)
+        .then(res => {
+          if (res.success) {
+            this.$message({
+              type: 'info',
+              message: '任务运行中'
+            })
+          } else {
+            this.$message.error(res.msg)
+          }
+        })
+    },
+    paginationCurrentChange (currentPage) {
+      this.pagination.currentPage = currentPage
+      this.fetchData()
+    },
+    fetchData () {
+      this.loading = true
+      let requestBody = {
+        'queryName': this.queryParam.queryName,
+        'page': this.pagination.currentPage,
+        'length': this.pagination.pageSize
+      }
+      queryProfileSubscriptionPage(requestBody)
+        .then(res => {
+          this.tableData = res.body.data
+          this.pagination.total = res.body.totalNum
+          this.loading = false
+        })
+    }
   }
+}
 </script>
 
 <style>
-  .table-expand {
-    font-size: 0;
-  }
+.table-expand {
+  font-size: 0;
+}
 
-  .table-expand label {
-    width: 150px;
-    color: #99a9bf;
-  }
+.table-expand label {
+  width: 150px;
+  color: #99a9bf;
+}
 
-  .table-expand .el-form-item {
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 50%;
-  }
+.table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
+}
 
-  .input {
-    display: inline-block;
-    max-width: 200px;
-  }
+.input {
+  display: inline-block;
+  max-width: 200px;
+}
 
 </style>

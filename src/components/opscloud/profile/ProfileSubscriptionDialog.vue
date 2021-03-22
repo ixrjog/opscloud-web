@@ -74,6 +74,10 @@
     {
       value: 'PROMETHEUS_CONFIG',
       label: 'PROMETHEUS_CONFIG'
+    },
+    {
+      value: 'NGINX_CONFIG',
+      label: 'NGINX_CONFIG'
     }
   ]
 
