@@ -63,8 +63,8 @@ export default {
         this.$refs.nginxUpstreamTable.fetchData()
       }
     },
-    handlerInstance (id) {
-      this.$refs.nginxSubdomainForwardInstanceTable.initData(id)
+    handlerInstance (data) {
+      this.$refs.nginxSubdomainForwardInstanceTable.initData(data)
     },
     handlerInstanceUpdate () {
       this.$refs.nginxSubdomainForward.fetchData()

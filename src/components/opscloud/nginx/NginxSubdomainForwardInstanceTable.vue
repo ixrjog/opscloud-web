@@ -2,8 +2,11 @@
   <div v-show="queryParam.subdomainId !== ''">
     <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
       <el-input v-model="queryParam.queryName" placeholder="关键字查询" class="input"/>
-      <el-button @click="fetchData" class="button">查询</el-button>
-      <el-button @click="handlerAdd" class="button">新增</el-button>
+      <el-button size="mini" @click="fetchData" plain class="button">查询</el-button>
+      <el-button size="mini" @click="handlerAdd" plain class="button">新增</el-button>
+      <el-popconfirm title="确定推送配置文件吗？" @onConfirm="handlerRowConfPush()">
+        <el-button size="mini" slot="reference" plain class="button">推送</el-button>
+      </el-popconfirm>
     </el-row>
     <el-table :data="tableData" style="width: 100%" v-loading="loading" @expand-change="getConfContent">
       <el-table-column type="expand">
@@ -25,7 +28,7 @@
             <el-tooltip effect="dark" content="点击复制" placement="right">
               <span v-clipboard:copy="scope.row.subdomain" v-clipboard:success="onCopy"
                     v-clipboard:error="onError">
-                <i class="el-icon-copy-document"></i>
+                <i style="margin-left: 5px" class="el-icon-copy-document"></i>
               </span>
             </el-tooltip>
           </el-row>
@@ -51,11 +54,6 @@
               <el-dropdown-item icon="el-icon-truck">
                 <el-popconfirm title="确定推送DNS吗？" @onConfirm="handlerRowDNSPush(scope.row)">
                   <el-button slot="reference" type="text" style="margin-left: 5px">配置解析</el-button>
-                </el-popconfirm>
-              </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-position">
-                <el-popconfirm title="确定推送配置文件吗？" @onConfirm="handlerRowConfPush(scope.row)">
-                  <el-button slot="reference" type="text" style="margin-left: 5px">推送配置</el-button>
                 </el-popconfirm>
               </el-dropdown-item>
               <el-dropdown-item icon="el-icon-delete">
@@ -97,6 +95,7 @@ import { queryUpstreamPage } from '@api/nginx/nginx.upstream'
 export default {
   data () {
     return {
+      domainName: '',
       tableData: [],
       loading: false,
       formStatus: {
@@ -179,8 +178,9 @@ export default {
     getUrl (row) {
       return 'http://' + row.subdomain
     },
-    initData (subdomainId) {
-      this.queryParam.subdomainId = subdomainId
+    initData (data) {
+      this.domainName = data.domainName
+      this.queryParam.subdomainId = data.id
       this.fetchData()
     },
     handlerAdd () {
@@ -201,54 +201,23 @@ export default {
             locationParamList: '',
             remark: '',
             loadBalanceOptions: res.body.data[0].loadBalanceList,
-            domainName: res.body.data[0].domainName
+            domainName: this.domainName
           }
           this.formStatus.isUpdate = false
           this.formStatus.visible = true
           this.$refs.nginxSubdomainForwardDialog.initData(data)
         })
     },
-    handlerPush () {
-      delSubdomainForwardInstance(this.queryParam.logId)
-        .then(res => {
-          // 返回数据
-          if (res.success) {
-            this.$message({
-              message: '推送成功',
-              type: 'success'
-            })
-          } else {
-            this.$message.error(res.msg)
-          }
-        })
-    },
     handlerRowDNSPush (row) {
       pushDomainRecord(row)
         .then(res => {
-          // 返回数据
-          if (res.success) {
-            this.$message({
-              message: '推送DNS解析成功',
-              type: 'success'
-            })
-          } else {
-            this.$message.error(res.msg)
-          }
+          this.$message.success('推送DNS解析成功')
         })
     },
-    handlerRowConfPush (row) {
-      this.$message('Nginx配置推送中')
-      pushSubdomainConf(row)
+    handlerRowConfPush () {
+      pushSubdomainConf(this.domainName)
         .then(res => {
-          // 返回数据
-          if (res.success) {
-            this.$message({
-              message: '推送Nginx配置成功',
-              type: 'success'
-            })
-          } else {
-            this.$message.error(res.msg)
-          }
+          this.$message.success('Nginx配置推送中……')
         })
     },
     handlerRowEdit (row) {
@@ -270,7 +239,7 @@ export default {
             loadBalanceId: row.loadBalance.loadBalancerId,
             remark: row.remark,
             loadBalanceOptions: res.body.data[0].loadBalanceList,
-            domainName: res.body.data[0].domainName
+            domainName: this.domainName
           }
           queryServerGroupById(row.serverGroupId)
             .then(res => {
@@ -297,11 +266,7 @@ export default {
       this.$message('Nginx配置删除中')
       delSubdomainForwardInstance(row.id)
         .then(res => {
-          // 返回数据
-          this.$message({
-            message: '删除成功',
-            type: 'success'
-          })
+          this.$message.success('删除成功')
           this.fetchData()
           this.handlerInstanceDel()
         })

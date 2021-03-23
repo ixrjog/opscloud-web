@@ -40,10 +40,9 @@ export function tcpForwardInstanceCheck (port) {
   })
 }
 
-export function pushTcpConf (data) {
+export function pushTcpConf () {
   return request({
     url: baseURL + '/instance/conf/push',
-    method: 'post',
-    data
+    method: 'get'
   })
 }

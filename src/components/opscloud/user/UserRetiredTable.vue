@@ -41,8 +41,29 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column prop="username" label="用户名"></el-table-column>
-      <el-table-column prop="displayName" label="显示名"></el-table-column>
+      <el-table-column prop="username" label="用户名">
+        <template slot-scope="scope">
+          <el-tooltip class="item" effect="dark" content="点击查看用户详情" placement="right">
+            <el-button type="text" @click="openUserDetail(scope.row.username)">{{ scope.row.username }}</el-button>
+          </el-tooltip>
+          <el-tooltip effect="dark" content="点击复制" placement="right">
+              <span v-clipboard:copy="scope.row.username" v-clipboard:success="onCopy"
+                    v-clipboard:error="onError">
+                <i style="margin-left: 5px" class="el-icon-copy-document"></i>
+              </span>
+          </el-tooltip>
+        </template>
+      </el-table-column>
+      <el-table-column prop="displayName" label="显示名">
+        <template slot-scope="scope">
+          <el-tooltip effect="dark" content="点击复制" placement="right">
+              <span v-clipboard:copy="scope.row.displayName" v-clipboard:success="onCopy"
+                    v-clipboard:error="onError">{{ scope.row.displayName }}
+                <i style="margin-left: 5px" class="el-icon-copy-document"></i>
+              </span>
+          </el-tooltip>
+        </template>
+      </el-table-column>
       <el-table-column prop="email" label="邮箱"></el-table-column>
       <el-table-column prop="userGroups.length" label="用户组"></el-table-column>
       <el-table-column prop="serverGroups.length" label="服务器组"></el-table-column>
@@ -66,6 +87,7 @@
 import { mapActions, mapState } from 'vuex'
 // API
 import { fuzzyQueryUserPage, beReinstatedUser } from '@api/user/user'
+import util from '@/libs/util'
 
 export default {
   data () {
@@ -106,6 +128,18 @@ export default {
       this.info.pageSize = size
       this.setPageSize(this.info)
       this.fetchData()
+    },
+    openUserDetail (username) {
+      let host = window.location.host
+      let httpProtocol = window.location.href.split('://')[0]
+      let buildDetailsUrl = httpProtocol + '://' + host + '/#/user/detail/other?username=' + username
+      util.open(buildDetailsUrl)
+    },
+    onCopy (e) {
+      this.$message.success('内容已复制到剪切板！')
+    },
+    onError (e) {
+      this.$message.error('抱歉，复制失败！')
     },
     initPageSize () {
       if (typeof (this.info.pageSize) !== 'undefined') {

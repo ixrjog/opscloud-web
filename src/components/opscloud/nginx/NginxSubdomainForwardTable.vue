@@ -135,7 +135,7 @@ export default {
         })
     },
     handlerRowInstance (row) {
-      this.$emit('handlerInstance', row.id)
+      this.$emit('handlerInstance', row)
     },
     handlerRowEdit (row) {
       this.formData.id = row.id

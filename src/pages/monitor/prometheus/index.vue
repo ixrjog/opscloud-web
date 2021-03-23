@@ -7,13 +7,16 @@
       <el-row :gutter="20">
         <el-col :span="14">
           <el-card shadow="never">
+            <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
+              <el-button @click="handlerSave" size="mini" plain>保存</el-button>
+              <el-button @click="handlerPush" size="mini" plain class="button" :loading="creating">创建</el-button>
+            </el-row>
             <el-collapse v-model="activeName" @change="handleChange" accordion>
               <el-collapse-item name="1">
                 <template slot="title">自定义配置文件
                   <el-tooltip effect="dark" content="自定义配置，可修改" placement="top">
                     <i class="header-icon el-icon-info"></i>
                   </el-tooltip>
-                  <el-button @click="handlerSave" class="button">保存</el-button>
                 </template>
                 <editor v-model="customPrometheusConfig" @init="editorInit" lang="yaml" theme="chrome"
                         height="650" v-if="customPrometheusConfig !==''"></editor>
@@ -23,7 +26,6 @@
                   <el-tooltip effect="dark" content="根据服务器属性自动生成，不可修改" placement="top">
                     <i class="header-icon el-icon-info"></i>
                   </el-tooltip>
-                  <el-button @click="handlerPush" class="button" :loading="creating">创建</el-button>
                 </template>
                 <span v-if="prometheusConfig ===''">内容加载中</span>
                 <editor v-model="prometheusConfig" @init="readOnlyInit" lang="yaml" theme="kuroir" height="650"
@@ -44,7 +46,9 @@
                   :label="item.name"
                   :value="item.id">
                   <span style="float: left">{{ item.name }}</span>
-                  <span style="float: right; color: #8492a6; font-size: 13px;margin-left: 20px">{{ item.comment }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px;margin-left: 20px">{{
+                      item.comment
+                    }}</span>
                 </el-option>
               </el-select>
             </el-row>
@@ -151,7 +155,7 @@ export default {
         })
     },
     handlerSave () {
-      this.$confirm('确定保存Prometheus配置文件吗?', '提示', {
+      this.$confirm('确定保存Prometheus自定义配置文件吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -202,8 +206,9 @@ export default {
 
 <style scoped>
 .button {
-  margin-left: 20px
+  margin-left: 5px
 }
+
 .select {
   display: inline-block;
   max-width: 200px;

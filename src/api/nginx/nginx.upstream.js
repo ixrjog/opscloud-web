@@ -33,10 +33,9 @@ export function previewUpstream (data) {
   })
 }
 
-export function pushUpstreamConf (data) {
+export function pushUpstreamConf () {
   return request({
     url: baseURL + '/conf/push',
-    method: 'post',
-    data
+    method: 'get'
   })
 }

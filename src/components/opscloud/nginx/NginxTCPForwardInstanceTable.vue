@@ -2,8 +2,11 @@
   <div>
     <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
       <el-input v-model="queryParam.queryName" @change="fetchData" placeholder="关键字查询" class="input"/>
-      <el-button @click="fetchData" class="button">查询</el-button>
-      <el-button @click="handlerAdd" class="button">新增</el-button>
+      <el-button plain size="mini" @click="fetchData" class="button">查询</el-button>
+      <el-button plain size="mini" @click="handlerAdd" class="button">新增</el-button>
+      <el-popconfirm title="确定推送配置文件吗？" @onConfirm="handlerRowPush()">
+        <el-button size="mini" slot="reference" plain class="button">推送</el-button>
+      </el-popconfirm>
     </el-row>
     <el-table :data="tableData" style="width: 100%" v-loading="loading" @expand-change="getConfContent">
       <el-table-column type="expand">
@@ -33,12 +36,9 @@
           <span>{{ scope.row.upstream.backendName }}</span>
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="350">
+      <el-table-column fixed="right" label="操作" width="240">
         <template slot-scope="scope">
           <el-button size="mini" @click="handlerRowEdit(scope.row)" style="margin-left: 5px">编辑</el-button>
-          <el-popconfirm title="确定推送配置文件吗？" @onConfirm="handlerRowPush(scope.row)">
-            <el-button size="mini" slot="reference" plain style="margin-left: 5px">推送</el-button>
-          </el-popconfirm>
           <el-popconfirm title="确定删除吗？" @onConfirm="handlerRowDel(scope.row)">
             <el-button slot="reference" type="danger" style="margin-left: 5px" size="mini" plain>删除</el-button>
           </el-popconfirm>
@@ -171,19 +171,10 @@ export default {
           row.previewConf = res.body
         })
     },
-    handlerRowPush (row) {
-      this.$message('Nginx配置推送中')
-      pushTcpConf(row)
+    handlerRowPush () {
+      pushTcpConf()
         .then(res => {
-          // 返回数据
-          if (res.success) {
-            this.$message({
-              message: '推送Nginx配置成功',
-              type: 'success'
-            })
-          } else {
-            this.$message.error(res.msg)
-          }
+          this.$message.success('Nginx配置推送中……')
         })
     },
     handlerRowEdit (row) {
