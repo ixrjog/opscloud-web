@@ -19,7 +19,7 @@ import UserRetiredTable from '@/components/opscloud/user/UserRetiredTable'
 export default {
   data () {
     return {
-      activeName: 'retired',
+      activeName: 'toBeRetired',
       title: '用户离职管理'
     }
   },

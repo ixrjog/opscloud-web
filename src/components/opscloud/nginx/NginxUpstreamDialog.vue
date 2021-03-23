@@ -50,6 +50,16 @@
       <el-form-item label="端口" prop="backendPort">
         <el-input v-model.number="upstreamData.backendPort" placeholder="请输入端口" class="input"></el-input>
       </el-form-item>
+      <el-form-item label="健康检查" prop="needHealthCheck">
+        <el-switch
+          v-model="upstreamData.needHealthCheck"
+          active-color="#67C23A" inactive-color="#909399"
+          active-text="开启" inactive-text="关闭">
+        </el-switch>
+      </el-form-item>
+      <el-form-item label="健康检查路径" prop="healthCheckPath" v-if="upstreamData.needHealthCheck">
+        <el-input v-model.trim="upstreamData.healthCheckPath" placeholder="请输入健康检查路径" class="input"></el-input>
+      </el-form-item>
       <el-form-item label="备注">
         <el-input v-model="upstreamData.remark"></el-input>
       </el-form-item>
@@ -177,6 +187,8 @@ export default {
               'backendType': this.upstreamData.backendType,
               'serverGroupId': this.upstreamData.serverGroupId,
               'backendPort': this.upstreamData.backendPort,
+              'needHealthCheck': this.upstreamData.needHealthCheck,
+              'healthCheckPath': this.upstreamData.healthCheckPath,
               'remark': this.upstreamData.remark
             }
             if (this.upstreamData.backendType === 1) {

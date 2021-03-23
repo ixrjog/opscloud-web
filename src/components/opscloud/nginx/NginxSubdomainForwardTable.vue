@@ -7,7 +7,7 @@
     </el-row>
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
       <el-table-column prop="domainName" label="域名" width="120"></el-table-column>
-      <el-table-column prop="loadBalanceList" label="SLB配置" width="250">
+      <el-table-column prop="loadBalanceList" label="SLB" width="250">
         <template slot-scope="scope">
           <div v-for="item in scope.row.loadBalanceList" :key="item.id">
             <el-tag style="margin-left: 5px">{{ item | loadBalanceFilters }}</el-tag>

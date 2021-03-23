@@ -24,7 +24,7 @@
             </el-tooltip>
             <el-tooltip effect="dark" content="点击复制" placement="right">
               <span v-clipboard:copy="scope.row.subdomain" v-clipboard:success="onCopy"
-                    v-clipboard:error="onError" style="float: right">
+                    v-clipboard:error="onError">
                 <i class="el-icon-copy-document"></i>
               </span>
             </el-tooltip>

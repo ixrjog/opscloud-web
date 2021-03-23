@@ -54,128 +54,128 @@
 </template>
 
 <script>
-  // API
-  import { queryServerGroupPage } from '@api/server/server.group.js'
-  import { addProfileSubscription, updateProfileSubscription } from '@api/profile/profile.subscription.js'
-  import { queryPlaybookPage } from '@api/server/server.task.js'
+// API
+import { queryServerGroupPage } from '@api/server/server.group.js'
+import { addProfileSubscription, updateProfileSubscription } from '@api/profile/profile.subscription.js'
+import { queryPlaybookPage } from '@api/server/server.task.js'
 
-  const subscriptionTypeOptions = [{
-      value: 'ANSIBLE_HOSTS',
-      label: 'ANSIBLE_HOSTS'
-    },
-    {
-      value: 'DUBBO_TCP_MAPPING',
-      label: 'DUBBO_TCP_MAPPING'
-    },
-    {
-      value: 'JUMPSERVER',
-      label: 'JUMPSERVER'
-    },
-    {
-      value: 'PROMETHEUS_CONFIG',
-      label: 'PROMETHEUS_CONFIG'
-    },
-    {
-      value: 'NGINX_CONFIG',
-      label: 'NGINX_CONFIG'
+const subscriptionTypeOptions = [{
+  value: 'ANSIBLE_HOSTS',
+  label: 'ANSIBLE_HOSTS'
+},
+  {
+    value: 'DUBBO_TCP_MAPPING',
+    label: 'DUBBO_TCP_MAPPING'
+  },
+  {
+    value: 'JUMPSERVER',
+    label: 'JUMPSERVER'
+  },
+  {
+    value: 'PROMETHEUS_CONFIG',
+    label: 'PROMETHEUS_CONFIG'
+  },
+  {
+    value: 'NGINX_CONFIG',
+    label: 'NGINX_CONFIG'
+  }
+]
+
+export default {
+  data () {
+    return {
+      loading: false,
+      playbookSearching: false,
+      labelWidth: '150px',
+      profileSubscriptionData: {},
+      subscriptionTypeOptions: subscriptionTypeOptions,
+      serverGroupOptions: [],
+      playbookOptions: []
     }
-  ]
-
-  export default {
-    data () {
-      return {
-        loading: false,
-        playbookSearching: false,
-        labelWidth: '150px',
-        profileSubscriptionData: {},
-        subscriptionTypeOptions: subscriptionTypeOptions,
-        serverGroupOptions: [],
-        playbookOptions: []
+  },
+  name: 'ProfileSubscriptionDialog',
+  props: ['formStatus'],
+  mixins: [],
+  components: {
+    editor: require('vue2-ace-editor')
+  },
+  mounted () {
+  },
+  methods: {
+    editorInit: function () {
+      // language extension prerequsite...
+      require('brace/ext/language_tools')
+      // language
+      require('brace/mode/yaml')
+      require('brace/theme/chrome')
+      // snippet
+      require('brace/snippets/yaml')
+    },
+    getPlaybook (queryName) {
+      this.playbookSearching = true
+      let requestBody = {
+        queryName: queryName,
+        page: 1,
+        length: 20
+      }
+      queryPlaybookPage(requestBody)
+        .then(res => {
+          this.playbookOptions = res.body.data
+          this.playbookSearching = false
+        })
+    },
+    handlerCloseDialog () {
+      this.formStatus.visible = false
+      this.$emit('closeDialog')
+    },
+    getServerGroup (queryName) {
+      queryServerGroupPage(queryName, '', 1, 20)
+        .then(res => {
+          this.serverGroupOptions = res.body.data
+        })
+    },
+    initData (profileSubscriptionData) {
+      this.profileSubscriptionData = profileSubscriptionData
+      if (this.formStatus.operationType) {
+        this.getServerGroup('')
+        this.getPlaybook('')
+      } else {
+        this.serverGroupOptions = []
+        this.serverGroupOptions.push(profileSubscriptionData.serverGroup)
+        this.playbookOptions = []
+        this.playbookOptions.push(profileSubscriptionData.ansiblePlaybook)
       }
     },
-    name: 'ProfileSubscriptionDialog',
-    props: ['formStatus'],
-    mixins: [],
-    components: {
-      editor: require('vue2-ace-editor')
+    handleClick () {
+      this.$emit('input', !this.value)
     },
-    mounted () {
-    },
-    methods: {
-      editorInit: function () {
-        // language extension prerequsite...
-        require('brace/ext/language_tools')
-        // language
-        require('brace/mode/yaml')
-        require('brace/theme/chrome')
-        // snippet
-        require('brace/snippets/yaml')
-      },
-      getPlaybook (queryName) {
-        this.playbookSearching = true
-        let requestBody = {
-          queryName: queryName,
-          page: 1,
-          length: 20
-        }
-        queryPlaybookPage(requestBody)
-          .then(res => {
-            this.playbookOptions = res.body.data
-            this.playbookSearching = false
-          })
-      },
-      handlerCloseDialog () {
-        this.formStatus.visible = false
-        this.$emit('closeDialog')
-      },
-      getServerGroup (queryName) {
-        queryServerGroupPage(queryName, '', 1, 20)
-          .then(res => {
-            this.serverGroupOptions = res.body.data
-          })
-      },
-      initData (profileSubscriptionData) {
-        this.profileSubscriptionData = profileSubscriptionData
+    saveInfo () {
+      setTimeout(() => {
+        let requestBody = Object.assign({}, this.profileSubscriptionData)
+        // requestBody.serverGroupId = this.formData.serverGroup == null ? this.formData.serverGroupId : this.formData.serverGroup.id
         if (this.formStatus.operationType) {
-          this.getServerGroup('')
-          this.getPlaybook('')
+          addProfileSubscription(requestBody)
+            .then(res => {
+              // 返回数据
+              this.$message({
+                message: '成功',
+                type: 'success'
+              })
+              this.handlerCloseDialog()
+            })
         } else {
-          this.serverGroupOptions = []
-          this.serverGroupOptions.push(profileSubscriptionData.serverGroup)
-          this.playbookOptions = []
-          this.playbookOptions.push(profileSubscriptionData.ansiblePlaybook)
+          updateProfileSubscription(requestBody)
+            .then(res => {
+              // 返回数据
+              this.$message({
+                message: '成功',
+                type: 'success'
+              })
+              this.handlerCloseDialog()
+            })
         }
-      },
-      handleClick () {
-        this.$emit('input', !this.value)
-      },
-      saveInfo () {
-        setTimeout(() => {
-          let requestBody = Object.assign({}, this.profileSubscriptionData)
-          // requestBody.serverGroupId = this.formData.serverGroup == null ? this.formData.serverGroupId : this.formData.serverGroup.id
-          if (this.formStatus.operationType) {
-            addProfileSubscription(requestBody)
-              .then(res => {
-                // 返回数据
-                this.$message({
-                  message: '成功',
-                  type: 'success'
-                })
-                this.handlerCloseDialog()
-              })
-          } else {
-            updateProfileSubscription(requestBody)
-              .then(res => {
-                // 返回数据
-                this.$message({
-                  message: '成功',
-                  type: 'success'
-                })
-                this.handlerCloseDialog()
-              })
-          }
-        }, 600)
-      }
+      }, 600)
     }
   }
+}
 </script>

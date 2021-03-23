@@ -32,7 +32,8 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="管理配置">
+      <el-table-column prop="healthCheckPath" label="健康检查路径" show-overflow-tooltip></el-table-column>
+      <el-table-column label="管理配置" width="400">
         <template slot-scope="scope">
           <div v-for="(value,key) in scope.row.confMap" :key="key">
             <el-row v-if="JSON.stringify(value) !== '[]'">
@@ -162,7 +163,9 @@ export default {
         backendType: 1,
         backendPort: '',
         remark: '',
-        serverGroupId: ''
+        serverGroupId: '',
+        needHealthCheck: false,
+        healthCheckPath: '/webStatus'
       }
       this.formStatus.isUpdate = false
       this.formStatus.visible = true
@@ -197,6 +200,8 @@ export default {
         remark: row.remark,
         serverId: '',
         envType: '',
+        needHealthCheck: row.needHealthCheck,
+        healthCheckPath: row.healthCheckPath,
         serverGroupId: row.serverGroupId
       }
       this.formStatus.isUpdate = true
