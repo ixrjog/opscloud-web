@@ -4,7 +4,7 @@
       <el-input v-model="queryParam.queryName" placeholder="关键字查询" class="input"/>
       <el-button size="mini" @click="fetchData" plain class="button">查询</el-button>
       <el-button size="mini" @click="handlerAdd" plain class="button">新增</el-button>
-      <el-popconfirm title="确定推送配置文件吗？" @onConfirm="handlerRowConfPush()">
+      <el-popconfirm title="确定推送本域名下所有配置文件吗？" @onConfirm="handlerPush()">
         <el-button size="mini" slot="reference" plain class="button">推送</el-button>
       </el-popconfirm>
     </el-row>
@@ -22,9 +22,9 @@
       <el-table-column label="子域名" width="320">
         <template slot-scope="scope">
           <el-row>
-            <el-tooltip effect="dark" content="点击跳转" placement="right">
-              <el-link :href="getUrl(scope.row)" target="_blank">{{ scope.row.subdomain }}</el-link>
-            </el-tooltip>
+            <el-badge is-dot :hidden="!scope.row.needPushDNS" class="badge">
+              {{ scope.row.subdomain }}
+            </el-badge>
             <el-tooltip effect="dark" content="点击复制" placement="right">
               <span v-clipboard:copy="scope.row.subdomain" v-clipboard:success="onCopy"
                     v-clipboard:error="onError">
@@ -48,16 +48,16 @@
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="150">
         <template slot-scope="scope">
-          <el-dropdown split-button type="primary" size="mini" @click="handlerRowEdit(scope.row)">
+          <el-dropdown split-button type="primary" size="mini" @click="handlerEdit(scope.row)">
             编辑
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item icon="el-icon-truck">
-                <el-popconfirm title="确定推送DNS吗？" @onConfirm="handlerRowDNSPush(scope.row)">
+                <el-popconfirm title="确定推送DNS吗？" @onConfirm="handlerDNSPush(scope.row)">
                   <el-button slot="reference" type="text" style="margin-left: 5px">配置解析</el-button>
                 </el-popconfirm>
               </el-dropdown-item>
               <el-dropdown-item icon="el-icon-delete">
-                <el-popconfirm title="确定删除吗？" @onConfirm="handlerRowDel(scope.row)">
+                <el-popconfirm title="确定删除吗？" @onConfirm="handlerDel(scope.row)">
                   <el-button slot="reference" type="text" style="margin-left: 5px;color: #F56C6C" size="mini">删除配置
                   </el-button>
                 </el-popconfirm>
@@ -208,19 +208,20 @@ export default {
           this.$refs.nginxSubdomainForwardDialog.initData(data)
         })
     },
-    handlerRowDNSPush (row) {
+    handlerDNSPush (row) {
       pushDomainRecord(row)
         .then(res => {
           this.$message.success('推送DNS解析成功')
+          this.fetchData()
         })
     },
-    handlerRowConfPush () {
+    handlerPush () {
       pushSubdomainConf(this.domainName)
         .then(res => {
           this.$message.success('Nginx配置推送中……')
         })
     },
-    handlerRowEdit (row) {
+    handlerEdit (row) {
       let requestBody = {
         'id': this.queryParam.subdomainId,
         'page': 1,
@@ -262,7 +263,7 @@ export default {
           this.$refs.nginxSubdomainForwardDialog.initData(data)
         })
     },
-    handlerRowDel (row) {
+    handlerDel (row) {
       this.$message('Nginx配置删除中')
       delSubdomainForwardInstance(row.id)
         .then(res => {
@@ -307,7 +308,6 @@ export default {
 </script>
 
 <style scoped>
-
 .input {
   display: inline-block;
   max-width: 200px;
@@ -315,6 +315,11 @@ export default {
 
 .button {
   margin-left: 5px;
+}
+
+.badge {
+  margin-top: 5px;
+  margin-right: 5px;
 }
 </style>
 

@@ -13,7 +13,7 @@
       </el-select>
       <el-button @click="fetchData" plain class="button" size="mini">查询</el-button>
       <el-button @click="handlerAdd" plain class="button" size="mini">新增</el-button>
-      <el-popconfirm title="确定推送配置文件吗？" @onConfirm="handlerRowPush()">
+      <el-popconfirm title="确定推送所有配置文件吗？" @onConfirm="handlerPush()">
         <el-button size="mini" slot="reference" plain class="button">推送</el-button>
       </el-popconfirm>
     </el-row>
@@ -54,9 +54,9 @@
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="240">
         <template slot-scope="scope">
-          <el-button size="mini" plain @click="handlerRowEdit(scope.row)" style="margin-left: 5px">编辑</el-button>
-          <el-popconfirm title="确定删除吗？" @onConfirm="handlerRowDel(scope.row)">
-            <el-button slot="reference" type="danger" style="margin-left: 5px" size="mini" plain>删除</el-button>
+          <el-button size="mini" plain @click="handlerEdit(scope.row)" class="button">编辑</el-button>
+          <el-popconfirm title="确定删除吗？" @onConfirm="handlerDel(scope.row)">
+            <el-button slot="reference" type="danger" class="button" size="mini" plain>删除</el-button>
           </el-popconfirm>
         </template>
       </el-table-column>
@@ -177,13 +177,13 @@ export default {
           this.serverGroupOptions = res.body.data
         })
     },
-    handlerRowPush () {
+    handlerPush () {
       pushUpstreamConf()
         .then(res => {
           this.$message.success('Nginx配置推送中……')
         })
     },
-    handlerRowEdit (row) {
+    handlerEdit (row) {
       let data = {
         id: row.id,
         backendType: row.backendType,
@@ -222,7 +222,7 @@ export default {
       this.$refs.nginxUpstreamDialog.initData(data)
       this.formStatus.visible = true
     },
-    handlerRowDel (row) {
+    handlerDel (row) {
       this.$message('Nginx配置删除中')
       delUpstream(row.id)
         .then(res => {

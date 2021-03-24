@@ -4,7 +4,7 @@
       <el-input v-model="queryParam.queryName" @change="fetchData" placeholder="关键字查询" class="input"/>
       <el-button plain size="mini" @click="fetchData" class="button">查询</el-button>
       <el-button plain size="mini" @click="handlerAdd" class="button">新增</el-button>
-      <el-popconfirm title="确定推送配置文件吗？" @onConfirm="handlerRowPush()">
+      <el-popconfirm title="确定推送所有配置文件吗？" @onConfirm="handlerPush()">
         <el-button size="mini" slot="reference" plain class="button">推送</el-button>
       </el-popconfirm>
     </el-row>
@@ -38,9 +38,9 @@
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="240">
         <template slot-scope="scope">
-          <el-button size="mini" @click="handlerRowEdit(scope.row)" style="margin-left: 5px">编辑</el-button>
-          <el-popconfirm title="确定删除吗？" @onConfirm="handlerRowDel(scope.row)">
-            <el-button slot="reference" type="danger" style="margin-left: 5px" size="mini" plain>删除</el-button>
+          <el-button size="mini" @click="handlerEdit(scope.row)" class="button">编辑</el-button>
+          <el-popconfirm title="确定删除吗？" @onConfirm="handlerDel(scope.row)">
+            <el-button slot="reference" type="danger" class="button" size="mini" plain>删除</el-button>
           </el-popconfirm>
         </template>
       </el-table-column>
@@ -171,13 +171,13 @@ export default {
           row.previewConf = res.body
         })
     },
-    handlerRowPush () {
+    handlerPush () {
       pushTcpConf()
         .then(res => {
           this.$message.success('Nginx配置推送中……')
         })
     },
-    handlerRowEdit (row) {
+    handlerEdit (row) {
       let data = {
         id: row.id,
         listenerPort: row.listenerPort,
@@ -206,7 +206,7 @@ export default {
       this.formStatus.visible = true
       this.$refs.nginxTCPForwardInstanceDialog.initData(data)
     },
-    handlerRowDel (row) {
+    handlerDel (row) {
       this.$message('Nginx配置删除中')
       delTCPForwardInstance(row.id)
         .then(res => {

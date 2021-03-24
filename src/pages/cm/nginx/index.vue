@@ -3,23 +3,27 @@
     <h1>{{ title }}</h1>
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="子域名转发" name="subdomainForward">
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <nginx-subdomain-forward-table ref="nginxSubdomainForward"
-                                           @handlerInstance="handlerInstance">
-            </nginx-subdomain-forward-table>
+        <el-row :gutter="10">
+          <el-col :span="10">
+            <el-card shadow="never">
+              <nginx-subdomain-forward-table ref="nginxSubdomainForward"
+                                             @handlerInstance="handlerInstance">
+              </nginx-subdomain-forward-table>
+            </el-card>
           </el-col>
-          <el-col :span="16">
-            <nginx-subdomain-forward-instance-table ref="nginxSubdomainForwardInstanceTable"
-                                                    @handlerInstanceUpdate="handlerInstanceUpdate">
-            </nginx-subdomain-forward-instance-table>
+          <el-col :span="14">
+            <el-card shadow="never">
+              <nginx-subdomain-forward-instance-table ref="nginxSubdomainForwardInstanceTable"
+                                                      @handlerInstanceUpdate="handlerInstanceUpdate">
+              </nginx-subdomain-forward-instance-table>
+            </el-card>
           </el-col>
         </el-row>
       </el-tab-pane>
       <el-tab-pane label="路径转发" name="pathForward" v-if="false">
         <nginx-path-forward-table ref="nginxPathForward"></nginx-path-forward-table>
       </el-tab-pane>
-      <el-tab-pane label="TCP转发" name="tcpForward">
+      <el-tab-pane label="tcp转发" name="tcpForward">
         <nginx-tcp-forward-instance-table ref="nginxTCPForwardInstanceTable"></nginx-tcp-forward-instance-table>
       </el-tab-pane>
       <el-tab-pane label="upstream" name="upstream">

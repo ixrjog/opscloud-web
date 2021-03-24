@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-row style="margin-bottom: 5px" :gutter="24">
-      <el-button @click="fetchData" style="margin-left: 10px">查询</el-button>
+      <el-button @click="fetchData" style="margin-left: 15px">查询</el-button>
     </el-row>
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
       <el-table-column prop="name" label="实例名称"></el-table-column>
