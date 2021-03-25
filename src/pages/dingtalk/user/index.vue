@@ -7,6 +7,14 @@
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
           <el-input v-model.trim="queryParam.queryName" placeholder="输入关键字查询" class="searchBarStyle"/>
+          <el-select v-model.trim="queryParam.isBind" clearable placeholder="是否绑定OC" class="searchBarStyle">
+            <el-option
+              v-for="item in isBindOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
           <el-button @click="fetchData" class="searchBarStyle">查询</el-button>
           <el-popconfirm title="确定全量同步用户吗？" @onConfirm="handlerSync">
             <el-button slot="reference" class="searchBarStyle" :loading="syncLoading" :disabled="syncLoading"
@@ -71,13 +79,20 @@
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column prop="isActive" label="是否绑定OC">
+          <template slot-scope="scope">
+            <el-tag v-text="scope.row.ocUser !== null?'是':'否'" :type="scope.row.ocUser !== null?'success':'warning'">
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column fixed="right" label="操作" width="270">
           <template slot-scope="scope">
-            <el-button type="primary" plain size="mini" @click="handlerUpdate(scope.row)">刷新</el-button>
-            <el-button type="primary" plain size="mini" @click="handlerEdit(scope.row)">绑定</el-button>
-            <el-button type="primary" plain size="mini" @click="handlerImport(scope.row)"
-                       v-if="scope.row.ocUser === null">导入
-            </el-button>
+            <el-button-group>
+              <el-button plain size="mini" @click="handlerUpdate(scope.row)">刷新</el-button>
+              <el-button plain size="mini" @click="handlerEdit(scope.row)">绑定</el-button>
+              <el-button plain size="mini" @click="handlerImport(scope.row)" v-if="scope.row.ocUser === null">导入
+              </el-button>
+            </el-button-group>
           </template>
         </el-table-column>
       </el-table>
@@ -108,8 +123,16 @@ export default {
       title: '用户管理',
       syncLoading: false,
       queryParam: {
-        queryName: ''
+        queryName: '',
+        isBind: ''
       },
+      isBindOptions: [{
+        value: 1,
+        label: '已绑定'
+      }, {
+        value: 0,
+        label: '未绑定'
+      }],
       tableData: [],
       dingtalkUserBindDialogStatus: {
         visible: false
@@ -164,6 +187,7 @@ export default {
       this.loading = true
       let requestBody = {
         'queryName': this.queryParam.queryName,
+        'isBind': this.queryParam.isBind,
         'page': this.pagination.currentPage,
         'length': this.pagination.pageSize
       }
@@ -255,7 +279,7 @@ export default {
 }
 
 .searchBarStyle {
-  margin-left: 10px;
+  margin-left: 5px;
   max-width: 200px;
 }
 

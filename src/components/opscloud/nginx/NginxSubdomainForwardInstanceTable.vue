@@ -19,19 +19,17 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column label="子域名" width="320">
+      <el-table-column label="子域名">
         <template slot-scope="scope">
-          <el-row>
-            <el-badge is-dot :hidden="!scope.row.needPushDNS" class="badge">
-              {{ scope.row.subdomain }}
-            </el-badge>
-            <el-tooltip effect="dark" content="点击复制" placement="right">
+          <el-badge is-dot :hidden="!scope.row.needPushDNS" class="badge">
+            {{ scope.row.subdomain }}
+          </el-badge>
+          <el-tooltip effect="dark" content="点击复制" placement="right">
               <span v-clipboard:copy="scope.row.subdomain" v-clipboard:success="onCopy"
                     v-clipboard:error="onError">
                 <i style="margin-left: 5px" class="el-icon-copy-document"></i>
               </span>
-            </el-tooltip>
-          </el-row>
+          </el-tooltip>
         </template>
       </el-table-column>
       <el-table-column label="关联SLB" width="250">
