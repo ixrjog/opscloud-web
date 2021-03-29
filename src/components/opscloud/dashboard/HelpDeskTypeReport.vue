@@ -72,7 +72,7 @@ export default {
             labelLine: {
               show: false
             },
-            data: data.heplDeskGroupByTypes
+            data: data.helpDeskGroupByTypes
           }
         ]
       }

@@ -42,31 +42,31 @@ export default {
     initChart (data) {
       let myChart = echarts.init(document.getElementById('helpDeskReportChart'))
       // 指定图表的配置项和数据
-      let weeks = data.heplDeskGroupByWeeks.map(function (item) {
+      let weeks = data.helpDeskGroupByWeeks.map(function (item) {
         return item['weeks']
       })
-      let type0 = data.heplDeskGroupByWeeks.map(function (item) {
+      let type0 = data.helpDeskGroupByWeeks.map(function (item) {
         return item['type0']
       })
-      let type1 = data.heplDeskGroupByWeeks.map(function (item) {
+      let type1 = data.helpDeskGroupByWeeks.map(function (item) {
         return item['type1']
       })
-      let type2 = data.heplDeskGroupByWeeks.map(function (item) {
+      let type2 = data.helpDeskGroupByWeeks.map(function (item) {
         return item['type2']
       })
-      let type3 = data.heplDeskGroupByWeeks.map(function (item) {
+      let type3 = data.helpDeskGroupByWeeks.map(function (item) {
         return item['type3']
       })
-      let type4 = data.heplDeskGroupByWeeks.map(function (item) {
+      let type4 = data.helpDeskGroupByWeeks.map(function (item) {
         return item['type4']
       })
-      let type5 = data.heplDeskGroupByWeeks.map(function (item) {
+      let type5 = data.helpDeskGroupByWeeks.map(function (item) {
         return item['type5']
       })
-      let type6 = data.heplDeskGroupByWeeks.map(function (item) {
+      let type6 = data.helpDeskGroupByWeeks.map(function (item) {
         return item['type6']
       })
-      let type7 = data.heplDeskGroupByWeeks.map(function (item) {
+      let type7 = data.helpDeskGroupByWeeks.map(function (item) {
         return item['type7']
       })
 
