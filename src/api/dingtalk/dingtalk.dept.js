@@ -22,3 +22,10 @@ export function refreshDingtalkDeptTree (uid) {
     method: 'get'
   })
 }
+
+export function queryDingtalkRootDept () {
+  return request({
+    url: baseURL + '/root/query',
+    method: 'get'
+  })
+}

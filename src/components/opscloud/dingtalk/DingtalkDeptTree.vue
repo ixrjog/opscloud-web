@@ -2,8 +2,18 @@
   <div>
     <el-card class="box-card" shadow="hover">
       <el-row>
+        <el-select v-model="uid" placeholder="选择公司" class="select">
+          <el-option
+            v-for="item in rootDeptOptions"
+            :key="item.id"
+            :label="item.deptName"
+            :value="item.dingtalkUid">
+          </el-option>
+        </el-select>
+        <el-button @click="fetchData" class="button" :disabled="uid === ''">查询</el-button>
         <el-popconfirm title="确定全量同步部门吗？" @onConfirm="handlerSync">
-          <el-button slot="reference" :loading="syncLoading" :disabled="syncLoading" size="mini">同步
+          <el-button slot="reference" :loading="syncLoading" :disabled="uid === ''" size="mini"
+                     class="button">同步
           </el-button>
         </el-popconfirm>
         <span style="float: right">
@@ -19,7 +29,12 @@
 </template>
 
 <script>
-import { queryDingtalkDeptTree, refreshDingtalkDeptTree, syncDept } from '@api/dingtalk/dingtalk.dept'
+import {
+  queryDingtalkDeptTree,
+  queryDingtalkRootDept,
+  refreshDingtalkDeptTree,
+  syncDept
+} from '@api/dingtalk/dingtalk.dept'
 
 let echarts = require('echarts/lib/echarts')
 require('echarts/lib/chart/pie')
@@ -33,7 +48,8 @@ export default {
   name: 'DingtalkDeptTree',
   data () {
     return {
-      uid: 'xincheng',
+      rootDeptOptions: [],
+      uid: '',
       syncLoading: false,
       loading: false
     }
@@ -41,7 +57,7 @@ export default {
   mixins: [],
   components: {},
   mounted () {
-    this.fetchData()
+    this.getRootDept()
   },
   methods: {
     initChart (data) {
@@ -90,6 +106,12 @@ export default {
           this.initChart(res.body)
         })
     },
+    getRootDept () {
+      queryDingtalkRootDept()
+        .then(res => {
+          this.rootDeptOptions = res.body
+        })
+    },
     handlerRefresh () {
       this.loading = true
       refreshDingtalkDeptTree(this.uid)
@@ -116,5 +138,13 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.button {
+  margin-left: 5px;
+}
+
+.select {
+  width: 200px;
+  max-width: 250px;
+}
 </style>

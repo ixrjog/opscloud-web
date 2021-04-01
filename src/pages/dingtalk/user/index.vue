@@ -6,8 +6,8 @@
       </div>
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
-          <el-input v-model.trim="queryParam.queryName" placeholder="输入关键字查询" class="searchBarStyle"/>
-          <el-select v-model.trim="queryParam.isBind" clearable placeholder="是否绑定OC" class="searchBarStyle">
+          <el-input v-model.trim="queryParam.queryName" placeholder="输入关键字查询" class="input"/>
+          <el-select v-model.trim="queryParam.isBind" clearable placeholder="是否绑定OC" class="select">
             <el-option
               v-for="item in isBindOptions"
               :key="item.value"
@@ -15,10 +15,10 @@
               :value="item.value">
             </el-option>
           </el-select>
-          <el-button @click="fetchData" class="searchBarStyle">查询</el-button>
+          <el-button @click="fetchData" class="button">查询</el-button>
           <el-popconfirm title="确定全量同步用户吗？" @onConfirm="handlerSync">
-            <el-button slot="reference" class="searchBarStyle" :loading="syncLoading" :disabled="syncLoading"
-                       size="mini">同步
+            <el-button slot="reference" :loading="syncLoading" :disabled="syncLoading"
+                       size="mini" class="button">同步
             </el-button>
           </el-popconfirm>
         </el-row>
@@ -274,13 +274,15 @@ export default {
 <style scoped>
 .input {
   margin-left: 10px;
-  display: inline-block;
   max-width: 200px;
 }
 
-.searchBarStyle {
+.select {
   margin-left: 5px;
-  max-width: 200px;
+}
+
+.button {
+  margin-left: 5px;
 }
 
 .el-table .warning-row {
