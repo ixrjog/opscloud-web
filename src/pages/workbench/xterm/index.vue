@@ -41,7 +41,7 @@
                   <el-button @click="handlerResize" v-if="pageStatus === 1">调整大小</el-button>
                 </el-tooltip>
                 <el-button style="float: right" type="primary" @click="handlerLogin" v-if="pageStatus === 0">批量登录</el-button>
-                <el-button style="float: right" type="danger" @click="handlerClose" v-if="pageStatus === 1">全部关闭</el-button>
+                <el-button style="float: right" type="primary" @click="handlerClose" v-if="pageStatus === 1">全部关闭</el-button>
 <!--                <el-button @click="handlerLogin" v-if="pageStatus === 0">批量登录</el-button>-->
               </el-row>
             </div>

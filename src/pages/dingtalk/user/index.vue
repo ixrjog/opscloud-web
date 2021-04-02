@@ -7,6 +7,14 @@
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
           <el-input v-model.trim="queryParam.queryName" placeholder="输入关键字查询" class="input"/>
+          <el-select v-model="queryParam.uid" placeholder="选择公司" class="select">
+            <el-option
+              v-for="item in rootDeptOptions"
+              :key="item.id"
+              :label="item.deptName"
+              :value="item.dingtalkUid">
+            </el-option>
+          </el-select>
           <el-select v-model.trim="queryParam.isBind" clearable placeholder="是否绑定OC" class="select">
             <el-option
               v-for="item in isBindOptions"
@@ -40,12 +48,15 @@
           </template>
         </el-table-column>
         <el-table-column prop="displayName" label="员工名称"></el-table-column>
+        <el-table-column prop="accountUid" label="所属公司">
+          <template slot-scope="scope">
+            <span>{{ scope.row.accountUid  | accountUidFilters }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="所属部门" show-overflow-tooltip>
           <template slot-scope="scope">
             <span v-for="(value,key) in scope.row.deptMap" :key="key" :label="key">
-              <el-popover
-                placement="top"
-                trigger="hover">
+              <el-popover placement="top" trigger="hover">
                 <el-breadcrumb separator="/">
                   <el-breadcrumb-item v-for="item in value" :key="item.id">
                     {{ item.deptName }}
@@ -116,6 +127,7 @@ import DingtalkUserBindDialog from '@/components/opscloud/dingtalk/DingtalkUserB
 import UserDialog from '@/components/opscloud/dialog/UserDialog'
 import { chineseToPinYin } from '@api/opscloud/opscloud.common'
 import { userFilters } from '@/filters/user'
+import { queryDingtalkRootDept } from '@api/dingtalk/dingtalk.dept'
 
 export default {
   data () {
@@ -124,6 +136,7 @@ export default {
       syncLoading: false,
       queryParam: {
         queryName: '',
+        uid: '',
         isBind: ''
       },
       isBindOptions: [{
@@ -134,6 +147,7 @@ export default {
         label: '未绑定'
       }],
       tableData: [],
+      rootDeptOptions: [],
       dingtalkUserBindDialogStatus: {
         visible: false
       },
@@ -153,7 +167,16 @@ export default {
     }
   },
   filters: {
-    userFilters
+    userFilters,
+    accountUidFilters (accountUid) {
+      if (accountUid === 'xincheng') {
+        return '杭州辛橙'
+      }
+      if (accountUid === 'hexiang') {
+        return '广州和祥'
+      }
+      return ''
+    }
   },
   computed: {
     ...mapState('d2admin/user', [
@@ -161,6 +184,7 @@ export default {
     ])
   },
   mounted () {
+    this.getRootDept()
     this.initPageSize()
     this.fetchData()
   },
@@ -187,6 +211,7 @@ export default {
       this.loading = true
       let requestBody = {
         'queryName': this.queryParam.queryName,
+        'uid': this.queryParam.uid,
         'isBind': this.queryParam.isBind,
         'page': this.pagination.currentPage,
         'length': this.pagination.pageSize
@@ -204,13 +229,19 @@ export default {
     },
     handlerUpdate (row) {
       let requestBody = {
-        'uid': row.uid,
+        'uid': row.accountUid,
         'userid': row.username
       }
       updateDingtalkUser(requestBody)
         .then(res => {
           this.$message.success('刷新成功')
           this.fetchData()
+        })
+    },
+    getRootDept () {
+      queryDingtalkRootDept()
+        .then(res => {
+          this.rootDeptOptions = res.body
         })
     },
     handlerImport (row) {
