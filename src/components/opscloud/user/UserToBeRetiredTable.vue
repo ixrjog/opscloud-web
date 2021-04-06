@@ -26,17 +26,14 @@
               <div class="tag-group">
                  <span v-for="item in props.row.serverGroups" :key="item.id">
                     <el-tooltip class="item" effect="light" :content="item.comment || '没有填写'" placement="bottom">
-                     <el-tag style="margin-left: 5px"
-                             :type=" item.isAdmin ? 'danger': '' ">{{ item.name }}</el-tag>
+                     <el-tag style="margin-left: 5px" :type=" item.isAdmin ? 'danger': '' ">{{ item.name }}</el-tag>
                     </el-tooltip>
                  </span>
               </div>
             </el-form-item>
             <el-form-item label="部门" v-if="JSON.stringify(props.row.orgDeptMap) !== '{}'">
                 <span v-for="(value,key) in props.row.orgDeptMap" :key="key" :label="key">
-                  <el-popover
-                    placement="top"
-                    trigger="hover">
+                  <el-popover placement="top" trigger="hover">
                     <el-breadcrumb separator="/">
                       <el-breadcrumb-item v-for="item in value" :key="item.id">
                         {{ item.name }}
@@ -82,26 +79,61 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination background @current-change="paginationCurrentChange" :page-sizes="[10, 15, 20, 25, 30]"
+                   @size-change="handleSizeChange"
+                   layout="sizes, prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
+                   :page-size="pagination.pageSize">
+    </el-pagination>
   </div>
 </template>
 
 <script>
 import { queryOrgByUser } from '@api/org/org'
 import util from '@/libs/util'
-import { queryUserToBeRetired, retireUserById } from '@api/user/user'
+import { queryUserToBeRetiredPage, retireUserById } from '@api/user/user'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   data () {
     return {
       tableData: [],
+      pagination: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
+      },
       loading: false
     }
   },
   mounted () {
+    this.initPageSize()
     this.fetchData()
+  },
+  computed: {
+    ...mapState('d2admin/user', [
+      'info'
+    ])
   },
   name: 'UserToBeRetiredTable',
   methods: {
+    ...mapActions({
+      setPageSize: 'd2admin/user/set'
+    }),
+    handleSizeChange (size) {
+      this.pagination.pageSize = size
+      this.info.pageSize = size
+      this.setPageSize(this.info)
+      this.fetchData()
+    },
+    initPageSize () {
+      if (typeof (this.info.pageSize) !== 'undefined') {
+        this.pagination.pageSize = this.info.pageSize
+      }
+    },
+    paginationCurrentChange (currentPage) {
+      this.pagination.currentPage = currentPage
+      this.fetchData()
+    },
     retireUser (row) {
       this.$confirm('确认用户离职操作?', '提示', {
         confirmButtonText: '确定',
@@ -145,9 +177,14 @@ export default {
     },
     fetchData () {
       this.loading = true
-      queryUserToBeRetired()
+      let requestBody = {
+        'extend': 1,
+        'page': this.pagination.currentPage,
+        'length': this.pagination.pageSize
+      }
+      queryUserToBeRetiredPage(requestBody)
         .then(res => {
-          this.tableData = res.body
+          this.tableData = res.body.data
           this.loading = false
         })
     }

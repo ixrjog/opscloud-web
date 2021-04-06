@@ -137,9 +137,10 @@ export function queryUserDetailByUsername (username) {
   })
 }
 
-export function queryUserToBeRetired () {
+export function queryUserToBeRetiredPage (data) {
   return request({
     url: '/user/tobe/retired/query',
-    method: 'get'
+    method: 'post',
+    data
   })
 }

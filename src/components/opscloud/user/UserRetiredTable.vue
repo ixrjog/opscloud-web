@@ -118,7 +118,6 @@ export default {
     this.initPageSize()
     this.fetchData()
   },
-  components: {},
   methods: {
     ...mapActions({
       setPageSize: 'd2admin/user/set'
