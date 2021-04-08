@@ -8,7 +8,7 @@
         <el-col :span="14">
           <el-card shadow="never">
             <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
-              <el-button @click="handlerSave" size="mini" plain>保存</el-button>
+              <el-button @click="handlerSave" size="mini" plain :disabled="customPrometheusConfig === ''">保存</el-button>
               <el-button @click="handlerPush" size="mini" plain class="button" :loading="creating">创建</el-button>
             </el-row>
             <el-collapse v-model="activeName" @change="handleChange" accordion>
@@ -38,8 +38,7 @@
           <el-card shadow="never">
             <el-row style="margin-bottom: 5px" :gutter="24">
               <el-select v-model="serverGroupId" filterable clearable @change="getGroupConfig" class="select"
-                         remote reserve-keyword placeholder="关键词搜索服务器组" :remote-method="getServerGroup"
-                         :loading="loading">
+                         remote reserve-keyword placeholder="关键词搜索服务器组" :remote-method="getServerGroup">
                 <el-option
                   v-for="item in serverGroupOptions"
                   :key="item.id"
