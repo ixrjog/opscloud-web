@@ -6,62 +6,60 @@
       </div>
       <el-row :gutter="20">
         <el-col :span="14">
-          <el-card shadow="never">
-            <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
-              <el-button @click="handlerSave" size="mini" plain :disabled="customPrometheusConfig === ''">保存</el-button>
-              <el-button @click="handlerPush" size="mini" plain class="button" :loading="creating">创建</el-button>
-            </el-row>
-            <el-collapse v-model="activeName" @change="handleChange" accordion>
-              <el-collapse-item name="1">
-                <template slot="title">自定义配置文件
-                  <el-tooltip effect="dark" content="自定义配置，可修改" placement="top">
-                    <i class="header-icon el-icon-info"></i>
-                  </el-tooltip>
-                </template>
-                <editor v-model="customPrometheusConfig" @init="editorInit" lang="yaml" theme="chrome"
-                        height="650" v-if="customPrometheusConfig !==''"></editor>
-              </el-collapse-item>
-              <el-collapse-item name="2">
-                <template slot="title">服务器配置文件
-                  <el-tooltip effect="dark" content="根据服务器属性自动生成，不可修改" placement="top">
-                    <i class="header-icon el-icon-info"></i>
-                  </el-tooltip>
-                </template>
-                <span v-if="prometheusConfig ===''">内容加载中</span>
-                <editor v-model="prometheusConfig" @init="readOnlyInit" lang="yaml" theme="kuroir" height="650"
-                        v-else></editor>
-              </el-collapse-item>
-            </el-collapse>
-          </el-card>
+          <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
+            <el-button @click="handlerSave" size="mini" plain :disabled="customPrometheusConfig === ''">保存</el-button>
+            <el-button @click="handlerPush" size="mini" plain class="button" :loading="creating">创建</el-button>
+          </el-row>
+          <el-tabs type="border-card" @tab-click="handleChange">
+            <el-tab-pane>
+              <span slot="label">自定义配置文件
+                <el-tooltip effect="dark" content="自定义配置，可修改" placement="top">
+                  <i class="header-icon el-icon-info"></i>
+                </el-tooltip>
+              </span>
+              <editor v-model="customPrometheusConfig" @init="editorInit" lang="yaml" theme="chrome"
+                      height="650"></editor>
+            </el-tab-pane>
+            <el-tab-pane>
+              <span slot="label">服务器配置文件
+                <el-tooltip effect="dark" content="根据服务器属性自动生成，不可修改" placement="top">
+                  <i class="header-icon el-icon-info"></i>
+                </el-tooltip>
+              </span>
+              <span v-if="prometheusConfig ===''">内容加载中</span>
+              <editor v-model="prometheusConfig" @init="readOnlyInit" lang="yaml" theme="kuroir" height="650"
+                      v-else></editor>
+            </el-tab-pane>
+          </el-tabs>
         </el-col>
         <el-col :span="10">
-          <el-card shadow="never">
-            <el-row style="margin-bottom: 5px" :gutter="24">
-              <el-select v-model="serverGroupId" filterable clearable @change="getGroupConfig" class="select"
-                         remote reserve-keyword placeholder="关键词搜索服务器组" :remote-method="getServerGroup">
-                <el-option
-                  v-for="item in serverGroupOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-                  <span style="float: left">{{ item.name }}</span>
-                  <span style="float: right; color: #8492a6; font-size: 13px;margin-left: 20px">{{
-                      item.comment
-                    }}</span>
-                </el-option>
-              </el-select>
-            </el-row>
-            <el-collapse v-model="groupConfigActiveName">
-              <el-collapse-item title="config" name="1">
-                <editor v-model="groupConfig" @init="readOnlyInit" lang="yaml" theme="kuroir"
-                        height="120" v-if="groupConfig !==''"></editor>
-              </el-collapse-item>
-              <el-collapse-item title="target" name="2">
-                <editor v-model="groupTarget" @init="readOnlyInit" lang="json" theme="kuroir"
-                        height="500" v-if="groupTarget !==''"></editor>
-              </el-collapse-item>
-            </el-collapse>
-          </el-card>
+          <el-row style="margin-bottom: 5px" :gutter="24">
+            <el-select v-model="serverGroupId" filterable clearable @change="getGroupConfig" class="select"
+                       remote reserve-keyword placeholder="关键词搜索服务器组" :remote-method="getServerGroup">
+              <el-option
+                v-for="item in serverGroupOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
+                <span style="float: left">{{ item.name }}</span>
+                <span style="float: right; color: #8492a6; font-size: 13px;margin-left: 20px">{{
+                    item.comment
+                  }}</span>
+              </el-option>
+            </el-select>
+          </el-row>
+          <el-tabs type="border-card" v-model="activeName">
+            <el-tab-pane label="config" name="config">
+              <editor v-model="groupConfig" @init="readOnlyInit" lang="yaml" theme="kuroir"
+                      height="500" v-if="groupConfig !==''">
+              </editor>
+            </el-tab-pane>
+            <el-tab-pane label="target" name="target">
+              <editor v-model="groupTarget" @init="readOnlyInit" lang="json" theme="kuroir"
+                      height="500" v-if="groupTarget !==''">
+              </editor>
+            </el-tab-pane>
+          </el-tabs>
         </el-col>
       </el-row>
     </template>
@@ -85,8 +83,7 @@ export default {
       customPrometheusConfig: '',
       prometheusConfig: '',
       title: 'Prometheus管理',
-      activeName: '',
-      groupConfigActiveName: ['1', '2'],
+      activeName: 'config',
       serverGroupOptions: [],
       groupConfig: '',
       groupTarget: '',
@@ -94,6 +91,7 @@ export default {
     }
   },
   mounted () {
+    this.getPrometheusConfig()
   },
   computed: {},
   components: {
@@ -130,11 +128,11 @@ export default {
           this.customPrometheusConfig = res.body
         })
     },
-    handleChange (activeNames) {
-      if (activeNames === '1') {
+    handleChange (tab, event) {
+      if (tab.index === '0') {
         this.getPrometheusConfig()
       }
-      if (activeNames === '2') {
+      if (tab.index === '1') {
         this.previewPrometheusConfig()
       }
     },
