@@ -215,9 +215,12 @@
 
     <div slot="footer" class="dialog-footer">
       <el-button size="mini" @click="closeDialog">关闭</el-button>
-      <el-button type="primary" size="mini" v-if="step.active !== 1 && step.active !== step.lastStep" @click="handlerBack">上一步</el-button>
+      <el-button type="primary" size="mini" v-if="step.active !== 1 && step.active !== step.lastStep"
+                 @click="handlerBack">上一步
+      </el-button>
       <el-button type="primary" size="mini" v-if="step.active < step.lastStep - 1" @click="handlerNext">下一步</el-button>
-      <el-button type="primary" size="mini" v-if="step.active === step.lastStep - 1" :loading="creating" @click="handlerCreate">创建
+      <el-button type="primary" size="mini" v-if="step.active === step.lastStep - 1" :loading="creating"
+                 @click="handlerCreate">创建
       </el-button>
     </div>
   </el-dialog>
@@ -225,485 +228,485 @@
 
 <script>
 
-  // api
-  import { queryServerGroupPage } from '@api/server/server.group.js'
-  import { queryEnvPage } from '@api/env/env.js'
-  import { fuzzyQueryCloudImagePage } from '@api/cloud/cloud.image.js'
-  import { queryCloudVPCPage, queryCloudVPCSecurityGroupPage } from '@api/cloud/cloud.vpc.js'
-  import {
-    queryCloudInstanceTemplateVSwitch,
-    createCloudInstance,
-    queryLastCloudInstanceTaskByTemplateId
-  } from '@api/cloud/cloud.instance.js'
-  import { querySettingMapByName } from '@api/setting/setting.js'
+// api
+import { queryServerGroupPage } from '@api/server/server.group.js'
+import { queryEnvPage } from '@api/env/env.js'
+import { fuzzyQueryCloudImagePage } from '@api/cloud/cloud.image.js'
+import { queryCloudVPCPage, queryCloudVPCSecurityGroupPage } from '@api/cloud/cloud.vpc.js'
+import {
+  queryCloudInstanceTemplateVSwitch,
+  createCloudInstance,
+  queryLastCloudInstanceTaskByTemplateId
+} from '@api/cloud/cloud.instance.js'
+import { querySettingMapByName } from '@api/setting/setting.js'
 
-  let echarts = require('echarts/lib/echarts')
-  require('echarts/lib/chart/pie')
-  require('echarts/map/js/china')
-  require('echarts/lib/chart/line')
-  require('echarts/lib/chart/bar')
-  require('echarts/lib/component/tooltip')
-  require('echarts/lib/component/legend')
+let echarts = require('echarts/lib/echarts')
+require('echarts/lib/chart/pie')
+require('echarts/map/js/china')
+require('echarts/lib/chart/line')
+require('echarts/lib/chart/bar')
+require('echarts/lib/component/tooltip')
+require('echarts/lib/component/legend')
 
-  const loginTypeOptions = [{
-    value: 0,
-    label: 'key'
-  }, {
+const loginTypeOptions = [{
+  value: 0,
+  label: 'key'
+}, {
+  value: 1,
+  label: 'passwd'
+}]
+
+const aliyunDiskOptions = [{
+  value: 'cloud_efficiency',
+  label: '高效云盘'
+}, {
+  value: 'cloud_ssd',
+  label: 'SSD云盘'
+}, {
+  value: 'cloud_essd',
+  label: '高性能SSD云盘'
+}]
+
+const disk = {
+  sysDisk: {
+    size: 40,
+    category: 'cloud_efficiency'
+  },
+  dataDisk: {
+    size: 0,
+    category: 'cloud_efficiency'
+  }
+}
+
+const chargePeriodOptions = [
+  {
     value: 1,
-    label: 'passwd'
-  }]
-
-  const aliyunDiskOptions = [{
-    value: 'cloud_efficiency',
-    label: '高效云盘'
-  }, {
-    value: 'cloud_ssd',
-    label: 'SSD云盘'
-  }, {
-    value: 'cloud_essd',
-    label: '高性能SSD云盘'
-  }]
-
-  const disk = {
-    sysDisk: {
-      size: 40,
-      category: 'cloud_efficiency'
-    },
-    dataDisk: {
-      size: 0,
-      category: 'cloud_efficiency'
-    }
+    label: '1个月'
+  },
+  {
+    value: 2,
+    label: '2个月'
+  },
+  {
+    value: 3,
+    label: '3个月'
+  },
+  {
+    value: 4,
+    label: '4个月'
+  },
+  {
+    value: 5,
+    label: '5个月'
+  },
+  {
+    value: 6,
+    label: '6个月'
+  },
+  {
+    value: 7,
+    label: '7个月'
+  },
+  {
+    value: 8,
+    label: '8个月'
+  },
+  {
+    value: 9,
+    label: '9个月'
+  },
+  {
+    value: 12,
+    label: '1年'
+  },
+  {
+    value: 24,
+    label: '2年'
+  },
+  {
+    value: 36,
+    label: '3年'
   }
+]
 
-  const chargePeriodOptions = [
-    {
-      value: 1,
-      label: '1个月'
-    },
-    {
-      value: 2,
-      label: '2个月'
-    },
-    {
-      value: 3,
-      label: '3个月'
-    },
-    {
-      value: 4,
-      label: '4个月'
-    },
-    {
-      value: 5,
-      label: '5个月'
-    },
-    {
-      value: 6,
-      label: '6个月'
-    },
-    {
-      value: 7,
-      label: '7个月'
-    },
-    {
-      value: 8,
-      label: '8个月'
-    },
-    {
-      value: 9,
-      label: '9个月'
-    },
-    {
-      value: 12,
-      label: '1年'
-    },
-    {
-      value: 24,
-      label: '2年'
-    },
-    {
-      value: 36,
-      label: '3年'
+const accountSettingName = 'SERVER_ACCOUNT'
+
+export default {
+  name: 'CreateCloudInstanceDialog',
+  data () {
+    return {
+      timer: null,
+      tableData: [],
+      templateData: {},
+      createInstanceData: {
+        loginUser: '',
+        charge: {
+          chargeType: false,
+          period: 1,
+          autoRenew: true
+        }
+      },
+      serverGroupOptions: [],
+      envTypeOptions: [],
+      loginTypeOptions: loginTypeOptions,
+      aliyunDiskOptions: aliyunDiskOptions,
+      disk: disk,
+      chargePeriodOptions: chargePeriodOptions,
+      imageLoading: false,
+      imageOptions: [],
+      securityGroupOptions: [],
+      securityGroupLoading: false,
+      vswitchData: [],
+      vswitchTree: [],
+      completedPercentage: 0,
+      creating: false,
+      step: {}
     }
-  ]
-
-  const accountSettingName = 'SERVER_ACCOUNT'
-
-  export default {
-    name: 'CreateCloudInstanceDialog',
-    data () {
-      return {
-        timer: null,
-        tableData: [],
-        templateData: {},
-        createInstanceData: {
-          loginUser: '',
-          charge: {
-            chargeType: false,
-            period: 1,
-            autoRenew: true
-          }
+  },
+  props: ['formStatus'],
+  mixins: [],
+  components: {},
+  mounted () {
+    this.getEnvType()
+  },
+  methods: {
+    setTimer () {
+      this.timer = setInterval(() => {
+        this.queryTask()
+      }, 5000)
+    },
+    setAccountSetting () {
+      querySettingMapByName(accountSettingName)
+        .then(res => {
+          this.createInstanceData.loginUser = res.body[accountSettingName]
+        })
+    },
+    initMyChart (data) {
+      let myChart = echarts.init(document.getElementById('taskChart'))
+      // 指定图表的配置项和数据
+      let option = {
+        tooltip: {
+          trigger: 'item',
+          triggerOn: 'mousemove'
         },
-        serverGroupOptions: [],
-        envTypeOptions: [],
-        loginTypeOptions: loginTypeOptions,
-        aliyunDiskOptions: aliyunDiskOptions,
-        disk: disk,
-        chargePeriodOptions: chargePeriodOptions,
-        imageLoading: false,
-        imageOptions: [],
-        securityGroupOptions: [],
-        securityGroupLoading: false,
-        vswitchData: [],
-        vswitchTree: [],
-        completedPercentage: 0,
-        creating: false,
-        step: {}
-      }
-    },
-    props: ['formStatus'],
-    mixins: [],
-    components: {},
-    mounted () {
-      this.getEnvType()
-    },
-    methods: {
-      setTimer () {
-        this.timer = setInterval(() => {
-          this.queryTask()
-        }, 5000)
-      },
-      setAccountSetting () {
-        querySettingMapByName(accountSettingName)
-          .then(res => {
-            this.createInstanceData.loginUser = res.body[accountSettingName]
-          })
-      },
-      initMyChart (data) {
-        let myChart = echarts.init(document.getElementById('taskChart'))
-        // 指定图表的配置项和数据
-        let option = {
-          tooltip: {
-            trigger: 'item',
-            triggerOn: 'mousemove'
-          },
-          series: [
-            {
-              type: 'tree',
-              id: 0,
-              name: 'tree1',
-              data: [data],
-              top: '10%',
-              left: '8%',
-              bottom: '22%',
-              right: '35%',
-              symbolSize: 7,
-              edgeShape: 'polyline',
-              edgeForkPosition: '63%',
-              initialTreeDepth: 3,
-              lineStyle: {
-                width: 2
-              },
+        series: [
+          {
+            type: 'tree',
+            id: 0,
+            name: 'tree1',
+            data: [data],
+            top: '10%',
+            left: '8%',
+            bottom: '22%',
+            right: '35%',
+            symbolSize: 7,
+            edgeShape: 'polyline',
+            edgeForkPosition: '63%',
+            initialTreeDepth: 3,
+            lineStyle: {
+              width: 2
+            },
+            label: {
+              backgroundColor: '#fff',
+              position: 'left',
+              verticalAlign: 'middle',
+              align: 'right'
+            },
+            leaves: {
               label: {
-                backgroundColor: '#fff',
-                position: 'left',
+                position: 'right',
                 verticalAlign: 'middle',
-                align: 'right'
-              },
-              leaves: {
-                label: {
-                  position: 'right',
-                  verticalAlign: 'middle',
-                  align: 'left'
-                }
-              },
-              expandAndCollapse: true,
-              animationDuration: 550,
-              animationDurationUpdate: 750
-            }
-          ]
-        }
-        // 使用刚指定的配置项和数据显示图表。
-        myChart.setOption(option)
-      },
-      closeDialog () {
-        this.cloudType = ''
-        // this.templateData = {}
-        this.formStatus.visible = false
-        clearInterval(this.timer)
-        this.$emit('closeCloudInstanceTemplateDialog')
-      },
-      getServerGroup (queryName) {
-        queryServerGroupPage(queryName, '', 1, 20)
-          .then(res => {
-            this.serverGroupOptions = res.body.data
-          })
-      },
-      getImage (queryName) {
-        this.imageLoading = true
-        let imageQueryParam = {
-          queryName: queryName,
-          cloudType: this.formStatus.cloudType,
-          isActive: 1,
-          regionId: this.templateData.regionId,
-          page: 1,
-          length: 10
-        }
-        fuzzyQueryCloudImagePage(imageQueryParam)
-          .then(res => {
-            this.imageOptions = res.body.data
-            this.imageLoading = false
-          })
-      },
-      getSecurityGroup (queryName) {
-        this.securityGroupLoading = true
-        let securityGroupQueryParam = {
-          queryName: queryName,
-          isActive: 1,
-          extend: 0,
-          vpcId: this.templateData.vpcId,
-          page: 1,
-          length: 20
-        }
-        queryCloudVPCSecurityGroupPage(securityGroupQueryParam)
-          .then(res => {
-            this.securityGroupOptions = res.body.data
-            this.securityGroupLoading = false
-          })
-      },
-      convertTaskData (memberList) {
-        if (memberList === undefined || JSON.stringify(memberList) === '{}') {
-          return []
-        }
-        let childrens = []
-        memberList.forEach(member => {
-          let name = member.hostname
-          if (member.privateIp !== null && member.privateIp !== '') {
-            name = name + ' (' + member.privateIp + ' )'
-          }
-          let children = {
-            name: name,
-            value: member.seq
-          }
-          childrens.push(children)
-        })
-        return childrens
-      },
-      queryTask () {
-        queryLastCloudInstanceTaskByTemplateId(this.templateData.id)
-          .then(res => {
-            let taskDetail = res.body
-            this.completedPercentage = taskDetail.completedPercentage
-            let memberMap = taskDetail.memberMap
-            if (taskDetail.id !== null) {
-              let data = {
-                name: 'task',
-                children: [{
-                  name: 'create instance',
-                  children: this.convertTaskData(memberMap.CREATE_INSTANCE)
-                }, {
-                  name: 'allocate public ip',
-                  children: this.convertTaskData(memberMap.ALLOCATE_PUBLIC_IP_ADDRESS)
-                }, {
-                  name: 'start instance',
-                  children: this.convertTaskData(memberMap.STARTING)
-                }, {
-                  name: 'instance running',
-                  children: this.convertTaskData(memberMap.RUNNING)
-                }, {
-                  name: 'cloud server recorded',
-                  children: this.convertTaskData(memberMap.CLOUD_SERVER_RECORDED)
-                }, {
-                  name: 'server recorded',
-                  children: this.convertTaskData(memberMap.SERVER_RECORDED)
-                }, {
-                  name: 'finalized',
-                  children: this.convertTaskData(memberMap.FINALIZED)
-                }]
+                align: 'left'
               }
-              this.initMyChart(data)
-            }
-            if (taskDetail.taskPhase === 'FINALIZED') {
-              clearInterval(this.timer)
-            }
-          })
-      },
-      getEnvType () {
-        queryEnvPage('', '', 1, 20)
-          .then(res => {
-            this.envTypeOptions = res.body.data
-          })
-      },
-      convertVswitchData () {
-        this.vswitchTree = []
-        this.vswitchData.forEach(e => {
-          let vswitch = {
-            vswitchId: e.vswitchId,
-            label: e.vswitchName + ' ( 可用ip: ' + e.availableIpAddressCount + ' )'
+            },
+            expandAndCollapse: true,
+            animationDuration: 550,
+            animationDurationUpdate: 750
           }
-          this.vswitchTree.push(vswitch)
-        })
-      },
-      getTemplateVSwitch (zoneId) {
-        queryCloudInstanceTemplateVSwitch(this.templateData.id, zoneId)
-          .then(res => {
-            this.vswitchData = res.body
-            this.convertVswitchData()
-          })
-      },
-      handlerSelZone () {
-        if (this.createInstanceData.zoneId !== '' && this.createInstanceData.zonePattern === 'single') {
-          this.getTemplateVSwitch(this.createInstanceData.zoneId)
-        }
-      },
-      handlerBack () {
-        if (this.step.active > 1) {
-          this.step.active--
-        }
-      },
-      handlerNext () {
-        // let actives = ['template', 'options', 'instance', 'disk', 'task']
-        switch (this.step.active) {
-          case 1:
-            this.step.active++
-            break
-          case 2:
-            if (this.createInstanceData.serverGroupId === '') {
-              this.$message.error('请选择服务器组!')
-              return
-            }
-            this.step.active++
-            break
-          case 3:
-            this.step.active++
-            break
-          case 4:
-            this.step.active++
-            break
-        }
-      },
-      initData (cloudType, templateData) {
-        this.step = {
-          active: 1,
-          lastStep: 5
-        }
-        this.creating = false
-        this.cloudType = cloudType
-        this.templateData = templateData
-        // 设置模版详情
-        this.tableData = []
-        this.tableData.push(templateData)
-        this.createInstanceData = {
-          templateId: templateData.id,
-          serverGroupId: '',
-          securityGroupId: templateData.securityGroupId === null ? 0 : templateData.securityGroupId,
-          imageId: templateData.imageId,
-          serverName: '',
-          loginUser: 'root',
-          loginType: 0,
-          envType: 4,
-          allocatePublicIpAddress: false,
-          createSize: 1,
-          zonePattern: 'auto',
-          zoneId: '',
-          vswitchIds: [],
-          charge: {
-            chargeType: true,
-            period: 3,
-            autoRenew: true
-          }
-        }
-        this.setAccountSetting()
-        if (templateData.vpcId !== '') {
-          this.vpcId = templateData.vpcId
-        }
-        if (templateData.instanceTemplate != null && templateData.instanceTemplate.disk !== null) {
-          this.data = templateData.instanceTemplate.disk
-        } else {
-          this.disk = disk
-        }
-        // 设置选中的配置项
-        this.securityGroupOptions = []
-        this.securityGroupOptions.push(templateData.securityGroup)
-        this.imageOptions = []
-        this.imageOptions.push(templateData.cloudImage)
-      },
-      fetchImageData () {
-        let imageQueryParam = {
-          queryName: this.queryImageParam.queryName,
-          cloudType: this.formStatus.cloudType,
-          isActive: 1,
-          regionId: this.templateData.regionId,
-          page: this.imagePagination.currentPage,
-          length: this.imagePagination.pageSize
-        }
-        fuzzyQueryCloudImagePage(imageQueryParam)
-          .then(res => {
-            this.imagePagination.total = res.body.totalNum
-          })
-      },
-      handlerCreate () {
-        this.creating = true
-        let requestBody = Object.assign({}, this.createInstanceData)
-        requestBody.disk = this.disk
-        try {
-          requestBody.vswitchIds = this.$refs.vswitchTree.getCheckedKeys()
-        } catch (e) {
-        }
-        createCloudInstance(requestBody)
-          .then(res => {
-            if (!res.success) {
-              this.$message.error(res.msg)
-            } else {
-              this.$message({
-                message: '任务执行中！',
-                type: 'success'
-              })
-              this.step.active = this.step.lastStep
-              this.setTimer()
-            }
-          })
-      },
-      fetchVPCData () {
-        this.vpcTableLoading = true
-        let zoneIds = []
-        if (this.templateData.instanceTemplate !== null && this.templateData.instanceTemplate.zoneIds !== null) {
-          zoneIds = this.templateData.instanceTemplate.zoneIds
-        }
-        let vpcQueryParam = {
-          queryName: this.queryVPCParam.queryName,
-          cloudType: this.formStatus.cloudType,
-          isActive: 1,
-          extend: 1,
-          zoneIds: zoneIds,
-          regionId: this.templateData.regionId,
-          page: this.vpcPagination.currentPage,
-          length: this.vpcPagination.pageSize
-        }
-        queryCloudVPCPage(vpcQueryParam)
-          .then(res => {
-            this.vpcTableData = res.body.data
-            this.vpcPagination.total = res.body.totalNum
-            this.vpcTableLoading = false
-            this.convertVswitchData()
-          })
+        ]
       }
+      // 使用刚指定的配置项和数据显示图表。
+      myChart.setOption(option)
+    },
+    closeDialog () {
+      this.cloudType = ''
+      // this.templateData = {}
+      this.formStatus.visible = false
+      clearInterval(this.timer)
+      this.$emit('closeCloudInstanceTemplateDialog')
+    },
+    getServerGroup (queryName) {
+      queryServerGroupPage(queryName, '', 1, 20)
+        .then(res => {
+          this.serverGroupOptions = res.body.data
+        })
+    },
+    getImage (queryName) {
+      this.imageLoading = true
+      let imageQueryParam = {
+        queryName: queryName,
+        cloudType: this.formStatus.cloudType,
+        isActive: 1,
+        regionId: this.templateData.regionId,
+        page: 1,
+        length: 10
+      }
+      fuzzyQueryCloudImagePage(imageQueryParam)
+        .then(res => {
+          this.imageOptions = res.body.data
+          this.imageLoading = false
+        })
+    },
+    getSecurityGroup (queryName) {
+      this.securityGroupLoading = true
+      let securityGroupQueryParam = {
+        queryName: queryName,
+        isActive: 1,
+        extend: 0,
+        vpcId: this.templateData.vpcId,
+        page: 1,
+        length: 20
+      }
+      queryCloudVPCSecurityGroupPage(securityGroupQueryParam)
+        .then(res => {
+          this.securityGroupOptions = res.body.data
+          this.securityGroupLoading = false
+        })
+    },
+    convertTaskData (memberList) {
+      if (memberList === undefined || JSON.stringify(memberList) === '{}') {
+        return []
+      }
+      let childrens = []
+      memberList.forEach(member => {
+        let name = member.hostname
+        if (member.privateIp !== null && member.privateIp !== '') {
+          name = name + ' (' + member.privateIp + ' )'
+        }
+        let children = {
+          name: name,
+          value: member.seq
+        }
+        childrens.push(children)
+      })
+      return childrens
+    },
+    queryTask () {
+      queryLastCloudInstanceTaskByTemplateId(this.templateData.id)
+        .then(res => {
+          let taskDetail = res.body
+          this.completedPercentage = taskDetail.completedPercentage
+          let memberMap = taskDetail.memberMap
+          if (taskDetail.id !== null) {
+            let data = {
+              name: 'task',
+              children: [{
+                name: 'create instance',
+                children: this.convertTaskData(memberMap.CREATE_INSTANCE)
+              }, {
+                name: 'allocate public ip',
+                children: this.convertTaskData(memberMap.ALLOCATE_PUBLIC_IP_ADDRESS)
+              }, {
+                name: 'start instance',
+                children: this.convertTaskData(memberMap.STARTING)
+              }, {
+                name: 'instance running',
+                children: this.convertTaskData(memberMap.RUNNING)
+              }, {
+                name: 'cloud server recorded',
+                children: this.convertTaskData(memberMap.CLOUD_SERVER_RECORDED)
+              }, {
+                name: 'server recorded',
+                children: this.convertTaskData(memberMap.SERVER_RECORDED)
+              }, {
+                name: 'finalized',
+                children: this.convertTaskData(memberMap.FINALIZED)
+              }]
+            }
+            this.initMyChart(data)
+          }
+          if (taskDetail.taskPhase === 'FINALIZED') {
+            clearInterval(this.timer)
+          }
+        })
+    },
+    getEnvType () {
+      queryEnvPage('', '', 1, 20)
+        .then(res => {
+          this.envTypeOptions = res.body.data
+        })
+    },
+    convertVswitchData () {
+      this.vswitchTree = []
+      this.vswitchData.forEach(e => {
+        let vswitch = {
+          vswitchId: e.vswitchId,
+          label: e.vswitchName + ' ( 可用ip: ' + e.availableIpAddressCount + ' )'
+        }
+        this.vswitchTree.push(vswitch)
+      })
+    },
+    getTemplateVSwitch (zoneId) {
+      queryCloudInstanceTemplateVSwitch(this.templateData.id, zoneId)
+        .then(res => {
+          this.vswitchData = res.body
+          this.convertVswitchData()
+        })
+    },
+    handlerSelZone () {
+      if (this.createInstanceData.zoneId !== '' && this.createInstanceData.zonePattern === 'single') {
+        this.getTemplateVSwitch(this.createInstanceData.zoneId)
+      }
+    },
+    handlerBack () {
+      if (this.step.active > 1) {
+        this.step.active--
+      }
+    },
+    handlerNext () {
+      // let actives = ['template', 'options', 'instance', 'disk', 'task']
+      switch (this.step.active) {
+        case 1:
+          this.step.active++
+          break
+        case 2:
+          if (this.createInstanceData.serverGroupId === '') {
+            this.$message.error('请选择服务器组!')
+            return
+          }
+          this.step.active++
+          break
+        case 3:
+          this.step.active++
+          break
+        case 4:
+          this.step.active++
+          break
+      }
+    },
+    initData (cloudType, templateData) {
+      this.step = {
+        active: 1,
+        lastStep: 5
+      }
+      this.creating = false
+      this.cloudType = cloudType
+      this.templateData = templateData
+      // 设置模版详情
+      this.tableData = []
+      this.tableData.push(templateData)
+      this.createInstanceData = {
+        templateId: templateData.id,
+        serverGroupId: '',
+        securityGroupId: templateData.securityGroupId === null ? 0 : templateData.securityGroupId,
+        imageId: templateData.imageId,
+        serverName: '',
+        loginUser: 'root',
+        loginType: 0,
+        envType: 4,
+        allocatePublicIpAddress: false,
+        createSize: 1,
+        zonePattern: 'auto',
+        zoneId: '',
+        vswitchIds: [],
+        charge: {
+          chargeType: true,
+          period: 3,
+          autoRenew: true
+        }
+      }
+      this.setAccountSetting()
+      if (templateData.vpcId !== '') {
+        this.vpcId = templateData.vpcId
+      }
+      if (templateData.instanceTemplate != null && templateData.instanceTemplate.disk !== null) {
+        this.data = templateData.instanceTemplate.disk
+      } else {
+        this.disk = disk
+      }
+      // 设置选中的配置项
+      this.securityGroupOptions = []
+      this.securityGroupOptions.push(templateData.securityGroup)
+      this.imageOptions = []
+      this.imageOptions.push(templateData.cloudImage)
+    },
+    fetchImageData () {
+      let imageQueryParam = {
+        queryName: this.queryImageParam.queryName,
+        cloudType: this.formStatus.cloudType,
+        isActive: 1,
+        regionId: this.templateData.regionId,
+        page: this.imagePagination.currentPage,
+        length: this.imagePagination.pageSize
+      }
+      fuzzyQueryCloudImagePage(imageQueryParam)
+        .then(res => {
+          this.imagePagination.total = res.body.totalNum
+        })
+    },
+    handlerCreate () {
+      this.creating = true
+      let requestBody = Object.assign({}, this.createInstanceData)
+      requestBody.disk = this.disk
+      try {
+        requestBody.vswitchIds = this.$refs.vswitchTree.getCheckedKeys()
+      } catch (e) {
+      }
+      createCloudInstance(requestBody)
+        .then(res => {
+          if (!res.success) {
+            this.$message.error(res.msg)
+          } else {
+            this.$message({
+              message: '任务执行中！',
+              type: 'success'
+            })
+            this.step.active = this.step.lastStep
+            this.setTimer()
+          }
+        })
+    },
+    fetchVPCData () {
+      this.vpcTableLoading = true
+      let zoneIds = []
+      if (this.templateData.instanceTemplate !== null && this.templateData.instanceTemplate.zoneIds !== null) {
+        zoneIds = this.templateData.instanceTemplate.zoneIds
+      }
+      let vpcQueryParam = {
+        queryName: this.queryVPCParam.queryName,
+        cloudType: this.formStatus.cloudType,
+        isActive: 1,
+        extend: 1,
+        zoneIds: zoneIds,
+        regionId: this.templateData.regionId,
+        page: this.vpcPagination.currentPage,
+        length: this.vpcPagination.pageSize
+      }
+      queryCloudVPCPage(vpcQueryParam)
+        .then(res => {
+          this.vpcTableData = res.body.data
+          this.vpcPagination.total = res.body.totalNum
+          this.vpcTableLoading = false
+          this.convertVswitchData()
+        })
     }
   }
+}
 </script>
 
 <style>
-  .table-expand {
-    font-size: 0;
-  }
+.table-expand {
+  font-size: 0;
+}
 
-  .table-expand label {
-    width: 150px;
-    color: #99a9bf;
-  }
+.table-expand label {
+  width: 150px;
+  color: #99a9bf;
+}
 
-  .table-expand .el-form-item {
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 50%;
-  }
+.table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
+}
 </style>

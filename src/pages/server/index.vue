@@ -76,6 +76,9 @@
               <el-form-item label="登录类型">
                 <span>{{ props.row.loginType | getLoginTypeText }}</span>
               </el-form-item>
+              <el-form-item label="管理用户">
+                <span>{{ props.row.manageUser }}</span>
+              </el-form-item>
               <el-form-item label="登录用户">
                 <span>{{ props.row.loginUser }}</span>
               </el-form-item>
@@ -154,10 +157,10 @@
                      :page-size="pagination.pageSize">
       </el-pagination>
       <!-- server编辑-->
-      <ServerDialog :formStatus="formServerStatus" ref="serverDialog" @closeDialog="fetchData"></ServerDialog>
+      <server-dialog :formStatus="formServerStatus" ref="serverDialog" @closeDialog="fetchData"></server-dialog>
       <!-- tag编辑-->
-      <TagTransferDialog :formStatus="formTagTransferStatus" ref="tagTransferDialog"
-                         @closeDialog="fetchData"></TagTransferDialog>
+      <tag-transfer-dialog :formStatus="formTagTransferStatus" ref="tagTransferDialog"
+                         @closeDialog="fetchData"></tag-transfer-dialog>
       <XTerm :formStatus="formXtermStatus" ref="xtermDialog"></XTerm>
     </template>
   </d2-container>
@@ -368,6 +371,7 @@ export default {
         name: '',
         serverGroupId: '',
         loginType: 0,
+        manageUser: '',
         loginUser: '',
         envType: 4,
         publicIp: '',

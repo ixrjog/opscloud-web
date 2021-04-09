@@ -18,8 +18,8 @@
         </el-popconfirm>
         <span style="float: right">
           <el-tooltip class="item" effect="dark" content="刷新" placement="top">
-            <el-button type="text" icon="el-icon-refresh" :disabled="loading" style="margin-left: 5px"
-                       @click="handlerRefresh" size="mini" plain></el-button>
+            <el-button type="text" icon="el-icon-refresh" :loading="loading" style="margin-left: 5px"
+                       @click="handlerRefresh" size="mini" plain :disabled="uid === ''"></el-button>
           </el-tooltip>
         </span>
       </el-row>
@@ -117,7 +117,7 @@ export default {
       refreshDingtalkDeptTree(this.uid)
         .then(res => {
           this.initChart(res.body)
-          this.loading = true
+          this.loading = false
         })
     },
     handlerSync () {

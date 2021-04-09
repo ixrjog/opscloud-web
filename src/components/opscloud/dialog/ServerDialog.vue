@@ -33,6 +33,11 @@
       </el-form-item>
     </el-form>
     <el-form :model="serverData">
+      <el-form-item label="管理用户" :label-width="formStatus.labelWidth">
+        <el-input v-model.trim="serverData.manageUser" placeholder="请输入内容"></el-input>
+      </el-form-item>
+    </el-form>
+    <el-form :model="serverData">
       <el-form-item label="登录用户" :label-width="formStatus.labelWidth">
         <el-input v-model.trim="serverData.loginUser" placeholder="请输入内容"></el-input>
       </el-form-item>
@@ -96,138 +101,149 @@
 </template>
 
 <script>
-  // API
-  import { queryEnvPage } from '@api/env/env.js'
-  import { addServer, updateServer } from '@api/server/server.js'
-  import { queryServerGroupPage } from '@api/server/server.group.js'
-  import { querySettingMapByName } from '@api/setting/setting.js'
+// API
+import { queryEnvPage } from '@api/env/env.js'
+import { addServer, updateServer } from '@api/server/server.js'
+import { queryServerGroupPage } from '@api/server/server.group.js'
+import { querySettingMapByName } from '@api/setting/setting.js'
 
-  const accountSettingName = 'SERVER_ACCOUNT'
+const accountSettingName = 'SERVER_ACCOUNT'
+const highAccountSettingName = 'SERVER_HIGH_AUTHORITY_ACCOUNT'
 
-  const serverTypeOptions = [{
-    value: 0,
-    label: 'server'
-  }, {
-    value: 1,
-    label: 'vmware vm'
-  }, {
-    value: 2,
-    label: 'aliyun ecs'
-  }, {
-    value: 3,
-    label: 'aws ec2'
-  }, {
-    value: 4,
-    label: 'tencent cvm'
-  }, {
-    value: 5,
-    label: 'vmware esxi'
-  }]
+const serverTypeOptions = [{
+  value: 0,
+  label: 'server'
+}, {
+  value: 1,
+  label: 'vmware vm'
+}, {
+  value: 2,
+  label: 'aliyun ecs'
+}, {
+  value: 3,
+  label: 'aws ec2'
+}, {
+  value: 4,
+  label: 'tencent cvm'
+}, {
+  value: 5,
+  label: 'vmware esxi'
+}]
 
-  const loginTypeOptions = [{
-    value: 0,
-    label: 'key'
-  }, {
-    value: 1,
-    label: 'passwd'
-  }]
+const loginTypeOptions = [{
+  value: 0,
+  label: 'key'
+}, {
+  value: 1,
+  label: 'passwd'
+}]
 
-  export default {
-    data () {
-      return {
-        loading: false,
-        envTypeOptions: [],
-        serverGroupOptions: [],
-        serverData: {},
-        loginUser: '',
-        serverTypeOptions: serverTypeOptions,
-        loginTypeOptions: loginTypeOptions
+export default {
+  data () {
+    return {
+      loading: false,
+      envTypeOptions: [],
+      serverGroupOptions: [],
+      serverData: {},
+      loginUser: '',
+      manageUser: '',
+      serverTypeOptions: serverTypeOptions,
+      loginTypeOptions: loginTypeOptions
+    }
+  },
+  name: 'ServerDialog',
+  props: ['formStatus'],
+  mixins: [],
+  mounted () {
+  },
+  methods: {
+    setAccountSetting () {
+      querySettingMapByName(accountSettingName)
+        .then(res => {
+          this.serverData.loginUser = res.body[accountSettingName]
+        })
+    },
+    setHighAccountSetting () {
+      querySettingMapByName(highAccountSettingName)
+        .then(res => {
+          this.serverData.manageUser = res.body[highAccountSettingName]
+        })
+    },
+    handlerCloseDialog () {
+      this.formStatus.visible = false
+      this.$emit('closeDialog')
+    },
+    getEnvType () {
+      queryEnvPage('', '', 1, 20)
+        .then(res => {
+          this.envTypeOptions = res.body.data
+        })
+    },
+    initData (serverData, serverGroupOptions) {
+      this.serverData = serverData
+      this.serverGroupOptions = serverGroupOptions
+      this.getEnvType()
+      if (this.serverData.loginUser === '') {
+        this.setAccountSetting()
       }
-    },
-    name: 'ServerDialog',
-    props: ['formStatus'],
-    mixins: [],
-    mounted () {
-    },
-    methods: {
-      setAccountSetting () {
-        querySettingMapByName(accountSettingName)
-          .then(res => {
-            this.serverData.loginUser = res.body[accountSettingName]
-          })
-      },
-      handlerCloseDialog () {
-        this.formStatus.visible = false
-        this.$emit('closeDialog')
-      },
-      getEnvType () {
-        queryEnvPage('', '', 1, 20)
-          .then(res => {
-            this.envTypeOptions = res.body.data
-          })
-      },
-      initData (serverData, serverGroupOptions) {
-        this.serverData = serverData
-        this.serverGroupOptions = serverGroupOptions
-        this.getEnvType()
-        if (this.serverData.loginUser === '') {
-          this.setAccountSetting()
-        }
-        // 尝试选择匹配服务器组
-        if (JSON.stringify(this.serverData.serverGroup) === '{}') {
-          let queryName = this.serverData.name.replace(new RegExp('-[0-9]+$'), '')
-          queryServerGroupPage(queryName, '', 1, 20)
-            .then(res => {
-              this.serverGroupOptions = res.body.data
-              if (JSON.stringify(this.serverGroupOptions) === '[]') return
-              if (this.serverGroupOptions.length >= 0) {
-                this.serverData.serveGroup = this.serverGroupOptions[0]
-                this.serverData.serverGroupId = this.serverGroupOptions[0].id
-              }
-            })
-        }
-      },
-      handleClick () {
-        this.$emit('input', !this.value)
-      },
-      getServerGroup (queryName) {
+      if (this.serverData.manageUser === '') {
+        this.setHighAccountSetting()
+      }
+      // 尝试选择匹配服务器组
+      if (JSON.stringify(this.serverData.serverGroup) === '{}') {
+        let queryName = this.serverData.name.replace(new RegExp('-[0-9]+$'), '')
         queryServerGroupPage(queryName, '', 1, 20)
           .then(res => {
             this.serverGroupOptions = res.body.data
+            if (JSON.stringify(this.serverGroupOptions) === '[]') return
+            if (this.serverGroupOptions.length >= 0) {
+              this.serverData.serveGroup = this.serverGroupOptions[0]
+              this.serverData.serverGroupId = this.serverGroupOptions[0].id
+            }
           })
-      },
-      saveInfo () {
-        setTimeout(() => {
-          let requestBody = Object.assign({}, this.serverData)
-          delete requestBody.serverGroupOptions
-          delete requestBody.serverGroup
-          delete requestBody.envTypeOptions
-          delete requestBody.tags
-          delete requestBody.env
-          // requestBody.serverGroupId = this.formData.serverGroup == null ? this.formData.serverGroupId : this.formData.serverGroup.id
-          if (this.formStatus.operationType) {
-            addServer(requestBody)
-              .then(res => {
-                // 返回数据
-                this.$message({
-                  message: '成功',
-                  type: 'success'
-                })
-                this.handlerCloseDialog()
-              })
-          } else {
-            updateServer(requestBody)
-              .then(res => {
-                // 返回数据
-                this.$message({
-                  message: '成功',
-                  type: 'success'
-                })
-                this.handlerCloseDialog()
-              })
-          }
-        }, 600)
       }
+    },
+    handleClick () {
+      this.$emit('input', !this.value)
+    },
+    getServerGroup (queryName) {
+      queryServerGroupPage(queryName, '', 1, 20)
+        .then(res => {
+          this.serverGroupOptions = res.body.data
+        })
+    },
+    saveInfo () {
+      setTimeout(() => {
+        let requestBody = Object.assign({}, this.serverData)
+        delete requestBody.serverGroupOptions
+        delete requestBody.serverGroup
+        delete requestBody.envTypeOptions
+        delete requestBody.tags
+        delete requestBody.env
+        // requestBody.serverGroupId = this.formData.serverGroup == null ? this.formData.serverGroupId : this.formData.serverGroup.id
+        if (this.formStatus.operationType) {
+          addServer(requestBody)
+            .then(res => {
+              // 返回数据
+              this.$message({
+                message: '成功',
+                type: 'success'
+              })
+              this.handlerCloseDialog()
+            })
+        } else {
+          updateServer(requestBody)
+            .then(res => {
+              // 返回数据
+              this.$message({
+                message: '成功',
+                type: 'success'
+              })
+              this.handlerCloseDialog()
+            })
+        }
+      }, 600)
     }
   }
+}
 </script>
