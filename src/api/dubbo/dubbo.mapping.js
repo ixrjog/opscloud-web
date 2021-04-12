@@ -8,3 +8,10 @@ export function refreshDubboMappingByEnv (env) {
     method: 'get'
   })
 }
+
+export function queryDubboMappingByEnv () {
+  return request({
+    url: baseUrl + '/query',
+    method: 'get'
+  })
+}
