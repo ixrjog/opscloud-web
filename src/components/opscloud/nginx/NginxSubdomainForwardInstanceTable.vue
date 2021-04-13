@@ -264,7 +264,6 @@ export default {
         })
     },
     handlerDel (row) {
-      this.$message('Nginx配置删除中')
       delSubdomainForwardInstance(row.id)
         .then(res => {
           this.$message.success('删除成功')

@@ -25,81 +25,74 @@
 </template>
 
 <script>
-  // API
-  import { queryServerGroupTypePage } from '@api/server/server.group.type.js'
-  import { queryUserServerTree } from '@api/user/user.js'
-  import { createAnsibleHosts } from '@api/server/server.task.js'
+// API
+import { queryServerGroupTypePage } from '@api/server/server.group.type.js'
+import { queryUserServerTree } from '@api/user/user.js'
+import { createAnsibleHosts } from '@api/server/server.task.js'
 
-  export default {
-    data () {
-      return {
-        serverSize: 0,
-        loading: false,
-        grpTypeOptions: [],
-        searching: false,
-        creating: false,
-        searchBarHeadStyle: {
-          display: 'inline-block',
-          maxWidth: '200px'
-        },
-        searchBarStyle: {
-          marginLeft: '5px'
-        },
-        queryParam: {
-          name: '',
-          grpType: ''
-        },
-        serverTree: {}
-      }
-    },
-    name: 'ServerTree',
-    props: [],
-    mixins: [],
-    mounted () {
-      this.getGrpType('')
-    },
-    methods: {
-      getGrpType (name) {
-        queryServerGroupTypePage(name, '', 1, 10)
-          .then(res => {
-            this.grpTypeOptions = res.body.data
-          })
+export default {
+  data () {
+    return {
+      serverSize: 0,
+      loading: false,
+      grpTypeOptions: [],
+      searching: false,
+      creating: false,
+      searchBarHeadStyle: {
+        display: 'inline-block',
+        maxWidth: '200px'
       },
-      createAnsibleHostsCfg () {
-        this.creating = true
-        createAnsibleHosts().then(res => {
-          if (res.success) {
-            this.$message({
-              message: 'ansible主机配置文件创建成功!',
-              type: 'success'
-            })
-          } else {
-            this.$message.error(res.msg)
-          }
-          this.creating = false
+      searchBarStyle: {
+        marginLeft: '5px'
+      },
+      queryParam: {
+        name: '',
+        grpType: ''
+      },
+      serverTree: {}
+    }
+  },
+  name: 'ServerTree',
+  props: [],
+  mixins: [],
+  mounted () {
+    this.getGrpType('')
+  },
+  methods: {
+    getGrpType (name) {
+      queryServerGroupTypePage(name, '', 1, 10)
+        .then(res => {
+          this.grpTypeOptions = res.body.data
         })
-      },
-      getCheckedKeys (leafOnly) {
-        return this.$refs.myServerTree.getCheckedKeys(leafOnly)
-      },
-      getUuid () {
-        return this.serverTree.uuid
-      },
-      fetchData () {
-        this.searching = true
-        this.uuid = ''
-        let requestBody = {
-          queryName: this.queryParam.name,
-          grpType: this.queryParam.grpType
-        }
-        queryUserServerTree(requestBody)
-          .then(res => {
-            this.serverTree = res.body
-            this.serverSize = res.body.size || 0
-            this.uuid = res.body.uuid
-            this.searching = false
-          })
+    },
+    createAnsibleHostsCfg () {
+      this.creating = true
+      createAnsibleHosts().then(res => {
+        this.$message.success('ansible主机配置文件创建成功!')
+        this.creating = false
+      })
+    },
+    getCheckedKeys (leafOnly) {
+      return this.$refs.myServerTree.getCheckedKeys(leafOnly)
+    },
+    getUuid () {
+      return this.serverTree.uuid
+    },
+    fetchData () {
+      this.searching = true
+      this.uuid = ''
+      let requestBody = {
+        queryName: this.queryParam.name,
+        grpType: this.queryParam.grpType
       }
+      queryUserServerTree(requestBody)
+        .then(res => {
+          this.serverTree = res.body
+          this.serverSize = res.body.size || 0
+          this.uuid = res.body.uuid
+          this.searching = false
+        })
     }
   }
+}
 </script>

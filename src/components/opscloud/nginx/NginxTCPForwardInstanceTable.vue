@@ -225,14 +225,10 @@ export default {
         })
     },
     handlerDel (row) {
-      this.$message('Nginx配置删除中')
       delTCPForwardInstance(row.id)
         .then(res => {
           // 返回数据
-          this.$message({
-            message: '删除成功',
-            type: 'success'
-          })
+          this.$message.success('删除成功')
           this.fetchData()
         })
     },
