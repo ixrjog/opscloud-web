@@ -1,12 +1,9 @@
 <template>
   <div v-show="queryParam.subdomainId !== ''">
-    <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
+    <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="20">
       <el-input v-model="queryParam.queryName" placeholder="关键字查询" class="input"/>
       <el-button size="mini" @click="fetchData" plain class="button">查询</el-button>
       <el-button size="mini" @click="handlerAdd" plain class="button">新增</el-button>
-      <el-popconfirm title="确定推送本域名下所有配置文件吗？" @onConfirm="handlerPush()">
-        <el-button size="mini" slot="reference" plain class="button">推送</el-button>
-      </el-popconfirm>
     </el-row>
     <el-table :data="tableData" style="width: 100%" v-loading="loading" @expand-change="getConfContent">
       <el-table-column type="expand">
@@ -54,6 +51,11 @@
                   <el-button slot="reference" type="text" style="margin-left: 5px">配置解析</el-button>
                 </el-popconfirm>
               </el-dropdown-item>
+              <el-dropdown-item icon="el-icon-position">
+                <el-popconfirm title="确定推送配置文件吗？" @onConfirm="handlerConfPush(scope.row)">
+                  <el-button slot="reference" type="text" style="margin-left: 5px">推送配置</el-button>
+                </el-popconfirm>
+              </el-dropdown-item>
               <el-dropdown-item icon="el-icon-delete">
                 <el-popconfirm title="确定删除吗？" @onConfirm="handlerDel(scope.row)">
                   <el-button slot="reference" type="text" style="margin-left: 5px;color: #F56C6C" size="mini">删除配置
@@ -85,7 +87,7 @@ import {
   querySubdomainForwardPage,
   pushDomainRecord,
   pushSubdomainConf
-} from '@api/nginx/nginx.subdomain.js'
+} from '@api/nginx/nginx.subdomain'
 import NginxSubdomainForwardInstanceDialog from '@/components/opscloud/nginx/NginxSubdomainForwardInstanceDialog'
 import { queryServerGroupById } from '@api/server/server.group'
 import { queryUpstreamPage } from '@api/nginx/nginx.upstream'
@@ -213,8 +215,8 @@ export default {
           this.fetchData()
         })
     },
-    handlerPush () {
-      pushSubdomainConf(this.domainName)
+    handlerConfPush (row) {
+      pushSubdomainConf(row.subdomain)
         .then(res => {
           this.$message.success('Nginx配置推送中……')
         })

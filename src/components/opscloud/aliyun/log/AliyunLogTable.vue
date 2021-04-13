@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
+    <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="20">
       <el-input v-model="queryParam.queryName" placeholder="关键字查询" class="input"/>
       <el-button @click="fetchData" class="button">查询</el-button>
       <el-button @click="handlerRowAdd" style="margin-left: 5px">新增</el-button>

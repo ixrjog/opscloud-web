@@ -49,8 +49,8 @@
                    :page-size="pagination.pageSize">
     </el-pagination>
     <!-- cluster编辑对话框 -->
-    <ProfileSubscriptionDialog ref="profileSubscriptionDialog" :formStatus="formStatus"
-                               @closeDialog="fetchData"></ProfileSubscriptionDialog>
+    <profile-subscription-dialog ref="profileSubscriptionDialog" :formStatus="formStatus"
+                               @closeDialog="fetchData"></profile-subscription-dialog>
   </div>
 </template>
 
@@ -164,8 +164,8 @@ export default {
         name: '',
         subscriptionType: '',
         hostPattern: '',
-        serverGroupId: 0,
-        serverTaskId: 0,
+        serverGroupId: '',
+        serverTaskId: '',
         vars: '',
         comment: ''
       }

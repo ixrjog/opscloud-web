@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row :gutter="24" style="margin-bottom: 5px; margin-left: 0px">
+    <el-row :gutter="20" style="margin-bottom: 5px; margin-left: 0px">
       <el-input v-model="queryParam.queryName" placeholder="关键字查询" class="input-search-bar"/>
       <el-select v-model="queryParam.isActive" clearable placeholder="有效" class="search-bar">
         <el-option

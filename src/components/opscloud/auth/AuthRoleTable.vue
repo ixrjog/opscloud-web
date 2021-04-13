@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row :gutter="24" style="margin-bottom: 5px; margin-left: 0px">
+    <el-row :gutter="20" style="margin-bottom: 5px; margin-left: 0px">
       <el-input v-model="queryParam.roleName" placeholder="角色名称" style="display: inline-block; max-width:200px"/>
       <el-input v-model="queryParam.resourceName" placeholder="资源名称"
                 style="display: inline-block; max-width:200px; margin-left: 5px"/>

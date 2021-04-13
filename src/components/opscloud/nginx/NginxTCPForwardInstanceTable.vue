@@ -1,11 +1,11 @@
 <template>
   <div>
-    <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
+    <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="20">
       <el-input v-model="queryParam.queryName" @change="fetchData" placeholder="关键字查询" class="input"/>
       <el-button plain size="mini" @click="fetchData" class="button">查询</el-button>
       <el-button plain size="mini" @click="handlerAdd" class="button">新增</el-button>
-      <el-popconfirm title="确定推送所有配置文件吗？" @onConfirm="handlerPush()">
-        <el-button size="mini" slot="reference" plain class="button">推送</el-button>
+      <el-popconfirm title="确定同步所有配置文件吗？" @onConfirm="handlerSync()">
+        <el-button size="mini" slot="reference" plain class="button">同步</el-button>
       </el-popconfirm>
     </el-row>
     <el-table :data="tableData" style="width: 100%" v-loading="loading" @expand-change="getConfContent">
@@ -36,12 +36,24 @@
           <span>{{ scope.row.upstream.backendName }}</span>
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="240">
+      <el-table-column fixed="right" label="操作" width="150">
         <template slot-scope="scope">
-          <el-button size="mini" @click="handlerEdit(scope.row)" class="button">编辑</el-button>
-          <el-popconfirm title="确定删除吗？" @onConfirm="handlerDel(scope.row)">
-            <el-button slot="reference" type="danger" class="button" size="mini" plain>删除</el-button>
-          </el-popconfirm>
+          <el-dropdown split-button type="primary" size="mini" @click="handlerEdit(scope.row)">
+            编辑
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item icon="el-icon-position">
+                <el-popconfirm title="确定推送配置文件吗？" @onConfirm="handlerConfPush(scope.row)">
+                  <el-button slot="reference" type="text" style="margin-left: 5px">推送配置</el-button>
+                </el-popconfirm>
+              </el-dropdown-item>
+              <el-dropdown-item icon="el-icon-delete">
+                <el-popconfirm title="确定删除吗？" @onConfirm="handlerDel(scope.row)">
+                  <el-button slot="reference" type="text" style="margin-left: 5px;color: #F56C6C" size="mini">删除配置
+                  </el-button>
+                </el-popconfirm>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -62,7 +74,7 @@ import {
   delTCPForwardInstance, previewTCPForwardInstance
 } from '@api/nginx/nginx.tcp.js'
 import NginxTcpForwardInstanceDialog from '@/components/opscloud/nginx/NginxTCPForwardInstanceDialog'
-import { pushTcpConf, queryTcpForwardInstancePage } from '@api/nginx/nginx.tcp'
+import { pushTcpConf, queryTcpForwardInstancePage, syncTcpConf } from '@api/nginx/nginx.tcp'
 import { queryServerGroupById } from '@api/server/server.group'
 import { queryUpstreamPage } from '@api/nginx/nginx.upstream'
 
@@ -171,10 +183,10 @@ export default {
           row.previewConf = res.body
         })
     },
-    handlerPush () {
-      pushTcpConf()
+    handlerSync () {
+      syncTcpConf()
         .then(res => {
-          this.$message.success('Nginx配置推送中……')
+          this.$message.success('Nginx配置同步中……')
         })
     },
     handlerEdit (row) {
@@ -205,6 +217,12 @@ export default {
       this.formStatus.isUpdate = true
       this.formStatus.visible = true
       this.$refs.nginxTCPForwardInstanceDialog.initData(data)
+    },
+    handlerConfPush (row) {
+      pushTcpConf(row.listenerPort)
+        .then(res => {
+          this.$message.success('Nginx配置推送中……')
+        })
     },
     handlerDel (row) {
       this.$message('Nginx配置删除中')

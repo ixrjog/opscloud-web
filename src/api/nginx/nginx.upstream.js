@@ -33,9 +33,16 @@ export function previewUpstream (data) {
   })
 }
 
-export function pushUpstreamConf () {
+export function syncUpstreamConf () {
   return request({
-    url: baseURL + '/conf/push',
+    url: baseURL + '/conf/sync',
+    method: 'get'
+  })
+}
+
+export function pushUpstreamConf (backendName) {
+  return request({
+    url: baseURL + '/conf/push?backendName=' + backendName,
     method: 'get'
   })
 }

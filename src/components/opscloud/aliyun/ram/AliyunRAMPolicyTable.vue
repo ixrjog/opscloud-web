@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
+    <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="20">
       <el-select v-model="queryParam.accountUid" filterable clearable class="select"
                  remote reserve-keyword placeholder="选择主账户">
         <el-option

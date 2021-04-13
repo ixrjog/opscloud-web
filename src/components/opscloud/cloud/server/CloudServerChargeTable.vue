@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
+    <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="20">
       <el-input v-model="queryParam.serverName" placeholder="服务器名称" class="input"/>
       <el-input v-model="queryParam.queryIp" placeholder="ip" class="input"/>
       <el-select v-model="queryParam.chargeType" clearable placeholder="付费类型" class="search">

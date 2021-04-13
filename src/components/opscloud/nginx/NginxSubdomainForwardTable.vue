@@ -1,9 +1,12 @@
 <template>
   <div>
-    <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
+    <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="20">
       <el-input v-model="queryParam.queryName" placeholder="关键字查询" class="input"/>
       <el-button @click="fetchData" class="button">查询</el-button>
       <el-button @click="handlerRowAdd" class="button">新增</el-button>
+      <el-popconfirm title="确定同步所有配置文件吗？" @onConfirm="handlerSync()">
+        <el-button size="mini" slot="reference" plain class="button">同步</el-button>
+      </el-popconfirm>
     </el-row>
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
       <el-table-column prop="domainName" label="域名" width="120"></el-table-column>
@@ -52,7 +55,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import { querySubdomainForwardPage, delSubdomainForward } from '@api/nginx/nginx.subdomain.js'
+import { querySubdomainForwardPage, delSubdomainForward, syncSubdomainConf } from '@api/nginx/nginx.subdomain.js'
 import NginxSubdomainForwardDialog from '@/components/opscloud/nginx/NginxSubdomainForwardDialog'
 import { queryLinkNginxSLB } from '@api/cloud/aliyun.slb'
 
@@ -114,6 +117,12 @@ export default {
       this.info.pageSize = size
       this.setPageSize(this.info)
       this.fetchData()
+    },
+    handlerSync () {
+      syncSubdomainConf()
+        .then(res => {
+          this.$message.success('Nginx配置同步中……')
+        })
     },
     initPageSize () {
       if (typeof (this.info.pageSize) !== 'undefined') {

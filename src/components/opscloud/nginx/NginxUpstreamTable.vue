@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
+    <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="20">
       <el-input v-model="queryParam.queryName" placeholder="关键字查询" class="input"/>
       <el-select v-model.trim="queryParam.serverGroupId" filterable clearable class="select"
                  remote reserve-keyword placeholder="搜索服务器组" :remote-method="getServerGroup" :loading="loading">
@@ -13,8 +13,8 @@
       </el-select>
       <el-button @click="fetchData" plain class="button" size="mini">查询</el-button>
       <el-button @click="handlerAdd" plain class="button" size="mini">新增</el-button>
-      <el-popconfirm title="确定推送所有配置文件吗？" @onConfirm="handlerPush()">
-        <el-button size="mini" slot="reference" plain class="button">推送</el-button>
+      <el-popconfirm title="确定同步所有配置文件吗？" @onConfirm="handlerSync()">
+        <el-button size="mini" slot="reference" plain class="button">同步</el-button>
       </el-popconfirm>
     </el-row>
     <el-table :data="tableData" style="width: 100%" v-loading="loading" @expand-change="getConfContent">
@@ -52,12 +52,24 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="240">
+      <el-table-column fixed="right" label="操作" width="150">
         <template slot-scope="scope">
-          <el-button size="mini" plain @click="handlerEdit(scope.row)" class="button">编辑</el-button>
-          <el-popconfirm title="确定删除吗？" @onConfirm="handlerDel(scope.row)">
-            <el-button slot="reference" type="danger" class="button" size="mini" plain>删除</el-button>
-          </el-popconfirm>
+          <el-dropdown split-button type="primary" size="mini" @click="handlerEdit(scope.row)">
+            编辑
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item icon="el-icon-position">
+                <el-popconfirm title="确定推送配置文件吗？" @onConfirm="handlerConfPush(scope.row)">
+                  <el-button slot="reference" type="text" style="margin-left: 5px">推送配置</el-button>
+                </el-popconfirm>
+              </el-dropdown-item>
+              <el-dropdown-item icon="el-icon-delete">
+                <el-popconfirm title="确定删除吗？" @onConfirm="handlerDel(scope.row)">
+                  <el-button slot="reference" type="text" style="margin-left: 5px;color: #F56C6C" size="mini">删除配置
+                  </el-button>
+                </el-popconfirm>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -74,7 +86,13 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import NginxUpstreamDialog from '@/components/opscloud/nginx/NginxUpstreamDialog'
-import { delUpstream, previewUpstream, pushUpstreamConf, queryUpstreamPage } from '@api/nginx/nginx.upstream'
+import {
+  delUpstream,
+  previewUpstream,
+  pushUpstreamConf,
+  queryUpstreamPage,
+  syncUpstreamConf
+} from '@api/nginx/nginx.upstream'
 import { queryServerGroupById, queryServerGroupPage } from '@api/server/server.group'
 import { queryServerByServerGroup } from '@api/server/server'
 import { queryEnvPage } from '@api/env/env'
@@ -177,8 +195,8 @@ export default {
           this.serverGroupOptions = res.body.data
         })
     },
-    handlerPush () {
-      pushUpstreamConf()
+    handlerSync () {
+      syncUpstreamConf()
         .then(res => {
           this.$message.success('Nginx配置推送中……')
         })
@@ -221,6 +239,12 @@ export default {
       }
       this.$refs.nginxUpstreamDialog.initData(data)
       this.formStatus.visible = true
+    },
+    handlerConfPush (row) {
+      pushUpstreamConf(row.backendName)
+        .then(res => {
+          this.$message.success('Nginx配置推送中……')
+        })
     },
     handlerDel (row) {
       this.$message('Nginx配置删除中')

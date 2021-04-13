@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
+    <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="20">
       <el-select v-model="queryParam.instance" placeholder="请选择实例" class="select" @change="getRegionId"
                  value-key="instanceId">
         <el-option

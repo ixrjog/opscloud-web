@@ -4,7 +4,7 @@
     <h2>{{ queryParam.topic }}</h2>
     <span class="span-font">只显示最近一小时最新50条消息，如需具体查询，请根据Message ID查询</span>
     <el-divider></el-divider>
-    <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="24">
+    <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="20">
       <el-input v-model.trim="queryParam.msgId" class="input" placeholder="请输入完整Message ID，不支持模糊查询"/>
       <el-button @click="fetchData" :disabled="queryParam.msgId === ''">查询</el-button>
     </el-row>

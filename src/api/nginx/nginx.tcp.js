@@ -40,9 +40,16 @@ export function tcpForwardInstanceCheck (port) {
   })
 }
 
-export function pushTcpConf () {
+export function syncTcpConf () {
   return request({
-    url: baseURL + '/instance/conf/push',
+    url: baseURL + '/instance/conf/sync',
+    method: 'get'
+  })
+}
+
+export function pushTcpConf (listerPort) {
+  return request({
+    url: baseURL + '/instance/conf/push?listerPort=' + listerPort,
     method: 'get'
   })
 }

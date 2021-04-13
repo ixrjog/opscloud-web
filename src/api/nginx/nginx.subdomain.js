@@ -72,9 +72,16 @@ export function pushDomainRecord (data) {
   })
 }
 
-export function pushSubdomainConf (domain) {
+export function syncSubdomainConf () {
   return request({
-    url: baseURL + '/instance/conf/push?domain=' + domain,
+    url: baseURL + '/instance/conf/sync',
+    method: 'get'
+  })
+}
+
+export function pushSubdomainConf (subdomain) {
+  return request({
+    url: baseURL + '/instance/conf/push?subdomain=' + subdomain,
     method: 'get'
   })
 }

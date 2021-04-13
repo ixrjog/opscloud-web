@@ -1,7 +1,7 @@
 <template>
   <d2-container>
     <h1>{{title}}</h1>
-    <el-row :gutter="40">
+    <el-row :gutter="20">
       <el-col :span="12">
         <el-card shadow="never">
           <MyKubernetesApplicationTable ref="myKubernetesApplicationTable"

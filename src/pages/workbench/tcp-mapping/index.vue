@@ -63,6 +63,7 @@ export default {
         })
     },
     fetchData () {
+      this.previewSuccess = false
       queryDubboMappingByEnv()
         .then(res => {
           this.dubboResolvePreviewDoc = res.body

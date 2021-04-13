@@ -1,7 +1,7 @@
 <template>
   <el-dialog :title="formStatus.title" :visible.sync="formStatus.visible" :before-close="closeDialog">
     <div style="margin-bottom: 5px">
-      <el-row :gutter="24" style="margin-bottom: 5px">
+      <el-row :gutter="20" style="margin-bottom: 5px">
         <el-select v-model="userGroupId" filterable clearable
                    style="display: inline-block; max-width:200px; margin-left: 10px"
                    remote reserve-keyword placeholder="输入关键词搜索用户组" :remote-method="getUserGroup" :loading="loading">

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row :gutter="24" style="margin-bottom: 5px; margin-left: 0px">
+    <el-row :gutter="20" style="margin-bottom: 5px; margin-left: 0px">
       <el-input v-model="queryParam.queryName" placeholder="关键字查询" class="input-search-bar"/>
       <el-button @click="fetchData" class="search-bar">查询</el-button>
       <el-button @click="addItem" class="search-bar">新增</el-button>

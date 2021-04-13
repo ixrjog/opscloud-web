@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row :gutter="30">
+    <el-row :gutter="20">
       <el-col :span="8">
         <el-card shadow="hover">
           <div slot="header">
@@ -41,7 +41,7 @@
         </el-col>
       </el-row>
       <el-divider><i class="el-icon-monitor"></i></el-divider>
-      <el-row :gutter="30">
+      <el-row :gutter="20">
         <el-col :span="12" v-for="item in internetInstanceList" :key="item.id">
           <el-card shadow="hover" style="margin-bottom: 30px">
             <div slot="header">
@@ -138,7 +138,7 @@
         </el-col>
       </el-row>
       <el-divider><i class="el-icon-monitor"></i></el-divider>
-      <el-row :gutter="30">
+      <el-row :gutter="20">
         <el-col :span="12" v-for="item in hangzhouInstanceList" :key="item.id">
           <el-card shadow="hover" style="margin-bottom: 30px">
             <div slot="header">

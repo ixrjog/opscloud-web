@@ -6,7 +6,7 @@
         <el-input v-model.trim="profileSubscriptionData.name" placeholder="请输入内容"></el-input>
       </el-form-item>
       <el-form-item label="订阅类型" :label-width="labelWidth" :required="true">
-        <el-select v-model.trim="profileSubscriptionData.subscriptionType" placeholder="选择类型">
+        <el-select v-model.trim="profileSubscriptionData.subscriptionType" placeholder="选择类型" class="select">
           <el-option
             v-for="item in subscriptionTypeOptions"
             :key="item.value"
@@ -18,7 +18,7 @@
       <el-form-item label="选择脚本" :label-width="labelWidth" :required="true">
         <el-select v-model="profileSubscriptionData.scriptId" filterable value-key="id" reserve-keyword
                    remote placeholder="搜索playbook" :remote-method="getPlaybook"
-                   :loading="playbookSearching">
+                   :loading="playbookSearching" class="select">
           <el-option v-for="item in playbookOptions" :key="item.id" :label="item.name" :value="item.id">
           </el-option>
         </el-select>
@@ -26,7 +26,7 @@
       <el-form-item label="服务器组" :label-width="labelWidth" :required="true">
         <el-select v-model.trim="profileSubscriptionData.serverGroupId" filterable clearable
                    remote reserve-keyword placeholder="输入关键词搜组类型" :remote-method="getServerGroup"
-                   :loading="loading">
+                   :loading="loading" class="select">
           <el-option
             v-for="item in serverGroupOptions"
             :key="item.id"
@@ -76,10 +76,13 @@ const subscriptionTypeOptions = [{
     label: 'PROMETHEUS_CONFIG'
   },
   {
-    value: 'NGINX_CONFIG',
-    label: 'NGINX_CONFIG'
-  }
-]
+    value: 'NGINX_CONFIG_SYNC',
+    label: 'NGINX_CONFIG_SYNC'
+  },
+  {
+    value: 'NGINX_CONFIG_PUSH',
+    label: 'NGINX_CONFIG_PUSH'
+  }]
 
 export default {
   data () {
@@ -179,3 +182,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.select {
+  max-width: 250px;
+  width: 250px;
+}
+</style>
