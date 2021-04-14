@@ -13,8 +13,6 @@
 </template>
 
 <script>
-
-
 import AliyunDomainMgmtTable from '@/components/opscloud/aliyun/dns/AliyunDomainMgmtTable'
 import AliyunDomainTable from '@/components/opscloud/aliyun/dns/AliyunDomainTable'
 

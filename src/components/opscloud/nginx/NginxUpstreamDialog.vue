@@ -25,7 +25,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="服务器" v-show="upstreamData.backendType ===1">
-        <el-select v-model.trim="upstreamData.serverId" class="search" clearable
+        <el-select v-model.trim="upstreamData.serverId" class="search" clearable filterable
                    :disabled="serverOptions === []">
           <el-option
             v-for="item in serverOptions"
@@ -54,7 +54,7 @@
         <el-switch
           v-model="upstreamData.needHealthCheck"
           active-color="#67C23A" inactive-color="#909399"
-          active-text="开启" inactive-text="关闭">
+          active-text="开启" inactive-text="关闭" @change="smartHealthCheckPath">
         </el-switch>
       </el-form-item>
       <el-form-item label="健康检查路径" prop="healthCheckPath" v-if="upstreamData.needHealthCheck">
@@ -82,6 +82,7 @@ export default {
   data () {
     return {
       recordRrCheck: false,
+      defaultHealthCheckPath: '/webStatus',
       loading: false,
       title: {
         addTitle: '新增upstream配置',
@@ -159,6 +160,14 @@ export default {
         .then(res => {
           this.serverOptions = res.body
         })
+    },
+    smartHealthCheckPath () {
+      if (this.upstreamData.needHealthCheck && this.upstreamData.healthCheckPath === '') {
+        this.upstreamData.healthCheckPath = this.defaultHealthCheckPath
+      }
+      if (!this.upstreamData.needHealthCheck) {
+        this.upstreamData.healthCheckPath = ''
+      }
     },
     handlerClose () {
       this.serverGroupOptions = []

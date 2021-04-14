@@ -63,7 +63,7 @@
       </el-form-item>
       <el-form-item label="Location参数" prop="locationParamList">
         <el-input v-model="instanceData.locationParamList"
-                  type="textarea" :rows="2" placeholder="locationParam(多条参数用;分割)">
+                  type="textarea" :rows="4" placeholder="locationParam(多条参数需要换行)">
         </el-input>
       </el-form-item>
       <el-form-item label="备注" prop="remark">

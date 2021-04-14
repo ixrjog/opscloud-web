@@ -2,7 +2,7 @@
   <d2-container>
     <template>
       <div>
-        <h1>{{title}}</h1>
+        <h1>{{ title }}</h1>
       </div>
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
@@ -27,7 +27,8 @@
         <el-table-column prop="medias" label="报警媒介" width="300">
           <template slot-scope="props">
             <div class="tag-group">
-              <el-tag style="margin-left: 5px" :type="item.active ?'success' :'info'" v-for="item in props.row.medias" :key="item.mediaid">{{ item.sendto }}
+              <el-tag style="margin-left: 5px" :type="item.active ?'success' :'info'" v-for="item in props.row.medias"
+                      :key="item.mediaid">{{ item.sendto }}
               </el-tag>
             </div>
           </template>
@@ -56,111 +57,111 @@
 </template>
 
 <script>
-  import {mapState, mapActions} from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
-  // API
-  import {syncMonitorUsers, queryMonitorUserPage} from '@api/monitor/monitor.user.js'
+// API
+import { syncMonitorUsers, queryMonitorUserPage } from '@api/monitor/monitor.user.js'
 
-  export default {
-    data() {
-      return {
-        tableData: [],
-        options: {
-          stripe: true
-        },
-        loading: false,
-        pagination: {
-          currentPage: 1,
-          pageSize: 10,
-          total: 0
-        },
-        queryParam: {
-          queryName: '',
-          accountType: 1,
-          isActive: true
-        },
-        title: '用户配置'
-      }
-    },
-    computed: {
-      ...mapState('d2admin/user', [
-        'info'
-      ])
-    },
-    mounted() {
-      this.initPageSize()
+export default {
+  data () {
+    return {
+      tableData: [],
+      options: {
+        stripe: true
+      },
+      loading: false,
+      pagination: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
+      },
+      queryParam: {
+        queryName: '',
+        accountType: 1,
+        isActive: true
+      },
+      title: '用户配置'
+    }
+  },
+  computed: {
+    ...mapState('d2admin/user', [
+      'info'
+    ])
+  },
+  mounted () {
+    this.initPageSize()
+    this.fetchData()
+  },
+  components: {},
+  methods: {
+    ...mapActions({
+      setPageSize: 'd2admin/user/set'
+    }),
+    handleSizeChange (size) {
+      this.pagination.pageSize = size
+      this.info.pageSize = size
+      this.setPageSize(this.info)
       this.fetchData()
     },
-    components: {},
-    methods: {
-      ...mapActions({
-        setPageSize: 'd2admin/user/set'
-      }),
-      handleSizeChange(size) {
-        this.pagination.pageSize = size
-        this.info.pageSize = size
-        this.setPageSize(this.info)
-        this.fetchData()
-      },
-      initPageSize() {
-        if (typeof (this.info.pageSize) !== 'undefined') {
-          this.pagination.pageSize = this.info.pageSize
-        }
-      },
-      handleDialogCancel(done) {
-        this.$message({
-          message: '取消保存',
-          type: 'warning'
-        })
-        done()
-      },
-      handlerSyncMonitorUser() {
-        setTimeout(() => {
-          syncMonitorUsers()
-            .then(res => {
-              this.$message({
-                message: '后台同步中！',
-                type: 'success'
-              })
-            })
-        }, 300)
-      },
-      paginationCurrentChange(currentPage) {
-        this.pagination.currentPage = currentPage
-        this.fetchData()
-      },
-      fetchData() {
-        this.loading = true
-        let requestBody = {
-          'queryName': this.queryParam.queryName,
-          'accountType': this.queryParam.accountType,
-          'page': this.pagination.currentPage,
-          'length': this.pagination.pageSize
-        }
-        queryMonitorUserPage(requestBody)
-          .then(res => {
-            this.tableData = res.body.data
-            this.pagination.total = res.body.totalNum
-            this.loading = false
-          })
+    initPageSize () {
+      if (typeof (this.info.pageSize) !== 'undefined') {
+        this.pagination.pageSize = this.info.pageSize
       }
+    },
+    handleDialogCancel (done) {
+      this.$message({
+        message: '取消保存',
+        type: 'warning'
+      })
+      done()
+    },
+    handlerSyncMonitorUser () {
+      setTimeout(() => {
+        syncMonitorUsers()
+          .then(res => {
+            this.$message({
+              message: '后台同步中！',
+              type: 'success'
+            })
+          })
+      }, 300)
+    },
+    paginationCurrentChange (currentPage) {
+      this.pagination.currentPage = currentPage
+      this.fetchData()
+    },
+    fetchData () {
+      this.loading = true
+      let requestBody = {
+        'queryName': this.queryParam.queryName,
+        'accountType': this.queryParam.accountType,
+        'page': this.pagination.currentPage,
+        'length': this.pagination.pageSize
+      }
+      queryMonitorUserPage(requestBody)
+        .then(res => {
+          this.tableData = res.body.data
+          this.pagination.total = res.body.totalNum
+          this.loading = false
+        })
     }
   }
+}
 </script>
 
 <style scoped>
-  .table-expand {
-    font-size: 0;
-  }
+.table-expand {
+  font-size: 0;
+}
 
-  .table-expand label {
-    width: 150px;
-    color: #99a9bf;
-  }
+.table-expand label {
+  width: 150px;
+  color: #99a9bf;
+}
 
-  .table-expand .el-form-item {
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 50%;
-  }
+.table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
+}
 </style>

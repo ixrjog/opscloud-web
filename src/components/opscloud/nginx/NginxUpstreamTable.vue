@@ -183,7 +183,7 @@ export default {
         remark: '',
         serverGroupId: '',
         needHealthCheck: false,
-        healthCheckPath: '/webStatus'
+        healthCheckPath: ''
       }
       this.formStatus.isUpdate = false
       this.formStatus.visible = true
