@@ -3,7 +3,7 @@
              :visible.sync="formStatus.visible" width="40%" @before-close="handlerClose">
     <el-form :model="upstreamData" :rules="rules" label-width="130px" ref="upstreamDataForm">
       <el-form-item label="后端类型">
-        <el-select v-model="upstreamData.backendType" class="search">
+        <el-select v-model="upstreamData.backendType" class="search" :disabled="formStatus.isUpdate">
           <el-option
             v-for="item in backendTypeOptions"
             :key="item.value"
@@ -15,7 +15,7 @@
       <el-form-item label="服务器组" prop="serverGroupId">
         <el-select v-model.trim="upstreamData.serverGroupId" class="search" filterable clearable
                    remote reserve-keyword placeholder="输入关键词搜组" :remote-method="getServerGroup"
-                   @change="getBackend">
+                   @change="getBackend" :disabled="formStatus.isUpdate">
           <el-option
             v-for="item in serverGroupOptions"
             :key="item.id"
@@ -26,7 +26,7 @@
       </el-form-item>
       <el-form-item label="服务器" v-show="upstreamData.backendType ===1">
         <el-select v-model.trim="upstreamData.serverId" class="search" clearable filterable
-                   :disabled="serverOptions === []">
+                   :disabled="serverOptions === [] || formStatus.isUpdate">
           <el-option
             v-for="item in serverOptions"
             :key="item.id"
@@ -38,7 +38,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="环境类型" v-show="upstreamData.backendType ===2">
-        <el-select v-model="upstreamData.envType" class="search" clearable>
+        <el-select v-model="upstreamData.envType" class="search" clearable :disabled="formStatus.isUpdate">
           <el-option
             v-for="item in envTypeOptions"
             :key="item.envType"
@@ -48,7 +48,8 @@
         </el-select>
       </el-form-item>
       <el-form-item label="端口" prop="backendPort">
-        <el-input v-model.number="upstreamData.backendPort" placeholder="请输入端口" class="input"></el-input>
+        <el-input v-model.number="upstreamData.backendPort" placeholder="请输入端口" class="input"
+                  :disabled="formStatus.isUpdate"></el-input>
       </el-form-item>
       <el-form-item label="健康检查" prop="needHealthCheck">
         <el-switch
