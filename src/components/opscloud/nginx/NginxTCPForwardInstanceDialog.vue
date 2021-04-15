@@ -24,7 +24,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="关联upstream" prop="backendId">
-        <el-select v-model="instanceData.backendId" placeholder="请选择" class="search">
+        <el-select v-model="instanceData.backendId" placeholder="请选择" class="search" filterable>
           <el-option
             v-for="item in backendOptions"
             :key="item.id"

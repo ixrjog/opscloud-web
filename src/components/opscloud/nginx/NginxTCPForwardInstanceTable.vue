@@ -36,6 +36,7 @@
           <span>{{ scope.row.upstream.backendName }}</span>
         </template>
       </el-table-column>
+      <el-table-column prop="remark" label="备注" show-overflow-tooltip></el-table-column>
       <el-table-column fixed="right" label="操作" width="150">
         <template slot-scope="scope">
           <el-dropdown split-button type="primary" size="mini" @click="handlerEdit(scope.row)">
