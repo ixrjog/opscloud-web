@@ -18,9 +18,11 @@
       </el-table-column>
       <el-table-column label="子域名">
         <template slot-scope="scope">
-          <el-badge is-dot :hidden="!scope.row.needPushDNS" class="badge">
-            {{ scope.row.subdomain }}
-          </el-badge>
+          <el-tooltip class="item" effect="dark" :content="scope.row.remark" placement="top-start">
+            <el-badge is-dot :hidden="!scope.row.needPushDNS" class="badge">
+              {{ scope.row.subdomain }}
+            </el-badge>
+          </el-tooltip>
           <el-tooltip effect="dark" content="点击复制" placement="right">
               <span v-clipboard:copy="scope.row.subdomain" v-clipboard:success="onCopy"
                     v-clipboard:error="onError">

@@ -37,12 +37,14 @@
         </el-select>
       </el-form-item>
       <el-form-item label="关联upstream" prop="backendId">
-        <el-select v-model="instanceData.backendId" placeholder="请选择" class="search">
+        <el-select v-model="instanceData.backendId" placeholder="请选择" class="search" filterable>
           <el-option
             v-for="item in backendOptions"
             :key="item.id"
             :label="item.backendName"
             :value="item.id">
+            <span style="float: left">{{ item.backendName }}</span>
+            <span style="float: right; color: #8492a6; font-size: 10px;margin-left: 20px">{{ item.remark }}</span>
           </el-option>
         </el-select>
         <el-button-group style="margin-left:5px">
