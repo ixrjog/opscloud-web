@@ -194,7 +194,9 @@ export default {
         backendType: 1,
         backendPort: '',
         remark: '',
-        serverGroupId: this.instanceData.serverGroupId !== '' ? '' : this.instanceData.serverGroupId
+        serverGroupId: this.instanceData.serverGroupId !== '' ? '' : this.instanceData.serverGroupId,
+        needHealthCheck: false,
+        healthCheckPath: ''
       }
       if (this.instanceData.serverGroupId !== '') {
         queryServerGroupById(this.instanceData.serverGroupId)

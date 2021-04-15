@@ -124,7 +124,7 @@
 import { mapActions, mapState } from 'vuex'
 import { queryDingtalkUserPage, syncUser, updateDingtalkUser } from '@api/dingtalk/dintalk.user'
 import DingtalkUserBindDialog from '@/components/opscloud/dingtalk/DingtalkUserBindDialog'
-import UserDialog from '@/components/opscloud/dialog/UserDialog'
+import UserDialog from '@/components/opscloud/user/UserDialog'
 import { chineseToPinYin } from '@api/opscloud/opscloud.common'
 import { userFilters } from '@/filters/user'
 import { queryDingtalkRootDept } from '@api/dingtalk/dingtalk.dept'

@@ -125,7 +125,7 @@
 import { mapState, mapActions } from 'vuex'
 
 // Component
-import UserDialog from '@/components/opscloud/dialog/UserDialog'
+import UserDialog from '@/components/opscloud/user/UserDialog'
 import UserUserGroupDialog from '@/components/opscloud/dialog/UserUserGroupDialog'
 import UserServerGroupDialog from '@/components/opscloud/dialog/UserServerGroupDialog'
 // API

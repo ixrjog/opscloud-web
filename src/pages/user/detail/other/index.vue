@@ -28,7 +28,7 @@
 
 <script>
 // Component
-import UserDialog from '@/components/opscloud/dialog/UserDialog'
+import UserDialog from '@/components/opscloud/user/UserDialog'
 import UserDetailCard from '@/components/opscloud/user/UserDetailCard'
 import UserDetailAssetCard from '@/components/opscloud/user/UserDetailAssetCard'
 import UserDetailUserGroupCard from '@/components/opscloud/user/UserDetailUserGroupCard'

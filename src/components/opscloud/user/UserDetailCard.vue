@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import UserDialog from '@/components/opscloud/dialog/UserDialog'
+import UserDialog from '@/components/opscloud/user/UserDialog'
 
 export default {
   data () {
