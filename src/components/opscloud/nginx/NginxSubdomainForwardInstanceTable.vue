@@ -196,6 +196,7 @@ export default {
           let data = {
             subdomainId: this.queryParam.subdomainId,
             recordRr: '',
+            aliasServerName: '',
             backendId: '',
             isWebSocket: false,
             serverGroupId: '',
@@ -234,6 +235,7 @@ export default {
           let data = {
             subdomainId: this.queryParam.subdomainId,
             recordRr: row.recordRr,
+            aliasServerName: row.aliasServerName,
             serverGroupId: row.serverGroupId,
             backendId: row.upstream.id,
             isWebSocket: row.isWebSocket,

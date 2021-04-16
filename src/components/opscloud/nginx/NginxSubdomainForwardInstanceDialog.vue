@@ -13,6 +13,11 @@
                        @click="handlerCheck(instanceData.recordRr)" :disabled="formStatus.isUpdate"></el-button>
           </el-input>
         </div>
+        <el-checkbox v-model="otherServerName" @change="handlerChange" style="margin-left: 10px">其他server_name
+        </el-checkbox>
+      </el-form-item>
+      <el-form-item label="其他server_name" v-if="otherServerName">
+        <el-input v-model="instanceData.aliasServerName" placeholder="其他server_name(空格分隔)"></el-input>
       </el-form-item>
       <el-form-item label="关联SLB" prop="loadBalanceId">
         <el-select v-model="instanceData.loadBalanceId" placeholder="请选择" class="search">
@@ -100,6 +105,7 @@ export default {
         visible: false,
         isUpdate: true
       },
+      otherServerName: false,
       loadBalanceOptions: [],
       serverGroupOptions: [],
       backendOptions: [],
@@ -173,6 +179,11 @@ export default {
           this.backendOptions = res.body.data
         })
     },
+    handlerChange () {
+      if (!this.otherServerName) {
+        this.instanceData.aliasServerName = ''
+      }
+    },
     handlerClose () {
       this.loadBalanceOptions = []
       this.serverGroupOptions = []
@@ -182,6 +193,11 @@ export default {
     },
     initData (instanceData) {
       this.instanceData = instanceData
+      if (this.instanceData.aliasServerName !== '') {
+        this.otherServerName = true
+      } else {
+        this.otherServerName = false
+      }
       this.loadBalanceOptions = instanceData.loadBalanceOptions
     },
     initServerGroup (serverGroupOptions) {
@@ -225,6 +241,7 @@ export default {
             let requestBody = {
               'subdomainId': this.instanceData.subdomainId,
               'recordRr': this.instanceData.recordRr,
+              'aliasServerName': this.instanceData.aliasServerName.trim(),
               'serverGroupId': this.instanceData.serverGroupId,
               'backendId': this.instanceData.backendId,
               'isWebSocket': this.instanceData.isWebSocket,
