@@ -144,3 +144,10 @@ export function queryUserToBeRetiredPage (data) {
     data
   })
 }
+
+export function cleanUserToken () {
+  return request({
+    url: '/user/token/clean',
+    method: 'get'
+  })
+}

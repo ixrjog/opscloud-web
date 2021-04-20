@@ -8,9 +8,13 @@
         <el-row :gutter="24" style="margin-bottom: 5px">
           <el-input v-model.trim="queryParam.queryName" placeholder="输入关键字模糊查询"
                     style="display: inline-block; max-width:200px;margin-left: 10px"/>
-          <el-button @click="fetchData" style="margin-left: 5px">查询</el-button>
-          <el-button @click="syncLdapUser" style="margin-left: 5px">同步</el-button>
-          <el-button @click="addItem" style="margin-left: 5px">新建</el-button>
+          <el-button @click="fetchData" size="mini" style="margin-left: 5px">查询</el-button>
+          <el-button @click="syncLdapUser" size="mini" style="margin-left: 5px">同步</el-button>
+          <el-button @click="addItem" size="mini" style="margin-left: 5px">新建</el-button>
+          <el-popconfirm title="确定吊销所有用户的令牌吗？" @onConfirm="cleanToken()">
+            <el-button slot="reference" size="mini" style="margin-left: 5px">吊销令牌
+            </el-button>
+          </el-popconfirm>
         </el-row>
       </div>
       <el-table :data="tableData" style="width: 100%" v-loading="loading" @expand-change="getUserOrgList">
@@ -129,7 +133,7 @@ import UserDialog from '@/components/opscloud/user/UserDialog'
 import UserUserGroupDialog from '@/components/opscloud/dialog/UserUserGroupDialog'
 import UserServerGroupDialog from '@/components/opscloud/dialog/UserServerGroupDialog'
 // API
-import { fuzzyQueryUserPage, syncUser, retireUserById } from '@api/user/user.js'
+import { fuzzyQueryUserPage, syncUser, retireUserById, cleanUserToken } from '@api/user/user.js'
 import { queryOrgByUser } from '@api/org/org'
 import util from '@/libs/util'
 
@@ -234,6 +238,12 @@ export default {
       let user = Object.assign({}, row)
       this.$refs.userServerGroupDialog.initData(user)
       this.formUserServerGroupStatus.visible = true
+    },
+    cleanToken () {
+      cleanUserToken()
+        .then(res => {
+          this.$message.success('操作成功')
+        })
     },
     addItem () {
       let user = {
