@@ -73,6 +73,7 @@
       <el-table-column prop="userGroups.length" label="用户组"></el-table-column>
       <el-table-column prop="serverGroups.length" label="服务器组"></el-table-column>
       <el-table-column prop="ramUsers.length" label="阿里云RAM账户"></el-table-column>
+      <el-table-column prop="ago" label="时间"></el-table-column>
       <el-table-column fixed="right" label="操作" width="180">
         <template slot-scope="scope">
           <el-button type="danger" plain size="mini" @click="retireUser(scope.row)">离职</el-button>
