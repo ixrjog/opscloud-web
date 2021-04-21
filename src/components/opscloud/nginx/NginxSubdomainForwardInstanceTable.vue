@@ -11,7 +11,7 @@
           <el-form label-position="left" inline class="table-expand">
             <el-form-item label="配置文件">
               <editor v-model="props.row.previewConf" @init="editorInit" lang="yaml" theme="kuroir"
-                      width="800" height="300"></editor>
+                      width="800" height="400"></editor>
             </el-form-item>
           </el-form>
         </template>

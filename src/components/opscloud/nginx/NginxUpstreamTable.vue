@@ -23,7 +23,7 @@
           <el-form label-position="left" inline class="table-expand">
             <el-form-item label="配置文件">
               <editor v-model="props.row.previewConf" @init="editorInit" lang="yaml" theme="kuroir"
-                      width="800" height="150"></editor>
+                      width="800" height="400"></editor>
             </el-form-item>
           </el-form>
         </template>
@@ -36,7 +36,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="healthCheckPath" label="健康检查路径" show-overflow-tooltip></el-table-column>
-      <el-table-column label="管理配置" width="400">
+      <el-table-column label="关联配置" width="500">
         <template slot-scope="scope">
           <div v-for="(value,key) in scope.row.confMap" :key="key">
             <el-row v-if="JSON.stringify(value) !== '[]'">

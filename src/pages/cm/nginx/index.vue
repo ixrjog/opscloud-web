@@ -4,14 +4,14 @@
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="子域名转发" name="subdomainForward">
         <el-row :gutter="10">
-          <el-col :span="10">
+          <el-col :span="9">
             <el-card shadow="never">
               <nginx-subdomain-forward-table ref="nginxSubdomainForward"
                                              @handlerInstance="handlerInstance">
               </nginx-subdomain-forward-table>
             </el-card>
           </el-col>
-          <el-col :span="14">
+          <el-col :span="15">
             <el-card shadow="never">
               <nginx-subdomain-forward-instance-table ref="nginxSubdomainForwardInstanceTable"
                                                       @handlerInstanceUpdate="handlerInstanceUpdate">
