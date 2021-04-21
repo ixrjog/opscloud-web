@@ -29,6 +29,9 @@
       <el-tab-pane label="upstream" name="upstream">
         <nginx-upstream-table ref="nginxUpstreamTable"></nginx-upstream-table>
       </el-tab-pane>
+      <el-tab-pane label="自定义配置" name="custom">
+        <nginx-custom-instance-table ref="NginxCustomInstanceTable"></nginx-custom-instance-table>
+      </el-tab-pane>
     </el-tabs>
   </d2-container>
 </template>
@@ -39,6 +42,7 @@ import NginxSubdomainForwardInstanceTable from '@/components/opscloud/nginx/Ngin
 import NginxPathForwardTable from '@/components/opscloud/nginx/NginxPathForwardTable'
 import NginxTcpForwardInstanceTable from '@/components/opscloud/nginx/NginxTCPForwardInstanceTable'
 import NginxUpstreamTable from '@/components/opscloud/nginx/NginxUpstreamTable'
+import NginxCustomInstanceTable from '@/components/opscloud/nginx/NginxCustomInstanceTable'
 
 export default {
   data () {
@@ -52,7 +56,8 @@ export default {
     NginxSubdomainForwardInstanceTable,
     NginxPathForwardTable,
     NginxTcpForwardInstanceTable,
-    NginxUpstreamTable
+    NginxUpstreamTable,
+    NginxCustomInstanceTable
   },
   methods: {
     handleClick (tab, event) {
@@ -65,6 +70,9 @@ export default {
       }
       if (tab.name === 'upstream') {
         this.$refs.nginxUpstreamTable.fetchData()
+      }
+      if (tab.name === 'custom') {
+        this.$refs.NginxCustomInstanceTable.fetchData()
       }
     },
     handlerInstance (data) {

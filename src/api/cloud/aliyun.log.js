@@ -54,3 +54,10 @@ export function pushAliyunLogById (id) {
     method: 'get'
   })
 }
+
+export function delLog (id) {
+  return request({
+    url: '/aliyun/log/del?id=' + id,
+    method: 'delete'
+  })
+}

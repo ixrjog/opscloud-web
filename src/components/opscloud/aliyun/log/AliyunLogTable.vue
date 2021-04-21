@@ -9,9 +9,9 @@
       <el-table-column prop="accountUid" label="主账户uid" v-if="false"></el-table-column>
       <el-table-column prop="project" label="日志服务配置">
         <template slot-scope="scope">
-          <div>日志项目: {{ scope.row.project}}</div>
-          <div>日志库: {{ scope.row.logstore}}</div>
-          <div>logtail配置: {{ scope.row.config}}</div>
+          <div>日志项目: {{ scope.row.project }}</div>
+          <div>日志库: {{ scope.row.logstore }}</div>
+          <div>logtail配置: {{ scope.row.config }}</div>
         </template>
       </el-table-column>
       <el-table-column prop="logstore" label="日志库" v-if="false"></el-table-column>
@@ -23,9 +23,15 @@
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="240">
         <template slot-scope="scope">
-          <el-button @click="handlerRowMember(scope.row)" type="primary" plain size="mini" style="margin-left: 5px">成员</el-button>
-          <el-button @click="handlerRowEdit(scope.row)" type="primary" plain size="mini" style="margin-left: 5px">编辑</el-button>
-          <el-button type="danger" plain size="mini" @click="handlerRowDel(scope.row)">删除</el-button>
+          <el-button @click="handlerRowMember(scope.row)" type="primary" plain size="mini" style="margin-left: 5px">成员
+          </el-button>
+          <el-button @click="handlerRowEdit(scope.row)" type="primary" plain size="mini" style="margin-left: 5px">编辑
+          </el-button>
+          <!--          <el-button type="danger" plain size="mini" @click="handlerRowDel(scope.row)">删除</el-button>-->
+          <el-popconfirm title="确定删除改配置吗？" @onConfirm="handlerRowDel(scope.row)">
+            <el-button slot="reference" type="danger" plain size="mini" style="margin-left: 5px">删除
+            </el-button>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -39,131 +45,135 @@
 </template>
 
 <script>
-  import { mapActions, mapState } from 'vuex'
-  // API
-  import { queryAliyunLogPage } from '@api/cloud/aliyun.log.js'
+import { mapActions, mapState } from 'vuex'
+// API
+import { delLog, queryAliyunLogPage } from '@api/cloud/aliyun.log.js'
+import AliyunLogDialog from '@/components/opscloud/aliyun/log/AliyunLogDialog'
 
-  import AliyunLogDialog from '@/components/opscloud/aliyun/log/AliyunLogDialog'
-
-  export default {
-    data () {
-      return {
-        tableData: [],
-        loading: false,
-        formStatus: {
-          visible: false,
-          addTitle: '新增日志服务配置',
-          updateTitle: '更新日志服务配置',
-          operationType: true
-        },
-        pagination: {
-          currentPage: 1,
-          pageSize: 10,
-          total: 0
-        },
-        queryParam: {
-          queryName: ''
-        }
-      }
-    },
-    name: 'AliyunLogTable',
-    mounted () {
-      this.initPageSize()
-      this.fetchData()
-    },
-    computed: {
-      ...mapState('d2admin/user', [
-        'info'
-      ])
-    },
-    components: {
-      AliyunLogDialog
-    },
-    methods: {
-      ...mapActions({
-        setPageSize: 'd2admin/user/set'
-      }),
-      handleSizeChange (size) {
-        this.pagination.pageSize = size
-        this.info.pageSize = size
-        this.setPageSize(this.info)
-        this.fetchData()
+export default {
+  data () {
+    return {
+      tableData: [],
+      loading: false,
+      formStatus: {
+        visible: false,
+        addTitle: '新增日志服务配置',
+        updateTitle: '更新日志服务配置',
+        operationType: true
       },
-      initPageSize () {
-        if (typeof (this.info.pageSize) !== 'undefined') {
-          this.pagination.pageSize = this.info.pageSize
-        }
+      pagination: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
       },
-      handlerRowAdd () {
-        let aliyunLog = {
-          id: 0,
-          account_uid: '',
-          project: '',
-          logstore: '',
-          config: '',
-          comment: ''
-        }
-        this.formStatus.operationType = true
-        this.formStatus.visible = true
-        this.$refs.aliyunLogDialog.initData(aliyunLog)
-      },
-      handlerRowMember (row) {
-        this.$emit('handlerSelLog', row.id)
-      },
-      handlerRowEdit (row) {
-        this.formStatus.operationType = false
-        this.formStatus.visible = true
-        this.$refs.aliyunLogDialog.initData(row)
-      },
-      handlerRowDel (row) {
-      },
-      paginationCurrentChange (currentPage) {
-        this.pagination.currentPage = currentPage
-        this.fetchData()
-      },
-      fetchData () {
-        this.loading = true
-        let requestBody = Object.assign({}, this.queryParam)
-        requestBody.page = this.pagination.currentPage
-        requestBody.length = this.pagination.pageSize
-        queryAliyunLogPage(requestBody)
-          .then(res => {
-            this.tableData = res.body.data
-            this.pagination.total = res.body.totalNum
-            this.loading = false
-          })
+      queryParam: {
+        queryName: ''
       }
     }
+  },
+  name: 'AliyunLogTable',
+  mounted () {
+    this.initPageSize()
+    this.fetchData()
+  },
+  computed: {
+    ...mapState('d2admin/user', [
+      'info'
+    ])
+  },
+  components: {
+    AliyunLogDialog
+  },
+  methods: {
+    ...mapActions({
+      setPageSize: 'd2admin/user/set'
+    }),
+    handleSizeChange (size) {
+      this.pagination.pageSize = size
+      this.info.pageSize = size
+      this.setPageSize(this.info)
+      this.fetchData()
+    },
+    initPageSize () {
+      if (typeof (this.info.pageSize) !== 'undefined') {
+        this.pagination.pageSize = this.info.pageSize
+      }
+    },
+    handlerRowAdd () {
+      let aliyunLog = {
+        id: 0,
+        account_uid: '',
+        project: '',
+        logstore: '',
+        config: '',
+        comment: ''
+      }
+      this.formStatus.operationType = true
+      this.formStatus.visible = true
+      this.$refs.aliyunLogDialog.initData(aliyunLog)
+    },
+    handlerRowMember (row) {
+      this.$emit('handlerSelLog', row.id)
+    },
+    handlerRowEdit (row) {
+      this.formStatus.operationType = false
+      this.formStatus.visible = true
+      this.$refs.aliyunLogDialog.initData(row)
+    },
+    handlerRowDel (row) {
+      delLog(row.id)
+        .then(res => {
+          this.$message.success('删除成功')
+          this.fetchData()
+        })
+    },
+    paginationCurrentChange (currentPage) {
+      this.pagination.currentPage = currentPage
+      this.fetchData()
+    },
+    fetchData () {
+      this.loading = true
+      let requestBody = Object.assign({}, this.queryParam)
+      requestBody.page = this.pagination.currentPage
+      requestBody.length = this.pagination.pageSize
+      queryAliyunLogPage(requestBody)
+        .then(res => {
+          this.tableData = res.body.data
+          this.pagination.total = res.body.totalNum
+          this.loading = false
+        })
+    }
   }
+}
 </script>
 
 <style scoped>
-  .table-expand {
-    font-size: 0;
-  }
+.table-expand {
+  font-size: 0;
+}
 
-  .table-expand label {
-    width: 150px;
-    color: #99a9bf;
-  }
+.table-expand label {
+  width: 150px;
+  color: #99a9bf;
+}
 
-  .table-expand .el-form-item {
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 50%;
-  }
+.table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
+}
 
-  .input {
-    display: inline-block;
-    max-width: 200px;
-    margin-right: 5px;
-  }
+.input {
+  display: inline-block;
+  max-width: 200px;
+  margin-right: 5px;
+}
 
-  .select {
-    margin-right: 5px;
-  }
+.select {
+  margin-right: 5px;
+}
 
-  .button {
-    margin-right: 5px;
-  }
+.button {
+  margin-right: 5px;
+}
 </style>

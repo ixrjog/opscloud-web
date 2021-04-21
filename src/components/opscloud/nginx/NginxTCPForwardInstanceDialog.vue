@@ -152,7 +152,7 @@ export default {
       this.serverGroupOptions = []
       this.serverOptions = []
       this.formStatus.visible = false
-      this.recordRrCheck = false
+      this.listenerPortCheck = false
     },
     initData (instanceData) {
       this.instanceData = instanceData
