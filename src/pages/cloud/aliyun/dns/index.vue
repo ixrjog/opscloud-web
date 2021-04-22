@@ -374,13 +374,11 @@ export default {
     },
     handleSync () {
       this.syncLoading = true
+      this.$message.info('后台数据同步中')
       setTimeout(() => {
         syncAliyunDomainRecord()
           .then(res => {
-            this.$message({
-              message: '后台同步数据中',
-              type: 'success'
-            })
+            this.$message.success('同步完成')
             this.fetchData()
             this.syncLoading = false
           })

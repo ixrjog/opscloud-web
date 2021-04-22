@@ -270,7 +270,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.syncLoading = true
-        this.$message.info('后台同步数据中')
+        this.$message.info('后台数据同步中')
         setTimeout(() => {
           let requestBody = {
             'regionId': this.regionId,
@@ -278,10 +278,7 @@ export default {
           }
           syncONSGroup(requestBody)
             .then(res => {
-              this.$message({
-                message: '后台同步数据完成',
-                type: 'success'
-              })
+              this.$message.success('同步完成')
               this.fetchData()
               this.syncLoading = false
             })
