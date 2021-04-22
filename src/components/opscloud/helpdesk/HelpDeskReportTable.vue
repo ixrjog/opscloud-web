@@ -12,40 +12,38 @@
 </template>
 
 <script>
-// Component
-import HelpDeskReport from '@/components/opscloud/dashboard/HelpDeskReport'
-import HelpDeskTypeReport from '@/components/opscloud/dashboard/HelpDeskTypeReport'
+  // Component
+  import HelpDeskReport from '@/components/opscloud/dashboard/HelpDeskReport'
+  import HelpDeskTypeReport from '@/components/opscloud/dashboard/HelpDeskTypeReport'
 
-export default {
-  name: 'HelpDeskReportTable',
-  data () {
-    return {
-    }
-  },
-  computed: {},
-  mounted () {
-  },
-  components: {
-    HelpDeskReport,
-    HelpDeskTypeReport
-  },
-  methods: {
-    refreshData () {
-      this.$refs.helpDeskReport.handlerRefresh()
-      this.$refs.helpDeskTypeReport.handlerRefresh()
+  export default {
+    name: 'HelpDeskReportTable',
+    data () {
+      return {}
+    },
+    computed: {},
+    mounted () {
+    },
+    components: {
+      HelpDeskReport,
+      HelpDeskTypeReport
+    },
+    methods: {
+      refreshData () {
+        this.$refs.helpDeskReport.handlerRefresh()
+        this.$refs.helpDeskTypeReport.handlerRefresh()
+      }
     }
   }
-}
 </script>
 
-<style scoped>
-.el-row {
-  margin-left: 0px;
-  margin-bottom: 5px;
+<style lang="scss" scoped>
 
-&
-:last-child {
-}
+  .el-row {
+    margin-left: 0px;
+    margin-bottom: 5px;
+    & :last-child {
+    }
+  }
 
-}
 </style>
