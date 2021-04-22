@@ -42,6 +42,9 @@ const settingGroup = 'XTERM'
 const message = {
   close: {
     status: 'CLOSE'
+  },
+  heartbeat: {
+    status: 'HEARTBEAT'
   }
 }
 
@@ -127,11 +130,8 @@ export default {
      * 发送空心跳 避免阿里云SLB会话断开
      */
     handlerSSHHeartbeat () {
-      let heartbeat = {
-        status: 'HEARTBEAT'
-      }
       try {
-        this.sendMessage(heartbeat)
+        this.sendMessage(message.heartbeat)
       } catch (e) {
       }
     },
