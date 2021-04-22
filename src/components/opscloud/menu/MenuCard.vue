@@ -20,7 +20,7 @@
             <el-input v-model.trim="menu.menuTitle" :readonly="finalized"></el-input>
           </el-form-item>
           <el-form-item label="图标" required>
-            <el-input v-model.trim="menu.menuIcon" :readonly="finalized"></el-input>
+            <el-input v-model.trim="menu.menuIcon" :readonly="finalized" :suffix-icon="getIcon(menu.menuIcon)"></el-input>
           </el-form-item>
           <span style="float: right">
             <el-form-item>
@@ -80,6 +80,9 @@ export default {
     },
     handlerSubmenu (menu) {
       this.$emit('handlerSubmenu', menu.id, menu.menuTitle)
+    },
+    getIcon (icon) {
+      return 'fa fa-' + icon
     },
     handlerDel (menu) {
       if (menu.id === '') {

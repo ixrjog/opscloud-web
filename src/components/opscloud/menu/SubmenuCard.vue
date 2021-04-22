@@ -23,7 +23,11 @@
             <el-input v-model.trim="submenu.submenuPath" :readonly="finalized" class="input"></el-input>
           </el-form-item>
           <el-form-item label="图标" required>
-            <el-input v-model.trim="submenu.submenuIcon" :readonly="finalized"></el-input>
+            <el-input v-model.trim="submenu.submenuIcon" :readonly="finalized" v-if="submenu.isSvg">
+              <img slot="suffix" :src="getImgUrl(submenu.submenuIcon)" style="width: 12px">
+            </el-input>
+            <el-input v-model.trim="submenu.submenuIcon" :readonly="finalized"
+                      :suffix-icon="getIcon(submenu.submenuIcon)" v-else></el-input>
           </el-form-item>
           <el-form-item>
             <el-checkbox v-model="submenu.isSvg" :disabled="finalized">SVG</el-checkbox>
@@ -75,6 +79,12 @@ export default {
     },
     updateFinalized () {
       this.finalized = !this.finalized
+    },
+    getIcon (icon) {
+      return 'fa fa-' + icon
+    },
+    getImgUrl (svg) {
+      return require('@/static/icons/' + svg + '.svg')
     },
     addSubmenu () {
       let data = Object.assign({}, submenu)
