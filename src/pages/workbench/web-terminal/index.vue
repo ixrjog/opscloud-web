@@ -2,7 +2,7 @@
   <d2-container>
     <template>
       <div>
-        <h1>{{title}}</h1>
+        <h1>{{ title }}</h1>
       </div>
       <!--      顶部工具栏-->
       <el-row>
@@ -38,175 +38,180 @@
 </template>
 
 <script>
-  // import util from '@/libs/util'
-  import { queryUserSettingByGroup } from '@api/user/user.setting.js'
+// import util from '@/libs/util'
+import { queryUserSettingByGroup } from '@api/user/user.setting.js'
 
-  import TerminalTools from '../../../components/opscloud/web-terminal/TerminalTools'
-  import ServerTree from '../../../components/opscloud/tree/ServerTree'
-  import TerminalLayout from '../../../components/opscloud/web-terminal/TerminalLayout'
+import TerminalTools from '../../../components/opscloud/web-terminal/TerminalTools'
+import ServerTree from '../../../components/opscloud/tree/ServerTree'
+import TerminalLayout from '../../../components/opscloud/web-terminal/TerminalLayout'
 
-  const terminalSetting = {
-    theme: {
-      foreground: '#FFFFFF', // 字体
-      background: '#606266', // 背景色
-      cursor: 'help', // 设置光标
-      red: '#dd7479'
-    },
-    rows: 30
-  }
+const terminalSetting = {
+  theme: {
+    foreground: '#FFFFFF', // 字体
+    background: '#606266', // 背景色
+    cursor: 'help', // 设置光标
+    red: '#dd7479'
+  },
+  rows: 30
+}
 
-  const settingGroup = 'XTERM'
+const settingGroup = 'XTERM'
 
-  export default {
-    props: {},
-    data () {
-      return {
-        title: 'Web Terminal',
-        layout: {
-          mode: 0
-        },
-        terminalSetting: Object.assign({}, terminalSetting), // 终端设置
-        terminalTools: {
-          mode: 0, // 0未登录:1登录
-          batchType: ''
-        },
-        terminalLayout: {
-          instanceIds: [],
-          servers: [],
-          uuid: '',
-          loginUserType: 0,
-          colSpan: 12
-        }
+export default {
+  props: {},
+  data () {
+    return {
+      title: 'Web Terminal',
+      layout: {
+        mode: 0
+      },
+      terminalSetting: Object.assign({}, terminalSetting), // 终端设置
+      terminalTools: {
+        mode: 0, // 0未登录:1登录
+        batchType: ''
+      },
+      terminalLayout: {
+        instanceIds: [],
+        servers: [],
+        uuid: '',
+        loginUserType: 0,
+        colSpan: 12
       }
-    },
-    mounted () {
-      this.initTerminalSetting()
-    },
-    beforeDestroy () {
-      this.handlerLogout()
-    },
-    components: {
-      ServerTree,
-      TerminalTools,
-      TerminalLayout
-    },
-    methods: {
-      /**
-       * 设置终端主题色彩
-       */
-      initTerminalSetting () {
-        queryUserSettingByGroup(settingGroup)
-          .then(res => {
-            if (res.success) {
-              try {
-                this.terminalSetting.theme.foreground = res.body['XTERM_FOREGROUND']
-                this.terminalSetting.theme.background = res.body['XTERM_BACKGROUND']
-                this.terminalSetting.rows = res.body['XTERM_ROWS'] || 30
-              } catch (e) {
-              }
-            } else {
-              this.$message.error(res.msg)
+    }
+  },
+  mounted () {
+    this.initTerminalSetting()
+  },
+  beforeDestroy () {
+    this.handlerLogout()
+  },
+  components: {
+    ServerTree,
+    TerminalTools,
+    TerminalLayout
+  },
+  methods: {
+    /**
+     * 设置终端主题色彩
+     */
+    initTerminalSetting () {
+      queryUserSettingByGroup(settingGroup)
+        .then(res => {
+          if (res.success) {
+            try {
+              this.terminalSetting.theme.foreground = res.body['XTERM_FOREGROUND']
+              this.terminalSetting.theme.background = res.body['XTERM_BACKGROUND']
+              this.terminalSetting.rows = res.body['XTERM_ROWS'] || 30
+            } catch (e) {
             }
-          })
-      },
-      handlerChangeBatch () {
-        let isBatch = true
-        debugger
-        if (this.terminalTools.batchType === '') {
-          this.terminalTools.batchType = 'success'
-        } else {
-          this.terminalTools.batchType = ''
-          isBatch = false
-        }
-        this.$refs.terminalLayout.handlerBatch(isBatch)
-      },
-      handlerChangeLoginUserType (loginUserType) {
-        this.terminalLayout.loginUserType = loginUserType
-      },
-      handlerChangeLayout (mode) {
-        this.layout.mode = mode
-        this.terminalLayout.colSpan = mode === 0 ? 12 : 24 // 双列布局:单列布局
-      },
-      handlerLogin () {
-        this.terminalTools.batchType = ''
-        this.terminalLayout.instanceIds = this.$refs.serverTree.getCheckedKeys(true)
-        if (this.terminalLayout.instanceIds.length === 0) return
-        // 如果用户只打开一个终端则自动切换为单列模式
-        if (this.terminalLayout.instanceIds.length === 1) {
-          this.handlerChangeLayout(1)
-          this.$refs.terminalTools.setLayoutMode(1)
-        }
-        this.terminalTools.mode = 1
-        this.terminalLayout.uuid = this.$refs.serverTree.getUuid()
-        this.terminalLayout.servers = []
-        for (let id of this.terminalLayout.instanceIds) {
-          let server = {
-            name: id
+          } else {
+            this.$message.error(res.msg)
           }
-          this.terminalLayout.servers.push(server)
-        }
-        this.$nextTick(() => {
-          this.$refs.terminalLayout.open()
         })
-      },
-      handlerLoginByInstanceId (id) {
+    },
+    handlerChangeBatch () {
+      let isBatch = true
+      debugger
+      if (this.terminalTools.batchType === '') {
+        this.terminalTools.batchType = 'success'
+      } else {
+        this.terminalTools.batchType = ''
+        isBatch = false
+      }
+      this.$refs.terminalLayout.handlerBatch(isBatch)
+    },
+    handlerChangeLoginUserType (loginUserType) {
+      this.terminalLayout.loginUserType = loginUserType
+    },
+    handlerChangeLayout (mode) {
+      this.layout.mode = mode
+      this.terminalLayout.colSpan = mode === 0 ? 12 : 24 // 双列布局:单列布局
+    },
+    handlerLogin () {
+      this.terminalTools.batchType = ''
+      this.terminalLayout.instanceIds = this.$refs.serverTree.getCheckedKeys(true)
+      if (this.terminalLayout.instanceIds.length === 0) return
+      // 如果用户只打开一个终端则自动切换为单列模式
+      this.$store.dispatch('d2admin/menu/asideCollapseSet', true)
+      if (this.terminalLayout.instanceIds.length === 1) {
+        this.handlerChangeLayout(1)
+        this.$refs.terminalTools.setLayoutMode(1)
+      }
+      this.terminalTools.mode = 1
+      this.terminalLayout.uuid = this.$refs.serverTree.getUuid()
+      this.terminalLayout.servers = []
+      for (let id of this.terminalLayout.instanceIds) {
         let server = {
           name: id
         }
         this.terminalLayout.servers.push(server)
-        this.$nextTick(() => {
-          this.$refs.terminalLayout.openServer(server)
-        })
-      },
-      /**
-       * 所有终端退出
-       */
-      handlerLogout () {
-        if (this.terminalLayout.instanceIds.length === 0) return
-        this.terminalLayout.instanceIds.forEach(id => {
-            let args = {
-              id: id,
-              isNotify: false
-            }
-            this.$refs.terminalLayout.handlerLogoutByInstance(args)
-          }
-        )
-        // this.$refs.terminalLayout.close()
-        this.$message.warning('所有终端已关闭')
-        this.terminalTools.mode = 0
-      },
-      /**
-       * 单个终端退出
-       * @param id
-       */
-      handlerLogoutByInstance (args) {
-        this.terminalLayout.instanceIds = this.terminalLayout.instanceIds.filter(function (n) {
-          return n !== args.id
-        })
-        this.terminalLayout.servers = this.terminalLayout.servers.filter(function (n) {
-          return n.name !== args.id
-        })
-        if (args.isNotify) this.$message.warning(args.id + '终端已关闭')
-        if (this.terminalLayout.instanceIds.length === 0) {
-          this.terminalTools.mode = 0
-          this.$refs.terminalLayout.close()
-        }
       }
+      this.$nextTick(() => {
+        this.$refs.terminalLayout.open()
+      })
+    },
+    handlerLoginByInstanceId (id) {
+      let server = {
+        name: id
+      }
+      this.terminalLayout.servers.push(server)
+      this.$nextTick(() => {
+        this.$refs.terminalLayout.openServer(server)
+      })
+    },
+    /**
+     * 所有终端退出
+     */
+    handlerLogout () {
+      if (this.terminalLayout.instanceIds.length === 0) return
+      this.terminalLayout.instanceIds.forEach(id => {
+          let args = {
+            id: id,
+            isNotify: false
+          }
+          this.$refs.terminalLayout.handlerLogoutByInstance(args)
+        }
+      )
+      // this.$refs.terminalLayout.close()
+      this.$message.warning('所有终端已关闭')
+      this.recovery()
+    },
+    /**
+     * 单个终端退出
+     * @param id
+     */
+    handlerLogoutByInstance (args) {
+      this.terminalLayout.instanceIds = this.terminalLayout.instanceIds.filter(function (n) {
+        return n !== args.id
+      })
+      this.terminalLayout.servers = this.terminalLayout.servers.filter(function (n) {
+        return n.name !== args.id
+      })
+      if (args.isNotify) this.$message.warning(args.id + '终端已关闭')
+      if (this.terminalLayout.instanceIds.length === 0) {
+        this.recovery()
+        this.$refs.terminalLayout.close()
+      }
+    },
+    recovery () {
+      this.$store.dispatch('d2admin/menu/asideCollapseSet', false)
+      this.terminalTools.mode = 0
     }
   }
+}
 
 </script>
 
 <style scoped>
-  .el-button {
-    margin-left: 5px
-  }
+.el-button {
+  margin-left: 5px
+}
 
-  .server-tree {
-    margin-top: 5px;
-  }
+.server-tree {
+  margin-top: 5px;
+}
 
-  .terminal-layout {
-    margin-top: 5px;
-  }
+.terminal-layout {
+  margin-top: 5px;
+}
 </style>
