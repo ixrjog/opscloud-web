@@ -55,7 +55,7 @@
             {{ item | userFilters }}</span>
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="180">
+      <el-table-column fixed="right" label="操作" width="240">
         <template slot-scope="scope">
           <el-button-group>
             <el-tooltip class="item" effect="dark" content="订阅关系" placement="left">
@@ -65,6 +65,10 @@
             <el-tooltip class="item" effect="dark" content="消费状态" placement="top">
               <el-button type="primary" plain size="mini" @click="getGroupStatus(scope.row)"
                          icon="el-icon-shopping-cart-full"></el-button>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="死信队列" placement="top">
+              <el-button type="primary" plain size="mini" @click="getDLQMessage(scope.row)"
+                         icon="el-icon-message"></el-button>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="监控配置" placement="top">
               <el-button type="primary" plain size="mini" @click="getGroupAlarm(scope.row)"
@@ -87,6 +91,8 @@
                                     :formStatus="aliyunONSGroupDialogStatusStatus"></aliyun-ons-group-status-dialog>
     <aliyun-ons-group-alarm-dialog ref="aliyunOnsGroupAlarmDialog" @closeDialog="fetchData"
                                    :formStatus="aliyunOnsGroupAlarmDialogStatus"></aliyun-ons-group-alarm-dialog>
+    <aliyun-ons-dlq-message-dialog ref="aliyunOnsDLQMessageDialog"
+                                   :formStatus="aliyunOnsDLQMessageDialogStatus"></aliyun-ons-dlq-message-dialog>
   </div>
 </template>
 
@@ -107,6 +113,7 @@ import {
 } from '@api/cloud/aliyun.ons.group.js'
 import { mapActions, mapState } from 'vuex'
 import { userFilters } from '@/filters/user'
+import AliyunOnsDlqMessageDialog from '@/components/opscloud/aliyun/ons/AliyunOnsDLQMessageDialog'
 
 export default {
   data () {
@@ -122,6 +129,9 @@ export default {
         visible: false
       },
       aliyunOnsGroupAlarmDialogStatus: {
+        visible: false
+      },
+      aliyunOnsDLQMessageDialogStatus: {
         visible: false
       },
       tableData: [],
@@ -166,7 +176,8 @@ export default {
     AliyunOnsGroupSubDrawer,
     AliyunOnsGroupDialog,
     AliyunOnsGroupStatusDialog,
-    AliyunOnsGroupAlarmDialog
+    AliyunOnsGroupAlarmDialog,
+    AliyunOnsDlqMessageDialog
   },
   filters: {
     userFilters,
@@ -236,6 +247,15 @@ export default {
           this.groupSubDetail.groupId = row.groupId
           this.$refs.aliyunONSGroupSubDrawer.initData(this.groupSubDetail)
         })
+    },
+    getDLQMessage (row) {
+      let requestBody = {
+        'regionId': this.regionId,
+        'instanceId': row.instanceId,
+        'groupId': row.groupId
+      }
+      this.aliyunOnsDLQMessageDialogStatus.visible = true
+      this.$refs.aliyunOnsDLQMessageDialog.initData(requestBody)
     },
     getGroupStatus (row) {
       this.aliyunONSGroupDialogStatusStatus.visible = true
