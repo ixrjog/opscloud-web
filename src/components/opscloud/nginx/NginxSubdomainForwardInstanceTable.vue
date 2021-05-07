@@ -187,7 +187,7 @@ export default {
     },
     handlerAdd () {
       let requestBody = {
-        'id': this.queryParam.subdomainId,
+        'subdomainId': this.queryParam.subdomainId,
         'page': 1,
         'length': 10
       }
