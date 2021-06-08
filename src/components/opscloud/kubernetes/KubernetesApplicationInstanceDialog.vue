@@ -294,7 +294,6 @@ export default {
           const prefix = 'https://cs.console.aliyun.com/hook/trigger?token='
           this.deploymentTrigger.type = '重新部署'
           this.deploymentTrigger.url = prefix + res.body.token
-          debugger
         })
     },
     handlerTriggerCreate () {

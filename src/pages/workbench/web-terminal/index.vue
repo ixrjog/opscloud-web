@@ -111,7 +111,6 @@ export default {
     },
     handlerChangeBatch () {
       let isBatch = true
-      debugger
       if (this.terminalTools.batchType === '') {
         this.terminalTools.batchType = 'success'
       } else {
