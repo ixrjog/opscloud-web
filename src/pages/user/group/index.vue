@@ -2,7 +2,7 @@
   <d2-container>
     <template>
       <div>
-        <h1>{{title}}</h1>
+        <h1>{{ title }}</h1>
       </div>
       <div style="margin-bottom: 5px">
         <el-row :gutter="24" style="margin-bottom: 5px">
@@ -33,8 +33,7 @@
         <el-table-column prop="workflow" label="工单申请" width="100">
           <template slot-scope="scope">
             <el-tag :type="scope.row.inWorkorder === 0 ? 'danger' : 'success'" disable-transitions>
-              {{scope.row.inWorkorder ===
-              0 ? '禁止' : '允许'}}
+              {{scope.row.inWorkorder === 0 ? '禁止' : '允许'}}
             </el-tag>
           </template>
         </el-table-column>
@@ -52,19 +51,20 @@
                      :page-size="pagination.pageSize">
       </el-pagination>
       <!-- userGroup编辑对话框-->
-      <user-group-dialog  ref="userGroupDialog" :formStatus="formGroupStatus" @closeDialog="fetchData"></user-group-dialog>
+      <user-group-dialog ref="userGroupDialog" :formStatus="formGroupStatus"
+                         @closeDialog="fetchData"></user-group-dialog>
       <!-- userGroup编辑对话框-->
     </template>
   </d2-container>
 </template>
 
 <script>
-  import { mapState, mapActions } from 'vuex'
-  // Component
-  import UserGroupDialog from '@/components/opscloud/user/UserGroupDialog'
+import { mapState, mapActions } from 'vuex'
+// Component
+import UserGroupDialog from '@/components/opscloud/user/UserGroupDialog'
 
-  // API
-  import { queryUserGroupPage, deleteUserGroupById, syncUserGroup } from '@api/user/user.group.js'
+// API
+import { queryUserGroupPage, deleteUserGroupById, syncUserGroup } from '@api/user/user.group.js'
 
   export default {
     data () {
@@ -193,18 +193,18 @@
 </script>
 
 <style scoped>
-  .table-expand {
-    font-size: 0;
-  }
+.table-expand {
+  font-size: 0;
+}
 
-  .table-expand label {
-    width: 150px;
-    color: #99a9bf;
-  }
+.table-expand label {
+  width: 150px;
+  color: #99a9bf;
+}
 
-  .table-expand .el-form-item {
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 50%;
-  }
+.table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
+}
 </style>
