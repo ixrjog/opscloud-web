@@ -120,7 +120,7 @@
                         this.$message({
                             message: '成功',
                             type: 'success'
-                        });
+                        })
                         this.fetchData()
                         done()
                     })
@@ -145,7 +145,7 @@
             handleRowEdit ({ index, row }, done) {
                 setTimeout(() => {
                     updateBusinessDetail({
-                        id : row.id,
+                        id: row.id,
                         businessName: row.businessName,
                         dingdingAccessToken: row.dingdingAccessToken,
                         dingdingSecret: row.dingdingSecret
@@ -164,7 +164,7 @@
                 this.$message({
                     message: '取消保存',
                     type: 'warning'
-                });
+                })
                 done()
             },
             paginationCurrentChange (currentPage) {
