@@ -1,8 +1,6 @@
 <template>
-  <el-dialog :title="title" :visible.sync="formStatus.visible" width="60%" v-loading="loading"
-             element-loading-text="Topic消费轨迹查询中" element-loading-spinner="el-icon-loading">
-    <h2>{{ queryParam.topic }}</h2>
-    <span class="span-font">只显示最近一小时最新50条消息，如需具体查询，请根据Message ID查询</span>
+  <el-dialog :title="title" :visible.sync="formStatus.visible" width="60%">
+    <h2>{{ queryParam.groupId }}</h2>
     <el-divider></el-divider>
     <el-row style="margin-bottom: 5px; margin-left: 0px" :gutter="20">
       <el-input v-model.trim="queryParam.msgId" class="input" placeholder="请输入完整Message ID，不支持模糊查询"/>
@@ -16,6 +14,16 @@
               <span>{{ item.value }}</span>
             </el-form-item>
           </el-form>
+        </template>
+      </el-table-column>
+      <el-table-column prop="topic" label="Topic">
+        <template slot-scope="scope">
+          <el-row>
+            <span v-clipboard:copy="scope.row.topic" v-clipboard:success="onCopy"
+                  v-clipboard:error="onError">{{ scope.row.topic }}
+              <i style="margin-left: 5px" class="el-icon-copy-document"></i>
+            </span>
+          </el-row>
         </template>
       </el-table-column>
       <el-table-column label="Message ID" width="300">
@@ -37,32 +45,30 @@
       <el-table-column prop="storeTime" label="存储时间" width="150"></el-table-column>
       <el-table-column fixed="right" label="操作" width="80">
         <template slot-scope="scope">
-          <el-tooltip class="item" effect="dark" content="消费轨迹" placement="left">
-            <el-button type="primary" plain size="mini" @click="getTopicMsgTrace(scope.row)"
-                       icon="el-icon-s-promotion"></el-button>
+          <el-tooltip class="item" effect="dark" content="重新发送" placement="left">
+            <el-popconfirm
+              title="确定要重新发送吗？" @onConfirm="handlerResend(scope.row)">
+              <el-button slot="reference" type="primary" plain size="mini"
+                         icon="el-icon-s-promotion"></el-button>
+            </el-popconfirm>
           </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
-    <aliyun-ons-topic-msg-trace-dialog
-      ref="aliyunOnsTopicMsgTraceDialog"
-      :formStatus="aliyunOnsTopicMsgTraceDialogStatus"></aliyun-ons-topic-msg-trace-dialog>
   </el-dialog>
 </template>
 
 <script>
-import AliyunOnsTopicMsgTraceDialog from '@/components/opscloud/aliyun/ons/AliyunOnsTopicMsgTraceDialog'
-// API
-import { queryOnsMessage, queryOnsTrace } from '@api/cloud/aliyun.ons.topic'
+import { queryOnsDLQMessage, resendOnsDLQMessage } from '@api/cloud/aliyun.ons.group'
 
 export default {
   data () {
     return {
-      title: 'Topic消息查询',
+      title: '死信队列查询',
       queryParam: {
         regionId: '',
         instanceId: '',
-        topic: '',
+        groupId: '',
         msgId: ''
       },
       aliyunOnsTopicMsgTraceDialogStatus: {
@@ -72,22 +78,19 @@ export default {
       loading: false
     }
   },
-  name: 'AliyunOnsTopicMsgDialog',
+  name: 'AliyunOnsDLQMessageDialog',
   props: ['formStatus'],
   mounted () {
   },
-  components: {
-    AliyunOnsTopicMsgTraceDialog
-  },
+  components: {},
   filters: {},
   methods: {
-    initData (topicMsgData) {
+    initData (groupIdData) {
       this.tableData = []
-      this.tableData = topicMsgData.msgList
       this.queryParam = {
-        'regionId': topicMsgData.regionId,
-        'instanceId': topicMsgData.instanceId,
-        'topic': topicMsgData.topic,
+        'regionId': groupIdData.regionId,
+        'instanceId': groupIdData.instanceId,
+        'groupId': groupIdData.groupId,
         'msgId': ''
       }
     },
@@ -97,32 +100,26 @@ export default {
         return
       }
       this.tableData = []
-      queryOnsMessage(this.queryParam)
+      queryOnsDLQMessage(this.queryParam)
         .then(res => {
           if (res.body !== null) {
             this.tableData.push(res.body)
           }
         })
     },
-    getTopicMsgTrace (row) {
-      this.loading = true
+    handlerResend (row) {
       let requestBody = {
         'regionId': this.queryParam.regionId,
-        'instanceId': row.instanceId,
-        'topic': row.topic,
-        'msgId': row.msgId,
-        'beginTime': row.bornTimestamp,
-        'endTime': row.storeTimestamp
+        'instanceId': this.queryParam.instanceId,
+        'groupId': this.queryParam.groupId,
+        'msgId': row.msgId
       }
-      queryOnsTrace(requestBody)
+      resendOnsDLQMessage(requestBody)
         .then(res => {
-          this.$refs.aliyunOnsTopicMsgTraceDialog.initData(res.body)
-          this.loading = false
-          this.aliyunOnsTopicMsgTraceDialogStatus.visible = true
+          this.$message.success('重新发送成功')
         })
     },
     onCopy (e) {
-      // this.queryParam.queryName = e.text
       this.$message.success('内容已复制到剪切板！')
     },
     onError (e) {
@@ -138,26 +135,21 @@ export default {
   max-width: 300px;
   margin-right: 5px;
 }
-
-.span-font {
-  font-size: 6px;
-  color: #99a9bf;
-}
 </style>
 
 <style>
 .table-expand {
-  font-size: 8px;
+font-size: 8px;
 }
 
 .table-expand label {
-  width: 300px;
-  color: #99a9bf;
+width: 300px;
+color: #99a9bf;
 }
 
 .table-expand .el-form-item {
-  margin-right: 0;
-  margin-bottom: 0;
-  width: 100%;
+margin-right: 0;
+margin-bottom: 0;
+width: 100%;
 }
 </style>

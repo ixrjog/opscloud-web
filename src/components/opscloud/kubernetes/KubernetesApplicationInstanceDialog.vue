@@ -1,7 +1,7 @@
 <template>
   <el-dialog :title="formStatus.operationType ? formStatus.addTitle : formStatus.updateTitle"
              :visible.sync="formStatus.visible">
-    <el-tabs v-model="activeName">
+    <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="实例配置" name="instance">
         <el-form :model="kubernetesApplicationInstance">
           <el-form-item label="应用名称" :label-width="labelWidth" :required="true">
@@ -89,6 +89,20 @@
           <el-button align="center" type="success" size="mini" @click="handlerCreateService">创建</el-button>
         </div>
       </el-tab-pane>
+      <el-tab-pane label="触发器配置" name="trigger" :disabled="kubernetesApplicationInstance.id === ''">
+        <el-form :label-width="labelWidth" :model="deploymentTrigger">
+          <el-form-item label="类型">
+            <el-input v-model="deploymentTrigger.type" readonly>重新部署</el-input>
+          </el-form-item>
+          <el-form-item label="链接">
+            <el-input type="textarea" v-model="deploymentTrigger.url" readonly :rows="5"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="success" size="mini" @click="handlerTriggerCreate">创建</el-button>
+            <el-button type="success" size="mini" @click="handlerTriggerPush">推送</el-button>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
     </el-tabs>
     <div slot="footer" class="dialog-footer">
       <el-button size="mini" @click="formStatus.visible = false">取消</el-button>
@@ -98,194 +112,229 @@
 </template>
 
 <script>
-  // API
-  import { queryEnvPage } from '@api/env/env.js'
-  import {
-    addKubernetesApplicationInstance,
-    updateKubernetesApplicationInstance,
-    queryKubernetesApplicationInstanceLable,
-    queryKubernetesApplicationInstanceTemplatePage,
-    createKubernetesDeployment,
-    createKubernetesService
-  } from '@api/kubernetes/kubernetes.application.instance.js'
+// API
+import { queryEnvPage } from '@api/env/env.js'
+import {
+  addKubernetesApplicationInstance,
+  updateKubernetesApplicationInstance,
+  queryKubernetesApplicationInstanceLable,
+  queryKubernetesApplicationInstanceTemplatePage,
+  createKubernetesDeployment,
+  createKubernetesService
+} from '@api/kubernetes/kubernetes.application.instance.js'
+import {
+  createDeploymentTrigger,
+  getDeploymentTrigger,
+  pushRepoTrigger
+} from '@api/kubernetes/kubernetes.application.instance'
 
-  export default {
-    data () {
-      return {
-        activeName: 'instance',
-        kubernetesApplication: {},
-        kubernetesApplicationInstance: {},
-        labelWidth: '100px',
-        options: {
-          stripe: true
-        },
-        envTypeOptions: [],
-        envLabelOptions: [],
-        deploymentTemplateOptions: [],
-        serviceTemplateOptions: [],
-        deploymentTemplate: {},
-        serviceTemplate: {}
-      }
-    },
-    name: 'KubernetesApplicationInstanceDialog',
-    props: ['formStatus'],
-    components: {
-      editor: require('vue2-ace-editor')
-    },
-    mounted () {
-      this.getEnvType()
-    },
-    methods: {
-      editorInit () {
-        // language extension prerequsite...
-        require('brace/ext/language_tools')
-        // language
-        require('brace/mode/yaml')
-        require('brace/theme/chrome')
-        // snippet
-        require('brace/snippets/yaml')
+export default {
+  data () {
+    return {
+      activeName: 'instance',
+      kubernetesApplication: {},
+      kubernetesApplicationInstance: {},
+      labelWidth: '100px',
+      options: {
+        stripe: true
       },
-      editorTplInit: function (ed) {
-        // language extension prerequsite...
-        require('brace/ext/language_tools')
-        // language
-        require('brace/mode/yaml')
-        require('brace/theme/chrome')
-        require('brace/theme/kuroir')
-        // snippet
-        require('brace/snippets/yaml')
-        ed.setReadOnly(true)
-      },
-      getDeploymentTemplate (queryName) {
-        this.getTemplate(queryName, 'DEPLOYMENT')
-      },
-      getServiceTemplate (queryName) {
-        this.getTemplate(queryName, 'SERVICE')
-      },
-      getTemplate (queryName, templateType) {
-        if (this.kubernetesApplicationInstance.id === '') {
-          this.deploymentTemplate = ''
-          this.serviceTemplate = ''
-          return
-        }
-        let requestBody = {
-          queryName: queryName,
-          envType: this.kubernetesApplicationInstance.envType,
-          templateType: templateType,
-          instanceId: this.kubernetesApplicationInstance.id,
-          page: 1,
-          length: 10
-        }
-        queryKubernetesApplicationInstanceTemplatePage(requestBody)
-          .then(res => {
-            if (templateType === 'DEPLOYMENT') {
-              this.deploymentTemplateOptions = res.body.data
-              if (this.deploymentTemplateOptions.length === 1) {
-                this.deploymentTemplate = this.deploymentTemplateOptions[0]
-              }
-            } else {
-              this.serviceTemplateOptions = res.body.data
-              if (this.serviceTemplateOptions.length === 1) {
-                this.serviceTemplate = this.serviceTemplateOptions[0]
-              }
-            }
-          })
-      },
-      getEnvType () {
-        queryEnvPage('', '', 1, 20)
-          .then(res => {
-            this.envTypeOptions = res.body.data
-          })
-      },
-      handlerSelEnvType () {
-        this.kubernetesApplicationInstance.envLabel = ''
-        this.getEnvLabel()
-      },
-      getEnvLabel () {
-        if (this.kubernetesApplicationInstance.envType === null) return
-        if (this.kubernetesApplicationInstance.envType === '') return
-        queryKubernetesApplicationInstanceLable(this.kubernetesApplicationInstance.envType)
-          .then(res => {
-            this.envLabelOptions = res.body
-          })
-      },
-      handlerCloseDialog () {
-        this.formStatus.visible = false
-        this.$emit('closeDialog')
-      },
-      initData (kubernetesApplication, kubernetesApplicationInstance) {
-        this.activeName = 'instance'
-        this.deploymentTemplateOptions = []
-        this.serviceTemplateOptions = []
-        this.deploymentTemplate = {}
-        this.serviceTemplate = {}
-        this.kubernetesApplication = kubernetesApplication
-        this.kubernetesApplicationInstance = kubernetesApplicationInstance
-        this.getDeploymentTemplate('')
-        this.getServiceTemplate('')
-      },
-      handlerCreateDeployment () {
-        if (this.deploymentTemplate === null || this.deploymentTemplate.id === '') return
-        let requestBody = {
-          instanceId: this.kubernetesApplicationInstance.id,
-          templateId: this.deploymentTemplate.id
-        }
-        createKubernetesDeployment(requestBody)
-          .then(res => {
-            if (res.success) {
-              this.$message({
-                message: '成功',
-                type: 'success'
-              })
-            } else {
-              this.$message.error(res.msg)
-            }
-          })
-      },
-      handlerCreateService () {
-        if (this.serviceTemplate === null || this.serviceTemplate.id === '') return
-        let requestBody = {
-          instanceId: this.kubernetesApplicationInstance.id,
-          templateId: this.serviceTemplate.id
-        }
-        createKubernetesService(requestBody)
-          .then(res => {
-            if (res.success) {
-              this.$message({
-                message: '成功',
-                type: 'success'
-              })
-            } else {
-              this.$message.error(res.msg)
-            }
-          })
-      },
-      handlerSave () {
-        setTimeout(() => {
-          let requestBody = Object.assign({}, this.kubernetesApplicationInstance)
-          if (this.formStatus.operationType) {
-            addKubernetesApplicationInstance(requestBody)
-              .then(res => {
-                // 返回数据
-                this.$message({
-                  message: '成功',
-                  type: 'success'
-                })
-                this.handlerCloseDialog()
-              })
-          } else {
-            updateKubernetesApplicationInstance(requestBody)
-              .then(res => {
-                // 返回数据
-                this.$message({
-                  message: '成功',
-                  type: 'success'
-                })
-                this.handlerCloseDialog()
-              })
-          }
-        }, 600)
+      envTypeOptions: [],
+      envLabelOptions: [],
+      deploymentTemplateOptions: [],
+      serviceTemplateOptions: [],
+      deploymentTemplate: {},
+      serviceTemplate: {},
+      deploymentTrigger: {
+        type: '',
+        url: ''
       }
     }
+  },
+  name: 'KubernetesApplicationInstanceDialog',
+  props: ['formStatus'],
+  components: {
+    editor: require('vue2-ace-editor')
+  },
+  mounted () {
+    this.getEnvType()
+  },
+  methods: {
+    editorInit () {
+      // language extension prerequsite...
+      require('brace/ext/language_tools')
+      // language
+      require('brace/mode/yaml')
+      require('brace/theme/chrome')
+      // snippet
+      require('brace/snippets/yaml')
+    },
+    editorTplInit: function (ed) {
+      // language extension prerequsite...
+      require('brace/ext/language_tools')
+      // language
+      require('brace/mode/yaml')
+      require('brace/theme/chrome')
+      require('brace/theme/kuroir')
+      // snippet
+      require('brace/snippets/yaml')
+      ed.setReadOnly(true)
+    },
+    handleClick (tab, event) {
+      if (tab.name === 'trigger') {
+        this.getTrigger()
+      }
+    },
+    getDeploymentTemplate (queryName) {
+      this.getTemplate(queryName, 'DEPLOYMENT')
+    },
+    getServiceTemplate (queryName) {
+      this.getTemplate(queryName, 'SERVICE')
+    },
+    getTemplate (queryName, templateType) {
+      if (this.kubernetesApplicationInstance.id === '') {
+        this.deploymentTemplate = ''
+        this.serviceTemplate = ''
+        return
+      }
+      let requestBody = {
+        queryName: queryName,
+        envType: this.kubernetesApplicationInstance.envType,
+        templateType: templateType,
+        instanceId: this.kubernetesApplicationInstance.id,
+        page: 1,
+        length: 10
+      }
+      queryKubernetesApplicationInstanceTemplatePage(requestBody)
+        .then(res => {
+          if (templateType === 'DEPLOYMENT') {
+            this.deploymentTemplateOptions = res.body.data
+            if (this.deploymentTemplateOptions.length === 1) {
+              this.deploymentTemplate = this.deploymentTemplateOptions[0]
+            }
+          } else {
+            this.serviceTemplateOptions = res.body.data
+            if (this.serviceTemplateOptions.length === 1) {
+              this.serviceTemplate = this.serviceTemplateOptions[0]
+            }
+          }
+        })
+    },
+    getEnvType () {
+      queryEnvPage('', '', 1, 20)
+        .then(res => {
+          this.envTypeOptions = res.body.data
+        })
+    },
+    handlerSelEnvType () {
+      this.kubernetesApplicationInstance.envLabel = ''
+      this.getEnvLabel()
+    },
+    getEnvLabel () {
+      if (this.kubernetesApplicationInstance.envType === null) return
+      if (this.kubernetesApplicationInstance.envType === '') return
+      queryKubernetesApplicationInstanceLable(this.kubernetesApplicationInstance.envType)
+        .then(res => {
+          this.envLabelOptions = res.body
+        })
+    },
+    handlerCloseDialog () {
+      this.formStatus.visible = false
+      this.$emit('closeDialog')
+    },
+    initData (kubernetesApplication, kubernetesApplicationInstance) {
+      this.activeName = 'instance'
+      this.deploymentTemplateOptions = []
+      this.serviceTemplateOptions = []
+      this.deploymentTemplate = {}
+      this.serviceTemplate = {}
+      this.kubernetesApplication = kubernetesApplication
+      this.kubernetesApplicationInstance = kubernetesApplicationInstance
+      this.getDeploymentTemplate('')
+      this.getServiceTemplate('')
+    },
+    handlerCreateDeployment () {
+      if (this.deploymentTemplate === null || this.deploymentTemplate.id === '') return
+      let requestBody = {
+        instanceId: this.kubernetesApplicationInstance.id,
+        templateId: this.deploymentTemplate.id
+      }
+      createKubernetesDeployment(requestBody)
+        .then(res => {
+          if (res.success) {
+            this.$message({
+              message: '成功',
+              type: 'success'
+            })
+          } else {
+            this.$message.error(res.msg)
+          }
+        })
+    },
+    handlerCreateService () {
+      if (this.serviceTemplate === null || this.serviceTemplate.id === '') return
+      let requestBody = {
+        instanceId: this.kubernetesApplicationInstance.id,
+        templateId: this.serviceTemplate.id
+      }
+      createKubernetesService(requestBody)
+        .then(res => {
+          if (res.success) {
+            this.$message({
+              message: '成功',
+              type: 'success'
+            })
+          } else {
+            this.$message.error(res.msg)
+          }
+        })
+    },
+    getTrigger () {
+      getDeploymentTrigger({ instanceId: this.kubernetesApplicationInstance.id })
+        .then(res => {
+          const prefix = 'https://cs.console.aliyun.com/hook/trigger?token='
+          this.deploymentTrigger.type = '重新部署'
+          this.deploymentTrigger.url = prefix + res.body.token
+        })
+    },
+    handlerTriggerCreate () {
+      createDeploymentTrigger({ instanceId: this.kubernetesApplicationInstance.id })
+        .then(() => {
+          this.getTrigger()
+          this.$message.success('创建成功')
+        })
+    },
+    handlerTriggerPush () {
+      pushRepoTrigger({ instanceId: this.kubernetesApplicationInstance.id })
+        .then(() => {
+          this.$message.success('推送成功')
+        })
+    },
+    handlerSave () {
+      setTimeout(() => {
+        let requestBody = Object.assign({}, this.kubernetesApplicationInstance)
+        if (this.formStatus.operationType) {
+          addKubernetesApplicationInstance(requestBody)
+            .then(res => {
+              // 返回数据
+              this.$message({
+                message: '成功',
+                type: 'success'
+              })
+              this.handlerCloseDialog()
+            })
+        } else {
+          updateKubernetesApplicationInstance(requestBody)
+            .then(res => {
+              // 返回数据
+              this.$message({
+                message: '成功',
+                type: 'success'
+              })
+              this.handlerCloseDialog()
+            })
+        }
+      }, 600)
+    }
   }
+}
 </script>

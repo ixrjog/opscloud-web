@@ -71,3 +71,19 @@ export function queryONSGroupAlarm (onsGroupId) {
     method: 'get'
   })
 }
+
+export function queryOnsDLQMessage (data) {
+  return request({
+    url: baseUrl + '/dlq/message/query',
+    method: 'post',
+    data
+  })
+}
+
+export function resendOnsDLQMessage (data) {
+  return request({
+    url: baseUrl + '/dlq/message/resend',
+    method: 'post',
+    data
+  })
+}

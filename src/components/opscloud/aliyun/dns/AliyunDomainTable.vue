@@ -30,10 +30,8 @@
       <el-table-column prop="expirationCurrDateDiff" label="距离到期天数"></el-table-column>
       <el-table-column prop="domainStatus" label="域名状态">
         <template slot-scope="scope">
-          <el-tag :type="getColor(scope.row.domainStatus)" size="small" disable-transitions>{{
-              scope.row.domainStatus |
-                domainStatusFilters
-            }}
+          <el-tag :type="getColor(scope.row.expirationCurrDateDiff)" size="small" disable-transitions>
+            {{ scope.row.expirationCurrDateDiff | domainStatusFilters }}
           </el-tag>
         </template>
       </el-table-column>
@@ -119,14 +117,14 @@ export default {
       }
       return ''
     },
-    domainStatusFilters (domainStatus) {
-      if (domainStatus === '1') {
+    domainStatusFilters (expirationDate) {
+      if (expirationDate < 60) {
         return '急需续费'
       }
-      if (domainStatus === '2') {
+      if (expirationDate === -1) {
         return '急需赎回'
       }
-      if (domainStatus === '3') {
+      if (expirationDate >= 60) {
         return '正常'
       }
       return ''
@@ -156,14 +154,11 @@ export default {
         this.pagination.pageSize = this.info.pageSize
       }
     },
-    getColor (domainStatus) {
-      if (domainStatus === '1') {
+    getColor (expirationCurrDateDiff) {
+      if (expirationCurrDateDiff < 60) {
         return 'danger'
       }
-      if (domainStatus === '2') {
-        return 'danger'
-      }
-      if (domainStatus === '3') {
+      if (expirationCurrDateDiff >= 60) {
         return 'success'
       }
       return ''

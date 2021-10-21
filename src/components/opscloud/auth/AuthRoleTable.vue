@@ -13,9 +13,8 @@
       <el-table-column prop="resourceName" label="资源名称"></el-table-column>
       <el-table-column prop="inWorkorder" label="工单申请" width="100">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.inWorkorder === 0 ? 'success' : 'danger'" disable-transitions>{{scope.row.inWorkorder
-            === 0 ?
-            '禁止' : '允许'}}
+          <el-tag :type="scope.row.inWorkorder === 0 ? 'danger' : 'success'" disable-transitions>
+            {{ scope.row.inWorkorder === 0 ? '禁止' : '允许' }}
           </el-tag>
         </template>
       </el-table-column>
@@ -28,7 +27,8 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination background @current-change="paginationCurrentChange" :page-sizes="[10, 15, 20, 25, 30]" @size-change="handleSizeChange"
+    <el-pagination background @current-change="paginationCurrentChange" :page-sizes="[10, 15, 20, 25, 30]"
+                   @size-change="handleSizeChange"
                    layout="sizes, prev, pager, next" :total="pagination.total" :current-page="pagination.currentPage"
                    :page-size="pagination.pageSize">
     </el-pagination>
@@ -40,132 +40,132 @@
 </template>
 
 <script>
-  import { mapState, mapActions } from 'vuex'
-  import RoleDialog from '@/components/opscloud/dialog/RoleDialog'
-  import MenuDialog from '@/components/opscloud/dialog/MenuDialog'
-  // API
-  import { queryRolePage, deleteRoleById } from '@api/auth/auth.role.js'
-  import RoleMenuDialog from '@/components/opscloud/menu/RoleMenuDialog'
+import { mapState, mapActions } from 'vuex'
+import RoleDialog from '@/components/opscloud/dialog/RoleDialog'
+import MenuDialog from '@/components/opscloud/dialog/MenuDialog'
+// API
+import { queryRolePage, deleteRoleById } from '@api/auth/auth.role.js'
+import RoleMenuDialog from '@/components/opscloud/menu/RoleMenuDialog'
 
-  export default {
-    name: 'AuthRoleTable',
-    data () {
-      return {
-        tableData: [],
-        formMenuStatus: {
-          visible: false
-        },
-        formRoleStatus: {
-          visible: false,
-          labelWidth: '150px',
-          operationType: true,
-          addTitle: '新增角色配置',
-          updateTitle: '更新角色配置'
-        },
-        formRoleMenuStatus: {
-          visible: false
-        },
-        loading: false,
-        pagination: {
-          currentPage: 1,
-          pageSize: 10,
-          total: 0
-        },
-        queryParam: {
-          roleName: '',
-          resourceName: ''
-        },
-        title: '角色配置'
-      }
-    },
-    computed: {
-      ...mapState('d2admin/user', [
-        'info'
-      ])
-    },
-    mounted () {
-      this.initPageSize()
+export default {
+  name: 'AuthRoleTable',
+  data () {
+    return {
+      tableData: [],
+      formMenuStatus: {
+        visible: false
+      },
+      formRoleStatus: {
+        visible: false,
+        labelWidth: '150px',
+        operationType: true,
+        addTitle: '新增角色配置',
+        updateTitle: '更新角色配置'
+      },
+      formRoleMenuStatus: {
+        visible: false
+      },
+      loading: false,
+      pagination: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
+      },
+      queryParam: {
+        roleName: '',
+        resourceName: ''
+      },
+      title: '角色配置'
+    }
+  },
+  computed: {
+    ...mapState('d2admin/user', [
+      'info'
+    ])
+  },
+  mounted () {
+    this.initPageSize()
+    this.fetchData()
+  },
+  components: {
+    RoleDialog,
+    MenuDialog,
+    RoleMenuDialog
+  },
+  methods: {
+    ...mapActions({
+      setPageSize: 'd2admin/user/set'
+    }),
+    handleSizeChange (size) {
+      this.pagination.pageSize = size
+      this.info.pageSize = size
+      this.setPageSize(this.info)
       this.fetchData()
     },
-    components: {
-      RoleDialog,
-      MenuDialog,
-      RoleMenuDialog
+    initPageSize () {
+      if (typeof (this.info.pageSize) !== 'undefined') {
+        this.pagination.pageSize = this.info.pageSize
+      }
     },
-    methods: {
-      ...mapActions({
-        setPageSize: 'd2admin/user/set'
-      }),
-      handleSizeChange (size) {
-        this.pagination.pageSize = size
-        this.info.pageSize = size
-        this.setPageSize(this.info)
-        this.fetchData()
-      },
-      initPageSize () {
-        if (typeof (this.info.pageSize) !== 'undefined') {
-          this.pagination.pageSize = this.info.pageSize
-        }
-      },
-      editItem (row) {
-        this.$refs.roleDialog.initData(Object.assign({}, row))
-        this.formRoleStatus.visible = true
-        this.formRoleStatus.operationType = false
-      },
-      editMenu (row) {
-        // form
-        this.formRoleMenuStatus.visible = true
-        this.$refs.roleMenuDialog.initData(row)
-      },
-      addItem () {
-        let role = {
-          id: '',
-          roleName: '',
-          accessLevel: 0,
-          resourceName: '',
-          workflow: 0,
-          comment: ''
-        }
-        this.$refs.roleDialog.initData(role)
-        this.formRoleStatus.operationType = true
-        this.formRoleStatus.visible = true
-      },
-      delItem (row) {
-        this.$confirm('此操作将删除当前配置?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          deleteRoleById(row.id).then(res => {
-            this.fetchData()
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-          })
-        }).catch(() => {
+    editItem (row) {
+      this.$refs.roleDialog.initData(Object.assign({}, row))
+      this.formRoleStatus.visible = true
+      this.formRoleStatus.operationType = false
+    },
+    editMenu (row) {
+      // form
+      this.formRoleMenuStatus.visible = true
+      this.$refs.roleMenuDialog.initData(row)
+    },
+    addItem () {
+      let role = {
+        id: '',
+        roleName: '',
+        accessLevel: 0,
+        resourceName: '',
+        workflow: 0,
+        comment: ''
+      }
+      this.$refs.roleDialog.initData(role)
+      this.formRoleStatus.operationType = true
+      this.formRoleStatus.visible = true
+    },
+    delItem (row) {
+      this.$confirm('此操作将删除当前配置?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteRoleById(row.id).then(res => {
+          this.fetchData()
           this.$message({
-            type: 'info',
-            message: '已取消删除'
+            type: 'success',
+            message: '删除成功!'
           })
         })
-      },
-      paginationCurrentChange (currentPage) {
-        this.pagination.currentPage = currentPage
-        this.fetchData()
-      },
-      fetchData () {
-        this.loading = true
-        queryRolePage(
-          this.queryParam.roleName, this.queryParam.resourceName, this.pagination.currentPage, this.pagination.pageSize)
-          .then(res => {
-            this.tableData = res.body.data
-            this.pagination.total = res.body.totalNum
-            this.loading = false
-          })
-      }
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    paginationCurrentChange (currentPage) {
+      this.pagination.currentPage = currentPage
+      this.fetchData()
+    },
+    fetchData () {
+      this.loading = true
+      queryRolePage(
+        this.queryParam.roleName, this.queryParam.resourceName, this.pagination.currentPage, this.pagination.pageSize)
+        .then(res => {
+          this.tableData = res.body.data
+          this.pagination.total = res.body.totalNum
+          this.loading = false
+        })
     }
   }
+}
 </script>
 
 <style scoped>

@@ -77,3 +77,27 @@ export function delKubernetesServiceById (id) {
     method: 'delete'
   })
 }
+
+export function createDeploymentTrigger (data) {
+  return request({
+    url: baseUrl + '/deployment/trigger/create',
+    method: 'post',
+    data
+  })
+}
+
+export function getDeploymentTrigger (data) {
+  return request({
+    url: baseUrl + '/deployment/trigger/get',
+    method: 'post',
+    data
+  })
+}
+
+export function pushRepoTrigger (data) {
+  return request({
+    url: baseUrl + '/deployment/trigger/push',
+    method: 'post',
+    data
+  })
+}

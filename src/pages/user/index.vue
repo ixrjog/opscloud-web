@@ -208,18 +208,13 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        retireUserById(row.id).then(res => {
-          this.fetchData()
-          this.$message({
-            type: 'success',
-            message: '离职成功!'
+        retireUserById(row.id)
+          .then(res => {
+            this.fetchData()
+            this.$message.success('离职成功')
           })
-        })
       }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消操作'
-        })
+        this.$message.info('已取消操作')
       })
     },
     editItem (row) {

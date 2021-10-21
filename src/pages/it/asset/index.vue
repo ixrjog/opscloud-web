@@ -453,21 +453,13 @@ export default {
   margin-left: 10px;
 }
 
-.picker {
-  margin-left: 5px;
-}
-
-.select {
+.picker, .select, .button {
   margin-left: 5px;
 }
 
 .cascader {
   margin-left: 5px;
   width: 220px;
-}
-
-.button {
-  margin-left: 5px;
 }
 
 </style>
